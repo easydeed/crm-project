@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react'
 import { redirect } from 'next/navigation'
 import { TopBar } from '@/app/app/top-bar'
+import { ViewAsBanner } from '@/app/app/view-as-banner'
 import { logoutAction } from '@/app/login/actions'
 import { readRequestSession } from '@/auth/current-session'
+import { getAccountById } from '@/db/accounts'
 
 export default async function AppLayout({
   children,
@@ -14,8 +16,12 @@ export default async function AppLayout({
     redirect('/login?returnTo=/app')
   }
 
+  const viewed =
+    session.viewingAsAccountId ? await getAccountById(session.viewingAsAccountId) : null
+
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen ${viewed ? 'pt-14' : ''}`}>
+      {viewed ? <ViewAsBanner name={viewed.name} /> : null}
       <TopBar />
       <form action={logoutAction} className="px-4">
         <button

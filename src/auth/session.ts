@@ -6,6 +6,7 @@ const SESSION_TTL_SECONDS = 60 * 60 * 24 * 14
 export type SessionPayload = {
   accountId: string
   role: 'agent' | 'admin'
+  viewingAsAccountId?: string
   exp: number
 }
 
@@ -25,11 +26,16 @@ function sign(encoded: string) {
   return createHmac('sha256', sessionSecret()).update(encoded).digest('base64url')
 }
 
-export function createSessionValue(accountId: string, role: 'agent' | 'admin') {
+export function createSessionValue(
+  accountId: string,
+  role: 'agent' | 'admin',
+  viewingAsAccountId?: string,
+) {
   const encoded = encodePayload({
     accountId,
     role,
     exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
+    ...(viewingAsAccountId ? { viewingAsAccountId } : {}),
   })
   return `${encoded}.${sign(encoded)}`
 }
@@ -47,6 +53,9 @@ export function readSessionValue(value: string | undefined): SessionPayload | nu
   try {
     const payload = JSON.parse(Buffer.from(encoded, 'base64url').toString('utf8')) as SessionPayload
     if (!payload.accountId || (payload.role !== 'agent' && payload.role !== 'admin')) {
+      return null
+    }
+    if (payload.viewingAsAccountId && typeof payload.viewingAsAccountId !== 'string') {
       return null
     }
     if (payload.exp < Math.floor(Date.now() / 1000)) return null

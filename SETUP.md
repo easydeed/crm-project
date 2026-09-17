@@ -62,7 +62,8 @@ DESIRED BEHAVIOR
      accounts            id, email, password_hash, name, brokerage, dre,
                          phone, role ('agent'|'admin'), sender_name,
                          reply_to, accent_color, send_day, send_time,
-                         timezone, paused, mls_agent_id, created_at
+                         timezone, paused, last_logged_in_at, mls_agent_id,
+                         created_at
 
      contacts            id, account_id FK, name, email, phone,
                          address_raw, parcel_id FK nullable, close_date,

@@ -1,7 +1,7 @@
 import { verifyPasswordOrDummy } from '@/auth/password'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts } from '@/db/schema'
-import { sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 
 export type AuthenticateResult =
   | { ok: true; accountId: string; role: 'agent' | 'admin' }
@@ -24,5 +24,9 @@ export async function authenticate(
 
   const matches = await verifyPasswordOrDummy(password, row?.passwordHash ?? null)
   if (!row || !matches) return { ok: false }
+  await db
+    .update(accounts)
+    .set({ lastLoggedInAt: new Date() })
+    .where(eq(accounts.id, row.id))
   return { ok: true, accountId: row.id, role: row.role }
 }

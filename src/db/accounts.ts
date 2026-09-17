@@ -17,6 +17,7 @@ export type AccountRecord = {
   sendTime: string | null
   timezone: string | null
   paused: boolean
+  lastLoggedInAt: Date | null
   createdAt: Date
 }
 
@@ -35,6 +36,7 @@ const accountColumns = {
   sendTime: accounts.sendTime,
   timezone: accounts.timezone,
   paused: accounts.paused,
+  lastLoggedInAt: accounts.lastLoggedInAt,
   createdAt: accounts.createdAt,
 }
 

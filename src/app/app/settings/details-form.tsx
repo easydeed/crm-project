@@ -7,7 +7,13 @@ import { saveDetailsAction, type DetailsState } from '@/app/app/settings/actions
 import { FieldError, Muted, fieldClass } from '@/app/app/settings/field'
 import { SaveButton } from '@/app/app/settings/save-button'
 
-export function DetailsForm({ account }: { account: AccountRecord }) {
+export function DetailsForm({
+  account,
+  readOnly,
+}: {
+  account: AccountRecord
+  readOnly?: boolean
+}) {
   const [state, action, pending] = useActionState(saveDetailsAction, {} as DetailsState)
 
   return (
@@ -61,7 +67,9 @@ export function DetailsForm({ account }: { account: AccountRecord }) {
         />
         <FieldError message={state.phone} />
       </label>
-      <SaveButton pending={pending} savedAt={state.savedAt} />
+      {readOnly ? <Muted>Viewing as another agent is read only.</Muted> : null}
+      <FieldError message={state.error} />
+      <SaveButton pending={pending} savedAt={state.savedAt} readOnly={readOnly} />
     </form>
   )
 }

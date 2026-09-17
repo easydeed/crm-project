@@ -1,13 +1,14 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { readRequestSession } from '@/auth/current-session'
+import { effectiveAccountId } from '@/auth/effective-account'
 import { countContactsForAccount, getAccountById } from '@/db/accounts'
 
 export default async function AppHomePage() {
   const session = await readRequestSession()
   if (!session) redirect('/login?returnTo=/app')
 
-  const account = await getAccountById(session.accountId)
+  const account = await getAccountById(effectiveAccountId(session))
   if (!account) {
     return (
       <main className="px-4 py-10">

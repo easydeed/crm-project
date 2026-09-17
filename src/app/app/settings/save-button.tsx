@@ -5,9 +5,11 @@ import { useEffect, useState } from 'react'
 export function SaveButton({
   pending,
   savedAt,
+  readOnly,
 }: {
   pending: boolean
   savedAt?: number
+  readOnly?: boolean
 }) {
   const [saved, setSaved] = useState(false)
 
@@ -22,7 +24,7 @@ export function SaveButton({
     <button
       className="mt-4 rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-60"
       type="submit"
-      disabled={pending}
+      disabled={pending || readOnly}
     >
       {pending ? 'Saving…' : saved ? 'Saved' : 'Save'}
     </button>
