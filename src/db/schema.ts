@@ -11,7 +11,6 @@ import {
   primaryKey,
   text,
   timestamp,
-  unique,
   uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core'
@@ -70,7 +69,7 @@ export const parcels = pgTable(
     baseYearValue: integer('base_year_value'),
     lastRefreshedAt: timestamp('last_refreshed_at', { withTimezone: true }),
   },
-  (t) => [unique('parcels_county_apn_uidx').on(t.county, t.apn)],
+  (t) => [uniqueIndex('parcels_county_apn_uidx').on(t.county, t.apn)],
 )
 
 export const contacts = pgTable(
@@ -152,7 +151,7 @@ export const parcelEvents = pgTable(
     party: text('party'),
     raw: jsonb('raw').$type<Record<string, unknown>>().notNull().default({}),
   },
-  (t) => [unique('parcel_events_county_doc_uidx').on(t.county, t.docNumber)],
+  (t) => [uniqueIndex('parcel_events_county_doc_uidx').on(t.county, t.docNumber)],
 )
 
 export const mlsListings = pgTable('mls_listings', {
@@ -200,7 +199,7 @@ export const sendRecipients = pgTable(
     sentAt: timestamp('sent_at', { withTimezone: true }),
     providerId: text('provider_id'),
   },
-  (t) => [unique('send_recipients_send_contact_uidx').on(t.sendId, t.contactId)],
+  (t) => [uniqueIndex('send_recipients_send_contact_uidx').on(t.sendId, t.contactId)],
 )
 
 export const events = pgTable('events', {
