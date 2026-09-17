@@ -8,12 +8,14 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 9.15.9
 
       - uses: actions/setup-node@v4
         with:
@@ -22,17 +24,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Typecheck
-        run: pnpm typecheck
+      - name: Verify
+        run: pnpm verify
 
-      - name: Lint
-        run: pnpm lint
-
-      - name: Tests
-        run: pnpm test -- --reporter=verbose
-
-      - name: File length (max 300 lines)
-        run: node scripts/check-file-length.mjs
-
-      - name: Forbidden patterns
-        run: node scripts/check-invariants.mjs
+      - name: Push schema
+        run: pnpm db:push

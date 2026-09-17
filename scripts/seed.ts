@@ -1,7 +1,6 @@
-import { existsSync, readFileSync } from 'node:fs'
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
 import { z } from 'zod'
+import { loadDatabaseUrl } from '../src/config/database-url'
+import { createDb } from '../src/db/client'
 import { buildLaVerneFixtures } from '../src/db/fixtures/la-verne'
 import {
   accounts,
@@ -10,30 +9,14 @@ import {
   parcels,
 } from '../src/db/schema'
 
-function loadEnvFile() {
-  if (!existsSync('.env')) return
-  for (const line of readFileSync('.env', 'utf8').split('\n')) {
-    const trimmed = line.trim()
-    if (!trimmed || trimmed.startsWith('#')) continue
-    const eq = trimmed.indexOf('=')
-    if (eq === -1) continue
-    const key = trimmed.slice(0, eq)
-    const value = trimmed.slice(eq + 1).replace(/^['"]|['"]$/g, '')
-    if (!process.env[key]) process.env[key] = value
-  }
-}
-
-loadEnvFile()
-
 const env = z
   .object({
     DATABASE_URL: z.string().min(1),
   })
-  .parse(process.env)
+  .parse({ DATABASE_URL: loadDatabaseUrl() })
 
 async function seed() {
-  const client = postgres(env.DATABASE_URL, { max: 1 })
-  const db = drizzle(client)
+  const { client, db } = createDb(env.DATABASE_URL)
   const fixture = buildLaVerneFixtures()
 
   await client`
@@ -66,8 +49,19 @@ async function seed() {
   )
   await db.insert(parcelEvents).values(fixture.parcelEvents)
 
+  const [counts] = await client`
+    select
+      (select count(*)::int from accounts) as agents,
+      (select count(*)::int from contacts) as contacts,
+      (select count(*)::int from contacts where status <> 'matched') as unmatched,
+      (select count(*)::int from contacts where address_raw ilike 'PO Box%') as po_boxes,
+      (select count(*)::int from parcel_events pe
+        join parcels p on p.id = pe.parcel_id
+        where p.address like '%Oakdale Ave') as oakdale_sales
+  `
+
   console.log(
-    `Seeded ${fixture.agent.name}: ${fixture.contacts.length} contacts, ${fixture.parcels.length} parcels, ${fixture.parcelEvents.length} parcel events.`,
+    `Seeded ${fixture.agent.name}: ${counts.contacts} contacts, ${counts.unmatched} unmatched, ${counts.po_boxes} PO Box, ${counts.oakdale_sales} Oakdale sales, ${counts.agents} agent.`,
   )
 
   await client.end()
