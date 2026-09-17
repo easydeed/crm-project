@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "next lint",
     "test": "vitest run",
-    "verify": "pnpm typecheck && pnpm lint && pnpm test && node scripts/check-file-length.mjs && node scripts/check-invariants.mjs",
+    "verify": "pnpm build && pnpm typecheck && pnpm lint && pnpm test && node scripts/check-file-length.mjs && node scripts/check-invariants.mjs",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx scripts/seed.ts"
   },

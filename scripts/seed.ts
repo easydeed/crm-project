@@ -1,7 +1,6 @@
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
 import { z } from 'zod'
 import { loadDatabaseUrl } from '../src/config/database-url'
+import { createDb } from '../src/db/client'
 import { buildLaVerneFixtures } from '../src/db/fixtures/la-verne'
 import {
   accounts,
@@ -17,8 +16,7 @@ const env = z
   .parse({ DATABASE_URL: loadDatabaseUrl() })
 
 async function seed() {
-  const client = postgres(env.DATABASE_URL, { max: 1 })
-  const db = drizzle(client)
+  const { client, db } = createDb(env.DATABASE_URL)
   const fixture = buildLaVerneFixtures()
 
   await client`
@@ -51,8 +49,19 @@ async function seed() {
   )
   await db.insert(parcelEvents).values(fixture.parcelEvents)
 
+  const [counts] = await client`
+    select
+      (select count(*)::int from accounts) as agents,
+      (select count(*)::int from contacts) as contacts,
+      (select count(*)::int from contacts where status <> 'matched') as unmatched,
+      (select count(*)::int from contacts where address_raw ilike 'PO Box%') as po_boxes,
+      (select count(*)::int from parcel_events pe
+        join parcels p on p.id = pe.parcel_id
+        where p.address like '%Oakdale Ave') as oakdale_sales
+  `
+
   console.log(
-    `Seeded ${fixture.agent.name}: ${fixture.contacts.length} contacts, ${fixture.parcels.length} parcels, ${fixture.parcelEvents.length} parcel events.`,
+    `Seeded ${fixture.agent.name}: ${counts.contacts} contacts, ${counts.unmatched} unmatched, ${counts.po_boxes} PO Box, ${counts.oakdale_sales} Oakdale sales, ${counts.agents} agent.`,
   )
 
   await client.end()
