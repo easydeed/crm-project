@@ -10,20 +10,38 @@ export type AccountRecord = {
   brokerage: string | null
   dre: string | null
   phone: string | null
+  senderName: string | null
+  replyTo: string | null
+  accentColor: string | null
+  sendDay: number | null
+  sendTime: string | null
+  timezone: string | null
+  paused: boolean
+  createdAt: Date
+}
+
+const accountColumns = {
+  id: accounts.id,
+  email: accounts.email,
+  name: accounts.name,
+  role: accounts.role,
+  brokerage: accounts.brokerage,
+  dre: accounts.dre,
+  phone: accounts.phone,
+  senderName: accounts.senderName,
+  replyTo: accounts.replyTo,
+  accentColor: accounts.accentColor,
+  sendDay: accounts.sendDay,
+  sendTime: accounts.sendTime,
+  timezone: accounts.timezone,
+  paused: accounts.paused,
+  createdAt: accounts.createdAt,
 }
 
 export async function getAccountById(accountId: string): Promise<AccountRecord | null> {
   const { db } = getRuntimeDb()
   const [row] = await db
-    .select({
-      id: accounts.id,
-      email: accounts.email,
-      name: accounts.name,
-      role: accounts.role,
-      brokerage: accounts.brokerage,
-      dre: accounts.dre,
-      phone: accounts.phone,
-    })
+    .select(accountColumns)
     .from(accounts)
     .where(eq(accounts.id, accountId))
     .limit(1)
