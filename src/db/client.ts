@@ -15,9 +15,13 @@ export function createPostgresClient(url: string) {
   })
 }
 
-export function createDb(url = loadDatabaseUrl()) {
+export function createDb(url: string) {
   const client = createPostgresClient(url)
   return { client, db: drizzle(client, { schema }) }
+}
+
+export function createSessionDb() {
+  return createDb(loadDatabaseUrl())
 }
 
 export function createRuntimeDb() {
