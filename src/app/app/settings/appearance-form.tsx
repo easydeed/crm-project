@@ -4,10 +4,16 @@ import { useActionState } from 'react'
 import { ACCENT_COLORS } from '@/config/settings'
 import type { AccountRecord } from '@/db/accounts'
 import { saveAppearanceAction, type AppearanceState } from '@/app/app/settings/actions'
-import { FieldError, fieldClass } from '@/app/app/settings/field'
+import { FieldError, Muted, fieldClass } from '@/app/app/settings/field'
 import { SaveButton } from '@/app/app/settings/save-button'
 
-export function AppearanceForm({ account }: { account: AccountRecord }) {
+export function AppearanceForm({
+  account,
+  readOnly,
+}: {
+  account: AccountRecord
+  readOnly?: boolean
+}) {
   const [state, action, pending] = useActionState(
     saveAppearanceAction,
     {} as AppearanceState,
@@ -58,7 +64,9 @@ export function AppearanceForm({ account }: { account: AccountRecord }) {
         </div>
         <FieldError message={state.accentColor} />
       </fieldset>
-      <SaveButton pending={pending} savedAt={state.savedAt} />
+      {readOnly ? <Muted>Viewing as another agent is read only.</Muted> : null}
+      <FieldError message={state.error} />
+      <SaveButton pending={pending} savedAt={state.savedAt} readOnly={readOnly} />
     </form>
   )
 }

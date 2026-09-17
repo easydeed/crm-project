@@ -21,6 +21,15 @@ test('tampered session values are rejected', () => {
   expect(readSessionValue('not-a-session')).toBeNull()
 })
 
+test('view-as is stored on the admin session, not as an ambient account', () => {
+  const value = createSessionValue('admin-1', 'admin', 'agent-1')
+  expect(readSessionValue(value)).toMatchObject({
+    accountId: 'admin-1',
+    role: 'admin',
+    viewingAsAccountId: 'agent-1',
+  })
+})
+
 test('returnTo only allows same-origin relative paths', () => {
   expect(safeReturnTo('/app')).toBe('/app')
   expect(safeReturnTo('https://evil.example')).toBe('/app')

@@ -7,7 +7,13 @@ import { saveSendingAction, type SendingState } from '@/app/app/settings/actions
 import { FieldError, Muted, fieldClass } from '@/app/app/settings/field'
 import { SaveButton } from '@/app/app/settings/save-button'
 
-export function SendingForm({ account }: { account: AccountRecord }) {
+export function SendingForm({
+  account,
+  readOnly,
+}: {
+  account: AccountRecord
+  readOnly?: boolean
+}) {
   const [state, action, pending] = useActionState(saveSendingAction, {} as SendingState)
 
   return (
@@ -73,7 +79,9 @@ export function SendingForm({ account }: { account: AccountRecord }) {
         </label>
         <Muted>Nothing sends while this is on. Turn it back on any time.</Muted>
       </div>
-      <SaveButton pending={pending} savedAt={state.savedAt} />
+      {readOnly ? <Muted>Viewing as another agent is read only.</Muted> : null}
+      <FieldError message={state.error} />
+      <SaveButton pending={pending} savedAt={state.savedAt} readOnly={readOnly} />
     </form>
   )
 }

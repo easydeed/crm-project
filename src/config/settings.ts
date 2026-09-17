@@ -1,8 +1,10 @@
+export const INK_COLOR = '#0E1729'
+
 export const ACCENT_COLORS = [
   { name: 'blue', value: '#2F5BFF' },
   { name: 'green', value: '#2F5D50' },
   { name: 'rust', value: '#B4532A' },
-  { name: 'ink', value: '#0E1729' },
+  { name: 'ink', value: INK_COLOR },
   { name: 'violet', value: '#6B4EBF' },
 ] as const
 

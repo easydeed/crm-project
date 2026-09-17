@@ -11,6 +11,9 @@ export default async function AdminLayout({
   if (!session) {
     redirect('/login?returnTo=/admin')
   }
+  if (session.viewingAsAccountId) {
+    redirect('/app')
+  }
   if (session.role !== 'admin') {
     notFound()
   }

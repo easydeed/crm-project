@@ -47,6 +47,7 @@ export const accounts = pgTable('accounts', {
   sendTime: text('send_time'),
   timezone: text('timezone'),
   paused: boolean('paused').notNull().default(false),
+  lastLoggedInAt: timestamp('last_logged_in_at', { withTimezone: true }),
   mlsAgentId: text('mls_agent_id'),
   createdAt: createdAt(),
 })
