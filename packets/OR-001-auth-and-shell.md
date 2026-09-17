@@ -24,6 +24,9 @@ SCOPE
 - /admin route gate only — no admin screens in this packet
 - Out of scope: settings fields, people, billing, email sending,
   password reset, OAuth, magic links
+- The runtime database client uses DATABASE_POOLER_URL (transaction
+  pooler, 6543) with prepare: false. Migrations and seeds use
+  DATABASE_URL (session pooler, 5432). Do not mix them.
 
 CURRENT BEHAVIOR
 Does not exist. Repo has the S0 schema and CI only.

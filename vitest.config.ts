@@ -12,5 +12,9 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
+    env: {
+      SESSION_SECRET:
+        process.env.SESSION_SECRET ?? 'test-session-secret-that-is-32-chars-min',
+    },
   },
 })
