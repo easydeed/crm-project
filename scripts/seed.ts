@@ -1,7 +1,7 @@
-import { existsSync, readFileSync } from 'node:fs'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import { z } from 'zod'
+import { loadDatabaseUrl } from '../src/config/database-url'
 import { buildLaVerneFixtures } from '../src/db/fixtures/la-verne'
 import {
   accounts,
@@ -10,26 +10,11 @@ import {
   parcels,
 } from '../src/db/schema'
 
-function loadEnvFile() {
-  if (!existsSync('.env')) return
-  for (const line of readFileSync('.env', 'utf8').split('\n')) {
-    const trimmed = line.trim()
-    if (!trimmed || trimmed.startsWith('#')) continue
-    const eq = trimmed.indexOf('=')
-    if (eq === -1) continue
-    const key = trimmed.slice(0, eq)
-    const value = trimmed.slice(eq + 1).replace(/^['"]|['"]$/g, '')
-    if (!process.env[key]) process.env[key] = value
-  }
-}
-
-loadEnvFile()
-
 const env = z
   .object({
     DATABASE_URL: z.string().min(1),
   })
-  .parse(process.env)
+  .parse({ DATABASE_URL: loadDatabaseUrl() })
 
 async function seed() {
   const client = postgres(env.DATABASE_URL, { max: 1 })

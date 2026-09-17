@@ -36,3 +36,8 @@ jobs:
 
       - name: Forbidden patterns
         run: node scripts/check-invariants.mjs
+
+      - name: Push schema
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: pnpm db:push
