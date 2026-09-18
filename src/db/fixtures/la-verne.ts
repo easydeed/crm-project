@@ -24,41 +24,12 @@ const COUNTY_META: Record<
   County,
   { city: string; zip: string; lat: number; lng: number; street: string }
 > = {
-  'Los Angeles': {
-    city: 'La Verne',
-    zip: '91750',
-    lat: 34.1008,
-    lng: -117.7678,
-    street: 'Bonita Ave',
-  },
-  Orange: {
-    city: 'Fullerton',
-    zip: '92831',
-    lat: 33.8704,
-    lng: -117.9242,
-    street: 'Commonwealth Ave',
-  },
-  'San Bernardino': {
-    city: 'Upland',
-    zip: '91786',
-    lat: 34.0975,
-    lng: -117.6484,
-    street: 'Arrow Hwy',
-  },
-  Riverside: {
-    city: 'Corona',
-    zip: '92882',
-    lat: 33.8753,
-    lng: -117.5664,
-    street: 'Main St',
-  },
-  'San Diego': {
-    city: 'Oceanside',
-    zip: '92054',
-    lat: 33.1959,
-    lng: -117.3795,
-    street: 'Coast Hwy',
-  },
+  'Los Angeles': { city: 'La Verne', zip: '91750', lat: 34.1008, lng: -117.7678, street: 'Bonita Ave' },
+  Orange: { city: 'Fullerton', zip: '92831', lat: 33.8704, lng: -117.9242, street: 'Commonwealth Ave' },
+  Ventura: { city: 'Ventura', zip: '93001', lat: 34.2746, lng: -119.229, street: 'Main St' },
+  'San Diego': { city: 'Oceanside', zip: '92054', lat: 33.1959, lng: -117.3795, street: 'Coast Hwy' },
+  Riverside: { city: 'Corona', zip: '92882', lat: 33.8753, lng: -117.5664, street: 'Main St' },
+  'San Bernardino': { city: 'Upland', zip: '91786', lat: 34.0975, lng: -117.6484, street: 'Arrow Hwy' },
 }
 
 function id(n: number) {
