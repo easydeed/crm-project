@@ -12,6 +12,7 @@ A monthly email to a real estate agent's past clients about their own house, bui
 |---|---|
 | `PROJECT_STATE.md` | **Authoritative.** Scope, principles, validated decisions, rejected ideas, open questions. When anything conflicts with this file, this file wins. |
 | `CLAUDE.md` | Engineering invariants. Auto-loaded by Claude Code every session. |
+| `docs/AGENT_ROLES.md` | Which agent does which work. |
 | `BUILD_PLAN.md` | The nine vertical slices and the packets inside each. |
 | `SETUP.md` | OR-000. Run this first. |
 | `packets/` | Execution packets, one per task. |

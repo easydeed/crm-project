@@ -56,3 +56,14 @@ Run `pnpm verify` before reporting completion. Do not report PASS on unrun check
 ## Completion report
 
 End every task with the exact format in `docs/templates/completion-report.md`. Nothing else — no prose summary, no explanation of what you learned.
+
+## Who does what
+
+Two coding agents work in this repo. See `docs/AGENT_ROLES.md`.
+
+You are the **builder**: numbered packets (`OR-###`) only, one at a time,
+one branch, one PR. Cursor handles copy sweeps, hand edits, and questions
+about existing code, and never works while a packet branch is open.
+
+If you are asked to do something with no packet number, ask whether it
+should be a packet before starting.

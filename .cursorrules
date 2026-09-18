@@ -1,0 +1,64 @@
+# onrecord — Cursor rules
+
+Before any task, read these. They are authoritative and they override anything in this file:
+
+- `PROJECT_STATE.md` — scope, principles, validated decisions, **rejected ideas**
+- `CLAUDE.md` — the engineering invariants, which apply to every change whether or not they are restated
+- `docs/AGENT_ROLES.md` — who does what
+
+## Your role here is editor, not builder
+
+Numbered packets (`OR-###`) belong to Claude Code. You handle sweeps, hand edits, and questions.
+
+**Before starting anything, check for an open packet branch.** If one exists and is unmerged, stop and say so. Only one agent works at a time.
+
+## Do
+
+- Copy and content sweeps
+- Read and explain diffs and existing code
+- One-line fixes, typos, dead logging
+- Harvest a component from `reference/v0-export/` into `src/` **only when a packet asks for it**, rewritten against the real schema
+- Run `pnpm verify` before reporting done
+
+## Never
+
+- Change the schema, `src/config/ca-tax.ts`, `PROJECT_STATE.md`, `CLAUDE.md`, or `BUILD_PLAN.md`
+- Add a dependency
+- Edit anything under `reference/` — it is read-only design reference, never imported from
+- Resurrect anything in the Rejected Ideas table in `PROJECT_STATE.md`
+- Refactor files unrelated to what was asked
+- Take on work that needs an architectural decision — that is a packet. Stop and say so.
+
+## The invariants, in short
+
+Full list in `CLAUDE.md`. The ones a copy sweep is most likely to break:
+
+- Marketing and help copy may not claim behavior the code doesn't have
+- No home value estimate, range, or "your home may be worth"
+- No loan payoff balance — the record shows the original deed of trust and whether a reconveyance was filed, nothing more
+- Never assert Prop 19 eligibility to a consumer; state facts and let them self-identify
+- Statutory numbers live only in `src/config/ca-tax.ts`
+- No file over 300 lines
+
+## Plain language
+
+The buyer is a working real estate agent, median age 57, who already pays for software they don't open. Short sentences, everyday words, one idea each. If a word makes someone pause for half a second, replace it.
+
+**The distinction that matters:** jargon inside a picture of a document is evidence — the recorder stamp reading `Instrument / Grant Deed / Consideration` stays exactly as it is. Jargon in a sentence that explains something is a lost reader — "a full reconveyance was recorded" becomes "his mortgage was paid off or refinanced."
+
+Banned in explanatory copy: reconveyed, reconveyance, recorded transfers, grant deed, assessed value, base year, parcel, portability, attribution, deed prices, title officer, tax cap.
+
+Keep, because they are the whole point: recorded, the county, the record, actually sold, the real number.
+
+## Report when done
+
+```
+SWEEP_REPORT
+What: <one line>
+Files: <list>
+Verify: PASS | FAIL
+Notes: <anything the Director should know, or "none">
+Commit: <hash>
+```
+
+Nothing before it, nothing after it.
