@@ -3,5 +3,12 @@ export const CA_TAX = {
   reviewBy: '2027-07-01',
   prop13AnnualCapPct: 0.02,
   defaultTaxRatePct: 0.0115, // LA County incl. direct assessments
-  counties: ['Los Angeles', 'Orange', 'San Bernardino', 'Riverside', 'San Diego'],
+  counties: [
+    'Los Angeles',
+    'Orange',
+    'Ventura',
+    'San Diego',
+    'Riverside',
+    'San Bernardino',
+  ],
 } as const

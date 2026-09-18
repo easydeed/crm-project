@@ -1,13 +1,14 @@
 import { expect, test } from 'vitest'
 import { CA_TAX } from '@/config/ca-tax'
 
-test('CA_TAX pins the five in-scope counties', () => {
+test('CA_TAX pins the six in-scope counties', () => {
   expect([...CA_TAX.counties]).toEqual([
     'Los Angeles',
     'Orange',
-    'San Bernardino',
-    'Riverside',
+    'Ventura',
     'San Diego',
+    'Riverside',
+    'San Bernardino',
   ])
 })
 
