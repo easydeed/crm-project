@@ -24,4 +24,5 @@ test('schema exports every OR-000 table', () => {
   for (const name of tables) {
     expect(schema[name], name).toBeDefined()
   }
+  expect(schema.parcels.streetNameNorm).toBeDefined()
 })

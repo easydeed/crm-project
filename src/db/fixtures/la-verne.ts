@@ -1,4 +1,6 @@
 import { CA_TAX } from '@/config/ca-tax'
+import { reviewContacts, reviewParcels } from '@/db/fixtures/la-verne-review'
+import { streetNameNorm } from '@/matching/normalize'
 
 export const AGENT_ID = '00000000-0000-4000-8000-000000000001'
 
@@ -154,6 +156,7 @@ export function buildLaVerneFixtures() {
     address: string
     city: string
     zip: string
+    streetNameNorm: string
     lat: number
     lng: number
     beds: number
@@ -213,6 +216,7 @@ export function buildLaVerneFixtures() {
       address,
       city,
       zip,
+      streetNameNorm: streetNameNorm(address),
       lat: oakdale ? 34.1042 + i * 0.0003 : meta.lat + i * 0.0004,
       lng: oakdale ? -117.7721 - i * 0.0003 : meta.lng - i * 0.0004,
       beds: 3 + (i % 3),
@@ -261,11 +265,9 @@ export function buildLaVerneFixtures() {
 
   return {
     agent,
-    parcels,
-    contacts: [
-      ...unmatchedContacts,
-      ...contacts,
-    ],
+    parcels: [...parcels, ...reviewParcels],
+    contacts: [...unmatchedContacts, ...contacts, ...reviewContacts],
+    reviewContacts,
     parcelEvents,
   }
 }

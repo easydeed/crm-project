@@ -5,12 +5,13 @@ import {
   unmatchedContacts,
 } from '@/db/fixtures/la-verne'
 
-test('La Verne fixture has Dana Whitfield and 47 contacts', () => {
+test('La Verne fixture has Dana Whitfield and 51 contacts', () => {
   const fixture = buildLaVerneFixtures()
   expect(fixture.agent.name).toBe('Dana Whitfield')
   expect(fixture.agent.brokerage).toBe('Coastline Realty')
   expect(fixture.agent.dre).toBe('01998432')
-  expect(fixture.contacts).toHaveLength(47)
+  expect(fixture.contacts).toHaveLength(51)
+  expect(fixture.reviewContacts).toHaveLength(4)
 })
 
 test('three contacts are unmatched and one is a PO Box', () => {
@@ -29,5 +30,5 @@ test('three Oakdale Ave recorded sales are present', () => {
   expect(oakdaleEvents).toHaveLength(3)
   expect(
     fixture.parcels.filter((parcel) => parcel.address.endsWith('Oakdale Ave')),
-  ).toHaveLength(3)
+  ).toHaveLength(4)
 })

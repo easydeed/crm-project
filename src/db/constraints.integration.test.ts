@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm'
 import { afterAll, beforeAll, describe, expect, test } from 'vitest'
 import { loadDatabaseUrl } from '@/config/database-url'
 import { createDb } from '@/db/client'
+import { withStreetNameNorm } from '@/db/parcel-write'
 import {
   accounts,
   contacts,
@@ -131,14 +132,16 @@ describe.skipIf(!databaseUrl)('live constraints', () => {
   })
 
   test('duplicate (county, doc_number) parcel_event is rejected', async () => {
-    await db().insert(parcels).values({
-      id: ids.parcel,
-      apn: `TEST-${ids.parcel.slice(0, 8)}`,
-      county: 'Los Angeles',
-      address: '9 Test Ave',
-      city: 'La Verne',
-      zip: '91750',
-    })
+    await db().insert(parcels).values(
+      withStreetNameNorm({
+        id: ids.parcel,
+        apn: `TEST-${ids.parcel.slice(0, 8)}`,
+        county: 'Los Angeles',
+        address: '9 Test Ave',
+        city: 'La Verne',
+        zip: '91750',
+      }),
+    )
     await db().insert(parcelEvents).values({
       id: ids.eventA,
       parcelId: ids.parcel,

@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { loadDatabaseUrl } from '../src/config/database-url'
 import { createDb } from '../src/db/client'
 import { buildLaVerneFixtures } from '../src/db/fixtures/la-verne'
+import { persistReviewCandidates } from '../src/db/persist-review-candidates'
 import {
   accounts,
   contacts,
@@ -49,12 +50,15 @@ async function seed() {
     })),
   )
   await db.insert(parcelEvents).values(fixture.parcelEvents)
+  await persistReviewCandidates(db, fixture.reviewContacts)
 
   const [counts] = await client`
     select
       (select count(*)::int from accounts) as agents,
       (select count(*)::int from contacts) as contacts,
       (select count(*)::int from contacts where status <> 'matched') as unmatched,
+      (select count(*)::int from contacts where status = 'needs_review') as needs_review,
+      (select count(distinct contact_id)::int from contact_match_candidates) as review_with_candidates,
       (select count(*)::int from contacts where address_raw ilike 'PO Box%') as po_boxes,
       (select count(*)::int from parcel_events pe
         join parcels p on p.id = pe.parcel_id
@@ -62,7 +66,7 @@ async function seed() {
   `
 
   console.log(
-    `Seeded ${fixture.agent.name}: ${counts.contacts} contacts, ${counts.unmatched} unmatched, ${counts.po_boxes} PO Box, ${counts.oakdale_sales} Oakdale sales, ${counts.agents} agent.`,
+    `Seeded ${fixture.agent.name}: ${counts.contacts} contacts, ${counts.unmatched} unmatched, ${counts.needs_review} needs_review, ${counts.review_with_candidates} with candidates, ${counts.po_boxes} PO Box, ${counts.oakdale_sales} Oakdale sales, ${counts.agents} agent.`,
   )
 
   await client.end()

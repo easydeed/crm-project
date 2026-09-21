@@ -1,9 +1,14 @@
 import { buildLaVerneFixtures } from '@/db/fixtures/la-verne'
+import { reviewContacts } from '@/db/fixtures/la-verne-review'
 import { csvEscape } from '@/import/parse-csv'
 import type { ImportRow } from '@/import/types'
 
+const reviewEmails = new Set(reviewContacts.map((row) => row.email))
+
 export function laVerneImportRows(): ImportRow[] {
-  return buildLaVerneFixtures().contacts.map((contact, index) => ({
+  return buildLaVerneFixtures()
+    .contacts.filter((contact) => !reviewEmails.has(contact.email))
+    .map((contact, index) => ({
     line: index + 2,
     name: contact.name,
     email: contact.email,

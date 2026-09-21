@@ -133,6 +133,12 @@ function parseStreet(streetPart: string) {
   return { number, directional, suffix, name: tokens.join(' ') }
 }
 
+export function streetNameNorm(address: string): string {
+  const parsed = parseAddress(address)
+  if (parsed?.name) return parsed.name
+  return parseStreet(address.split(',')[0] ?? '').name
+}
+
 function formatStreet(
   name: string,
   suffix: string | null,
