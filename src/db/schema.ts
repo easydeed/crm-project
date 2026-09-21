@@ -62,6 +62,7 @@ export const parcels = pgTable(
     address: text('address').notNull(),
     city: text('city').notNull(),
     zip: text('zip').notNull(),
+    streetNameNorm: text('street_name_norm').notNull().default(''),
     lat: doublePrecision('lat'),
     lng: doublePrecision('lng'),
     beds: integer('beds'),
@@ -78,6 +79,8 @@ export const parcels = pgTable(
     uniqueIndex('parcels_county_apn_uidx').on(t.county, t.apn),
     index('parcels_zip_idx').on(t.zip),
     index('parcels_city_address_idx').on(t.city, t.address),
+    index('parcels_zip_street_name_norm_idx').on(t.zip, t.streetNameNorm),
+    index('parcels_street_name_norm_trgm_idx').using('gin', t.streetNameNorm.op('gin_trgm_ops')),
   ],
 )
 

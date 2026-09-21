@@ -3,8 +3,7 @@ import { eq, inArray } from 'drizzle-orm'
 import { afterAll, describe, expect, test } from 'vitest'
 import { registerAccount } from '@/auth/register-account'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
-import { loadDatabasePoolerUrl, loadDatabaseUrl } from '@/config/database-url'
-import { createDb } from '@/db/client'
+import { loadDatabasePoolerUrl } from '@/config/database-url'
 import { listContactsForAccount } from '@/db/contacts'
 import { buildLaVerneFixtures } from '@/db/fixtures/la-verne'
 import { getRuntimeDb } from '@/db/runtime'
@@ -20,22 +19,19 @@ import { parseDelimited } from '@/import/parse-csv'
 import { runImport } from '@/import/run-import'
 import { SKIP } from '@/import/skip-reasons'
 import type { FieldRole, ImportRow } from '@/import/types'
+import { withStreetNameNorm } from '@/db/parcel-write'
 import { findCandidateParcels } from '@/matching/candidates'
 import { matchAddress } from '@/matching/match-address'
 import { parseAddress } from '@/matching/normalize'
 
 let poolerUrl: string | null = null
-let sessionUrl: string | null = null
 try {
   poolerUrl = loadDatabasePoolerUrl()
-  sessionUrl = loadDatabaseUrl()
 } catch {
   poolerUrl = null
-  sessionUrl = null
 }
 
 const accountIds: string[] = []
-const extraParcelIds: string[] = []
 
 async function ensureLaVerneParcels() {
   const { db } = getRuntimeDb()
@@ -64,7 +60,9 @@ async function ensureLaVerneParcels() {
         ? `OR005-${randomUUID().slice(0, 8)}`
         : row.apn,
     }))
-  if (missing.length) await db.insert(parcels).values(missing)
+  if (missing.length) {
+    await db.insert(parcels).values(missing.map(withStreetNameNorm))
+  }
 }
 
 async function newAccount() {
@@ -118,9 +116,6 @@ describe.skipIf(!poolerUrl)('OR-005 import', { timeout: 30_000 }, () => {
     if (accountIds.length) {
       await db.delete(contacts).where(inArray(contacts.accountId, accountIds))
       await db.delete(accounts).where(inArray(accounts.id, accountIds))
-    }
-    if (extraParcelIds.length) {
-      await db.delete(parcels).where(inArray(parcels.id, extraParcelIds))
     }
   })
 
@@ -242,7 +237,7 @@ describe.skipIf(!poolerUrl)('OR-005 import', { timeout: 30_000 }, () => {
     expect(leftover).toHaveLength(0)
   })
 
-  test('findCandidateParcels ZIP lookup uses parcels_zip_idx', async () => {
+  test('findCandidateParcels narrows by street, not ZIP alone', async () => {
     await ensureLaVerneParcels()
     const { db } = getRuntimeDb()
     const normalized = parseAddress('1840 Oakdale Ave, La Verne, CA 91750')
@@ -252,35 +247,13 @@ describe.skipIf(!poolerUrl)('OR-005 import', { timeout: 30_000 }, () => {
     expect(found.length).toBeGreaterThan(0)
     expect(found.length).toBeLessThanOrEqual(50)
     expect(found.every((row) => row.zip === '91750')).toBe(true)
+    expect(found.every((row) => /oakdale|oak dale/i.test(row.address))).toBe(true)
 
     const cityOnly = { ...normalized, zip: null }
     const byCity = await findCandidateParcels(db, cityOnly)
     expect(byCity.some((row) => /oakdale/i.test(row.address))).toBe(true)
-
-    if (!sessionUrl) return
-    const session = createDb(sessionUrl)
-    const fillers = Array.from({ length: 80 }, (_, i) => {
-      const id = randomUUID()
-      extraParcelIds.push(id)
-      return {
-        id,
-        apn: `EXPLAIN-${id.slice(0, 8)}`,
-        county: 'Los Angeles',
-        address: `${100 + i} Filler Rd`,
-        city: 'Pomona',
-        zip: `8${String(1000 + i).slice(-4)}`,
-      }
-    })
-    await session.db.insert(parcels).values(fillers)
-    await session.client.unsafe('set enable_seqscan = off')
-    const explained = await session.client.unsafe(
-      `explain (format json) select id, apn, county, address, city, zip from parcels where zip = '91750' limit 50`,
-    )
-    await session.client.unsafe('set enable_seqscan = on')
-    const planText = JSON.stringify(explained)
-    console.log(`EXPLAIN zip=91750: ${planText}`)
-    expect(planText).toMatch(/parcels_zip_idx/)
-    await session.client.end({ timeout: 2 })
+    expect(byCity.every((row) => row.city === 'La Verne')).toBe(true)
+    expect(byCity.every((row) => /oakdale|oak dale/i.test(row.address))).toBe(true)
   })
 
   test('250 rows finish in one request', async () => {

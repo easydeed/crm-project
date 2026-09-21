@@ -143,7 +143,7 @@ async function candidatesFor(
   normalized: NormalizedAddress,
 ) {
   const key = normalized.zip
-    ? `z:${normalized.zip}`
+    ? `z:${normalized.zip}:${normalized.name}`
     : `c:${normalized.city ?? ''}:${normalized.name}`
   const hit = cache.get(key)
   if (hit) return hit
