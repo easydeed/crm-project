@@ -17,6 +17,7 @@ test('schema exports every OR-000 table', () => {
     'subscriptions',
     'accountAddons',
     'adminActions',
+    'contactMatchCandidates',
     'jobs',
   ] as const
 
