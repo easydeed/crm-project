@@ -1,12 +1,7 @@
+import { candidateInsertRows } from '@/db/persist-contact-candidates'
 import { contactMatchCandidates } from '@/db/schema'
-import {
-  findCandidateParcels,
-  type ParcelDb,
-  type ParcelRecord,
-} from '@/matching/candidates'
-import { matchAddress } from '@/matching/match-address'
-import { parseAddress } from '@/matching/normalize'
-import type { Parcel } from '@/matching/types'
+import type { ParcelDb } from '@/matching/candidates'
+import { resolveAddressMatch } from '@/matching/resolve-match'
 
 export type ReviewContactSeed = {
   id: string
@@ -14,35 +9,14 @@ export type ReviewContactSeed = {
   addressRaw: string
 }
 
-function asParcel(row: ParcelRecord): Parcel {
-  return {
-    apn: row.apn,
-    county: row.county,
-    address: row.address,
-    city: row.city,
-    zip: row.zip,
-  }
-}
-
 export async function persistReviewCandidates(
   db: ParcelDb,
   rows: ReviewContactSeed[],
 ) {
-  const candidateRows: Array<{
-    contactId: string
-    parcelId: string
-    confidence: number
-    reason: string
-    rank: number
-  }> = []
+  const candidateRows: ReturnType<typeof candidateInsertRows> = []
 
   for (const contact of rows) {
-    const normalized = parseAddress(contact.addressRaw)
-    if (!normalized) {
-      throw new Error(`review contact ${contact.name} did not parse`)
-    }
-    const found = await findCandidateParcels(db, normalized)
-    const match = matchAddress(contact.addressRaw, found.map(asParcel))
+    const match = await resolveAddressMatch(db, contact.addressRaw)
     if (match.status !== 'needs_review') {
       throw new Error(
         `expected needs_review for ${contact.name}, got ${match.status}`,
@@ -53,22 +27,7 @@ export async function persistReviewCandidates(
         `expected 2-3 candidates for ${contact.name}, got ${match.candidates.length}`,
       )
     }
-    const byKey = new Map(
-      found.map((parcel) => [`${parcel.county}:${parcel.apn}`, parcel]),
-    )
-    match.candidates.forEach((candidate, index) => {
-      const parcel = byKey.get(
-        `${candidate.parcel.county}:${candidate.parcel.apn}`,
-      )
-      if (!parcel) return
-      candidateRows.push({
-        contactId: contact.id,
-        parcelId: parcel.id,
-        confidence: candidate.confidence,
-        reason: candidate.reason,
-        rank: index + 1,
-      })
-    })
+    candidateRows.push(...candidateInsertRows(contact.id, match.candidates))
   }
 
   if (candidateRows.length) {

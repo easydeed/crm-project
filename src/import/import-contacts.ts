@@ -1,16 +1,11 @@
 import { randomUUID } from 'node:crypto'
 import { eq } from 'drizzle-orm'
+import { candidateInsertRows } from '@/db/persist-contact-candidates'
 import { contactMatchCandidates, contacts } from '@/db/schema'
 import { CONTACT_LIMIT, SKIP } from '@/import/skip-reasons'
 import type { ImportRow, ImportSummary, SkippedRow } from '@/import/types'
-import {
-  findCandidateParcels,
-  type ParcelDb,
-  type ParcelRecord,
-} from '@/matching/candidates'
-import { matchAddress } from '@/matching/match-address'
-import { parseAddress } from '@/matching/normalize'
-import type { NormalizedAddress, Parcel } from '@/matching/types'
+import { type ParcelDb, type ParcelRecord } from '@/matching/candidates'
+import { resolveAddressMatch } from '@/matching/resolve-match'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -38,13 +33,7 @@ export async function importContacts(
     closeDate: string | null
     status: 'matched' | 'needs_review' | 'no_parcel'
   }> = []
-  const candidateRows: Array<{
-    contactId: string
-    parcelId: string
-    confidence: number
-    reason: string
-    rank: number
-  }> = []
+  const candidateRows: ReturnType<typeof candidateInsertRows> = []
   const cache = new Map<string, ParcelRecord[]>()
 
   for (const row of rows) {
@@ -68,52 +57,19 @@ export async function importContacts(
       continue
     }
 
-    const normalized = parseAddress(address)
-    const found = normalized
-      ? await candidatesFor(db, cache, normalized)
-      : []
-    const match = matchAddress(
-      address,
-      found.map((parcel): Parcel => ({
-        apn: parcel.apn,
-        county: parcel.county,
-        address: parcel.address,
-        city: parcel.city,
-        zip: parcel.zip,
-      })),
-    )
-    const byKey = new Map(found.map((parcel) => [`${parcel.county}:${parcel.apn}`, parcel]))
+    const match = await resolveAddressMatch(db, address, cache)
     const contactId = randomUUID()
-    const best =
-      match.status === 'matched' && match.candidates[0]
-        ? byKey.get(
-            `${match.candidates[0].parcel.county}:${match.candidates[0].parcel.apn}`,
-          )
-        : undefined
-
     toInsert.push({
       id: contactId,
       accountId,
       name: name || email,
       email,
       addressRaw: address,
-      parcelId: best?.id ?? null,
+      parcelId: match.parcelId,
       closeDate: row.closeDate,
       status: match.status,
     })
-    if (match.status === 'needs_review') {
-      match.candidates.forEach((candidate, index) => {
-        const parcel = byKey.get(`${candidate.parcel.county}:${candidate.parcel.apn}`)
-        if (!parcel) return
-        candidateRows.push({
-          contactId,
-          parcelId: parcel.id,
-          confidence: candidate.confidence,
-          reason: candidate.reason,
-          rank: index + 1,
-        })
-      })
-    }
+    candidateRows.push(...candidateInsertRows(contactId, match.candidates))
     seen.add(email.toLowerCase())
     remaining -= 1
   }
@@ -135,19 +91,4 @@ export async function importContacts(
     skipped,
     elapsedMs: Date.now() - started,
   }
-}
-
-async function candidatesFor(
-  db: ParcelDb,
-  cache: Map<string, ParcelRecord[]>,
-  normalized: NormalizedAddress,
-) {
-  const key = normalized.zip
-    ? `z:${normalized.zip}:${normalized.name}`
-    : `c:${normalized.city ?? ''}:${normalized.name}`
-  const hit = cache.get(key)
-  if (hit) return hit
-  const rows = await findCandidateParcels(db, normalized)
-  cache.set(key, rows)
-  return rows
 }
