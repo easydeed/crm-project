@@ -18,7 +18,13 @@ test('tenant reads and settings writes require accountId on the function signatu
 })
 
 test('account queries do not read the session', () => {
-  const files = ['accounts.ts', 'account-settings.ts', 'contacts.ts']
+  const files = [
+    'accounts.ts',
+    'account-settings.ts',
+    'contacts.ts',
+    'contact-write.ts',
+    'groups.ts',
+  ]
   for (const name of files) {
     const src = readFileSync(new URL(`./${name}`, import.meta.url), 'utf8')
     expect(src).not.toMatch(/cookies|readRequestSession|SESSION_COOKIE/)
