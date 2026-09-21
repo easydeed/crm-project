@@ -6,6 +6,17 @@ import {
   updateContactForAccount,
 } from '@/db/contact-write'
 import {
+  getReviewItemForAccount,
+  listReviewQueueForAccount,
+  loadWrongHouseReview,
+} from '@/db/review-queue'
+import {
+  chooseCandidateForAccount,
+  fixReviewAddressForAccount,
+  leaveOutContactForAccount,
+  undoReviewChangeForAccount,
+} from '@/db/review-write'
+import {
   addContactsToGroup,
   createGroupForAccount,
   deleteGroupForAccount,
@@ -25,10 +36,17 @@ test('every contact and group function takes accountId first', () => {
   expect(deleteGroupForAccount.length).toBe(2)
   expect(addContactsToGroup.length).toBe(3)
   expect(removeContactsFromGroup.length).toBe(3)
+  expect(listReviewQueueForAccount.length).toBe(1)
+  expect(getReviewItemForAccount.length).toBe(2)
+  expect(loadWrongHouseReview.length).toBe(2)
+  expect(chooseCandidateForAccount.length).toBe(3)
+  expect(leaveOutContactForAccount.length).toBe(2)
+  expect(fixReviewAddressForAccount.length).toBe(3)
+  expect(undoReviewChangeForAccount.length).toBe(2)
 })
 
 test('people data helpers do not read the session', () => {
-  const files = ['contacts.ts', 'contact-write.ts', 'groups.ts']
+  const files = ['contacts.ts', 'contact-write.ts', 'groups.ts', 'review-queue.ts', 'review-write.ts']
   for (const name of files) {
     const source = readFileSync(new URL(`./${name}`, import.meta.url), 'utf8')
     expect(source).not.toMatch(/cookies|readRequestSession|SESSION_COOKIE/)
@@ -51,4 +69,6 @@ test('mutations assertWritable before they write', () => {
   const groups = readFileSync(new URL('../people/save-groups.ts', import.meta.url), 'utf8')
   expect(contact.match(/assertWritable/g)?.length).toBeGreaterThanOrEqual(3)
   expect(groups.match(/assertWritable/g)?.length).toBeGreaterThanOrEqual(5)
+  const review = readFileSync(new URL('../people/save-review.ts', import.meta.url), 'utf8')
+  expect(review.match(/assertWritable/g)?.length).toBeGreaterThanOrEqual(4)
 })

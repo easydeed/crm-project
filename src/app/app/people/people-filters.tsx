@@ -29,11 +29,15 @@ export function PeopleFilters({
             const id = item.id === 'all' ? undefined : item.id
             const count = item.id === 'all' ? statusCounts.all : statusCounts[item.id]
             const active = status === id
+            const href =
+              item.id === 'needs_review'
+                ? '/app/people/review'
+                : peopleListHref({ status: id, groupId })
             return (
               <Link
                 key={item.id}
                 className={`${linkClass} ${active ? 'font-semibold' : ''}`}
-                href={peopleListHref({ status: id, groupId })}
+                href={href}
                 aria-current={active ? 'page' : undefined}
               >
                 {item.label} ({count})

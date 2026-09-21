@@ -32,7 +32,7 @@ export function ImportResultView({ result }: { result: ImportSummary }) {
       ) : null}
       <p className="mt-8 flex flex-col gap-3">
         {result.needsReview > 0 ? (
-          <Link className={linkClass} href="/app/people?status=needs_review">
+          <Link className={linkClass} href="/app/people/review">
             Review them
           </Link>
         ) : null}

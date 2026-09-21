@@ -5,6 +5,7 @@ test('import, edit, and review persist share resolveAddressMatch', () => {
   const resolve = readFileSync(new URL('./resolve-match.ts', import.meta.url), 'utf8')
   expect(resolve).toContain('findCandidateParcels')
   expect(resolve).toContain('matchAddress')
+  expect(resolve).toContain('excludeParcelId')
 
   const importer = readFileSync(new URL('../import/import-contacts.ts', import.meta.url), 'utf8')
   expect(importer).toContain("from '@/matching/resolve-match'")
@@ -17,6 +18,14 @@ test('import, edit, and review persist share resolveAddressMatch', () => {
   expect(writer).toContain('resolveAddressMatch')
   expect(writer).toContain('persistContactCandidates')
   expect(writer).toContain("'replace'")
+  expect(writer).toContain('reviewState')
+
+  const review = readFileSync(new URL('../db/review-write.ts', import.meta.url), 'utf8')
+  expect(review).toContain("from '@/matching/resolve-match'")
+  expect(review).toContain('resolveAddressMatch')
+  expect(review).toContain('persistContactCandidates')
+  expect(review).not.toMatch(/findCandidateParcels\(/)
+  expect(review).not.toMatch(/matchAddress\(/)
 
   const persist = readFileSync(
     new URL('../db/persist-contact-candidates.ts', import.meta.url),

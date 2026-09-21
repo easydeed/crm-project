@@ -24,6 +24,7 @@ export type ContactListRow = {
   closeDate: string | null
   notes: string | null
   status: ContactListStatus
+  reviewState: 'pending' | 'reviewed'
   parcelId: string | null
   parcelAddress: string | null
   parcelApn: string | null
@@ -46,6 +47,7 @@ type ListedRow = {
   closeDate: string | null
   notes: string | null
   status: ContactListStatus
+  reviewState: 'pending' | 'reviewed'
   parcelId: string | null
   parcelStreet: string | null
   parcelCity: string | null
@@ -62,6 +64,7 @@ const listColumns = {
   closeDate: contacts.closeDate,
   notes: contacts.notes,
   status: contacts.status,
+  reviewState: contacts.reviewState,
   parcelId: contacts.parcelId,
   parcelStreet: parcels.address,
   parcelCity: parcels.city,
@@ -149,6 +152,7 @@ async function hydrateContacts(accountId: string, rows: ListedRow[]) {
       closeDate: row.closeDate,
       notes: row.notes,
       status: row.status,
+      reviewState: row.reviewState,
       parcelId: row.parcelId,
       parcelAddress: formatParcelAddress(row),
       parcelApn: row.parcelApn,

@@ -66,6 +66,54 @@ function reviewContact(opts: {
   }
 }
 
+function reviewEvent(opts: {
+  n: number
+  parcelN: number
+  kind: string
+  docNumber: string
+  recordedAt: string
+  party: string
+}) {
+  return {
+    id: id(opts.n),
+    parcelId: id(opts.parcelN),
+    county: 'Los Angeles' as const,
+    kind: opts.kind,
+    docNumber: opts.docNumber,
+    recordedAt: opts.recordedAt,
+    amount: 625000,
+    party: opts.party,
+    raw: { source: 'la-verne-review' },
+  }
+}
+
+export const reviewParcelEvents = [
+  reviewEvent({
+    n: 450,
+    parcelN: 50,
+    kind: 'grant_deed',
+    docNumber: '2015040101',
+    recordedAt: '2015-04-01',
+    party: 'James Whitaker',
+  }),
+  reviewEvent({
+    n: 451,
+    parcelN: 50,
+    kind: 'grant_deed',
+    docNumber: '2023011501',
+    recordedAt: '2023-01-15',
+    party: 'Anita Flores',
+  }),
+  reviewEvent({
+    n: 452,
+    parcelN: 51,
+    kind: 'grant_deed',
+    docNumber: '2018040201',
+    recordedAt: '2018-04-02',
+    party: 'Robert Chen',
+  }),
+]
+
 export const reviewContacts = [
   reviewContact({
     n: 203,

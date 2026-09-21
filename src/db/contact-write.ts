@@ -44,7 +44,11 @@ export async function updateContactForAccount(
           closeDate: input.closeDate,
           notes: input.notes,
           ...(match
-            ? { status: match.status, parcelId: match.parcelId }
+            ? {
+                status: match.status,
+                parcelId: match.parcelId,
+                reviewState: 'pending' as const,
+              }
             : {}),
         })
         .where(and(eq(contacts.id, contactId), eq(contacts.accountId, accountId)))

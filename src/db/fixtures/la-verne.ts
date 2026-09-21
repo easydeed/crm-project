@@ -1,5 +1,9 @@
 import { CA_TAX } from '@/config/ca-tax'
-import { reviewContacts, reviewParcels } from '@/db/fixtures/la-verne-review'
+import {
+  reviewContacts,
+  reviewParcelEvents,
+  reviewParcels,
+} from '@/db/fixtures/la-verne-review'
 import { streetNameNorm } from '@/matching/normalize'
 
 export const AGENT_ID = '00000000-0000-4000-8000-000000000001'
@@ -268,6 +272,6 @@ export function buildLaVerneFixtures() {
     parcels: [...parcels, ...reviewParcels],
     contacts: [...unmatchedContacts, ...contacts, ...reviewContacts],
     reviewContacts,
-    parcelEvents,
+    parcelEvents: [...parcelEvents, ...reviewParcelEvents],
   }
 }

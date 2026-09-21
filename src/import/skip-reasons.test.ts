@@ -16,6 +16,6 @@ test('result screen has the required links and counts', () => {
   expect(src).toContain('have no house on the record')
   expect(src).toContain('See why')
   expect(src).toContain('Review them')
-  expect(src).toContain('href="/app/people?status=needs_review"')
+  expect(src).toContain('href="/app/people/review"')
   expect(src).toContain('Go to your people')
 })

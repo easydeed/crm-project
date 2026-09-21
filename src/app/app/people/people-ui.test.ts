@@ -26,6 +26,8 @@ test('people board has count, add people, search, and export of the filtered vie
   expect(board).toContain('people')
   expect(board).toContain('href="/app/people/import"')
   expect(board).toContain('Add people')
+  expect(board).toContain('href="/app/people/review"')
+  expect(board).toContain('Review them')
   expect(board).toContain('Name, email, or address')
   expect(board).toContain('filterPeople')
   expect(board).toContain('Export this list')
@@ -38,6 +40,7 @@ test('filters write status and group into the URL', () => {
   expect(filters).toContain('STATUS_FILTERS')
   expect(filters).toContain('peopleListHref')
   expect(filters).toContain('All people')
+  expect(filters).toContain("'/app/people/review'")
 })
 
 test('bulk bar is only rendered when a selection exists', () => {
@@ -72,6 +75,8 @@ test('detail shows the listed fields, review href, and add to group', () => {
   expect(detail).toContain('parcelApn')
   expect(detail).toContain('Review this match')
   expect(detail).toContain('`/app/people/${person.id}/review`')
+  expect(detail).toContain('REVIEW_WRONG_HOUSE')
+  expect(detail).toContain("reviewQueueHref(person.id, 'wrong-house')")
   expect(detail).toContain('Fix the address')
   expect(detail).toContain('`/app/people/${person.id}/edit`')
   expect(detail).toContain('Delete ${person.name}?')
@@ -99,8 +104,9 @@ test('four states exist for the list and the person screen', () => {
   expect(src('./[id]/not-found.tsx')).toContain('couldn&apos;t find that person')
 })
 
-test('review stub is a real href destination', () => {
+test('person review opens the queue at that contact', () => {
   const review = src('./[id]/review/page.tsx')
-  expect(review).toContain('That step is not built yet')
+  expect(review).not.toContain('That step is not built yet')
   expect(review).toContain('getContactForAccount')
+  expect(review).toContain('reviewQueueHref(person.id)')
 })

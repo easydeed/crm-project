@@ -1,3 +1,4 @@
+import { isLeftOut, type ContactReviewState } from '@/people/review-state'
 import type { ContactMatchStatus } from '@/people/status'
 
 export type SearchableContact = {
@@ -18,15 +19,18 @@ export type PeopleFilter = {
   status?: ContactMatchStatus
   groupId?: string
   q?: string
+  leftOut?: boolean
 }
 
 export function filterPeople<
   T extends SearchableContact & {
     status: ContactMatchStatus
+    reviewState: ContactReviewState
     groupIds: string[]
   },
 >(rows: T[], filters: PeopleFilter): T[] {
   return rows.filter((row) => {
+    if (filters.leftOut && !isLeftOut(row.status, row.reviewState)) return false
     if (filters.status && row.status !== filters.status) return false
     if (filters.groupId && !row.groupIds.includes(filters.groupId)) return false
     return contactMatchesSearch(row, filters.q ?? '')

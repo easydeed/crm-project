@@ -12,8 +12,9 @@ import type { ContactListRow } from '@/db/contacts'
 import type { GroupListRow } from '@/db/groups'
 import { contactsToCsv, downloadCsv, peopleExportFilename } from '@/people/export'
 import { filterPeople } from '@/people/filter'
+import { isInReviewQueue } from '@/people/review-state'
 import type { ContactMatchStatus } from '@/people/status'
-import { parseStatusParam } from '@/people/url'
+import { parseLeftOutParam, parseStatusParam } from '@/people/url'
 
 export function PeopleBoard({
   rows,
@@ -21,16 +22,20 @@ export function PeopleBoard({
   readOnly,
   statusFromUrl,
   groupFromUrl,
+  leftOutFromUrl,
 }: {
   rows: ContactListRow[]
   groups: GroupListRow[]
   readOnly: boolean
   statusFromUrl?: ContactMatchStatus
   groupFromUrl?: string
+  leftOutFromUrl?: boolean
 }) {
   const router = useRouter()
   const params = useSearchParams()
   const status = parseStatusParam(params.get('status')) ?? statusFromUrl
+  const leftOut = parseLeftOutParam(params.get('leftOut')) || Boolean(leftOutFromUrl)
+  const queueCount = rows.filter((row) => isInReviewQueue(row.status, row.reviewState)).length
   const groupId =
     (params.get('group') ?? groupFromUrl ?? undefined) &&
     groups.some((group) => group.id === (params.get('group') ?? groupFromUrl))
@@ -40,8 +45,8 @@ export function PeopleBoard({
   const [selected, setSelected] = useState<string[]>([])
 
   const visible = useMemo(
-    () => filterPeople(rows, { status, groupId, q: query }),
-    [rows, status, groupId, query],
+    () => filterPeople(rows, { status, groupId, q: query, leftOut }),
+    [rows, status, groupId, query, leftOut],
   )
   const selectedSet = new Set(selected)
   const selectedRows = rows.filter((row) => selectedSet.has(row.id))
@@ -56,10 +61,15 @@ export function PeopleBoard({
       <p className="mt-3 text-[15px]">
         {rows.length === 1 ? '1 person' : `${rows.length} people`}
       </p>
-      <p className="mt-3">
+      <p className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
         <Link className={linkClass} href="/app/people/import">
           Add people
         </Link>
+        {queueCount > 0 ? (
+          <Link className={linkClass} href="/app/people/review">
+            Review them
+          </Link>
+        ) : null}
       </p>
       {rows.length === 0 ? (
         <p className="mt-6 max-w-xl text-[15px]">
