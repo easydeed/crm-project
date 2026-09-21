@@ -17,11 +17,8 @@ import {
 } from 'drizzle-orm/pg-core'
 
 export const accountRoleEnum = pgEnum('account_role', ['agent', 'admin'])
-export const contactStatusEnum = pgEnum('contact_status', [
-  'matched',
-  'needs_review',
-  'no_parcel',
-])
+export const contactStatusEnum = pgEnum('contact_status', ['matched', 'needs_review', 'no_parcel'])
+export const contactReviewStateEnum = pgEnum('contact_review_state', ['pending', 'reviewed'])
 export const subscriptionScopeEnum = pgEnum('subscription_scope', [
   'monthly',
   'weekly',
@@ -99,6 +96,7 @@ export const contacts = pgTable(
     closeDate: date('close_date'),
     notes: text('notes'),
     status: contactStatusEnum('status').notNull(),
+    reviewState: contactReviewStateEnum('review_state').notNull().default('pending'),
     createdAt: createdAt(),
   },
   (t) => [

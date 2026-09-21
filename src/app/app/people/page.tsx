@@ -5,12 +5,12 @@ import { readRequestSession } from '@/auth/current-session'
 import { effectiveAccountId } from '@/auth/effective-account'
 import { listContactsForAccount } from '@/db/contacts'
 import { listGroupsForAccount } from '@/db/groups'
-import { parseStatusParam } from '@/people/url'
+import { parseLeftOutParam, parseStatusParam } from '@/people/url'
 
 export default async function PeoplePage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; group?: string }>
+  searchParams: Promise<{ status?: string; group?: string; leftOut?: string }>
 }) {
   const session = await readRequestSession()
   if (!session) redirect('/login?returnTo=/app/people')
@@ -30,6 +30,7 @@ export default async function PeoplePage({
           readOnly={Boolean(session.viewingAsAccountId)}
           statusFromUrl={parseStatusParam(params.status)}
           groupFromUrl={params.group}
+          leftOutFromUrl={parseLeftOutParam(params.leftOut)}
         />
       </Suspense>
     </main>

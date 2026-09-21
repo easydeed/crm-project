@@ -1,0 +1,16 @@
+export const REVIEW_YOU_GAVE_US = 'You gave us:'
+export const REVIEW_THIS_ONE = 'This one'
+export const REVIEW_NONE_OF_THESE = 'None of these'
+export const REVIEW_NAME_MATCHES = 'Name matches'
+export const REVIEW_RECORDED_OWNER = 'Recorded owner'
+export const REVIEW_COULDNT_FIND = "We couldn't find this address."
+export const REVIEW_FIX_ADDRESS = 'Fix the address'
+export const REVIEW_LEAVE_OUT = 'Leave them out'
+export const REVIEW_LEAVE_OUT_MUTED = "They won't get the monthly email."
+export const REVIEW_ALL_ON_MAP = "Everyone's on the map."
+export const REVIEW_ON_THE_MAP = "They're on the map."
+export const REVIEW_BACK_TO_PEOPLE = 'Back to your people'
+export const REVIEW_UNDO = 'Undo'
+export const REVIEW_WRONG_HOUSE = 'Wrong house?'
+export const REVIEW_SAVE_ADDRESS = 'Save address'
+export const REVIEW_LEFT_OUT_LINK = 'See who was left out'

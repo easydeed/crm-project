@@ -9,7 +9,9 @@ import { formatUsPhone } from '@/config/phone'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
 import type { ContactListRow } from '@/db/contacts'
 import type { GroupListRow } from '@/db/groups'
+import { REVIEW_WRONG_HOUSE } from '@/people/review-copy'
 import { contactStatusLabel } from '@/people/status'
+import { reviewQueueHref } from '@/people/url'
 
 function phoneDisplay(phone: string | null) {
   if (!phone) return 'None on file'
@@ -67,10 +69,17 @@ export function PersonDetail({
         </div>
       </dl>
       {person.status === 'matched' ? (
-        <p className="mt-6 max-w-xl text-[15px]">
-          On the record: {person.parcelAddress ?? 'the matched house'}
-          {person.parcelApn ? ` · APN ${person.parcelApn}` : ''}
-        </p>
+        <div className="mt-6 max-w-xl text-[15px]">
+          <p>
+            On the record: {person.parcelAddress ?? 'the matched house'}
+            {person.parcelApn ? ` · APN ${person.parcelApn}` : ''}
+          </p>
+          <p className="mt-2">
+            <Link className={linkClass} href={reviewQueueHref(person.id, 'wrong-house')}>
+              {REVIEW_WRONG_HOUSE}
+            </Link>
+          </p>
+        </div>
       ) : null}
       {person.status === 'needs_review' ? (
         <p className="mt-6">

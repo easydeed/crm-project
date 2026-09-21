@@ -9,6 +9,7 @@ function row(
     email: string
     addressRaw: string
     status: ContactMatchStatus
+    reviewState: 'pending' | 'reviewed'
     groupIds: string[]
   }>,
 ) {
@@ -17,6 +18,7 @@ function row(
     email: extra?.email ?? `person-${index}@example.com`,
     addressRaw: extra?.addressRaw ?? `${100 + index} Main St, La Verne, CA 91750`,
     status: extra?.status ?? 'matched',
+    reviewState: extra?.reviewState ?? 'pending',
     groupIds: extra?.groupIds ?? [],
   }
 }
@@ -63,4 +65,13 @@ test('status and group filters combine', () => {
     needs_review: 1,
     no_parcel: 0,
   })
+})
+
+test('left-out filter is reviewed no_parcel only', () => {
+  const rows = [
+    row(1, { status: 'no_parcel', reviewState: 'reviewed' }),
+    row(2, { status: 'no_parcel', reviewState: 'pending' }),
+    row(3, { status: 'needs_review', reviewState: 'pending' }),
+  ]
+  expect(filterPeople(rows, { leftOut: true })).toEqual([rows[0]])
 })

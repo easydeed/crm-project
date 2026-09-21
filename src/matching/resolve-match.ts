@@ -18,6 +18,7 @@ export type ResolvedMatch = {
   status: MatchStatus
   parcelId: string | null
   candidates: PersistedCandidate[]
+  reason: string
 }
 
 export function cacheKeyForNormalized(normalized: {
@@ -74,6 +75,7 @@ export function applyParcelMatch(
     status: match.status,
     parcelId: best?.id ?? null,
     candidates,
+    reason: match.reason,
   }
 }
 
@@ -81,6 +83,7 @@ export async function resolveAddressMatch(
   db: ParcelDb,
   addressRaw: string,
   cache?: Map<string, ParcelRecord[]>,
+  excludeParcelId?: string | null,
 ): Promise<ResolvedMatch> {
   const normalized = parseAddress(addressRaw)
   let found: ParcelRecord[] = []
@@ -93,6 +96,9 @@ export async function resolveAddressMatch(
       found = await findCandidateParcels(db, normalized)
       cache?.set(key, found)
     }
+  }
+  if (excludeParcelId) {
+    found = found.filter((parcel) => parcel.id !== excludeParcelId)
   }
   return applyParcelMatch(addressRaw, found)
 }
