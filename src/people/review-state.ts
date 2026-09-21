@@ -26,14 +26,20 @@ export function contactLastName(name: string) {
   return parts.at(-1) ?? ''
 }
 
+export function nameTokens(value: string) {
+  return foldText(value)
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean)
+}
+
 export function nameMatchesOwner(contactName: string, recordedOwner: string | null) {
   if (!recordedOwner) return false
   const last = contactLastName(contactName)
   if (!last) return false
-  const owner = foldText(recordedOwner)
-  const needle = foldText(last)
-  const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  return new RegExp(`(^|[^a-z0-9])${escaped}([^a-z0-9]|$)`).test(owner)
+  const lastTokens = nameTokens(last)
+  if (!lastTokens.length) return false
+  const ownerTokens = new Set(nameTokens(recordedOwner))
+  return lastTokens.some((token) => ownerTokens.has(token))
 }
 
 export function formatHouseFacts(input: {
