@@ -3,6 +3,7 @@ import {
   boolean,
   date,
   doublePrecision,
+  index,
   integer,
   jsonb,
   numeric,
@@ -73,7 +74,11 @@ export const parcels = pgTable(
     baseYearValue: integer('base_year_value'),
     lastRefreshedAt: timestamp('last_refreshed_at', { withTimezone: true }),
   },
-  (t) => [uniqueIndex('parcels_county_apn_uidx').on(t.county, t.apn)],
+  (t) => [
+    uniqueIndex('parcels_county_apn_uidx').on(t.county, t.apn),
+    index('parcels_zip_idx').on(t.zip),
+    index('parcels_city_address_idx').on(t.city, t.address),
+  ],
 )
 
 export const contacts = pgTable(
@@ -255,6 +260,28 @@ export const adminActions = pgTable('admin_actions', {
   detail: jsonb('detail').$type<Record<string, unknown>>().notNull().default({}),
   createdAt: createdAt(),
 })
+
+export const contactMatchCandidates = pgTable(
+  'contact_match_candidates',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    contactId: uuid('contact_id')
+      .notNull()
+      .references(() => contacts.id, { onDelete: 'cascade' }),
+    parcelId: uuid('parcel_id')
+      .notNull()
+      .references(() => parcels.id),
+    confidence: doublePrecision('confidence').notNull(),
+    reason: text('reason').notNull(),
+    rank: integer('rank').notNull(),
+  },
+  (t) => [
+    uniqueIndex('contact_match_candidates_contact_parcel_uidx').on(
+      t.contactId,
+      t.parcelId,
+    ),
+  ],
+)
 
 export const jobs = pgTable('jobs', {
   id: uuid('id').defaultRandom().primaryKey(),

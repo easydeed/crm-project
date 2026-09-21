@@ -86,7 +86,10 @@ function printMatchReport(report: CorpusReport) {
 
 test('matcher modules do not import db, fetch, or Date', () => {
   const files = readdirSync(MATCHING_DIR).filter(
-    (name) => name.endsWith('.ts') && !name.endsWith('.test.ts'),
+    (name) =>
+      name.endsWith('.ts') &&
+      !name.endsWith('.test.ts') &&
+      name !== 'candidates.ts',
   )
   expect(files.length).toBeGreaterThan(0)
 

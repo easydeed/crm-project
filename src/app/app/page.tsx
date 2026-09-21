@@ -32,7 +32,7 @@ export default async function AppHomePage() {
         </p>
         <Link
           className="mt-6 inline-block rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-          href="/app/people"
+          href="/app/people/import"
         >
           Add your people
         </Link>
@@ -44,7 +44,7 @@ export default async function AppHomePage() {
     <main className="px-4 py-10">
       <h1 className="text-[22px] font-semibold">Your people are on file.</h1>
       <p className="mt-3 max-w-xl text-[15px]">
-        Open People to review the list. Adding and matching come next.
+        Open People to review the list.
       </p>
       <Link
         className="mt-6 inline-block rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"

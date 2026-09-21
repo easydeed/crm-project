@@ -33,6 +33,7 @@ async function seed() {
       group_members,
       groups,
       contact_subscriptions,
+      contact_match_candidates,
       contacts,
       parcels,
       accounts
