@@ -14,7 +14,7 @@ A subscription service that emails a real estate agent's past clients one messag
 
 ## Market
 
-- California only. Counties in scope for MVP: Los Angeles, Orange, San Bernardino, Riverside, San Diego. Agents outside these counties get an honest "not in your county yet" at signup.
+- California only. Counties in scope for MVP: Los Angeles, Orange, Ventura, San Diego, Riverside, San Bernardino. Agents outside these counties get an honest "not in your county yet" at signup.
 - Buyer: a working residential agent, median age 57, who already pays for a CRM they don't open.
 - Base price $19/mo, up to 250 homeowners.
 
@@ -60,7 +60,7 @@ A subscription service that emails a real estate agent's past clients one messag
 
 ## Open questions — blocking, not yet answered
 
-1. **Property data unit cost.** Budget is ~$0.012 per parcel per month. If SiteX/TitlePoint per-lookup pricing exceeds ~3.5¢ with quarterly caching, $19 is not viable and we move to bulk county data. **Answer before build step 5.**
+1. **Property data unit cost.** Per-record lookup was rejected on cost. Bulk assessor and recorder data for all California counties is the source, focused on the lower six.
 2. **MLS agent-ID lookup.** Does `GET /properties?agent={id}&status=Closed` return usable history? Prior integration was a debug scaffold that never parsed a response. If this fails, signup falls back to CSV and the onboarding advantage is gone.
 3. **Comprehension.** Five agents, ten seconds on the marketing page, then "what does that do?" If the answer isn't "it tells me who to call," positioning is wrong.
 4. **Employment/IP.** California Labor Code 2870 carve-out for inventions related to the employer's business. Resolve before incorporating or taking revenue.

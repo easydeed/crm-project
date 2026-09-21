@@ -2,14 +2,87 @@ import { readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { expect, test } from 'vitest'
 import { CA_TAX } from '@/config/ca-tax'
-import { ADDRESS_FIXTURES } from '@/matching/fixtures/addresses'
+import {
+  ADDRESS_FIXTURES,
+  EXTRA_NO_PARCEL,
+} from '@/matching/fixtures/addresses'
 import { MATCH_PARCELS } from '@/matching/fixtures/parcels'
 import { matchAddress } from '@/matching/match-address'
+import type { AddressFixture } from '@/matching/types'
 
 const MATCHING_DIR = path.join(process.cwd(), 'src', 'matching')
 const REASON_FIELD =
   /\b(streetNumber|street_name|streetName|zipCode|zip_code|houseNumber|house_number|confidence)\b/i
 const REASON_SCORE = /\b0\.\d+\b/
+
+type CorpusReport = {
+  corpus: number
+  matchable: number
+  matchedCorrectly: number
+  ambiguous: number
+  ambiguousCorrect: number
+  rejected: number
+  rejectedCorrect: number
+  mismatches: { raw: string; actual: string }[]
+  matchRate: number
+}
+
+function evaluateCorpus(fixtures: AddressFixture[]): CorpusReport {
+  const mismatches: { raw: string; actual: string }[] = []
+  let matchable = 0
+  let matchedCorrectly = 0
+  let ambiguous = 0
+  let ambiguousCorrect = 0
+  let rejected = 0
+  let rejectedCorrect = 0
+
+  for (const fixture of fixtures) {
+    const actual = matchAddress(fixture.raw, MATCH_PARCELS).status
+    if (actual !== fixture.expect) {
+      mismatches.push({ raw: fixture.raw, actual })
+    }
+    if (fixture.expect === 'matched') {
+      matchable += 1
+      if (actual === 'matched') matchedCorrectly += 1
+    } else if (fixture.expect === 'needs_review') {
+      ambiguous += 1
+      if (actual === 'needs_review') ambiguousCorrect += 1
+    } else {
+      rejected += 1
+      if (actual === 'no_parcel') rejectedCorrect += 1
+    }
+  }
+
+  return {
+    corpus: fixtures.length,
+    matchable,
+    matchedCorrectly,
+    ambiguous,
+    ambiguousCorrect,
+    rejected,
+    rejectedCorrect,
+    mismatches,
+    matchRate: matchable === 0 ? 0 : matchedCorrectly / matchable,
+  }
+}
+
+function printMatchReport(report: CorpusReport) {
+  console.log(`Corpus: ${report.corpus} rows`)
+  console.log(`  Matchable (expect 'matched'):   ${report.matchable}`)
+  console.log(
+    `    matched correctly:            ${report.matchedCorrectly}  (this is the match rate)`,
+  )
+  console.log(
+    `  Ambiguous (expect 'needs_review'): ${report.ambiguousCorrect} correct / ${report.ambiguous}`,
+  )
+  console.log(
+    `  Rejected (expect 'no_parcel'):     ${report.rejectedCorrect} correct / ${report.rejected}`,
+  )
+  console.log(`MATCH RATE: ${report.matchRate.toFixed(2)}`)
+  for (const row of report.mismatches) {
+    console.log(`WRONG: ${JSON.stringify(row.raw)} -> ${row.actual}`)
+  }
+}
 
 test('matcher modules do not import db, fetch, or Date', () => {
   const files = readdirSync(MATCHING_DIR).filter(
@@ -27,13 +100,21 @@ test('matcher modules do not import db, fetch, or Date', () => {
 })
 
 test('every fixture returns its expected status', () => {
-  let matched = 0
-  for (const fixture of ADDRESS_FIXTURES) {
-    const result = matchAddress(fixture.raw, MATCH_PARCELS)
-    expect(result.status, fixture.raw).toBe(fixture.expect)
-    if (result.status === 'matched') matched += 1
-  }
-  console.log((matched / ADDRESS_FIXTURES.length).toFixed(4))
+  const report = evaluateCorpus(ADDRESS_FIXTURES)
+  printMatchReport(report)
+  expect(report.mismatches, JSON.stringify(report.mismatches)).toEqual([])
+})
+
+test('adding a no_parcel case does not change MATCH RATE', () => {
+  expect(EXTRA_NO_PARCEL.expect).toBe('no_parcel')
+  const onCorpus = evaluateCorpus(ADDRESS_FIXTURES)
+  const onCorpusPlusExtra = evaluateCorpus([
+    ...ADDRESS_FIXTURES,
+    EXTRA_NO_PARCEL,
+  ])
+  expect(onCorpusPlusExtra.matchRate).toBe(onCorpus.matchRate)
+  expect(onCorpusPlusExtra.matchable).toBe(onCorpus.matchable)
+  expect(onCorpusPlusExtra.matchedCorrectly).toBe(onCorpus.matchedCorrectly)
 })
 
 test('expectApn cases return that parcel first', () => {

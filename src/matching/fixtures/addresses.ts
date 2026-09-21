@@ -1,5 +1,11 @@
 import type { AddressFixture } from '../types'
 
+export const EXTRA_NO_PARCEL: AddressFixture = {
+  raw: 'PO Box 4401, Riverside, CA 92501',
+  expect: 'no_parcel',
+  note: 'extra no_parcel — adding this must not move MATCH RATE',
+}
+
 export const ADDRESS_FIXTURES: AddressFixture[] = [
   { raw: '1142 Oakdale Ave, La Verne, CA 91750', expect: 'matched', expectApn: 'LA-1142-OAK', note: 'exact LA' },
   { raw: '1142 Oakdale Avenue, La Verne, CA 91750', expect: 'matched', expectApn: 'LA-1142-OAK', note: 'Ave to Avenue' },
@@ -82,4 +88,5 @@ export const ADDRESS_FIXTURES: AddressFixture[] = [
   { raw: '(909) 555-0147', expect: 'no_parcel', note: 'non-address phone formatted' },
   { raw: 'Helen Cho', expect: 'no_parcel', note: 'non-address name' },
   { raw: '9999 Unknown Ridge, Nowhere, CA 00000', expect: 'no_parcel', note: 'no candidate above threshold' },
+  EXTRA_NO_PARCEL,
 ]
