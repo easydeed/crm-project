@@ -126,14 +126,14 @@ DESIRED BEHAVIOR
        reviewBy:      '2027-07-01',
        prop13AnnualCapPct: 0.02,
        defaultTaxRatePct:  0.0115,   // LA County incl. direct assessments
-       counties: ['Los Angeles','Orange','San Bernardino','Riverside','San Diego'],
+       counties: ['Los Angeles','Orange','Ventura','San Diego','Riverside','San Bernardino'],
      } as const
 
    No statutory figure appears anywhere else in the codebase.
 
 6. scripts/seed.ts — the La Verne fixture set:
    one agent (Dana Whitfield, Coastline Realty, DRE 01998432),
-   47 contacts across the five counties, parcels and parcel_events for
+   47 contacts across the six counties, parcels and parcel_events for
    the matched ones, three unmatched (one a PO Box), and the three
    Oakdale Ave recorded sales.
 
