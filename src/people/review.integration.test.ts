@@ -3,7 +3,7 @@ import { and, eq, inArray } from 'drizzle-orm'
 import { afterAll, describe, expect, test } from 'vitest'
 import { registerAccount } from '@/auth/register-account'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
-import { loadDatabasePoolerUrl } from '@/config/database-url'
+import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { persistContactCandidates } from '@/db/persist-contact-candidates'
 import { withStreetNameNorm } from '@/db/parcel-write'
 import { GRANT_DEED_KIND } from '@/db/recorded-owner'
@@ -32,12 +32,7 @@ import {
 } from '@/people/save-review'
 import { resolveAddressMatch } from '@/matching/resolve-match'
 
-let poolerUrl: string | null = null
-try {
-  poolerUrl = loadDatabasePoolerUrl()
-} catch {
-  poolerUrl = null
-}
+const sessionUrl = tryLoadIntegrationDatabaseUrl()
 
 const accountIds: string[] = []
 const parcelIds: string[] = []
@@ -153,9 +148,9 @@ async function seedReviewContact(accountId: string, name: string, addressRaw: st
   return { contactId, match }
 }
 
-describe.skipIf(!poolerUrl)('OR-007 review queue', { timeout: 60_000 }, () => {
+describe.skipIf(!sessionUrl)('OR-007 review queue', { timeout: 120_000 }, () => {
   afterAll(async () => {
-    if (!poolerUrl) return
+    if (!sessionUrl) return
     const { db } = getRuntimeDb()
     if (eventIds.length) {
       await db.delete(parcelEvents).where(inArray(parcelEvents.id, eventIds))

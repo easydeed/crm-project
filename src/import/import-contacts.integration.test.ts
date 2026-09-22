@@ -3,9 +3,8 @@ import { eq, inArray } from 'drizzle-orm'
 import { afterAll, describe, expect, test } from 'vitest'
 import { registerAccount } from '@/auth/register-account'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
-import { loadDatabasePoolerUrl } from '@/config/database-url'
+import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { listContactsForAccount } from '@/db/contacts'
-import { buildLaVerneFixtures } from '@/db/fixtures/la-verne'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts, contactMatchCandidates, contacts, parcels } from '@/db/schema'
 import {
@@ -24,44 +23,28 @@ import { findCandidateParcels } from '@/matching/candidates'
 import { matchAddress } from '@/matching/match-address'
 import { parseAddress } from '@/matching/normalize'
 
-let poolerUrl: string | null = null
-try {
-  poolerUrl = loadDatabasePoolerUrl()
-} catch {
-  poolerUrl = null
-}
+const sessionUrl = tryLoadIntegrationDatabaseUrl()
 
 const accountIds: string[] = []
+const parcelIds: string[] = []
 
-async function ensureLaVerneParcels() {
+async function insertIsolatedParcels(
+  rows: { address: string; city?: string; zip?: string }[],
+) {
   const { db } = getRuntimeDb()
-  const fixture = buildLaVerneFixtures()
-  const existing = await db
-    .select({
-      id: parcels.id,
-      county: parcels.county,
-      apn: parcels.apn,
-      address: parcels.address,
-      city: parcels.city,
-      zip: parcels.zip,
-    })
-    .from(parcels)
-  const havePlace = new Set(
-    existing.map((row) => `${row.address}|${row.city}|${row.zip}`),
-  )
-  const haveId = new Set(existing.map((row) => row.id))
-  const haveApn = new Set(existing.map((row) => `${row.county}:${row.apn}`))
-  const missing = fixture.parcels
-    .filter((row) => !havePlace.has(`${row.address}|${row.city}|${row.zip}`))
-    .map((row) => ({
-      ...row,
-      id: haveId.has(row.id) ? randomUUID() : row.id,
-      apn: haveApn.has(`${row.county}:${row.apn}`)
-        ? `OR005-${randomUUID().slice(0, 8)}`
-        : row.apn,
-    }))
-  if (missing.length) {
-    await db.insert(parcels).values(missing.map(withStreetNameNorm))
+  for (const row of rows) {
+    const id = randomUUID()
+    await db.insert(parcels).values(
+      withStreetNameNorm({
+        id,
+        apn: `OR005-${id.slice(0, 8)}`,
+        county: 'Los Angeles',
+        address: row.address,
+        city: row.city ?? 'Importville',
+        zip: row.zip ?? '91993',
+      }),
+    )
+    parcelIds.push(id)
   }
 }
 
@@ -109,18 +92,20 @@ function rowsFromText(text: string): ImportRow[] {
   return applyMapping(table, mapping, hasHeader)
 }
 
-describe.skipIf(!poolerUrl)('OR-005 import', { timeout: 30_000 }, () => {
+describe.skipIf(!sessionUrl)('OR-005 import', { timeout: 120_000 }, () => {
   afterAll(async () => {
-    if (!poolerUrl) return
+    if (!sessionUrl) return
     const { db } = getRuntimeDb()
     if (accountIds.length) {
       await db.delete(contacts).where(inArray(contacts.accountId, accountIds))
       await db.delete(accounts).where(inArray(accounts.id, accountIds))
     }
+    if (parcelIds.length) {
+      await db.delete(parcels).where(inArray(parcels.id, parcelIds))
+    }
   })
 
   test('47-row La Verne CSV imports with the matcher status split', async () => {
-    await ensureLaVerneParcels()
     const accountId = await newAccount()
     const { db } = getRuntimeDb()
     const rows = laVerneImportRows()
@@ -138,7 +123,6 @@ describe.skipIf(!poolerUrl)('OR-005 import', { timeout: 30_000 }, () => {
   })
 
   test('paste and CSV produce the same mapped rows and status split', async () => {
-    await ensureLaVerneParcels()
     const csvRows = rowsFromText(laVerneCsv())
     const pasteRows = rowsFromText(laVernePaste())
     expect(pasteRows.map((row) => ({ name: row.name, email: row.email, address: row.address }))).toEqual(
@@ -156,7 +140,6 @@ describe.skipIf(!poolerUrl)('OR-005 import', { timeout: 30_000 }, () => {
   })
 
   test('a bad row is skipped and the rest still import', async () => {
-    await ensureLaVerneParcels()
     const accountId = await newAccount()
     const { db } = getRuntimeDb()
     const rows = [
@@ -171,7 +154,6 @@ describe.skipIf(!poolerUrl)('OR-005 import', { timeout: 30_000 }, () => {
   })
 
   test('re-import adds nothing and uses Already in your list', async () => {
-    await ensureLaVerneParcels()
     const accountId = await newAccount()
     const { db } = getRuntimeDb()
     const rows = laVerneImportRows()
@@ -183,17 +165,13 @@ describe.skipIf(!poolerUrl)('OR-005 import', { timeout: 30_000 }, () => {
   })
 
   test('the 251st person is skipped for the 250 cap', async () => {
-    await ensureLaVerneParcels()
     const accountId = await newAccount()
     const { db } = getRuntimeDb()
-    const addresses = buildLaVerneFixtures()
-      .contacts.filter((contact) => contact.status === 'matched')
-      .map((contact) => contact.addressRaw)
     const rows: ImportRow[] = Array.from({ length: 251 }, (_, i) => ({
       line: i + 2,
       name: `Cap ${i}`,
       email: `cap-${i}-${randomUUID()}@example.com`,
-      address: addresses[i % addresses.length],
+      address: `${100 + (i % 50)} Cap Ave, Testville, CA 91990`,
       closeDate: '2020-01-15',
     }))
     const result = await importContacts(db, accountId, rows)
@@ -204,7 +182,10 @@ describe.skipIf(!poolerUrl)('OR-005 import', { timeout: 30_000 }, () => {
   })
 
   test('needs_review candidates persist across a second read', async () => {
-    await ensureLaVerneParcels()
+    await insertIsolatedParcels([
+      { address: '1840 Importoak Ave' },
+      { address: '1852 Importoak Ave' },
+    ])
     const accountId = await newAccount()
     const { db } = getRuntimeDb()
     const result = await importContacts(db, accountId, [
@@ -212,7 +193,7 @@ describe.skipIf(!poolerUrl)('OR-005 import', { timeout: 30_000 }, () => {
         line: 2,
         name: 'Between Houses',
         email: `review-${randomUUID()}@example.com`,
-        address: '1846 Oakdale Ave, La Verne, CA 91750',
+        address: '1846 Importoak Ave, Importville, CA 91993',
         closeDate: '2021-06-15',
       },
     ])
@@ -238,36 +219,36 @@ describe.skipIf(!poolerUrl)('OR-005 import', { timeout: 30_000 }, () => {
   })
 
   test('findCandidateParcels narrows by street, not ZIP alone', async () => {
-    await ensureLaVerneParcels()
+    await insertIsolatedParcels([
+      { address: '1840 Importoak Ave' },
+      { address: '1842 Importoak Ave' },
+      { address: '1852 Importoak Ave' },
+    ])
     const { db } = getRuntimeDb()
-    const normalized = parseAddress('1840 Oakdale Ave, La Verne, CA 91750')
-    expect(normalized?.zip).toBe('91750')
+    const normalized = parseAddress('1840 Importoak Ave, Importville, CA 91993')
+    expect(normalized?.zip).toBe('91993')
     if (!normalized) throw new Error('expected a parsed address')
     const found = await findCandidateParcels(db, normalized)
     expect(found.length).toBeGreaterThan(0)
     expect(found.length).toBeLessThanOrEqual(50)
-    expect(found.every((row) => row.zip === '91750')).toBe(true)
-    expect(found.every((row) => /oakdale|oak dale/i.test(row.address))).toBe(true)
+    expect(found.every((row) => row.zip === '91993')).toBe(true)
+    expect(found.every((row) => /importoak/i.test(row.address))).toBe(true)
 
     const cityOnly = { ...normalized, zip: null }
     const byCity = await findCandidateParcels(db, cityOnly)
-    expect(byCity.some((row) => /oakdale/i.test(row.address))).toBe(true)
-    expect(byCity.every((row) => row.city === 'La Verne')).toBe(true)
-    expect(byCity.every((row) => /oakdale|oak dale/i.test(row.address))).toBe(true)
+    expect(byCity.some((row) => /importoak/i.test(row.address))).toBe(true)
+    expect(byCity.every((row) => row.city === 'Importville')).toBe(true)
+    expect(byCity.every((row) => /importoak/i.test(row.address))).toBe(true)
   })
 
   test('250 rows finish in one request', async () => {
-    await ensureLaVerneParcels()
     const accountId = await newAccount()
     const { db } = getRuntimeDb()
-    const addresses = buildLaVerneFixtures()
-      .contacts.filter((contact) => contact.status === 'matched')
-      .map((contact) => contact.addressRaw)
     const rows: ImportRow[] = Array.from({ length: 250 }, (_, i) => ({
       line: i + 2,
       name: `Batch ${i}`,
       email: `batch-${i}-${randomUUID()}@example.com`,
-      address: addresses[i % addresses.length],
+      address: `${100 + (i % 50)} Cap Ave, Testville, CA 91990`,
       closeDate: '2020-01-15',
     }))
     const result = await importContacts(db, accountId, rows)

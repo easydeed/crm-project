@@ -24,6 +24,16 @@ test('rates exclude non-addresses from both denominators', () => {
   expect(rates.finalCoverage).toBe(3 / 5)
 })
 
+test('a classified PO Box is not a street in the gate metric', () => {
+  const rates = matchingRates([
+    { status: 'matched', matchSource: 'auto', noParcelKind: null },
+    { status: 'no_parcel', matchSource: 'auto', noParcelKind: 'non_address' },
+  ])
+  expect(rates.street).toBe(1)
+  expect(rates.autoMatched).toBe(1)
+  expect(rates.autoMatchRate).toBe(1)
+})
+
 test('per-account sort is lowest auto-match first', () => {
   const homework = matchingRates(mix)
   const clean = matchingRates([

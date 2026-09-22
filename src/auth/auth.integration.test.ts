@@ -3,25 +3,20 @@ import { eq } from 'drizzle-orm'
 import { afterAll, describe, expect, test } from 'vitest'
 import { authenticate } from '@/auth/authenticate'
 import { registerAccount } from '@/auth/register-account'
-import { loadDatabasePoolerUrl } from '@/config/database-url'
+import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { getAccountById } from '@/db/accounts'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts } from '@/db/schema'
 
-let poolerUrl: string | null = null
-try {
-  poolerUrl = loadDatabasePoolerUrl()
-} catch {
-  poolerUrl = null
-}
+const sessionUrl = tryLoadIntegrationDatabaseUrl()
 
-describe.skipIf(!poolerUrl)('auth against the runtime pooler', () => {
+describe.skipIf(!sessionUrl)('auth against the session pooler', () => {
   const suffix = randomUUID()
   const email = `or001-${suffix}@example.com`
   const ids: string[] = []
 
   afterAll(async () => {
-    if (!poolerUrl || ids.length === 0) return
+    if (!sessionUrl || ids.length === 0) return
     const { db } = getRuntimeDb()
     for (const id of ids) {
       await db.delete(accounts).where(eq(accounts.id, id))
