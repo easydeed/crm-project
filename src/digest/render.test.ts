@@ -49,6 +49,7 @@ test('the text part repeats every fact from the html', () => {
     for (const fact of numbers) {
       expect(result.text, `${scenario.name} ${fact}`).toContain(fact.replace(/,/g, ','))
     }
-    expect(result.text).toContain('Morning, Marilyn.')
+    expect(result.text).toContain('Hi Marilyn,')
+    expect(result.text).not.toMatch(/Morning|Afternoon|Evening|Good day/i)
   }
 })

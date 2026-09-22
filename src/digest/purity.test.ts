@@ -14,6 +14,7 @@ function sourceFiles(dir: string): string[] {
       found.push(...sourceFiles(full))
       continue
     }
+    if (name === 'build-input.ts') continue
     if (name.endsWith('.test.ts') || name.endsWith('.test.tsx')) continue
     if (/\.(ts|tsx)$/.test(name)) found.push(full)
   }

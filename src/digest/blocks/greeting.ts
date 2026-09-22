@@ -24,7 +24,7 @@ export function pickHeadline(blocks: ContentBlockName[]) {
 }
 
 export function renderGreeting(firstName: string, headline: string) {
-  const hello = `Morning, ${firstName}.`
+  const hello = `Hi ${firstName},`
   const html = `<tr><td style="padding:24px 28px 8px 28px;">
 <p style="margin:0 0 10px 0;font-family:${BODY_FONT};font-size:26px;line-height:1.3;color:${ink};">${escapeHtml(headline)}</p>
 <p style="margin:0;font-family:${BODY_FONT};font-size:18px;color:${ink};">${escapeHtml(hello)}</p>

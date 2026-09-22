@@ -1,6 +1,4 @@
-import { renderToStaticMarkup } from 'react-dom/server'
-import { createElement } from 'react'
-import { MlsAttribution, mlsAttributionText } from '@/digest/mls-attribution'
+import { mlsAttributionHtml, mlsAttributionText } from '@/digest/mls-attribution'
 import { escapeHtml, formatMoney } from '@/digest/format'
 import { BODY_FONT, LABEL_FONT, ink } from '@/digest/style'
 import type { DigestListing, DigestParcel } from '@/digest/types'
@@ -34,17 +32,11 @@ export function renderFourDoors(
     listing.sqft,
   )
   const attr = mlsAttributionText(listing.listingOffice, listing.listingAgent)
-  const attrHtml = renderToStaticMarkup(
-    createElement(MlsAttribution, {
-      office: listing.listingOffice,
-      agent: listing.listingAgent,
-    }),
-  )
   const lines = [lead, yours, theirs].filter(Boolean) as string[]
   const html = `<tr><td style="padding:18px 28px;">
 <p style="margin:0 0 8px 0;font-family:${LABEL_FONT};font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:${ink};">Four doors down</p>
 ${lines.map((line) => `<p style="margin:0 0 8px 0;font-family:${BODY_FONT};font-size:17px;color:${ink};">${escapeHtml(line)}</p>`).join('')}
-${attrHtml}
+${mlsAttributionHtml(listing.listingOffice, listing.listingAgent)}
 </td></tr>`
   return {
     name: 'four_doors' as const,
