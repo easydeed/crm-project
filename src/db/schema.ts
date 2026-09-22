@@ -19,10 +19,9 @@ import {
 export const accountRoleEnum = pgEnum('account_role', ['agent', 'admin'])
 export const contactStatusEnum = pgEnum('contact_status', ['matched', 'needs_review', 'no_parcel'])
 export const contactReviewStateEnum = pgEnum('contact_review_state', ['pending', 'reviewed'])
-export const subscriptionScopeEnum = pgEnum('subscription_scope', [
-  'monthly',
-  'weekly',
-])
+export const contactMatchSourceEnum = pgEnum('contact_match_source', ['auto', 'review', 'corrected'])
+export const contactNoParcelKindEnum = pgEnum('contact_no_parcel_kind', ['non_address', 'unmatched'])
+export const subscriptionScopeEnum = pgEnum('subscription_scope', ['monthly', 'weekly'])
 export const eventKindEnum = pgEnum('event_kind', ['opened', 'clicked'])
 
 function createdAt() {
@@ -97,6 +96,8 @@ export const contacts = pgTable(
     notes: text('notes'),
     status: contactStatusEnum('status').notNull(),
     reviewState: contactReviewStateEnum('review_state').notNull().default('pending'),
+    matchSource: contactMatchSourceEnum('match_source').notNull().default('auto'),
+    noParcelKind: contactNoParcelKindEnum('no_parcel_kind'),
     createdAt: createdAt(),
   },
   (t) => [

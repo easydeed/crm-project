@@ -4,6 +4,7 @@ import {
   type ParcelRecord,
 } from '@/matching/candidates'
 import { matchAddress } from '@/matching/match-address'
+import { noParcelKindFor, type NoParcelKind } from '@/matching/no-parcel-kind'
 import { parseAddress } from '@/matching/normalize'
 import type { MatchStatus } from '@/matching/types'
 
@@ -19,6 +20,7 @@ export type ResolvedMatch = {
   parcelId: string | null
   candidates: PersistedCandidate[]
   reason: string
+  noParcelKind: NoParcelKind | null
 }
 
 export function cacheKeyForNormalized(normalized: {
@@ -76,6 +78,7 @@ export function applyParcelMatch(
     parcelId: best?.id ?? null,
     candidates,
     reason: match.reason,
+    noParcelKind: noParcelKindFor(match.status, addressRaw),
   }
 }
 

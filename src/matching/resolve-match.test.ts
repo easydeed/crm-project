@@ -6,6 +6,7 @@ test('import, edit, and review persist share resolveAddressMatch', () => {
   expect(resolve).toContain('findCandidateParcels')
   expect(resolve).toContain('matchAddress')
   expect(resolve).toContain('excludeParcelId')
+  expect(resolve).toContain('noParcelKind')
 
   const importer = readFileSync(new URL('../import/import-contacts.ts', import.meta.url), 'utf8')
   expect(importer).toContain("from '@/matching/resolve-match'")

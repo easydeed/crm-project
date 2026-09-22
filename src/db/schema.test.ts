@@ -27,4 +27,8 @@ test('schema exports every OR-000 table', () => {
   expect(schema.parcels.streetNameNorm).toBeDefined()
   expect(schema.contactReviewStateEnum).toBeDefined()
   expect(schema.contacts.reviewState).toBeDefined()
+  expect(schema.contactMatchSourceEnum).toBeDefined()
+  expect(schema.contactNoParcelKindEnum).toBeDefined()
+  expect(schema.contacts.matchSource).toBeDefined()
+  expect(schema.contacts.noParcelKind).toBeDefined()
 })

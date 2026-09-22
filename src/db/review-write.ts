@@ -9,6 +9,7 @@ import {
 import type { ReviewQueueItem, ReviewSnapshot } from '@/db/review-types'
 import { getRuntimeDb } from '@/db/runtime'
 import { contacts } from '@/db/schema'
+import { noParcelKindFor } from '@/matching/no-parcel-kind'
 import { resolveAddressMatch } from '@/matching/resolve-match'
 
 export type ReviewWriteResult =
@@ -24,6 +25,8 @@ async function loadOwnedContact(accountId: string, contactId: string) {
       addressRaw: contacts.addressRaw,
       status: contacts.status,
       reviewState: contacts.reviewState,
+      matchSource: contacts.matchSource,
+      noParcelKind: contacts.noParcelKind,
       parcelId: contacts.parcelId,
     })
     .from(contacts)
@@ -42,6 +45,8 @@ async function snapshotFor(accountId: string, contactId: string): Promise<Review
     status: row.status,
     parcelId: row.parcelId,
     reviewState: row.reviewState,
+    matchSource: row.matchSource,
+    noParcelKind: row.noParcelKind,
     addressRaw: row.addressRaw,
     candidates,
   }
@@ -78,7 +83,13 @@ export async function chooseCandidateForAccount(
   await db.transaction(async (tx) => {
     await tx
       .update(contacts)
-      .set({ status: 'matched', parcelId, reviewState: 'pending' })
+      .set({
+        status: 'matched',
+        parcelId,
+        reviewState: 'pending',
+        matchSource: contact.status === 'matched' ? 'corrected' : 'review',
+        noParcelKind: null,
+      })
       .where(and(eq(contacts.id, contactId), eq(contacts.accountId, accountId)))
     await persistContactCandidates(tx, contactId, [], 'replace')
   })
@@ -95,7 +106,13 @@ export async function leaveOutContactForAccount(
   await db.transaction(async (tx) => {
     await tx
       .update(contacts)
-      .set({ status: 'no_parcel', parcelId: null, reviewState: 'reviewed' })
+      .set({
+        status: 'no_parcel',
+        parcelId: null,
+        reviewState: 'reviewed',
+        noParcelKind:
+          snapshot.noParcelKind ?? noParcelKindFor('no_parcel', snapshot.addressRaw),
+      })
       .where(and(eq(contacts.id, contactId), eq(contacts.accountId, accountId)))
     await persistContactCandidates(tx, contactId, [], 'replace')
   })
@@ -119,6 +136,8 @@ export async function fixReviewAddressForAccount(
         status: match.status,
         parcelId: match.parcelId,
         reviewState: 'pending',
+        matchSource: 'auto',
+        noParcelKind: match.noParcelKind,
       })
       .where(and(eq(contacts.id, contactId), eq(contacts.accountId, accountId)))
     await persistContactCandidates(tx, contactId, match.candidates, 'replace')
@@ -146,6 +165,8 @@ export async function undoReviewChangeForAccount(
         status: snapshot.status,
         parcelId: snapshot.parcelId,
         reviewState: snapshot.reviewState,
+        matchSource: snapshot.matchSource,
+        noParcelKind: snapshot.noParcelKind,
         addressRaw: snapshot.addressRaw,
       })
       .where(and(eq(contacts.id, snapshot.contactId), eq(contacts.accountId, accountId)))

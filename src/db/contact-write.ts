@@ -48,6 +48,8 @@ export async function updateContactForAccount(
                 status: match.status,
                 parcelId: match.parcelId,
                 reviewState: 'pending' as const,
+                matchSource: 'auto' as const,
+                noParcelKind: match.noParcelKind,
               }
             : {}),
         })

@@ -1,6 +1,9 @@
+import type { NoParcelKind } from '@/matching/no-parcel-kind'
 import type { PersistedCandidate } from '@/matching/resolve-match'
 import type { ContactReviewState } from '@/people/review-state'
 import type { ContactMatchStatus } from '@/people/status'
+
+export type ContactMatchSource = 'auto' | 'review' | 'corrected'
 
 export type ReviewCandidateCard = {
   parcelId: string
@@ -30,6 +33,8 @@ export type ReviewSnapshot = {
   status: ContactMatchStatus
   parcelId: string | null
   reviewState: ContactReviewState
+  matchSource: ContactMatchSource
+  noParcelKind: NoParcelKind | null
   addressRaw: string
   candidates: PersistedCandidate[]
 }
