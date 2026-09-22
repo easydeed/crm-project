@@ -285,13 +285,4 @@ export const contactMatchCandidates = pgTable(
   ],
 )
 
-export const jobs = pgTable('jobs', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  kind: text('kind').notNull(),
-  payload: jsonb('payload').$type<Record<string, unknown>>().notNull().default({}),
-  runAfter: timestamp('run_after', { withTimezone: true }).notNull(),
-  attempts: integer('attempts').notNull().default(0),
-  lockedAt: timestamp('locked_at', { withTimezone: true }),
-  completedAt: timestamp('completed_at', { withTimezone: true }),
-  error: text('error'),
-})
+export { jobs } from './schema-jobs'
