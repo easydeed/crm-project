@@ -32,6 +32,8 @@ export async function importContacts(
     parcelId: string | null
     closeDate: string | null
     status: 'matched' | 'needs_review' | 'no_parcel'
+    matchSource: 'auto'
+    noParcelKind: 'non_address' | 'unmatched' | null
   }> = []
   const candidateRows: ReturnType<typeof candidateInsertRows> = []
   const cache = new Map<string, ParcelRecord[]>()
@@ -68,6 +70,8 @@ export async function importContacts(
       parcelId: match.parcelId,
       closeDate: row.closeDate,
       status: match.status,
+      matchSource: 'auto',
+      noParcelKind: match.noParcelKind,
     })
     candidateRows.push(...candidateInsertRows(contactId, match.candidates))
     seen.add(email.toLowerCase())

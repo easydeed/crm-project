@@ -6,7 +6,12 @@ import {
   leaveOutContactForAccount,
   undoReviewChangeForAccount,
 } from '@/db/review-write'
-import type { ReviewQueueItem, ReviewSnapshot } from '@/db/review-types'
+import type {
+  ContactMatchSource,
+  ReviewQueueItem,
+  ReviewSnapshot,
+} from '@/db/review-types'
+import type { NoParcelKind } from '@/matching/no-parcel-kind'
 import { parseContactAddress } from '@/people/parse-fields'
 import type { ContactReviewState } from '@/people/review-state'
 import type { ContactMatchStatus } from '@/people/status'
@@ -27,6 +32,14 @@ function isReviewState(value: string): value is ContactReviewState {
   return value === 'pending' || value === 'reviewed'
 }
 
+function isMatchSource(value: unknown): value is ContactMatchSource {
+  return value === 'auto' || value === 'review' || value === 'corrected'
+}
+
+function isNoParcelKind(value: unknown): value is NoParcelKind | null {
+  return value === null || value === 'non_address' || value === 'unmatched'
+}
+
 export function parseReviewSnapshot(raw: string): ReviewSnapshot | null {
   try {
     const value = JSON.parse(raw) as ReviewSnapshot
@@ -36,7 +49,11 @@ export function parseReviewSnapshot(raw: string): ReviewSnapshot | null {
     if (typeof value.addressRaw !== 'string') return null
     if (value.parcelId !== null && typeof value.parcelId !== 'string') return null
     if (!Array.isArray(value.candidates)) return null
-    return value
+    return {
+      ...value,
+      matchSource: isMatchSource(value.matchSource) ? value.matchSource : 'auto',
+      noParcelKind: isNoParcelKind(value.noParcelKind) ? value.noParcelKind : null,
+    }
   } catch {
     return null
   }

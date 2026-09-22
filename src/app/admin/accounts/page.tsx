@@ -36,7 +36,13 @@ export default async function AdminAccountsPage({
       ) : (
         <AccountsTable rows={rows} q={q} sort={sort} dir={dir} />
       )}
-      <p className="mt-8 text-[15px]">
+      <p className="mt-8 flex flex-wrap gap-4 text-[15px]">
+        <Link
+          className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          href="/admin/matching"
+        >
+          Matching
+        </Link>
         <Link
           className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           href="/app"
