@@ -11,7 +11,8 @@
     "test": "vitest run",
     "verify": "pnpm build && pnpm typecheck && pnpm lint && pnpm test && node scripts/check-file-length.mjs && node scripts/check-invariants.mjs",
     "db:push": "drizzle-kit push",
-    "db:seed": "tsx scripts/seed.ts"
+    "db:seed": "tsx scripts/seed.ts",
+    "digest:preview": "tsx scripts/digest-preview.ts"
   },
   "dependencies": {
     "drizzle-kit": "^0.31.4",

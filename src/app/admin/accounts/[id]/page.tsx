@@ -39,6 +39,14 @@ export default async function AdminAccountDetailPage({
       <div className="mt-10">
         <SettingsReadout account={account} />
       </div>
+      <p className="mt-6">
+        <Link
+          className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          href={`/admin/preview?account=${account.id}`}
+        >
+          Preview this account&apos;s notes
+        </Link>
+      </p>
       {account.role === 'agent' ? <ViewAsButton accountId={account.id} /> : null}
     </main>
   )
