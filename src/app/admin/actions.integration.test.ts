@@ -8,7 +8,7 @@ import {
   SESSION_COOKIE,
 } from '@/auth/session'
 import { assertWritable, VIEW_AS_READ_ONLY } from '@/auth/write-guard'
-import { loadDatabasePoolerUrl } from '@/config/database-url'
+import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { saveDetails } from '@/app/app/settings/save'
 import { getAccountById } from '@/db/accounts'
 import { getRuntimeDb } from '@/db/runtime'
@@ -47,18 +47,13 @@ vi.mock('next/navigation', () => ({
 
 const { exitViewAsAction } = await import('@/app/admin/actions')
 
-let poolerUrl: string | null = null
-try {
-  poolerUrl = loadDatabasePoolerUrl()
-} catch {
-  poolerUrl = null
-}
+const sessionUrl = tryLoadIntegrationDatabaseUrl()
 
-describe.skipIf(!poolerUrl)('exit view-as', () => {
+describe.skipIf(!sessionUrl)('exit view-as', () => {
   const ids: string[] = []
 
   afterAll(async () => {
-    if (!poolerUrl || ids.length === 0) return
+    if (!sessionUrl || ids.length === 0) return
     const { db } = getRuntimeDb()
     for (const id of ids) {
       await db.delete(adminActions).where(eq(adminActions.adminAccountId, id))

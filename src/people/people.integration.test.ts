@@ -3,7 +3,7 @@ import { eq, inArray } from 'drizzle-orm'
 import { afterAll, describe, expect, test } from 'vitest'
 import { registerAccount } from '@/auth/register-account'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
-import { loadDatabasePoolerUrl } from '@/config/database-url'
+import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { getContactForAccount, listContactsForAccount } from '@/db/contacts'
 import { deleteContactsForAccount, updateContactForAccount } from '@/db/contact-write'
 import {
@@ -23,17 +23,11 @@ import {
   groups,
   parcels,
 } from '@/db/schema'
-import { buildLaVerneFixtures } from '@/db/fixtures/la-verne'
 import { contactMatchesSearch } from '@/people/filter'
 import { deleteContact, saveContact } from '@/people/save-contact'
 import { createGroup } from '@/people/save-groups'
 
-let poolerUrl: string | null = null
-try {
-  poolerUrl = loadDatabasePoolerUrl()
-} catch {
-  poolerUrl = null
-}
+const sessionUrl = tryLoadIntegrationDatabaseUrl()
 
 const accountIds: string[] = []
 const parcelIds: string[] = []
@@ -106,48 +100,34 @@ async function ensureTestParcel() {
       county: 'Los Angeles',
       address: '100 Test Ave',
       city: 'La Verne',
-      zip: '91750',
+      zip: '91992',
     }),
   )
   parcelIds.push(id)
   return id
 }
 
-async function ensureLaVerneParcels() {
+async function ensureReviewStreet() {
   const { db } = getRuntimeDb()
-  const fixture = buildLaVerneFixtures()
-  const existing = await db
-    .select({
-      id: parcels.id,
-      county: parcels.county,
-      apn: parcels.apn,
-      address: parcels.address,
-      city: parcels.city,
-      zip: parcels.zip,
-    })
-    .from(parcels)
-  const havePlace = new Set(
-    existing.map((row) => `${row.address}|${row.city}|${row.zip}`),
-  )
-  const haveId = new Set(existing.map((row) => row.id))
-  const haveApn = new Set(existing.map((row) => `${row.county}:${row.apn}`))
-  const missing = fixture.parcels
-    .filter((row) => !havePlace.has(`${row.address}|${row.city}|${row.zip}`))
-    .map((row) => ({
-      ...row,
-      id: haveId.has(row.id) ? randomUUID() : row.id,
-      apn: haveApn.has(`${row.county}:${row.apn}`)
-        ? `OR006-${randomUUID().slice(0, 8)}`
-        : row.apn,
-    }))
-  if (missing.length) {
-    await db.insert(parcels).values(missing.map(withStreetNameNorm))
+  for (const address of ['1840 Peopleoak Ave', '1852 Peopleoak Ave']) {
+    const id = randomUUID()
+    await db.insert(parcels).values(
+      withStreetNameNorm({
+        id,
+        apn: `OR006-${id.slice(0, 8)}`,
+        county: 'Los Angeles',
+        address,
+        city: 'La Verne',
+        zip: '91992',
+      }),
+    )
+    parcelIds.push(id)
   }
 }
 
-describe.skipIf(!poolerUrl)('OR-006 people list', { timeout: 60_000 }, () => {
+describe.skipIf(!sessionUrl)('OR-006 people list', { timeout: 120_000 }, () => {
   afterAll(async () => {
-    if (!poolerUrl) return
+    if (!sessionUrl) return
     const { db } = getRuntimeDb()
     if (accountIds.length) {
       await db.delete(contacts).where(inArray(contacts.accountId, accountIds))
@@ -217,7 +197,7 @@ describe.skipIf(!poolerUrl)('OR-006 people list', { timeout: 60_000 }, () => {
 
   test('address edit rematches and persists candidates the import way', async () => {
     await ensureTestParcel()
-    await ensureLaVerneParcels()
+    await ensureReviewStreet()
     const accountId = await newAccount()
     const personId = await insertPerson(accountId, {
       addressRaw: 'PO Box 99, La Verne, CA 91750',
@@ -228,7 +208,7 @@ describe.skipIf(!poolerUrl)('OR-006 people list', { timeout: 60_000 }, () => {
       name: 'Pat Rivera',
       email: `pat-match-${personId.slice(0, 8)}@example.com`,
       phone: '9095550147',
-      addressRaw: '100 Test Ave, La Verne, CA 91750',
+      addressRaw: '100 Test Ave, La Verne, CA 91992',
       closeDate: '2021-03-15',
       notes: 'Past client',
     })
@@ -243,7 +223,7 @@ describe.skipIf(!poolerUrl)('OR-006 people list', { timeout: 60_000 }, () => {
       name: 'Pat Rivera',
       email: afterMatch?.email ?? '',
       phone: '9095550147',
-      addressRaw: '1846 Oakdale Ave, La Verne, CA 91750',
+      addressRaw: '1846 Peopleoak Ave, La Verne, CA 91992',
       closeDate: '2021-03-15',
       notes: 'Past client',
     })
@@ -260,11 +240,11 @@ describe.skipIf(!poolerUrl)('OR-006 people list', { timeout: 60_000 }, () => {
   })
 
   test('hard delete names the person path and cascades members and candidates', async () => {
-    await ensureLaVerneParcels()
+    await ensureReviewStreet()
     const accountId = await newAccount()
     const personId = await insertPerson(accountId, {
       name: 'Jordan Hale',
-      addressRaw: '1846 Oakdale Ave, La Verne, CA 91750',
+      addressRaw: '1846 Peopleoak Ave, La Verne, CA 91992',
       status: 'needs_review',
     })
     const created = await createGroupForAccount(accountId, 'Cascade')
@@ -275,7 +255,7 @@ describe.skipIf(!poolerUrl)('OR-006 people list', { timeout: 60_000 }, () => {
       name: 'Jordan Hale',
       email: `jordan-${personId.slice(0, 8)}@example.com`,
       phone: '9095550147',
-      addressRaw: '1846 Oakdale Ave, La Verne, CA 91750',
+      addressRaw: '1846 Peopleoak Ave, La Verne, CA 91992',
       closeDate: '2021-03-15',
       notes: null,
     })

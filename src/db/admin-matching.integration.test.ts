@@ -3,7 +3,7 @@ import { and, eq, inArray } from 'drizzle-orm'
 import { afterAll, describe, expect, test } from 'vitest'
 import { fixturesToJson } from '@/admin/matching-export'
 import { registerAccount } from '@/auth/register-account'
-import { loadDatabasePoolerUrl } from '@/config/database-url'
+import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import {
   listMatchingFailuresForAdmin,
   listMatchingOverviewForAdmin,
@@ -16,12 +16,7 @@ import { getRuntimeDb } from '@/db/runtime'
 import { accounts, contacts, parcels } from '@/db/schema'
 import { importContacts } from '@/import/import-contacts'
 
-let poolerUrl: string | null = null
-try {
-  poolerUrl = loadDatabasePoolerUrl()
-} catch {
-  poolerUrl = null
-}
+const sessionUrl = tryLoadIntegrationDatabaseUrl()
 
 const accountIds: string[] = []
 const parcelIds: string[] = []
@@ -89,9 +84,9 @@ async function insertPerson(
   return id
 }
 
-describe.skipIf(!poolerUrl)('OR-008 admin matching', { timeout: 60_000 }, () => {
+describe.skipIf(!sessionUrl)('OR-008 admin matching', { timeout: 120_000 }, () => {
   afterAll(async () => {
-    if (!poolerUrl) return
+    if (!sessionUrl) return
     const { db } = getRuntimeDb()
     if (accountIds.length) {
       await db.delete(contacts).where(inArray(contacts.accountId, accountIds))

@@ -3,25 +3,20 @@ import { eq } from 'drizzle-orm'
 import { afterAll, describe, expect, test } from 'vitest'
 import { authenticate } from '@/auth/authenticate'
 import { registerAccount } from '@/auth/register-account'
-import { loadDatabasePoolerUrl } from '@/config/database-url'
+import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { listAccountsForAdmin, recordViewAs } from '@/db/admin-accounts'
 import { countContactsForAccount, getAccountById } from '@/db/accounts'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts, adminActions } from '@/db/schema'
 
-let poolerUrl: string | null = null
-try {
-  poolerUrl = loadDatabasePoolerUrl()
-} catch {
-  poolerUrl = null
-}
+const sessionUrl = tryLoadIntegrationDatabaseUrl()
 
-describe.skipIf(!poolerUrl)('admin account list and view-as audit', () => {
+describe.skipIf(!sessionUrl)('admin account list and view-as audit', () => {
   const suffix = randomUUID()
   const ids: string[] = []
 
   afterAll(async () => {
-    if (!poolerUrl || ids.length === 0) return
+    if (!sessionUrl || ids.length === 0) return
     const { db } = getRuntimeDb()
     for (const id of ids) {
       await db.delete(adminActions).where(eq(adminActions.adminAccountId, id))

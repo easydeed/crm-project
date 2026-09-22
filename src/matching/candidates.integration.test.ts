@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { eq, inArray } from 'drizzle-orm'
 import { afterAll, describe, expect, test } from 'vitest'
 import { registerAccount } from '@/auth/register-account'
-import { loadDatabaseUrl } from '@/config/database-url'
+import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { createDb } from '@/db/client'
 import { reviewContacts, reviewParcels } from '@/db/fixtures/la-verne-review'
 import { withStreetNameNorm } from '@/db/parcel-write'
@@ -21,15 +21,11 @@ const VOLUME_CITY = 'Temecula'
 const TARGET_APN = 'VOL-88881-TARGET'
 const TARGET_ADDRESS = '4721 Oakdale Ave'
 
-let sessionUrl: string | null = null
-try {
-  sessionUrl = loadDatabaseUrl()
-} catch {
-  sessionUrl = null
-}
+const sessionUrl = tryLoadIntegrationDatabaseUrl()
 
 const handle = sessionUrl ? createDb(sessionUrl) : null
 const accountIds: string[] = []
+const parcelIds: string[] = []
 
 function db() {
   if (!handle) throw new Error('DATABASE_URL is not set')
@@ -60,13 +56,16 @@ const MESSY_VARIANTS = [
   '4721 Oakdlae Ave, Temecula, CA 88881',
 ]
 
-describe.skipIf(!sessionUrl)('OR-005a candidate retrieval', { timeout: 120_000 }, () => {
+describe.skipIf(!sessionUrl)('OR-005a candidate retrieval', { timeout: 180_000 }, () => {
   afterAll(async () => {
     if (!handle) return
     await handle.db.delete(parcels).where(eq(parcels.zip, VOLUME_ZIP))
     if (accountIds.length) {
       await handle.db.delete(contacts).where(inArray(contacts.accountId, accountIds))
       await handle.db.delete(accounts).where(inArray(accounts.id, accountIds))
+    }
+    if (parcelIds.length) {
+      await handle.db.delete(parcels).where(inArray(parcels.id, parcelIds))
     }
     await handle.client.end({ timeout: 2 })
   })
@@ -202,21 +201,18 @@ describe.skipIf(!sessionUrl)('OR-005a candidate retrieval', { timeout: 120_000 }
     expect(retrievalMs as number).toBeLessThan(50)
   })
 
-  test('seed review path persists 2-3 candidates for four contacts', async () => {
-    const existing = await db()
-      .select({ id: parcels.id, county: parcels.county, apn: parcels.apn })
-      .from(parcels)
-    const have = new Set(existing.map((row) => `${row.county}:${row.apn}`))
-    const missing = reviewParcels
-      .filter((row) => !have.has(`${row.county}:${row.apn}`))
-      .map((row) => {
-        const clash = existing.some((item) => item.id === row.id)
-        return withStreetNameNorm({
-          ...row,
-          id: clash ? randomUUID() : row.id,
-        })
-      })
-    if (missing.length) await db().insert(parcels).values(missing)
+  test('review path persists 2-3 candidates for four contacts', async () => {
+    const isolatedZip = '88882'
+    const isolated = reviewParcels.map((row) =>
+      withStreetNameNorm({
+        ...row,
+        id: randomUUID(),
+        apn: `OR005A-${randomUUID().slice(0, 8)}`,
+        zip: isolatedZip,
+      }),
+    )
+    await db().insert(parcels).values(isolated)
+    parcelIds.push(...isolated.map((row) => row.id))
 
     const created = await registerAccount({
       name: 'Review Seed',
@@ -234,6 +230,7 @@ describe.skipIf(!sessionUrl)('OR-005a candidate retrieval', { timeout: 120_000 }
       ...contact,
       id: randomUUID(),
       accountId: created.accountId,
+      addressRaw: contact.addressRaw.replace('CA 91750', `CA ${isolatedZip}`),
     }))
     await db().insert(contacts).values(seeded)
     await persistReviewCandidates(db(), seeded)

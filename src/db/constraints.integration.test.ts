@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { eq } from 'drizzle-orm'
 import { afterAll, beforeAll, describe, expect, test } from 'vitest'
-import { loadDatabaseUrl } from '@/config/database-url'
+import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { createDb } from '@/db/client'
 import { withStreetNameNorm } from '@/db/parcel-write'
 import {
@@ -13,12 +13,7 @@ import {
   parcels,
 } from '@/db/schema'
 
-let databaseUrl: string | null = null
-try {
-  databaseUrl = loadDatabaseUrl()
-} catch {
-  databaseUrl = null
-}
+const databaseUrl = tryLoadIntegrationDatabaseUrl()
 
 describe.skipIf(!databaseUrl)('live constraints', () => {
   const ids = {

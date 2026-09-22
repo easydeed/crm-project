@@ -3,24 +3,19 @@ import { eq } from 'drizzle-orm'
 import { afterAll, describe, expect, test } from 'vitest'
 import { registerAccount } from '@/auth/register-account'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
-import { loadDatabasePoolerUrl } from '@/config/database-url'
+import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { saveDetails } from '@/app/app/settings/save'
 import { getAccountById } from '@/db/accounts'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts } from '@/db/schema'
 
-let poolerUrl: string | null = null
-try {
-  poolerUrl = loadDatabasePoolerUrl()
-} catch {
-  poolerUrl = null
-}
+const sessionUrl = tryLoadIntegrationDatabaseUrl()
 
-describe.skipIf(!poolerUrl)('view-as write block', () => {
+describe.skipIf(!sessionUrl)('view-as write block', () => {
   const ids: string[] = []
 
   afterAll(async () => {
-    if (!poolerUrl || ids.length === 0) return
+    if (!sessionUrl || ids.length === 0) return
     const { db } = getRuntimeDb()
     for (const id of ids) {
       await db.delete(accounts).where(eq(accounts.id, id))
