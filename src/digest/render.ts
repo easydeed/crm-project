@@ -22,7 +22,7 @@ export function renderDigest(input: DigestInput): DigestResult {
   ].filter((block): block is BlockOutput => Boolean(block))
 
   const blocks = content.map((block) => block.name)
-  if (content.length === 0 || !digestHasNews(blocks, input.events, input.asOf)) {
+  if (content.length === 0 || !digestHasNews(blocks)) {
     return { send: false, reason: NOTHING_NEW_REASON }
   }
 

@@ -145,8 +145,16 @@ export const scenarios: Scenario[] = [
       streetSales: [],
       events: [grant, loan, recentRelease],
     }),
+    send: false,
+    blocks: [],
+  },
+  {
+    name: 'recent payoff with street sales',
+    input: input({
+      events: [grant, loan, recentRelease],
+    }),
     send: true,
-    blocks: ['record', 'loan'],
+    blocks: ['record', 'taxes', 'street_sales', 'loan'],
   },
   {
     name: 'one street sale only',

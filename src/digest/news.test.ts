@@ -10,7 +10,7 @@ function byName(name: string) {
 }
 
 test('record and loan alone are not news', () => {
-  for (const name of ['no street sales', 'static only']) {
+  for (const name of ['no street sales', 'static only', 'recent payoff']) {
     const result = renderDigest(byName(name).input)
     expect(result.send, name).toBe(false)
     if (result.send) continue
@@ -18,11 +18,19 @@ test('record and loan alone are not news', () => {
   }
 })
 
-test('a document recorded twenty days ago is news', () => {
-  const row = byName('recent payoff') // invariant-ok
+test('a document recorded on their own house is not news', () => {
+  const row = byName('recent payoff')
+  const result = renderDigest(row.input)
+  expect(result.send).toBe(false)
+  if (result.send) return
+  expect(result.reason).toBe(NOTHING_NEW_REASON)
+})
+
+test('a recent own-house recording still sends when the street has news', () => {
+  const row = byName('recent payoff with street sales')
   const result = renderDigest(row.input)
   expect(result.send).toBe(true)
   if (!result.send) return
-  expect(result.blocks).toEqual(['record', 'loan'])
+  expect(result.blocks).toEqual(['record', 'taxes', 'street_sales', 'loan'])
   expect(result.text).toMatch(/Paid off or refinanced — recorded /)
 })
