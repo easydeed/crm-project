@@ -15,7 +15,9 @@ export function renderStreetSales(streetSales: DigestEvent[]) {
   const lines = sales.map((sale) => {
     const price = formatMoney(sale.amount as number)
     const day = formatRecordedDay(sale.recordedAt)
-    return `${price} — recorded ${day} · document ${sale.docNumber}`
+    const where = sale.address?.trim()
+    const sold = where ? `${where}  ${price}` : price
+    return `${sold} — recorded ${day} · document ${sale.docNumber}`
   })
   const html = `<tr><td style="padding:18px 28px;">
 <p style="margin:0 0 8px 0;font-family:${LABEL_FONT};font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:${ink};">What sold on your street</p>

@@ -28,58 +28,61 @@ const oakdale: DigestParcel = {
   baths: '2.0',
   sqft: 1680,
   useCode: 'SFR',
-  assessedValue: 425000,
+  assessedValue: 817800,
 }
 
 const grant: DigestEvent = {
   kind: GRANT_DEED,
-  docNumber: '2019041512',
-  recordedAt: '2019-04-15',
-  amount: 720000,
-  party: 'Marilyn Cole',
+  docNumber: '2019-0248117',
+  recordedAt: '2019-03-14',
+  amount: 712000,
+  party: 'Marilyn Okafor',
 }
 
 const loan: DigestEvent = {
   kind: DEED_OF_TRUST,
-  docNumber: '2019042018',
-  recordedAt: '2019-04-20',
-  amount: 500000,
-  party: 'Coastline Mortgage',
+  docNumber: '2019-0248204',
+  recordedAt: '2019-03-14',
+  amount: 569600,
+  party: 'Cardinal Home Loans',
 }
 
 const sales: DigestEvent[] = [
   {
     kind: GRANT_DEED,
-    docNumber: '2025110888',
-    recordedAt: '2025-11-08',
-    amount: 980000,
+    docNumber: '2026-0510881',
+    recordedAt: '2026-05-01',
+    amount: 1120000,
     party: 'Luis Ortega',
     propertyType: 'SFR',
+    address: '1108 Oakdale Ave',
   },
   {
     kind: GRANT_DEED,
-    docNumber: '2026032101',
-    recordedAt: '2026-03-21',
+    docNumber: '2026-0722140',
+    recordedAt: '2026-07-22',
     amount: 1040000,
     party: 'Elena Vasquez',
     propertyType: 'SFR',
+    address: '1162 Oakdale Ave',
   },
   {
     kind: GRANT_DEED,
-    docNumber: '2026051234',
-    recordedAt: '2026-05-14',
-    amount: 1100000,
+    docNumber: '2026-0609412',
+    recordedAt: '2026-06-09',
+    amount: 985000,
     party: 'Maya Chen',
     propertyType: 'SFR',
+    address: '2334 Bonita Ave',
   },
 ]
 
 const listing: DigestListing = {
-  mlsId: 'CRMLS-410ASH',
-  address: '410 Ashford Ave',
+  mlsId: 'CRMLS-1187OAK',
+  address: '1187 Oakdale Ave',
   status: 'Active',
-  listPrice: 1125000,
-  listDate: '2026-08-02',
+  listPrice: 1065000,
+  listDate: '2026-08-12',
   beds: 3,
   baths: '2.0',
   sqft: 1720,
@@ -88,11 +91,19 @@ const listing: DigestListing = {
   listingAgent: 'Pat Rivera',
 }
 
+const recentRelease: DigestEvent = {
+  kind: RECONVEYANCE,
+  docNumber: '2026-0826100',
+  recordedAt: '2026-08-26',
+  amount: null,
+  party: 'Cardinal Home Loans',
+}
+
 function input(extra: Partial<DigestInput>): DigestInput {
   return {
     asOf: AS_OF,
     agent,
-    contact: { firstName: 'Marilyn', closeDate: '2019-04-20' },
+    contact: { firstName: 'Marilyn', closeDate: '2019-03-14' },
     parcel: oakdale,
     events: [grant, loan],
     streetSales: sales,
@@ -119,6 +130,21 @@ export const scenarios: Scenario[] = [
   {
     name: 'no street sales',
     input: input({ streetSales: [] }),
+    send: false,
+    blocks: [],
+  },
+  {
+    name: 'static only',
+    input: input({ streetSales: [] }),
+    send: false,
+    blocks: [],
+  },
+  {
+    name: 'recent payoff',
+    input: input({
+      streetSales: [],
+      events: [grant, loan, recentRelease],
+    }),
     send: true,
     blocks: ['record', 'loan'],
   },
@@ -139,7 +165,7 @@ export const scenarios: Scenario[] = [
           docNumber: '2024011502',
           recordedAt: '2024-01-15',
           amount: null,
-          party: 'Coastline Mortgage',
+          party: 'Cardinal Home Loans',
         },
       ],
     }),
@@ -156,7 +182,7 @@ export const scenarios: Scenario[] = [
     name: 'trust vesting',
     input: input({
       events: [
-        { ...grant, party: 'The Cole Family Trust dated April 15, 2019' },
+        { ...grant, party: 'The Okafor Family Trust dated March 14, 2019' },
         loan,
       ],
     }),

@@ -42,6 +42,46 @@ test('tax block follows the street-median rule on each scenario', () => {
   }
 })
 
+test('the full Oakdale example produces about $2,600', () => {
+  const full = scenarios.find((row) => row.name === 'full')
+  if (!full) throw new Error('missing full')
+  const median = streetMedianSale(
+    full.input.parcel,
+    full.input.streetSales,
+    full.input.asOf,
+  )
+  const assessed = full.input.parcel.assessedValue
+  expect(median).toBe(1_040_000)
+  expect(assessed).toBe(817_800)
+  const benefit = roundToHundred((median! - assessed!) * CA_TAX.defaultTaxRatePct)
+  expect(benefit).toBe(2600)
+  expect(formatAboutMoney(benefit)).toBe('about $2,600')
+  const result = renderDigest(full.input)
+  expect(result.send).toBe(true)
+  if (!result.send) return
+  expect(result.text).toContain('about $2,600')
+})
+
+test('1187 Oakdale is the listing, never a recorded sale', () => {
+  const full = scenarios.find((row) => row.name === 'full')
+  if (!full) throw new Error('missing full')
+  expect(full.input.nearbyListing?.address).toBe('1187 Oakdale Ave')
+  expect(full.input.streetSales.map((sale) => sale.address)).toEqual([
+    '1108 Oakdale Ave',
+    '1162 Oakdale Ave',
+    '2334 Bonita Ave',
+  ])
+  const result = renderDigest(full.input)
+  expect(result.send).toBe(true)
+  if (!result.send) return
+  expect(result.text).toContain('A house at 1187 Oakdale Ave is active')
+  const saleLines = result.text
+    .split('\n')
+    .filter((line) => /recorded .+ · document /.test(line))
+  expect(saleLines.length).toBe(3)
+  expect(saleLines.join('\n')).not.toContain('1187 Oakdale Ave')
+})
+
 test('no statutory number is copied into digest source', () => {
   const root = path.dirname(fileURLToPath(import.meta.url))
   const forbidden = [/0\.0115/, /0\.0125/, /1\.15%/, /1\.25%/]

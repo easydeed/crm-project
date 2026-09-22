@@ -37,6 +37,7 @@ export type DigestEvent = {
   amount: number | null
   party: string | null
   propertyType?: string | null
+  address?: string | null
 }
 
 export type DigestListing = {

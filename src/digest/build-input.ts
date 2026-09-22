@@ -36,6 +36,7 @@ function toEvent(row: {
   amount: number | null
   party: string | null
   propertyType?: string | null
+  address?: string | null
 }): DigestEvent {
   return {
     kind: row.kind,
@@ -44,6 +45,7 @@ function toEvent(row: {
     amount: asInt(row.amount),
     party: row.party,
     propertyType: asText(row.propertyType),
+    address: asText(row.address),
   }
 }
 
@@ -60,6 +62,7 @@ async function loadStreetSales(
       amount: parcelEvents.amount,
       party: parcelEvents.party,
       propertyType: parcels.useCode,
+      address: parcels.address,
     })
     .from(parcelEvents)
     .innerJoin(parcels, eq(parcels.id, parcelEvents.parcelId))

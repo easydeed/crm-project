@@ -3,7 +3,10 @@ import { expect, test } from 'vitest'
 import { firstNameFrom } from '@/digest/build-input'
 
 test('buildDigestInput takes db, accountId, contactId, and asOf', () => {
-  const src = readFileSync(new URL('./build-input.ts', import.meta.url), 'utf8')
+  const src = readFileSync(new URL('./build-input.ts', import.meta.url), 'utf8').replace(
+    /\r\n/g,
+    '\n',
+  )
   expect(src).toContain(
     'export async function buildDigestInput(\n  db: DigestDb,\n  accountId: string,\n  contactId: string,\n  asOf: Date,',
   )
