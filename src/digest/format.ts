@@ -53,6 +53,26 @@ export function withinTrailingMonths(
   return gap >= 0 && gap < months
 }
 
+export function daysBetween(
+  start: { y: number; m: number; d: number },
+  end: { y: number; m: number; d: number },
+) {
+  const a = Date.UTC(start.y, start.m - 1, start.d)
+  const b = Date.UTC(end.y, end.m - 1, end.d)
+  return Math.round((b - a) / 86_400_000)
+}
+
+export function withinTrailingDays(
+  recordedAt: string,
+  asOf: Date,
+  days: number,
+) {
+  const start = parseDay(recordedAt)
+  if (!start) return false
+  const gap = daysBetween(start, dayFromAsOf(asOf))
+  return gap >= 0 && gap <= days
+}
+
 export function formatMoney(amount: number) {
   return `$${Math.round(amount).toLocaleString('en-US')}`
 }

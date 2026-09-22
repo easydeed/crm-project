@@ -4,6 +4,7 @@ import {
   ownedForPhrase,
   roundToHundred,
   streetLabel,
+  withinTrailingDays,
   withinTrailingMonths,
 } from '@/digest/format'
 
@@ -25,4 +26,10 @@ test('trailing twelve months uses asOf, not a clock', () => {
 
 test('benefit rounds to the nearest hundred', () => {
   expect(roundToHundred(7072.5)).toBe(7100)
+})
+
+test('trailing forty-five days uses asOf, not a clock', () => {
+  expect(withinTrailingDays('2026-08-01', AS_OF, 45)).toBe(true)
+  expect(withinTrailingDays('2026-07-31', AS_OF, 45)).toBe(false)
+  expect(withinTrailingDays('2026-08-26', AS_OF, 45)).toBe(true)
 })

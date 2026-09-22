@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest'
 import { scenarios } from '@/digest/fixtures/scenarios'
 import { renderDigest } from '@/digest/render'
+import { NOTHING_NEW_REASON } from '@/digest/skip-copy'
 
 function factsFromHtml(html: string) {
   return html
@@ -22,7 +23,7 @@ test('every scenario produces the expected send decision and block list', () => 
       expect(result.blocks, scenario.name).toEqual(scenario.blocks)
       expect(result.subject).toBeTruthy()
     } else {
-      expect(result.reason).toMatch(/not enough/i)
+      expect(result.reason).toBe(NOTHING_NEW_REASON)
     }
   }
 })

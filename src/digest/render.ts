@@ -8,10 +8,9 @@ import { renderReply } from '@/digest/blocks/reply'
 import { renderStreetSales } from '@/digest/blocks/street-sales'
 import { renderTaxes } from '@/digest/blocks/taxes'
 import { wrapEmail } from '@/digest/email'
+import { digestHasNews } from '@/digest/news'
+import { NOTHING_NEW_REASON } from '@/digest/skip-copy'
 import type { BlockOutput, DigestInput, DigestResult } from '@/digest/types'
-
-const THIN_REASON =
-  'Not enough of the record is in yet to send a useful note this month.'
 
 export function renderDigest(input: DigestInput): DigestResult {
   const content = [
@@ -22,11 +21,11 @@ export function renderDigest(input: DigestInput): DigestResult {
     renderLoan(input.events),
   ].filter((block): block is BlockOutput => Boolean(block))
 
-  if (content.length < 2) {
-    return { send: false, reason: THIN_REASON }
+  const blocks = content.map((block) => block.name)
+  if (content.length === 0 || !digestHasNews(blocks)) {
+    return { send: false, reason: NOTHING_NEW_REASON }
   }
 
-  const blocks = content.map((block) => block.name)
   const headline = pickHeadline(blocks)
   const accent = input.agent.accentColor || '#1f4d3a'
   const header = renderHeader(input.agent, accent)

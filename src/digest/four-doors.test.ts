@@ -11,11 +11,11 @@ test('four doors down includes MLS attribution when a listing is present', () =>
   expect(result.blocks).toContain('four_doors')
   expect(result.html).toContain('data-mls-attribution')
   expect(result.text).toContain('Listing courtesy of Hillside Brokerage / Pat Rivera.')
-  expect(result.text).toContain('410 Ashford Ave')
+  expect(result.text).toContain('1187 Oakdale Ave')
 })
 
 test('four doors is omitted when the listing is missing', () => {
-  const none = scenarios.find((row) => row.name === 'no street sales')
+  const none = scenarios.find((row) => row.name === 'one street sale only')
   if (!none) throw new Error('missing scenario')
   const result = renderDigest(none.input)
   expect(result.send).toBe(true)

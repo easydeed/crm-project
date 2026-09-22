@@ -1,5 +1,6 @@
-import { redirect } from 'next/navigation'
+import { HomeStory } from '@/app/home-story'
+import { canonicalFacts } from '@/digest/canonical-facts'
 
 export default function Home() {
-  redirect('/app')
+  return <HomeStory facts={canonicalFacts()} />
 }

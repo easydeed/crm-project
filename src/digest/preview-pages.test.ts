@@ -29,7 +29,7 @@ test('index lists send decision, blocks, and skip reason', () => {
   expect(html).toContain('thin.html')
   expect(html).toContain('Send')
   expect(html).toContain('Skip')
-  expect(html).toMatch(/Not enough of the record/i)
+  expect(html).toContain('Nothing new on their street this month.')
 })
 
 test('skipped preview files show the reason and no empty frame', () => {
