@@ -2,7 +2,7 @@
 
 **This file is authoritative.** Do not resurrect rejected concepts unless explicitly instructed. When this file and any other document conflict, this file wins. Update it only through an approved task.
 
-Last updated: 2026-08-31
+Last updated: 2026-09-23
 
 ---
 
@@ -64,6 +64,16 @@ A subscription service that emails a real estate agent's past clients one messag
 2. **MLS agent-ID lookup.** Does `GET /properties?agent={id}&status=Closed` return usable history? Prior integration was a debug scaffold that never parsed a response. If this fails, signup falls back to CSV and the onboarding advantage is gone.
 3. **Comprehension.** Five agents, ten seconds on the marketing page, then "what does that do?" If the answer isn't "it tells me who to call," positioning is wrong.
 4. **Employment/IP.** California Labor Code 2870 carve-out for inventions related to the employer's business. Resolve before incorporating or taking revenue.
+
+## Production env
+
+Set these before any real send. A missing value falls back to localhost, and a homeowner then cannot leave. That shows up later as a complaint instead of an unsubscribe.
+
+- `UNSUBSCRIBE_SECRET` — at least 32 characters. Signs the unsubscribe link. Tokens do not expire, so an old email must still work.
+- `APP_ORIGIN` — the public https origin, with no path on the end. Used in `List-Unsubscribe` and in the link inside the email.
+- `MAIL_FROM_MONTHLY` — the verified From address on the monthly stream. Also the mailto in `List-Unsubscribe`.
+
+`SEND_ENABLED` stays false until the send gate is deliberately opened. Never set it true in committed code or CI.
 
 ## Current phase
 

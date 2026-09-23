@@ -8,6 +8,7 @@ import {
   sends,
 } from '@/db/schema'
 import { deliverRecipient, isPermanentDeliveryError } from '@/jobs/deliver'
+import { maybePauseForComplaints } from '@/jobs/complaint-pause'
 import { mapLimit } from '@/jobs/pool'
 import type { JobHandler } from '@/jobs/types'
 import { getMailer } from '@/mail/current'
@@ -107,6 +108,7 @@ export const sendMail: JobHandler = async (payload, ctx) => {
 
   if (retryable === 0) {
     await db.update(sends).set({ state: 'done' }).where(eq(sends.id, sendId))
+    await maybePauseForComplaints(send.accountId, ctx.now)
     return
   }
   throw new Error(`Send incomplete: ${retryable} recipient(s) still unsent`)

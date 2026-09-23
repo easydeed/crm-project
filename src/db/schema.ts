@@ -262,9 +262,7 @@ export const accountAddons = pgTable(
 
 export const adminActions = pgTable('admin_actions', {
   id: uuid('id').defaultRandom().primaryKey(),
-  adminAccountId: uuid('admin_account_id')
-    .notNull()
-    .references(() => accounts.id),
+  adminAccountId: uuid('admin_account_id').references(() => accounts.id),
   targetAccountId: uuid('target_account_id')
     .notNull()
     .references(() => accounts.id),

@@ -10,9 +10,11 @@ import { SaveButton } from '@/app/app/settings/save-button'
 export function SendingForm({
   account,
   readOnly,
+  systemPaused = false,
 }: {
   account: AccountRecord
   readOnly?: boolean
+  systemPaused?: boolean
 }) {
   const [state, action, pending] = useActionState(saveSendingAction, {} as SendingState)
 
@@ -73,11 +75,16 @@ export function SendingForm({
             className="h-4 w-4 accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             type="checkbox"
             name="paused"
-            defaultChecked={account.paused}
+            defaultChecked={account.paused || systemPaused}
+            disabled={systemPaused || readOnly}
           />
           Pause my monthly note
         </label>
-        <Muted>Nothing sends while this is on. Turn it back on any time.</Muted>
+        <Muted>
+          {systemPaused
+            ? 'We paused your monthly note. Contact us to turn it back on.'
+            : 'Nothing sends while this is on. Turn it back on any time.'}
+        </Muted>
       </div>
       {readOnly ? <Muted>Viewing as another agent is read only.</Muted> : null}
       <FieldError message={state.error} />

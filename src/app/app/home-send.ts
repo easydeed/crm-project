@@ -3,10 +3,12 @@ import { getRuntimeDb } from '@/db/runtime'
 import { accounts, contactSubscriptions, contacts, sends } from '@/db/schema'
 import { formatSendDay, nextEmailSentence, nextSendInstant } from '@/jobs/schedule-time'
 import { isSendDay, isSendTime, isTimezone } from '@/config/settings'
+import { systemPauseState } from '@/db/system-pause'
 
 export type HomeSend =
   | { kind: 'missing-account' }
   | { kind: 'paused' }
+  | { kind: 'system-paused' }
   | { kind: 'settings' }
   | { kind: 'import' }
   | { kind: 'review' }
@@ -34,7 +36,10 @@ export async function loadHomeSend(accountId: string, now = new Date()): Promise
     .where(eq(accounts.id, accountId))
     .limit(1)
   if (!account) return { kind: 'missing-account' }
-  if (account.paused) return { kind: 'paused' }
+  if (account.paused) {
+    if (await systemPauseState(accountId)) return { kind: 'system-paused' }
+    return { kind: 'paused' }
+  }
   if (
     account.sendDay == null ||
     !account.sendTime ||
