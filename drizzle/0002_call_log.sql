@@ -1,6 +1,3 @@
--- crm-dev had an unmigrated call_log pushed by hand (outcome as text, no cascade).
--- It holds only test data. A no-op on a database built from zero.
-DROP TABLE IF EXISTS "call_log";--> statement-breakpoint
 CREATE TYPE "public"."call_outcome" AS ENUM('called', 'dismissed');--> statement-breakpoint
 CREATE TABLE "call_log" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
