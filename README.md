@@ -33,8 +33,10 @@ Approve on the **PR diff and the CI status**, never on the report alone. A compl
 
 ```
 pnpm dev          # local
-pnpm verify       # typecheck + lint + test + file length + invariants
-pnpm db:push      # apply schema
+pnpm verify:fast  # inner loop: no build, unit tests only
+pnpm verify       # build + typecheck + lint + all tests + file length + invariants
+pnpm db:generate  # write a SQL migration from a schema change
+pnpm db:migrate   # apply pending migrations
 pnpm db:seed      # load La Verne fixtures
 ```
 

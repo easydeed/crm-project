@@ -5,12 +5,22 @@ on:
   push:
     branches: [main]
 
+# Only one run migrates crm-dev at a time.
+concurrency:
+  group: verify-${{ github.event_name == 'push' && 'crm-dev' || github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    # Any failing command, including one inside a pipe, fails the step.
+    shell: bash -euo pipefail {0}
+
 jobs:
   verify:
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      DATABASE_POOLER_URL: ${{ secrets.DATABASE_POOLER_URL }}
+      # A scratch database built from zero on the runner. Tests never touch crm-dev.
+      DATABASE_URL: postgres://postgres@localhost:5432/postgres
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
     steps:
       - uses: actions/checkout@v4
@@ -26,8 +36,37 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Start scratch Postgres
+        run: bash scripts/scratch-postgres.sh
+
+      - name: Migrate from zero
+        run: pnpm db:migrate
+
+      - name: Seed
+        run: pnpm db:seed
+
       - name: Verify
         run: pnpm verify
 
-      - name: Push schema
-        run: pnpm db:push
+      - name: Report drift against crm-dev
+        if: github.event_name == 'pull_request'
+        env:
+          DRIFT_ZERO_URL: postgres://postgres@localhost:5432/postgres
+          DRIFT_DEV_URL: ${{ secrets.DATABASE_URL }}
+        # Report only: crm-dev receives this branch's migrations after merge.
+        run: pnpm db:drift --report
+
+      - name: Migrate crm-dev
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          # Records 0000_initial on a database built before migrations. No-op once history exists.
+          MIGRATE_BASELINE: '1'
+        run: pnpm db:migrate
+
+      - name: Fail on crm-dev drift
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          DRIFT_ZERO_URL: postgres://postgres@localhost:5432/postgres
+          DRIFT_DEV_URL: ${{ secrets.DATABASE_URL }}
+        run: pnpm db:drift
