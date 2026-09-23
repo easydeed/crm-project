@@ -22,10 +22,12 @@ function phoneDisplay(phone: string | null) {
 export function PersonDetail({
   person,
   groups,
+  calledOn,
   readOnly,
 }: {
   person: ContactListRow
   groups: GroupListRow[]
+  calledOn: string[]
   readOnly: boolean
 }) {
   const [state, action] = useActionState(deleteContactAction, {} as ContactFormState)
@@ -76,6 +78,18 @@ export function PersonDetail({
         <div>
           <dt className="font-medium">Match</dt>
           <dd>{contactStatusLabel(person.status)}</dd>
+        </div>
+        <div>
+          <dt className="font-medium">Calls</dt>
+          <dd>
+            {calledOn.length
+              ? calledOn.map((day) => (
+                  <span className="block" key={day}>
+                    You called them on {day}.
+                  </span>
+                ))
+              : 'None marked yet. Mark a call from your home page.'}
+          </dd>
         </div>
         <div>
           <dt className="font-medium">Groups</dt>

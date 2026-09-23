@@ -27,10 +27,11 @@ export default async function AppHomePage() {
 
   // Order is fixed: send status, then the call list, then homeowners. Nothing else.
   const list = await loadCallList(accountId)
+  const readOnly = Boolean(session.viewingAsAccountId)
   return (
     <main>
-      <HomeSendCard readOnly={Boolean(session.viewingAsAccountId)} view={view} />
-      <CallListSection list={list} />
+      <HomeSendCard readOnly={readOnly} view={view} />
+      <CallListSection list={list} readOnly={readOnly} />
       <HomeownersSection />
     </main>
   )

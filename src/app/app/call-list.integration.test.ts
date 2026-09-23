@@ -114,6 +114,8 @@ describe.skipIf(!databaseUrl)('dashboard call list against the session pooler', 
           sentence: 'Their loan was paid off.',
           address: dana.address,
           closeDate: 'May 10, 2018',
+          called: false,
+          panel: { phone: null, email: expect.stringContaining('@example.com'), record: [], loan: [] },
         },
       ],
     })

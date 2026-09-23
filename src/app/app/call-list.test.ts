@@ -86,23 +86,68 @@ test('/app renders send status, call list, homeowners — in that order, nothing
 })
 
 test('no stat cards, counters, or progress bars on /app', () => {
-  for (const file of ['./page.tsx', './call-list.tsx', './homeowners-section.tsx', './home-card.tsx']) {
+  for (const file of ['./page.tsx', './call-list.tsx', './call-entry.tsx', './call-panel.tsx', './homeowners-section.tsx', './home-card.tsx']) {
     expect(src(file)).not.toMatch(/<progress|role="progressbar"|%|\/250|stat-card|entries\.length\}/i)
   }
 })
 
-test('the call list shows every state and a disabled Call until OR-017b', () => {
+test('the call list shows every state', () => {
   const ui = src('./call-list.tsx')
   expect(ui).toContain('Worth a call this month')
   expect(ui).toContain('Quiet month. That happens.')
   expect(ui).toContain('href="/app/people/import"')
   expect(ui).toContain('href="/app/people/review"')
-  expect(ui).toMatch(/disabled type="button">\s*Call\s*<\/button>/)
-  expect(ui).not.toMatch(/onClick|action=/)
+})
+
+test('Call is live and opens a panel inline, never a modal', () => {
+  const entry = src('./call-entry.tsx')
+  const panel = src('./call-panel.tsx')
+  expect(entry).not.toMatch(/disabled type="button">\s*Call/)
+  expect(entry).toContain('aria-expanded={expanded}')
+  expect(entry).toContain("{expanded ? 'Close' : 'Call'}")
+  for (const file of [entry, panel]) {
+    expect(file).not.toMatch(/<dialog|role="dialog"|aria-modal|fixed inset/)
+  }
+  expect(panel).toContain('href={`tel:+1${digits}`}')
+  expect(panel).toContain('href={`mailto:${panel.email}`}')
+})
+
+test('both actions persist through server actions and undo for five seconds', () => {
+  const entry = src('./call-entry.tsx')
+  expect(entry).toContain('export const UNDO_SECONDS = 5')
+  expect(entry).toContain("act('called')")
+  expect(entry).toContain("act('dismissed')")
+  expect(entry).toContain('Mark as called')
+  expect(entry).toContain('Not now')
+  expect(entry).toContain('undoCallAction(entry.contactId)')
+})
+
+test('the panel reuses the note’s own record and loan blocks', () => {
+  const data = src('./call-list-data.ts')
+  expect(data).toContain("import { renderRecord } from '@/digest/blocks/record'")
+  expect(data).toContain("import { renderLoan } from '@/digest/blocks/loan'")
+})
+
+test('Not now hides a name without making the month quiet; called stays visible', () => {
+  const list = toCallList({
+    people: 9,
+    matched: 5,
+    rows: three.map((r) => ({ ...r, outcome: r.contactId === 'a' ? 'dismissed' : r.contactId === 'b' ? 'called' : null })),
+  })
+  if (list.kind !== 'list') throw new Error('expected a list')
+  expect(list.entries.map((e) => [e.name, e.called])).toEqual([['High', true], ['Mid', false]])
+  expect(list.quiet).toBe(false)
 })
 
 test('a paused account still gets its call list below the notice', () => {
   const page = src('./page.tsx')
   expect(page).not.toMatch(/kind === 'paused'|system-paused/)
   expect(page.indexOf('loadCallList(accountId)')).toBeGreaterThan(page.indexOf("'missing-account'"))
+})
+
+test('the person page shows the dates they were marked as called', () => {
+  const detail = src('./people/[id]/person-detail.tsx')
+  const page = src('./people/[id]/page.tsx')
+  expect(detail).toContain('You called them on {day}.')
+  expect(page).toContain('listCalledDates(accountId, person.id)')
 })

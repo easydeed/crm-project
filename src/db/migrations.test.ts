@@ -28,3 +28,10 @@ test('verify:fast runs unit tests only; verify runs everything', () => {
   expect(scripts.verify).toContain('pnpm build')
   expect(scripts.verify).toContain('pnpm test')
 })
+
+test('drizzle-kit generate does not need DATABASE_URL', () => {
+  const config = read('drizzle.config.ts')
+  expect(config).not.toContain('loadDatabaseUrl')
+  expect(config).toContain('if (!url) return undefined')
+  expect(config).toContain('assertSafeDatabaseUrl(url)')
+})

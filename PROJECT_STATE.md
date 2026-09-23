@@ -75,6 +75,8 @@ Set these before any real send. A missing value falls back to localhost, and a h
 
 `SEND_ENABLED` stays false until the send gate is deliberately opened. Never set it true in committed code or CI.
 
+RLS is not covered by the schema drift check. The app connects as `postgres`, which bypasses row-level security, so a policy enabled in Supabase goes unnoticed until something connects as another role (a Supabase client, an edge function, a BI tool). Check policies before adding any such connection.
+
 ## Current phase
 
 Pre-implementation. v0 prototypes exist for marketing, dashboard, People, Add-ons, Settings, and a `/lab` exploration set. No production code written.
