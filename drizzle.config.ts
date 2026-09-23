@@ -1,5 +1,17 @@
 import { defineConfig } from 'drizzle-kit'
-import { loadDatabaseUrl } from './src/config/database-url'
+import { assertSafeDatabaseUrl, loadEnvFiles } from './src/config/database-url'
+
+// generate never connects, so it runs without DATABASE_URL. Anything that does connect
+// still gets the crm-dev guard.
+function credentials() {
+  loadEnvFiles()
+  const url = process.env.DATABASE_URL
+  if (!url) return undefined
+  assertSafeDatabaseUrl(url)
+  return { url }
+}
+
+const dbCredentials = credentials()
 
 export default defineConfig({
   schema: [
@@ -10,7 +22,5 @@ export default defineConfig({
   ],
   out: './drizzle',
   dialect: 'postgresql',
-  dbCredentials: {
-    url: loadDatabaseUrl(),
-  },
+  ...(dbCredentials ? { dbCredentials } : {}),
 })

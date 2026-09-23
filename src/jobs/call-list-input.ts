@@ -1,7 +1,7 @@
 import { and, eq, inArray } from 'drizzle-orm'
 import type { createDb } from '@/db/client'
 import { contactSubscriptions, contacts, parcelEvents, parcels } from '@/db/schema'
-import { callListEntries } from '@/db/schema-call-lists'
+import { callListEntries, callLog } from '@/db/schema-call-lists'
 import { GRANT_DEED } from '@/digest/types'
 import type { PriorCall, SignalContact, SignalEvent, StreetSale } from '@/signals/types'
 
@@ -87,6 +87,11 @@ export async function loadCallListInput(db: Db, accountId: string, asOf: Date) {
     .select({ contactId: callListEntries.contactId, period: callListEntries.period })
     .from(callListEntries)
     .where(eq(callListEntries.accountId, accountId))
+  // "Not now" counts as shown, so a dismissed name stays off next month too.
+  const dismissed = await db
+    .select({ contactId: callLog.contactId, period: callLog.period })
+    .from(callLog)
+    .where(and(eq(callLog.accountId, accountId), eq(callLog.outcome, 'dismissed')))
 
   const eventsByParcel = new Map<string, SignalEvent[]>()
   for (const event of events) {
@@ -139,6 +144,6 @@ export async function loadCallListInput(db: Db, accountId: string, asOf: Date) {
     ]
   })
 
-  const priorCalls: PriorCall[] = priors
+  const priorCalls: PriorCall[] = [...priors, ...dismissed]
   return { asOf, contacts: contactsOut, streetSales, priorCalls }
 }

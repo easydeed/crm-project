@@ -15,6 +15,13 @@
       "when": 1790195292328,
       "tag": "0001_drop_orphan_call_log",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790196422172,
+      "tag": "0002_call_log",
+      "breakpoints": true
     }
   ]
 }
