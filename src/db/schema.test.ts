@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { expect, test } from 'vitest'
 import * as schema from '@/db/schema'
 
@@ -31,4 +32,12 @@ test('schema exports every OR-000 table', () => {
   expect(schema.contactNoParcelKindEnum).toBeDefined()
   expect(schema.contacts.matchSource).toBeDefined()
   expect(schema.contacts.noParcelKind).toBeDefined()
+  expect(schema.jobs.payloadKey).toBeDefined()
+})
+
+test('jobs unique index covers kind, payload_key, and run_after', () => {
+  const source = readFileSync(new URL('./schema-jobs.ts', import.meta.url), 'utf8')
+  expect(source).toContain("uniqueIndex('jobs_kind_payload_key_run_after_uidx')")
+  expect(source).toContain('t.payloadKey')
+  expect(source).toContain('t.runAfter')
 })
