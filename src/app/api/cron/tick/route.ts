@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { runDueJobs } from '@/jobs/run'
+import { scheduleMonthlyWork } from '@/jobs/schedule'
 
 const DEFAULT_LIMIT = 10
 
@@ -21,6 +22,7 @@ export async function POST(request: Request) {
   const url = new URL(request.url)
   const raw = url.searchParams.get('limit')
   const limit = Math.min(Math.max(Number(raw) || DEFAULT_LIMIT, 1), 50)
+  await scheduleMonthlyWork()
   const ran = await runDueJobs(limit)
   return NextResponse.json({ ran })
 }

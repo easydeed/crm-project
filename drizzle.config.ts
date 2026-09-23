@@ -2,7 +2,7 @@ import { defineConfig } from 'drizzle-kit'
 import { loadDatabaseUrl } from './src/config/database-url'
 
 export default defineConfig({
-  schema: ['./src/db/schema.ts', './src/db/schema-jobs.ts'],
+  schema: ['./src/db/schema.ts', './src/db/schema-jobs.ts', './src/db/schema-mail.ts'],
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {

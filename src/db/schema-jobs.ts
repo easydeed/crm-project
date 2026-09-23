@@ -22,6 +22,10 @@ export const jobs = pgTable(
     error: text('error'),
   },
   (t) => [
+    // Keys on run_after, which is the packet's scheduled_for at enqueue time.
+    // Retries move run_after on this same row. A fresh enqueue for the same
+    // kind and payload still collides. Inserting a new row for a retry would
+    // miss this index and could send the same note twice.
     uniqueIndex('jobs_kind_payload_key_run_after_uidx').on(
       t.kind,
       t.payloadKey,

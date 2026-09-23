@@ -20,6 +20,9 @@ importers:
       postgres:
         specifier: ^3.4.7
         version: 3.4.9
+      postmark:
+        specifier: ^5.1.0
+        version: 5.1.0
       react:
         specifier: 19.1.0
         version: 19.1.0
@@ -2352,6 +2355,10 @@ packages:
   postgres@3.4.9:
     resolution: {integrity: sha512-GD3qdB0x1z9xgFI6cdRD6xu2Sp2WCOEoe3mtnyB5Ee0XrrL5Pe+e4CCnJrRMnL1zYtRDZmQQVbvOttLnKDLnaw==}
     engines: {node: '>=12'}
+
+  postmark@5.1.0:
+    resolution: {integrity: sha512-8lj2Fu94pL3fzx9Sy599opqpK4Z/0/1xCHZS8tbGBnqSS5rAcXtcHQ+TI0Jc4VwlBWma1Ug0Qm98FEe+v94BIQ==}
+    engines: {node: '>=18.0.0'}
 
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
@@ -4847,6 +4854,8 @@ snapshots:
       source-map-js: 1.2.1
 
   postgres@3.4.9: {}
+
+  postmark@5.1.0: {}
 
   prelude-ls@1.2.1: {}
 

@@ -20,4 +20,4 @@ export type JobHandler = (
 ) => Promise<void>
 
 /** Every code path that would send email must be listed and call assertSendAllowed. */
-export const SEND_ENTRY_POINTS = ['handlers.send'] as const
+export const SEND_ENTRY_POINTS = ['deliverRecipient'] as const

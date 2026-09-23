@@ -1,0 +1,91 @@
+import { and, eq, isNull, ne, sql } from 'drizzle-orm'
+import { getRuntimeDb } from '@/db/runtime'
+import { accounts, contactSubscriptions, contacts, sends } from '@/db/schema'
+import { formatSendDay, nextEmailSentence, nextSendInstant } from '@/jobs/schedule-time'
+import { isSendDay, isSendTime, isTimezone } from '@/config/settings'
+
+export type HomeSend =
+  | { kind: 'missing-account' }
+  | { kind: 'paused' }
+  | { kind: 'settings' }
+  | { kind: 'import' }
+  | { kind: 'review' }
+  | { kind: 'none-subscribed' }
+  | { kind: 'skipped'; when: string }
+  | { kind: 'scheduled'; sentence: string; previewContactId: string | null }
+
+const eligible = and(
+  eq(contacts.status, 'matched'),
+  sql`${contacts.parcelId} is not null`,
+  eq(contactSubscriptions.scope, 'monthly'),
+  isNull(contactSubscriptions.unsubscribedAt),
+)
+
+export async function loadHomeSend(accountId: string, now = new Date()): Promise<HomeSend> {
+  const { db } = getRuntimeDb()
+  const [account] = await db
+    .select({
+      paused: accounts.paused,
+      sendDay: accounts.sendDay,
+      sendTime: accounts.sendTime,
+      timezone: accounts.timezone,
+    })
+    .from(accounts)
+    .where(eq(accounts.id, accountId))
+    .limit(1)
+  if (!account) return { kind: 'missing-account' }
+  if (account.paused) return { kind: 'paused' }
+  if (
+    account.sendDay == null ||
+    !account.sendTime ||
+    !account.timezone ||
+    !isSendDay(account.sendDay) ||
+    !isSendTime(account.sendTime) ||
+    !isTimezone(account.timezone)
+  ) {
+    return { kind: 'settings' }
+  }
+
+  const [people] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(contacts)
+    .where(eq(contacts.accountId, accountId))
+  if (!people?.count) return { kind: 'import' }
+
+  const [ready] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(contacts)
+    .innerJoin(contactSubscriptions, eq(contactSubscriptions.contactId, contacts.id))
+    .where(and(eq(contacts.accountId, accountId), eligible))
+  const count = ready?.count ?? 0
+  if (count === 0) {
+    const [open] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(contacts)
+      .where(and(eq(contacts.accountId, accountId), ne(contacts.status, 'matched')))
+    return (open?.count ?? 0) > 0 ? { kind: 'review' } : { kind: 'none-subscribed' }
+  }
+
+  const scheduledFor = nextSendInstant(now, account.sendDay, account.sendTime, account.timezone)
+  const when = formatSendDay(scheduledFor, account.timezone)
+  const [send] = await db
+    .select({ state: sends.state })
+    .from(sends)
+    .where(and(eq(sends.accountId, accountId), eq(sends.scheduledFor, scheduledFor)))
+    .limit(1)
+  if (send?.state === 'skipped') return { kind: 'skipped', when }
+
+  const [first] = await db
+    .select({ id: contacts.id })
+    .from(contacts)
+    .innerJoin(contactSubscriptions, eq(contactSubscriptions.contactId, contacts.id))
+    .where(and(eq(contacts.accountId, accountId), eligible))
+    .orderBy(contacts.name)
+    .limit(1)
+
+  return {
+    kind: 'scheduled',
+    sentence: nextEmailSentence(when, count),
+    previewContactId: first?.id ?? null,
+  }
+}

@@ -88,20 +88,13 @@ test('every send entry point calls assertSendAllowed and throws on default env',
   delete process.env.SEND_ENABLED
   delete process.env.SEND_ALLOWLIST
 
-  expect(SEND_ENTRY_POINTS).toEqual(['handlers.send'])
-  const registrySrc = readFileSync(
-    fileURLToPath(new URL('./registry.ts', import.meta.url)),
+  expect(SEND_ENTRY_POINTS).toEqual(['deliverRecipient'])
+  const deliverSrc = readFileSync(
+    fileURLToPath(new URL('./deliver.ts', import.meta.url)),
     'utf8',
   )
-  expect(registrySrc).toContain('assertSendAllowed')
-  expect(registrySrc).toMatch(/send:\s*sendStub/)
-
-  await expect(
-    handlers.send(
-      { recipientEmail: 'homeowner@example.com' },
-      { jobId: 'test', attempt: 1, now: new Date() },
-    ),
-  ).rejects.toThrow(/SEND_ENABLED/)
+  expect(deliverSrc.indexOf('assertSendAllowed')).toBeGreaterThan(-1)
+  expect(deliverSrc.indexOf('assertSendAllowed')).toBeLessThan(deliverSrc.indexOf('mailer.send('))
 })
 
 test('non-send stub twice leaves identical state', async () => {
@@ -112,14 +105,27 @@ test('non-send stub twice leaves identical state', async () => {
   expect(payload).toEqual({ zip: '91750' })
 })
 
-test('send stub throws both times under default env and writes nothing', async () => {
+test('deliverRecipient throws under default env before the mailer is called', async () => {
   delete process.env.SEND_ENABLED
-  const payload = { recipientEmail: 'a@example.com', marker: 1 }
+  const { FakeMailer } = await import('@/mail/fake-mailer')
+  const { deliverRecipient } = await import('@/jobs/deliver')
+  const mailer = new FakeMailer()
+  const msg = {
+    to: 'a@example.com',
+    from: 'Notes <notes@example.com>',
+    replyTo: 'agent@example.com',
+    subject: 'Hello',
+    html: '<p>Hi</p>',
+    text: 'Hi',
+    stream: 'monthly' as const,
+    idempotencyKey: 'send:contact',
+  }
   await expect(
-    handlers.send(payload, { jobId: 's1', attempt: 1, now: new Date() }),
+    deliverRecipient(mailer, {
+      recipientEmail: msg.to,
+      unsubscribed: false,
+      accountPaused: false,
+    }, msg),
   ).rejects.toThrow(/SEND_ENABLED/)
-  await expect(
-    handlers.send(payload, { jobId: 's1', attempt: 2, now: new Date() }),
-  ).rejects.toThrow(/SEND_ENABLED/)
-  expect(payload).toEqual({ recipientEmail: 'a@example.com', marker: 1 })
+  expect(mailer.calls).toHaveLength(0)
 })

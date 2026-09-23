@@ -33,6 +33,10 @@ test('schema exports every OR-000 table', () => {
   expect(schema.contacts.matchSource).toBeDefined()
   expect(schema.contacts.noParcelKind).toBeDefined()
   expect(schema.jobs.payloadKey).toBeDefined()
+  expect(schema.mailEvents).toBeDefined()
+  expect(schema.sends.composedCount).toBeDefined()
+  expect(schema.sendRecipients.plainText).toBeDefined()
+  expect(schema.sendRecipients.subject).toBeDefined()
 })
 
 test('jobs unique index covers kind, payload_key, and run_after', () => {
@@ -40,4 +44,5 @@ test('jobs unique index covers kind, payload_key, and run_after', () => {
   expect(source).toContain("uniqueIndex('jobs_kind_payload_key_run_after_uidx')")
   expect(source).toContain('t.payloadKey')
   expect(source).toContain('t.runAfter')
+  expect(source).toContain('could send the same note twice')
 })

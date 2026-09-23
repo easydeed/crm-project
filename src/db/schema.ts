@@ -185,16 +185,22 @@ export const mlsListings = pgTable('mls_listings', {
   listingAgent: text('listing_agent'),
   fetchedAt: timestamp('fetched_at', { withTimezone: true }),
 })
-
-export const sends = pgTable('sends', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  accountId: uuid('account_id')
-    .notNull()
-    .references(() => accounts.id),
-  scheduledFor: timestamp('scheduled_for', { withTimezone: true }).notNull(),
-  state: text('state').notNull(),
-  createdAt: createdAt(),
-})
+export const sends = pgTable(
+  'sends',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    accountId: uuid('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    scheduledFor: timestamp('scheduled_for', { withTimezone: true }).notNull(),
+    state: text('state').notNull(),
+    composedCount: integer('composed_count').notNull().default(0),
+    skippedCount: integer('skipped_count').notNull().default(0),
+    skips: jsonb('skips').$type<{ contactId: string; reason: string }[]>().notNull().default([]),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex('sends_account_scheduled_for_uidx').on(t.accountId, t.scheduledFor)],
+)
 
 export const sendRecipients = pgTable(
   'send_recipients',
@@ -207,6 +213,10 @@ export const sendRecipients = pgTable(
       .notNull()
       .references(() => contacts.id),
     html: text('html'),
+    plainText: text('plain_text'),
+    subject: text('subject'),
+    error: text('error'),
+    permanentFailure: boolean('permanent_failure').notNull().default(false),
     sentAt: timestamp('sent_at', { withTimezone: true }),
     providerId: text('provider_id'),
   },
@@ -286,3 +296,4 @@ export const contactMatchCandidates = pgTable(
 )
 
 export { jobs } from './schema-jobs'
+export { mailEvents } from './schema-mail'
