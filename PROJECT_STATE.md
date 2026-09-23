@@ -41,6 +41,10 @@ A subscription service that emails a real estate agent's past clients one messag
 - Top bar navigation. No sidebar.
 - Groups live inside People. One people table.
 
+## Enforcement, not instruction
+
+Rules that only describe correct behavior have failed twice: a CI step reported green while swallowing a non-zero exit, and an agent violated three standing rules it had loaded. What has held is code that throws — `assertSendAllowed`, the source test on `mailer.send`, the test that fails on `continue-on-error`, the single-use baseline. Prefer a check that fails the build over a line in a document.
+
 ## Rejected ideas — do not rebuild
 
 | Rejected | Reason |
@@ -57,6 +61,7 @@ A subscription service that emails a real estate agent's past clients one messag
 | $2 consumer SMS | Underwater before the first message. A2P registration, campaign fees, carrier surcharges, $250 non-use fee. |
 | "Sold in June — not by you" phrasing | Accurate but reads as a monthly accusation. State the fact, let the agent conclude. |
 | Pipeline stages, dialer, task lists, AI chat assistant, dark mode toggle | Out of scope permanently. |
+| `DROP TABLE IF EXISTS` in a migration to clean up a rogue table | Migrations are permanent; local messes get local fixes. |
 
 ## Open questions — blocking, not yet answered
 
