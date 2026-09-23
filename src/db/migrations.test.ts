@@ -10,6 +10,7 @@ test('schema reaches a database only through committed migrations', () => {
   expect(Object.values(scripts).join('\n')).not.toMatch(/drizzle-kit push/)
   expect(workflow).not.toMatch(/db:push|drizzle-kit push/)
   expect(scripts['db:migrate']).toBe('tsx scripts/migrate.ts')
+  expect(workflow).not.toMatch(/MIGRATE_BASELINE:\s*['"]?1/)
   const journal = JSON.parse(read('drizzle/meta/_journal.json')) as { entries: { tag: string }[] }
   expect(journal.entries[0]?.tag).toBe('0000_initial')
 })

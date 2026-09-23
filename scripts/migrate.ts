@@ -20,20 +20,34 @@ async function main() {
 }
 
 // A database built before migrations existed (crm-dev) has tables but no history.
-// Recording 0000 as applied is only allowed with MIGRATE_BASELINE=1, and only once.
+// MIGRATE_BASELINE=1 records 0000_initial as applied without running it. It is single-use:
+// with the flag set, anything other than "tables and no history" refuses and exits 1.
 async function baselineIfNeeded(client: ReturnType<typeof createDb>['client']) {
+  const requested = process.env.MIGRATE_BASELINE === '1'
   const [state] = await client<{ history: boolean; built: boolean }[]>`
     select
       to_regclass('drizzle.__drizzle_migrations') is not null as history,
       to_regclass('public.accounts') is not null as built`
-  if (!state?.built) return
-  if (state.history) {
+  let recorded = 0
+  if (state?.history) {
     const [row] = await client<{ n: number }[]>`select count(*)::int as n from drizzle.__drizzle_migrations`
-    if ((row?.n ?? 0) > 0) return
+    recorded = row?.n ?? 0
   }
-  if (process.env.MIGRATE_BASELINE !== '1') {
+  if (recorded > 0) {
+    if (requested) {
+      throw new Error(
+        `Refusing to baseline: this database already records ${recorded} migration(s). A second baseline would mark pending migrations as applied.`,
+      )
+    }
+    return
+  }
+  if (!state?.built) {
+    if (requested) throw new Error('Refusing to baseline: this database is empty. Migrate it from zero instead.')
+    return
+  }
+  if (!requested) {
     throw new Error(
-      'This database has tables but no migration history. Set MIGRATE_BASELINE=1 to record 0000_initial as applied, then diff it against a from-zero build.',
+      'This database has tables but no migration history. Baseline it once with MIGRATE_BASELINE=1, then diff it against a from-zero build.',
     )
   }
   const [initial] = readMigrationFiles({ migrationsFolder })

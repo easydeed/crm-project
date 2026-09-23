@@ -60,10 +60,12 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          # Records 0000_initial on a database built before migrations. No-op once history exists.
-          MIGRATE_BASELINE: '1'
+          # One-time: only the merge commit whose message carries [baseline crm-dev] may baseline.
+          # The script refuses a baseline once any migration is recorded.
+          MIGRATE_BASELINE: ${{ contains(github.event.head_commit.message, '[baseline crm-dev]') && '1' || '' }}
         run: pnpm db:migrate
 
+      # The alarm for a hand-pushed schema: main goes red.
       - name: Fail on crm-dev drift
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
