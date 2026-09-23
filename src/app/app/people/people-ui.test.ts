@@ -10,6 +10,7 @@ test('list columns are name, address, and status only', () => {
   expect(list).toContain('row.name')
   expect(list).toContain('row.addressRaw')
   expect(list).toContain('contactStatusLabel(row.status)')
+  expect(list).toContain('Unsubscribed')
   expect(list).not.toContain('row.email')
   expect(list).not.toContain('row.phone')
   expect(list).not.toMatch(/engagement|last-opened|lastOpened|opened recently|send data/i)
@@ -18,6 +19,11 @@ test('list columns are name, address, and status only', () => {
   expect(list).toContain('text-right')
   expect(list).toContain('flex-col')
   expect(list).toContain(`/app/people/${'${row.id}'}/edit`)
+})
+
+test('a homeowner address change is named on the contact', () => {
+  const detail = src('./[id]/person-detail.tsx')
+  expect(detail).toContain('Updated by the homeowner on')
 })
 
 test('people board has count, add people, search, and export of the filtered view', () => {

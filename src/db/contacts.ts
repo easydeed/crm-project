@@ -2,6 +2,7 @@ import { and, asc, eq, inArray } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
 import {
   contactMatchCandidates,
+  contactSubscriptions,
   contacts,
   groupMembers,
   groups,
@@ -28,6 +29,8 @@ export type ContactListRow = {
   parcelId: string | null
   parcelAddress: string | null
   parcelApn: string | null
+  unsubscribed: boolean
+  homeownerAddressAt: Date | null
   groupIds: string[]
   groupNames: string[]
   candidates: Array<{
@@ -53,6 +56,7 @@ type ListedRow = {
   parcelCity: string | null
   parcelZip: string | null
   parcelApn: string | null
+  homeownerAddressAt: Date | null
 }
 
 const listColumns = {
@@ -70,6 +74,7 @@ const listColumns = {
   parcelCity: parcels.city,
   parcelZip: parcels.zip,
   parcelApn: parcels.apn,
+  homeownerAddressAt: contacts.homeownerAddressAt,
 }
 
 function formatParcelAddress(row: ListedRow) {
@@ -140,6 +145,20 @@ async function hydrateContacts(accountId: string, rows: ListedRow[]) {
         .from(contactMatchCandidates)
         .where(inArray(contactMatchCandidates.contactId, reviewIds))
     : []
+  const subs = ids.length
+    ? await db
+        .select({
+          contactId: contactSubscriptions.contactId,
+          unsubscribedAt: contactSubscriptions.unsubscribedAt,
+        })
+        .from(contactSubscriptions)
+        .where(
+          and(
+            eq(contactSubscriptions.scope, 'monthly'),
+            inArray(contactSubscriptions.contactId, ids),
+          ),
+        )
+    : []
 
   return rows.map((row) => {
     const groupRows = memberships.filter((item) => item.contactId === row.id)
@@ -156,6 +175,10 @@ async function hydrateContacts(accountId: string, rows: ListedRow[]) {
       parcelId: row.parcelId,
       parcelAddress: formatParcelAddress(row),
       parcelApn: row.parcelApn,
+      unsubscribed: subs.some(
+        (sub) => sub.contactId === row.id && sub.unsubscribedAt != null,
+      ),
+      homeownerAddressAt: row.homeownerAddressAt,
       groupIds: groupRows.map((item) => item.groupId),
       groupNames: groupRows.map((item) => item.groupName),
       candidates: candidates

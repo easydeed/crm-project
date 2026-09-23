@@ -9,6 +9,7 @@ export type OutboundMail = {
   text: string
   stream: MailStream
   idempotencyKey: string
+  headers: { name: string; value: string }[]
 }
 
 export interface Mailer {

@@ -119,6 +119,7 @@ test('deliverRecipient throws under default env before the mailer is called', as
     text: 'Hi',
     stream: 'monthly' as const,
     idempotencyKey: 'send:contact',
+    headers: [],
   }
   await expect(
     deliverRecipient(mailer, {

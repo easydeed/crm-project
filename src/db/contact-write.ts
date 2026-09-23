@@ -52,6 +52,7 @@ export async function updateContactForAccount(
                 noParcelKind: match.noParcelKind,
               }
             : {}),
+          ...(rematch ? { homeownerAddressAt: null } : {}),
         })
         .where(and(eq(contacts.id, contactId), eq(contacts.accountId, accountId)))
       if (match) {

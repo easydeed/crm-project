@@ -5,6 +5,7 @@ import { buildDigestInput } from '@/digest/build-input'
 import { renderDigest } from '@/digest/render'
 import { NOTHING_NEW_REASON, UNMATCHED_REASON } from '@/digest/skip-copy'
 import type { JobHandler } from '@/jobs/types'
+import { applyUnsubscribeLinks, unsubscribeUrl } from '@/unsubscribe/links'
 
 type Skip = { contactId: string; reason: string }
 
@@ -53,13 +54,18 @@ export const composeSend: JobHandler = async (payload, ctx) => {
       skips.push({ contactId: person.id, reason: result.reason || NOTHING_NEW_REASON })
       continue
     }
+    const linked = applyUnsubscribeLinks(
+      result.html,
+      result.text,
+      unsubscribeUrl(person.id, 'monthly'),
+    )
     await db
       .insert(sendRecipients)
       .values({
         sendId,
         contactId: person.id,
-        html: result.html,
-        plainText: result.text,
+        html: linked.html,
+        plainText: linked.text,
         subject: result.subject,
       })
       .onConflictDoNothing({

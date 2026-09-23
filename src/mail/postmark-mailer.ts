@@ -16,7 +16,10 @@ export class PostmarkMailer implements Mailer {
       TextBody: msg.text,
       MessageStream: msg.stream,
       Metadata: { idempotencyKey: msg.idempotencyKey },
-      Headers: [{ Name: 'X-OnRecord-Idempotency-Key', Value: msg.idempotencyKey }],
+      Headers: [
+        { Name: 'X-OnRecord-Idempotency-Key', Value: msg.idempotencyKey },
+        ...msg.headers.map((header) => ({ Name: header.name, Value: header.value })),
+      ],
     })
     return { providerId: result.MessageID }
   }

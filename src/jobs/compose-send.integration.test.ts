@@ -209,7 +209,10 @@ describe.skipIf(!sessionUrl)('compose and send', () => {
     expect(rows[0]?.contactId).toBe(sender)
     expect(rows[0]?.subject).toBe('What sold on your street.')
     expect(rows[0]?.html).toContain('Hi Marilyn')
+    expect(rows[0]?.html).toContain('/u/')
+    expect(rows[0]?.html).not.toContain('href="#unsubscribe"')
     expect(rows[0]?.plainText).toContain('Hi Marilyn')
+    expect(rows[0]?.plainText).toContain('/u/')
     expect(rows.map((row) => row.contactId)).not.toContain(skipped)
 
     const [send] = await db.select().from(sends).where(eq(sends.id, sendId))
@@ -284,6 +287,16 @@ describe.skipIf(!sessionUrl)('compose and send', () => {
     expect(sent?.providerId).toMatch(/^fake-/)
     expect(failed?.error).toMatch(/Mailbox rejected/)
     expect(mailer.calls.filter((call) => call.to === good)).toHaveLength(1)
+    const delivered = mailer.calls.find((call) => call.to === good)
+    const names = delivered?.headers.map((header) => header.name)
+    expect(names).toContain('List-Unsubscribe')
+    expect(names).toContain('List-Unsubscribe-Post')
+    expect(delivered?.headers.find((header) => header.name === 'List-Unsubscribe')?.value).toMatch(
+      /<mailto:[^>]+>, <https?:\/\/[^>]+>/,
+    )
+    expect(
+      delivered?.headers.find((header) => header.name === 'List-Unsubscribe-Post')?.value,
+    ).toBe('List-Unsubscribe=One-Click')
 
     mailer.failFor = () => false
     await sendMail({ sendId }, ctx)
