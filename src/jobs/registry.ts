@@ -1,9 +1,12 @@
 /**
  * Handlers must be safe to run twice. Check state before acting; never
- * assume this is the first attempt. Stubs only log and complete — the send
- * stub calls assertSendAllowed and never delivers mail.
+ * assume this is the first attempt. compose and send are idempotent.
+ * refresh_parcels, refresh_mls, and build_call_lists still only log.
+ * The send handler calls deliverRecipient, which calls assertSendAllowed
+ * before any mailer.send.
  */
-import { assertSendAllowed } from '@/jobs/send-guard'
+import { composeSend } from '@/jobs/compose'
+import { sendMail } from '@/jobs/send-job'
 import type { JobHandler, JobKind } from '@/jobs/types'
 import { JOB_KINDS } from '@/jobs/types'
 
@@ -13,20 +16,11 @@ function stub(kind: JobKind): JobHandler {
   }
 }
 
-const sendStub: JobHandler = async (payload, ctx) => {
-  assertSendAllowed({
-    recipientEmail: String(payload.recipientEmail ?? ''),
-    unsubscribed: Boolean(payload.unsubscribed),
-    accountPaused: Boolean(payload.accountPaused),
-  })
-  console.info(`[job:send] attempt=${ctx.attempt} job=${ctx.jobId} (guard passed; no mail)`)
-}
-
 export const handlers: Record<JobKind, JobHandler> = {
   refresh_parcels: stub('refresh_parcels'),
   refresh_mls: stub('refresh_mls'),
-  compose: stub('compose'),
-  send: sendStub,
+  compose: composeSend,
+  send: sendMail,
   build_call_lists: stub('build_call_lists'),
 }
 

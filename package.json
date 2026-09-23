@@ -19,6 +19,7 @@
     "drizzle-orm": "^0.44.5",
     "next": "15.5.25",
     "postgres": "^3.4.7",
+    "postmark": "^5.1.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "zod": "^4.1.5"

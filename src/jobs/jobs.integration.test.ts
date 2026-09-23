@@ -115,7 +115,7 @@ describe.skipIf(!databaseUrl)('jobs runner against the session pooler', () => {
       const row = (await db().select().from(jobs).where(eq(jobs.id, id)).limit(1))[0]
       expect(row.attempts).toBe(i + 1)
       expect(row.completedAt).toBeNull()
-      expect(row.error).toMatch(/SEND_ENABLED/)
+      expect(row.error).toMatch(/send requires sendId/)
       if (i < MAX_ATTEMPTS - 1) {
         const expectedMs = [60_000, 5 * 60_000, 30 * 60_000][i]!
         expect(
@@ -172,7 +172,7 @@ describe.skipIf(!databaseUrl)('jobs runner against the session pooler', () => {
     process.env.DATABASE_URL = databaseUrl!
     await resetRuntimeDb()
     const id = await trackInsert(
-      'compose',
+      'refresh_parcels',
       { ok: randomUUID() },
       new Date('2000-01-02T00:00:00.000Z'),
     )
