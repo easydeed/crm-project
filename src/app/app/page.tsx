@@ -1,6 +1,9 @@
 import { redirect } from 'next/navigation'
+import { CallListSection } from '@/app/app/call-list'
+import { loadCallList } from '@/app/app/call-list-data'
 import { HomeSendCard } from '@/app/app/home-card'
 import { loadHomeSend } from '@/app/app/home-send'
+import { HomeownersSection } from '@/app/app/homeowners-section'
 import { readRequestSession } from '@/auth/current-session'
 import { effectiveAccountId } from '@/auth/effective-account'
 
@@ -8,7 +11,8 @@ export default async function AppHomePage() {
   const session = await readRequestSession()
   if (!session) redirect('/login?returnTo=/app')
 
-  const view = await loadHomeSend(effectiveAccountId(session))
+  const accountId = effectiveAccountId(session)
+  const view = await loadHomeSend(accountId)
   if (view.kind === 'missing-account') {
     return (
       <main className="px-4 py-10">
@@ -21,5 +25,13 @@ export default async function AppHomePage() {
     )
   }
 
-  return <HomeSendCard readOnly={Boolean(session.viewingAsAccountId)} view={view} />
+  // Order is fixed: send status, then the call list, then homeowners. Nothing else.
+  const list = await loadCallList(accountId)
+  return (
+    <main>
+      <HomeSendCard readOnly={Boolean(session.viewingAsAccountId)} view={view} />
+      <CallListSection list={list} />
+      <HomeownersSection />
+    </main>
+  )
 }

@@ -1,10 +1,9 @@
 import { and, eq, notInArray } from 'drizzle-orm'
-import { isTimezone } from '@/config/settings'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts } from '@/db/schema'
 import { callListEntries } from '@/db/schema-call-lists'
 import { loadCallListInput } from '@/jobs/call-list-input'
-import { localDate } from '@/jobs/schedule-time'
+import { callListAsOf } from '@/jobs/call-list-period'
 import type { JobHandler } from '@/jobs/types'
 import { computeSignals } from '@/signals/compute'
 import { periodOf } from '@/signals/period'
@@ -28,9 +27,7 @@ export const buildCallLists: JobHandler = async (payload, ctx) => {
     .limit(1)
   if (!account) throw new Error('Account not found')
 
-  const zone = account.timezone && isTimezone(account.timezone) ? account.timezone : 'UTC'
-  const day = localDate(readAsOf(payload.asOf, ctx.now), zone)
-  const asOf = new Date(Date.UTC(day.year, day.month - 1, day.day, 12))
+  const asOf = callListAsOf(readAsOf(payload.asOf, ctx.now), account.timezone)
   const signals = computeSignals(await loadCallListInput(db, accountId, asOf))
   const period = periodOf(asOf)
 
