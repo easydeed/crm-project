@@ -25,3 +25,23 @@ export const callListEntries = pgTable(
     ),
   ],
 )
+
+export const callLog = pgTable(
+  'call_log',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    accountId: uuid('account_id')
+      .notNull()
+      .references(() => accounts.id),
+    contactId: uuid('contact_id')
+      .notNull()
+      .references(() => contacts.id),
+    kind: text('kind').notNull(),
+    period: text('period').notNull(),
+    outcome: text('outcome').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex('call_log_account_contact_period_uidx').on(t.accountId, t.contactId, t.period),
+  ],
+)

@@ -22,10 +22,12 @@ function phoneDisplay(phone: string | null) {
 export function PersonDetail({
   person,
   groups,
+  calls,
   readOnly,
 }: {
   person: ContactListRow
   groups: GroupListRow[]
+  calls: { id: string; when: string }[]
   readOnly: boolean
 }) {
   const [state, action] = useActionState(deleteContactAction, {} as ContactFormState)
@@ -73,6 +75,14 @@ export function PersonDetail({
           <dt className="font-medium">Notes</dt>
           <dd>{person.notes ?? 'None on file'}</dd>
         </div>
+        {calls.length ? (
+          <div>
+            <dt className="font-medium">Calls</dt>
+            {calls.map((call) => (
+              <dd key={call.id}>You called them on {call.when}.</dd>
+            ))}
+          </div>
+        ) : null}
         <div>
           <dt className="font-medium">Match</dt>
           <dd>{contactStatusLabel(person.status)}</dd>

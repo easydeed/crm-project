@@ -6,7 +6,7 @@ import { withStreetNameNorm } from '@/db/parcel-write'
 import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { getRuntimeDb, resetRuntimeDb } from '@/db/runtime'
 import { accounts, contactSubscriptions, contacts, jobs, parcelEvents, parcels, sends } from '@/db/schema'
-import { callListEntries } from '@/db/schema-call-lists'
+import { callListEntries, callLog } from '@/db/schema-call-lists'
 import { GRANT_DEED } from '@/digest/types'
 import { buildCallLists } from '@/jobs/build-call-lists'
 import { scheduleAccountById } from '@/jobs/schedule'
@@ -26,6 +26,7 @@ describe.skipIf(!databaseUrl)('call lists against the session pooler', () => {
   afterAll(async () => {
     const { db, client } = getRuntimeDb()
     for (const accountId of accountIds) {
+      await db.delete(callLog).where(eq(callLog.accountId, accountId))
       await db.delete(callListEntries).where(eq(callListEntries.accountId, accountId))
       const sendRows = await db.select({ id: sends.id }).from(sends).where(eq(sends.accountId, accountId))
       for (const send of sendRows) {
@@ -163,5 +164,95 @@ describe.skipIf(!databaseUrl)('call lists against the session pooler', () => {
       )
     expect(queued).toHaveLength(1)
     expect(queued[0]?.payload).toMatchObject({ accountId: created.accountId })
+  })
+
+  test('a paused account still gets a call list and does not get a send', async () => {
+    const created = await registerAccount({
+      name: 'OR017 Paused',
+      email: `or017-paused-${randomUUID()}@example.com`,
+      password: 'long-enough-password',
+      brokerage: 'Hill Realty',
+      dre: '02001717',
+      phone: '909-555-0171',
+    })
+    expect(created.ok).toBe(true)
+    if (!created.ok) return
+    accountIds.push(created.accountId)
+    const { db } = getRuntimeDb()
+    await db
+      .update(accounts)
+      .set({ paused: true, sendDay: 15, sendTime: '09:00', timezone: 'America/Los_Angeles' })
+      .where(eq(accounts.id, created.accountId))
+
+    const now = new Date('2026-09-15T16:00:00.000Z')
+    await scheduleAccountById(created.accountId, now)
+    const forAccount = sql`${jobs.payload}->>'accountId' = ${created.accountId}`
+    const lists = await db.select().from(jobs).where(and(eq(jobs.kind, 'build_call_lists'), forAccount))
+    const compose = await db.select().from(jobs).where(and(eq(jobs.kind, 'compose'), forAccount))
+    const sendRows = await db.select().from(sends).where(eq(sends.accountId, created.accountId))
+    expect(lists).toHaveLength(1)
+    expect(compose).toHaveLength(0)
+    expect(sendRows).toHaveLength(0)
+  })
+
+  test('a contact dismissed last month is left off this month', async () => {
+    const created = await registerAccount({
+      name: 'OR017 Dismiss',
+      email: `or017-dismiss-${randomUUID()}@example.com`,
+      password: 'long-enough-password',
+      brokerage: 'Hill Realty',
+      dre: '02001718',
+      phone: '909-555-0172',
+    })
+    expect(created.ok).toBe(true)
+    if (!created.ok) return
+    accountIds.push(created.accountId)
+    const { db } = getRuntimeDb()
+    await db
+      .update(accounts)
+      .set({ timezone: 'America/Los_Angeles' })
+      .where(eq(accounts.id, created.accountId))
+    const parcelId = randomUUID()
+    await db.insert(parcels).values(
+      withStreetNameNorm({
+        id: parcelId,
+        apn: `OR017-${parcelId.slice(0, 8)}`,
+        county: 'Los Angeles',
+        address: `500 Quiet ${parcelId.slice(0, 6)} Ave`,
+        city: 'La Verne',
+        zip: '91750',
+      }),
+    )
+    parcelIds.push(parcelId)
+    const contactId = randomUUID()
+    await db.insert(contacts).values({
+      id: contactId,
+      accountId: created.accountId,
+      name: 'Quiet Person',
+      email: `or017-quiet-${contactId.slice(0, 8)}@example.com`,
+      addressRaw: '500 Quiet Ave',
+      parcelId,
+      closeDate: '2016-06-15',
+      status: 'matched',
+    })
+    contactIds.push(contactId)
+    await db.insert(contactSubscriptions).values({ contactId, scope: 'monthly' })
+    await db.insert(callLog).values({
+      accountId: created.accountId,
+      contactId,
+      kind: 'quiet_a_while',
+      period: '2026-05',
+      outcome: 'dismissed',
+    })
+
+    await buildCallLists(
+      { accountId: created.accountId, asOf: '2026-06-15T16:00:00.000Z' },
+      { jobId: 'or017', attempt: 1, now: new Date('2026-06-15T16:00:00.000Z') },
+    )
+    const rows = await db
+      .select()
+      .from(callListEntries)
+      .where(eq(callListEntries.accountId, created.accountId))
+    expect(rows).toHaveLength(0)
   })
 })

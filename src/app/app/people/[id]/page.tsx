@@ -1,3 +1,4 @@
+import { and, desc, eq } from 'drizzle-orm'
 import { notFound, redirect } from 'next/navigation'
 import { DigestPreviewPanel } from '@/app/digest/preview-panel'
 import { PersonDetail } from '@/app/app/people/[id]/person-detail'
@@ -6,6 +7,7 @@ import { effectiveAccountId } from '@/auth/effective-account'
 import { getContactForAccount } from '@/db/contacts'
 import { listGroupsForAccount } from '@/db/groups'
 import { getRuntimeDb } from '@/db/runtime'
+import { callLog } from '@/db/schema-call-lists'
 import { buildDigestInput } from '@/digest/build-input'
 import { renderDigest } from '@/digest/render'
 import { UNMATCHED_REASON } from '@/digest/skip-copy'
@@ -23,8 +25,22 @@ export default async function PersonPage({
   const person = await getContactForAccount(accountId, id)
   if (!person) notFound()
   const groups = await listGroupsForAccount(accountId)
-
   const { db } = getRuntimeDb()
+  const called = await db
+    .select({ id: callLog.id, createdAt: callLog.createdAt })
+    .from(callLog)
+    .where(and(eq(callLog.accountId, accountId), eq(callLog.contactId, person.id), eq(callLog.outcome, 'called')))
+    .orderBy(desc(callLog.createdAt))
+  const calls = called.map((row) => ({
+    id: row.id,
+    when: new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Los_Angeles',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    }).format(row.createdAt),
+  }))
+
   const input = await buildDigestInput(db, accountId, person.id, new Date())
   const preview = input
     ? renderDigest(input)
@@ -35,6 +51,7 @@ export default async function PersonPage({
       <PersonDetail
         person={person}
         groups={groups}
+        calls={calls}
         readOnly={Boolean(session.viewingAsAccountId)}
       />
       <div className="px-4 pb-10">

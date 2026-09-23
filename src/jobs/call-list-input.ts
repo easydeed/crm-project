@@ -1,9 +1,10 @@
 import { and, eq, inArray } from 'drizzle-orm'
 import type { createDb } from '@/db/client'
 import { contactSubscriptions, contacts, parcelEvents, parcels } from '@/db/schema'
-import { callListEntries } from '@/db/schema-call-lists'
+import { callListEntries, callLog } from '@/db/schema-call-lists'
 import { GRANT_DEED } from '@/digest/types'
-import type { PriorCall, SignalContact, SignalEvent, StreetSale } from '@/signals/types'
+import { mergeShown } from '@/signals/shown'
+import type { SignalContact, SignalEvent, StreetSale } from '@/signals/types'
 
 type Db = ReturnType<typeof createDb>['db']
 
@@ -87,6 +88,10 @@ export async function loadCallListInput(db: Db, accountId: string, asOf: Date) {
     .select({ contactId: callListEntries.contactId, period: callListEntries.period })
     .from(callListEntries)
     .where(eq(callListEntries.accountId, accountId))
+  const logged = await db
+    .select({ contactId: callLog.contactId, period: callLog.period })
+    .from(callLog)
+    .where(eq(callLog.accountId, accountId))
 
   const eventsByParcel = new Map<string, SignalEvent[]>()
   for (const event of events) {
@@ -139,6 +144,5 @@ export async function loadCallListInput(db: Db, accountId: string, asOf: Date) {
     ]
   })
 
-  const priorCalls: PriorCall[] = priors
-  return { asOf, contacts: contactsOut, streetSales, priorCalls }
+  return { asOf, contacts: contactsOut, streetSales, priorCalls: mergeShown(priors, logged) }
 }

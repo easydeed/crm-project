@@ -57,3 +57,9 @@ test('call list entries are unique per account, contact, and period', () => {
   expect(source).toContain('t.contactId')
   expect(source).toContain('t.period')
 })
+
+test('a call log row is unique per account, contact, and period', () => {
+  const source = readFileSync(new URL('./schema-call-lists.ts', import.meta.url), 'utf8')
+  expect(source).toContain("uniqueIndex('call_log_account_contact_period_uidx')")
+  expect(source).toContain("outcome: text('outcome').notNull()")
+})

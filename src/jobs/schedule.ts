@@ -28,16 +28,22 @@ async function ensureSend(db: Db, accountId: string, scheduledFor: Date) {
   return row
 }
 
+async function enqueueCallList(
+  account: AccountClock,
+  day: { year: number; month: number; day: number },
+) {
+  const scheduledFor = atLocalTime(day, account.sendTime, account.timezone)
+  await enqueue(
+    'build_call_lists',
+    { accountId: account.id, asOf: scheduledFor.toISOString() },
+    scheduledFor,
+  )
+}
+
 async function queueForDay(db: Db, account: AccountClock, day: { year: number; month: number; day: number }, nowIsSendDay: boolean) {
   const scheduledFor = atLocalTime(day, account.sendTime, account.timezone)
   const send = await ensureSend(db, account.id, scheduledFor)
-  if (nowIsSendDay) {
-    await enqueue(
-      'build_call_lists',
-      { accountId: account.id, asOf: scheduledFor.toISOString() },
-      scheduledFor,
-    )
-  }
+  if (nowIsSendDay) await enqueueCallList(account, day)
   if (send.state === 'skipped' || send.state === 'done') return
 
   if (send.state === 'scheduled') {
@@ -78,8 +84,19 @@ export async function scheduleAccountById(accountId: string, now = new Date()) {
     .from(accounts)
     .where(eq(accounts.id, accountId))
     .limit(1)
-  if (!row || row.paused || row.sendDay == null || !row.sendTime || !row.timezone) return
+  if (!row || row.sendDay == null || !row.sendTime || !row.timezone) return
   if (!isSendDay(row.sendDay) || !isSendTime(row.sendTime) || !isTimezone(row.timezone)) return
+  const clock = {
+    id: row.id,
+    sendDay: row.sendDay,
+    sendTime: row.sendTime,
+    timezone: row.timezone,
+  }
+  if (row.paused) {
+    const today = localDate(now, clock.timezone)
+    if (today.day === clock.sendDay) await enqueueCallList(clock, today)
+    return
+  }
   await scheduleAccount(
     db,
     { id: row.id, sendDay: row.sendDay, sendTime: row.sendTime, timezone: row.timezone },

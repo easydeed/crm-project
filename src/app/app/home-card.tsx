@@ -30,7 +30,7 @@ export function HomeSendCard({
 }) {
   if (view.kind === 'system-paused') {
     return (
-      <main className="px-4 py-10">
+      <section>
         <h1 className="text-[22px] font-semibold">We paused your monthly note.</h1>
         <p className="mt-3 max-w-xl text-[15px]">
           A few people marked it as spam, so we stopped to protect everyone&apos;s
@@ -39,23 +39,23 @@ export function HomeSendCard({
             Contact us
           </a>
         </p>
-      </main>
+      </section>
     )
   }
 
   if (view.kind === 'paused') {
     return (
-      <main className="px-4 py-10">
+      <section>
         <h1 className="text-[22px] font-semibold">Your monthly note is paused.</h1>
         <p className="mt-3 max-w-xl text-[15px]">Nothing sends until you turn it back on.</p>
         {readOnly ? null : <Action action={unpauseAction} label="Unpause" />}
-      </main>
+      </section>
     )
   }
 
   if (view.kind === 'settings') {
     return (
-      <main className="px-4 py-10">
+      <section>
         <h1 className="text-[22px] font-semibold">Set when the note goes out.</h1>
         <p className="mt-3 max-w-xl text-[15px]">
           Pick a send day, a time, and a timezone.
@@ -63,13 +63,13 @@ export function HomeSendCard({
         <Link className={buttonClass} href="/app/settings">
           Open settings
         </Link>
-      </main>
+      </section>
     )
   }
 
   if (view.kind === 'import') {
     return (
-      <main className="px-4 py-10">
+      <section>
         <h1 className="text-[22px] font-semibold">Let&apos;s get your people in.</h1>
         <p className="mt-3 max-w-xl text-[15px]">
           Add the folks you&apos;ve closed with and we&apos;ll match each address to the
@@ -78,13 +78,13 @@ export function HomeSendCard({
         <Link className={buttonClass} href="/app/people/import">
           Add your people
         </Link>
-      </main>
+      </section>
     )
   }
 
   if (view.kind === 'review') {
     return (
-      <main className="px-4 py-10">
+      <section>
         <h1 className="text-[22px] font-semibold">Some addresses still need a house.</h1>
         <p className="mt-3 max-w-xl text-[15px]">
           The monthly note only goes to people matched to a county record.
@@ -92,13 +92,13 @@ export function HomeSendCard({
         <Link className={buttonClass} href="/app/people/review">
           Open the review queue
         </Link>
-      </main>
+      </section>
     )
   }
 
   if (view.kind === 'none-subscribed') {
     return (
-      <main className="px-4 py-10">
+      <section>
         <h1 className="text-[22px] font-semibold">No one is set to get the monthly note.</h1>
         <p className="mt-3 max-w-xl text-[15px]">
           People need a matched house and an active monthly note.
@@ -106,26 +106,26 @@ export function HomeSendCard({
         <Link className={buttonClass} href="/app/people">
           Open people
         </Link>
-      </main>
+      </section>
     )
   }
 
   if (view.kind === 'skipped') {
     return (
-      <main className="px-4 py-10">
+      <section>
         <h1 className="text-[22px] font-semibold">Skipped.</h1>
         <p className="mt-3 max-w-xl text-[15px]">
           The {view.when} note will not go out.
         </p>
         {readOnly ? null : <Action action={resumeMonthAction} label="Resume" />}
-      </main>
+      </section>
     )
   }
 
   if (view.kind !== 'scheduled') return null
 
   return (
-    <main className="px-4 py-10">
+    <section>
       <h1 className="text-[22px] font-semibold">{view.sentence}</h1>
       <div className="mt-6 flex flex-wrap items-center gap-6">
         {view.previewContactId ? (
@@ -135,6 +135,6 @@ export function HomeSendCard({
         ) : null}
         {readOnly ? null : <Action action={skipMonthAction} label="Skip this month" />}
       </div>
-    </main>
+    </section>
   )
 }
