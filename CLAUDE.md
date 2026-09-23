@@ -48,10 +48,15 @@ pnpm dev          # local
 pnpm typecheck    # tsc --noEmit
 pnpm lint         # eslint
 pnpm test         # vitest run
-pnpm verify       # typecheck + lint + test + file-length check
+pnpm verify:fast  # typecheck + lint + unit tests + file-length + invariants
+pnpm verify       # build + typecheck + lint + all tests + file-length + invariants
+pnpm db:generate  # write a SQL migration from a schema change
+pnpm db:migrate   # apply pending migrations
 ```
 
-Run `pnpm verify` before reporting completion. Do not report PASS on unrun checks.
+Use `pnpm verify:fast` in the inner loop. Run the full `pnpm verify` once before opening the PR, and before reporting completion. Do not report PASS on unrun checks.
+
+Schema changes ship as generated SQL files in `drizzle/`, committed in the same PR. Never `drizzle-kit push`. CI builds a scratch database from zero for every run. crm-dev receives migrations only from CI after merge to main.
 
 ## Completion report
 
