@@ -51,7 +51,10 @@ export function PeopleList({
                 Edit
               </Link>
             </div>
-            <p className="text-right">{contactStatusLabel(row.status)}</p>
+            <p className="text-right">
+              {contactStatusLabel(row.status)}
+              {row.unsubscribed ? <span className="block">Unsubscribed</span> : null}
+            </p>
           </li>
         ))}
       </ul>

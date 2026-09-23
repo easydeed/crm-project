@@ -94,6 +94,7 @@ export const contacts = pgTable(
     parcelId: uuid('parcel_id').references(() => parcels.id),
     closeDate: date('close_date'),
     notes: text('notes'),
+    homeownerAddressAt: timestamp('homeowner_address_at', { withTimezone: true }),
     status: contactStatusEnum('status').notNull(),
     reviewState: contactReviewStateEnum('review_state').notNull().default('pending'),
     matchSource: contactMatchSourceEnum('match_source').notNull().default('auto'),
@@ -107,7 +108,6 @@ export const contacts = pgTable(
     ),
   ],
 )
-
 export const contactSubscriptions = pgTable(
   'contact_subscriptions',
   {

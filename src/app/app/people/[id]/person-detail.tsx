@@ -49,7 +49,21 @@ export function PersonDetail({
         </div>
         <div>
           <dt className="font-medium">Address</dt>
-          <dd>{person.addressRaw}</dd>
+          <dd>
+            {person.addressRaw}
+            {person.homeownerAddressAt ? (
+              <span className="mt-1 block">
+                Updated by the homeowner on{' '}
+                {new Intl.DateTimeFormat('en-US', {
+                  timeZone: 'America/Los_Angeles',
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                }).format(person.homeownerAddressAt)}
+                .
+              </span>
+            ) : null}
+          </dd>
         </div>
         <div>
           <dt className="font-medium">Close date</dt>

@@ -11,6 +11,9 @@ const alias = {
 const env = {
   SESSION_SECRET:
     process.env.SESSION_SECRET ?? 'test-session-secret-that-is-32-chars-min',
+  UNSUBSCRIBE_SECRET:
+    process.env.UNSUBSCRIBE_SECRET ?? 'test-unsubscribe-secret-32-characters',
+  APP_ORIGIN: process.env.APP_ORIGIN ?? 'http://localhost:3000',
 }
 
 const shared = {

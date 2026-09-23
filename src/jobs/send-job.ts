@@ -12,6 +12,7 @@ import { mapLimit } from '@/jobs/pool'
 import type { JobHandler } from '@/jobs/types'
 import { getMailer } from '@/mail/current'
 import { monthlyFromAddress, sendIdempotencyKey } from '@/mail/types'
+import { listUnsubscribeHeaders } from '@/unsubscribe/links'
 
 const SEND_CONCURRENCY = 4
 
@@ -86,6 +87,7 @@ export const sendMail: JobHandler = async (payload, ctx) => {
           text: row.plainText ?? '',
           stream: 'monthly',
           idempotencyKey: sendIdempotencyKey(sendId, row.contactId),
+          headers: listUnsubscribeHeaders(row.contactId, 'monthly'),
         },
       )
       await db
