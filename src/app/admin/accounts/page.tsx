@@ -45,6 +45,18 @@ export default async function AdminAccountsPage({
         </Link>
         <Link
           className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          href="/admin/sends"
+        >
+          Sends
+        </Link>
+        <Link
+          className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          href="/admin/deliverability"
+        >
+          Deliverability
+        </Link>
+        <Link
+          className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           href="/app"
         >
           Back to app

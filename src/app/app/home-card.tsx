@@ -28,6 +28,21 @@ export function HomeSendCard({
   view: HomeSend
   readOnly: boolean
 }) {
+  if (view.kind === 'system-paused') {
+    return (
+      <main className="px-4 py-10">
+        <h1 className="text-[22px] font-semibold">We paused your monthly note.</h1>
+        <p className="mt-3 max-w-xl text-[15px]">
+          A few people marked it as spam, so we stopped to protect everyone&apos;s
+          delivery.{' '}
+          <a className={linkClass} href="mailto:">
+            Contact us
+          </a>
+        </p>
+      </main>
+    )
+  }
+
   if (view.kind === 'paused') {
     return (
       <main className="px-4 py-10">

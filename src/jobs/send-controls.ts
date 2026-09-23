@@ -4,6 +4,7 @@ import { accounts, sends } from '@/db/schema'
 import { enqueue } from '@/jobs/enqueue'
 import { nextSendInstant } from '@/jobs/schedule-time'
 import { isSendDay, isSendTime, isTimezone } from '@/config/settings'
+import { systemPauseState } from '@/db/system-pause'
 
 async function upcoming(accountId: string, now: Date) {
   const { db } = getRuntimeDb()
@@ -58,6 +59,7 @@ export async function resumeUpcomingSend(accountId: string, now = new Date()) {
 }
 
 export async function unpauseAccount(accountId: string) {
+  if (await systemPauseState(accountId)) return
   const { db } = getRuntimeDb()
   await db.update(accounts).set({ paused: false }).where(eq(accounts.id, accountId))
 }

@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
 import { getAccountById, type AccountRecord } from '@/db/accounts'
 import { accounts } from '@/db/schema'
+import { systemPauseState } from '@/db/system-pause'
 
 export type AccountDetailsInput = {
   name: string
@@ -61,13 +62,14 @@ export async function updateAccountSending(
   input: AccountSendingInput,
 ): Promise<AccountRecord | null> {
   const { db } = getRuntimeDb()
+  const locked = await systemPauseState(accountId)
   await db
     .update(accounts)
     .set({
       sendDay: input.sendDay,
       sendTime: input.sendTime,
       timezone: input.timezone,
-      paused: input.paused,
+      paused: locked ? true : input.paused,
     })
     .where(eq(accounts.id, accountId))
   return getAccountById(accountId)
