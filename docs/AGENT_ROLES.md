@@ -18,6 +18,8 @@ Two coding agents work in this repo. This file is the contract between them. Bot
 
 **The rule that prevents every collision: only one agent works at a time.** Not one per branch — one, period. Finish, merge or park, then start the other.
 
+**Enforced by closing, not by instruction.** While a packet branch is open, Cursor is closed: every background agent stopped, no session open on this repo. A rules file is advisory. On 2026-09-23 a Cursor agent with `.cursor/rules/onrecord.mdc` loaded built a packet anyway and pushed schema to crm-dev mid-packet.
+
 ---
 
 ## Claude Code — the builder
@@ -49,7 +51,7 @@ Typical work:
 - "Where does X happen in this codebase?"
 
 Rules:
-- Never start work while a packet branch is open and unmerged.
+- Never start work while a packet branch is open and unmerged. The human closes Cursor for that time; this line is the reminder, not the control.
 - Never change the schema, `ca-tax.ts`, `PROJECT_STATE.md`, `CLAUDE.md`, or `BUILD_PLAN.md`. Those move by packet or by the human.
 - Never add a dependency.
 - Never touch `reference/v0-export/` — read only.
