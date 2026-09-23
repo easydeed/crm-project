@@ -31,6 +31,13 @@ async function ensureSend(db: Db, accountId: string, scheduledFor: Date) {
 async function queueForDay(db: Db, account: AccountClock, day: { year: number; month: number; day: number }, nowIsSendDay: boolean) {
   const scheduledFor = atLocalTime(day, account.sendTime, account.timezone)
   const send = await ensureSend(db, account.id, scheduledFor)
+  if (nowIsSendDay) {
+    await enqueue(
+      'build_call_lists',
+      { accountId: account.id, asOf: scheduledFor.toISOString() },
+      scheduledFor,
+    )
+  }
   if (send.state === 'skipped' || send.state === 'done') return
 
   if (send.state === 'scheduled') {
