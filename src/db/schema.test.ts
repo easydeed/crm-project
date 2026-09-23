@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { expect, test } from 'vitest'
+import { callListEntries } from '@/db/schema-call-lists'
 import * as schema from '@/db/schema'
 
 test('schema exports every OR-000 table', () => {
@@ -45,4 +46,14 @@ test('jobs unique index covers kind, payload_key, and run_after', () => {
   expect(source).toContain('t.payloadKey')
   expect(source).toContain('t.runAfter')
   expect(source).toContain('could send the same note twice')
+})
+
+test('call list entries are unique per account, contact, and period', () => {
+  expect(callListEntries.accountId).toBeDefined()
+  expect(callListEntries.period).toBeDefined()
+  const source = readFileSync(new URL('./schema-call-lists.ts', import.meta.url), 'utf8')
+  expect(source).toContain("uniqueIndex('call_list_entries_account_contact_period_uidx')")
+  expect(source).toContain('t.accountId')
+  expect(source).toContain('t.contactId')
+  expect(source).toContain('t.period')
 })
