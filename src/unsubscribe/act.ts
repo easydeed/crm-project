@@ -3,6 +3,7 @@ import { persistContactCandidates } from '@/db/persist-contact-candidates'
 import { getRuntimeDb } from '@/db/runtime'
 import { contactSubscriptions, contacts, parcels } from '@/db/schema'
 import { resolveAddressMatch } from '@/matching/resolve-match'
+import { liftSelfUnsubscribe } from '@/suppression/lift'
 import { suppress } from '@/suppression/suppressions'
 import type { UnsubscribeScope } from '@/unsubscribe/token'
 
@@ -33,6 +34,21 @@ export async function keepScope(contactId: string, scope: UnsubscribeScope) {
     .where(
       and(eq(contactSubscriptions.contactId, contactId), eq(contactSubscriptions.scope, scope)),
     )
+}
+
+/**
+ * "Actually, keep them coming." Lifts the homeowner's own unsubscribe (logged in
+ * suppression_lifts), then turns the subscription back on. Returns false, changing
+ * nothing, when the address carries a bounce, a complaint, or any stop they didn't make.
+ */
+export async function keepComing(contactId: string, scope: UnsubscribeScope, suppressed: boolean) {
+  const { db } = getRuntimeDb()
+  if (suppressed) {
+    const [contact] = await db.select({ email: contacts.email }).from(contacts).where(eq(contacts.id, contactId)).limit(1)
+    if (!contact || !(await liftSelfUnsubscribe(db, contact.email, scope))) return false
+  }
+  await keepScope(contactId, scope)
+  return true
 }
 
 export type AddressUpdate =

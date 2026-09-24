@@ -31,8 +31,8 @@ export function renderUnsubscribeHtml(view: UnsubscribeView, token: string) {
         })
         .join('')
   const undo =
-    // An opt-out is permanent: once suppressed, there is no "keep them coming".
-    !view.blocked && !view.suppressed && !active.some((row) => row.scope === view.scope)
+    // Only a homeowner's own unsubscribe can be undone. A bounce or complaint never can.
+    !view.blocked && (!view.suppressed || view.reversible) && !active.some((row) => row.scope === view.scope)
       ? `<form method="post" action="/u/${escapeHtml(token)}">
 <input type="hidden" name="intent" value="keep" />
 <button type="submit">Actually, keep them coming</button>
