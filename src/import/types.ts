@@ -17,6 +17,8 @@ export type SkippedRow = {
 
 export type ImportSummary = {
   added: number
+  /** Soft-deleted people whose address came back; restored with their subscription state. */
+  restored: number
   matched: number
   needsReview: number
   noParcel: number

@@ -1,6 +1,7 @@
 import { and, eq, isNull, ne, sql } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
-import { accounts, contactSubscriptions, contacts, sends } from '@/db/schema'
+import { accounts, contactSubscriptions, sends } from '@/db/schema'
+import { liveContacts } from '@/db/live-contacts'
 import { formatSendDay, nextEmailSentence, nextSendInstant } from '@/jobs/schedule-time'
 import { isSendDay, isSendTime, isTimezone } from '@/config/settings'
 import { systemPauseState } from '@/db/system-pause'
@@ -17,8 +18,8 @@ export type HomeSend =
   | { kind: 'scheduled'; sentence: string; previewContactId: string | null }
 
 const eligible = and(
-  eq(contacts.status, 'matched'),
-  sql`${contacts.parcelId} is not null`,
+  eq(liveContacts.status, 'matched'),
+  sql`${liveContacts.parcelId} is not null`,
   eq(contactSubscriptions.scope, 'monthly'),
   isNull(contactSubscriptions.unsubscribedAt),
 )
@@ -53,21 +54,21 @@ export async function loadHomeSend(accountId: string, now = new Date()): Promise
 
   const [people] = await db
     .select({ count: sql<number>`count(*)::int` })
-    .from(contacts)
-    .where(eq(contacts.accountId, accountId))
+    .from(liveContacts)
+    .where(eq(liveContacts.accountId, accountId))
   if (!people?.count) return { kind: 'import' }
 
   const [ready] = await db
     .select({ count: sql<number>`count(*)::int` })
-    .from(contacts)
-    .innerJoin(contactSubscriptions, eq(contactSubscriptions.contactId, contacts.id))
-    .where(and(eq(contacts.accountId, accountId), eligible))
+    .from(liveContacts)
+    .innerJoin(contactSubscriptions, eq(contactSubscriptions.contactId, liveContacts.id))
+    .where(and(eq(liveContacts.accountId, accountId), eligible))
   const count = ready?.count ?? 0
   if (count === 0) {
     const [open] = await db
       .select({ count: sql<number>`count(*)::int` })
-      .from(contacts)
-      .where(and(eq(contacts.accountId, accountId), ne(contacts.status, 'matched')))
+      .from(liveContacts)
+      .where(and(eq(liveContacts.accountId, accountId), ne(liveContacts.status, 'matched')))
     return (open?.count ?? 0) > 0 ? { kind: 'review' } : { kind: 'none-subscribed' }
   }
 
@@ -81,11 +82,11 @@ export async function loadHomeSend(accountId: string, now = new Date()): Promise
   if (send?.state === 'skipped') return { kind: 'skipped', when }
 
   const [first] = await db
-    .select({ id: contacts.id })
-    .from(contacts)
-    .innerJoin(contactSubscriptions, eq(contactSubscriptions.contactId, contacts.id))
-    .where(and(eq(contacts.accountId, accountId), eligible))
-    .orderBy(contacts.name)
+    .select({ id: liveContacts.id })
+    .from(liveContacts)
+    .innerJoin(contactSubscriptions, eq(contactSubscriptions.contactId, liveContacts.id))
+    .where(and(eq(liveContacts.accountId, accountId), eligible))
+    .orderBy(liveContacts.name)
     .limit(1)
 
   return {

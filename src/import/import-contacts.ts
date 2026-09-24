@@ -1,7 +1,8 @@
 import { randomUUID } from 'node:crypto'
-import { eq } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 import { candidateInsertRows } from '@/db/persist-contact-candidates'
-import { contactMatchCandidates, contactSubscriptions, contacts } from '@/db/schema'
+import { contactMatchCandidates, contactSubscriptions } from '@/db/schema'
+import { contactsIncludingDeleted, contactsTable } from '@/db/live-contacts'
 import { CONTACT_LIMIT, SKIP } from '@/import/skip-reasons'
 import type { ImportRow, ImportSummary, SkippedRow } from '@/import/types'
 import { type ParcelDb, type ParcelRecord } from '@/matching/candidates'
@@ -18,11 +19,19 @@ export async function importContacts(
 ): Promise<ImportSummary> {
   const started = Date.now()
   const existing = await db
-    .select({ email: contacts.email })
-    .from(contacts)
-    .where(eq(contacts.accountId, accountId))
-  const seen = new Set(existing.map((row) => row.email.toLowerCase()))
-  let remaining = CONTACT_LIMIT - existing.length
+    .select({
+      id: contactsIncludingDeleted.id,
+      email: contactsIncludingDeleted.email,
+      deletedAt: contactsIncludingDeleted.deletedAt,
+    })
+    .from(contactsIncludingDeleted)
+    .where(eq(contactsIncludingDeleted.accountId, accountId))
+  const live = existing.filter((row) => !row.deletedAt)
+  const seen = new Set(live.map((row) => row.email.toLowerCase()))
+  // A deleted person whose address comes back is restored, subscription state and all.
+  const deleted = new Map(existing.filter((row) => row.deletedAt).map((row) => [row.email.toLowerCase(), row.id]))
+  const restoreIds: string[] = []
+  let remaining = CONTACT_LIMIT - live.length
 
   const skipped: SkippedRow[] = []
   const toInsert: Array<{
@@ -65,6 +74,13 @@ export async function importContacts(
       skipped.push({ line: row.line, name, reason: SKIP.overLimit })
       continue
     }
+    const restoreId = deleted.get(email.toLowerCase())
+    if (restoreId) {
+      restoreIds.push(restoreId)
+      seen.add(email.toLowerCase())
+      remaining -= 1
+      continue
+    }
 
     const match = await resolveAddressMatch(db, address, cache)
     const contactId = randomUUID()
@@ -92,9 +108,15 @@ export async function importContacts(
     remaining -= 1
   }
 
+  if (restoreIds.length) {
+    await db
+      .update(contactsTable)
+      .set({ deletedAt: null })
+      .where(and(eq(contactsTable.accountId, accountId), inArray(contactsTable.id, restoreIds)))
+  }
   if (toInsert.length) {
     await db.transaction(async (tx) => {
-      await tx.insert(contacts).values(toInsert)
+      await tx.insert(contactsTable).values(toInsert)
       if (candidateRows.length) {
         await tx.insert(contactMatchCandidates).values(candidateRows)
       }
@@ -104,6 +126,7 @@ export async function importContacts(
 
   return {
     added: toInsert.length,
+    restored: restoreIds.length,
     matched: toInsert.filter((row) => row.status === 'matched').length,
     needsReview: toInsert.filter((row) => row.status === 'needs_review').length,
     noParcel: toInsert.filter((row) => row.status === 'no_parcel').length,

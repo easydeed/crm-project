@@ -1,7 +1,8 @@
 import { and, asc, desc, eq, ilike, or, sql } from 'drizzle-orm'
 import { getAccountById } from '@/db/accounts'
 import { getRuntimeDb } from '@/db/runtime'
-import { accounts, adminActions, contacts } from '@/db/schema'
+import { accounts, adminActions } from '@/db/schema'
+import { liveContacts } from '@/db/live-contacts'
 
 export type AccountListSort = 'signup' | 'contacts'
 export type AccountListDir = 'asc' | 'desc'
@@ -40,7 +41,7 @@ export async function listAccountsForAdmin(
   const dir = filters.dir === 'asc' ? asc : desc
   const order =
     filters.sort === 'contacts'
-      ? dir(sql`count(${contacts.id})`)
+      ? dir(sql`count(${liveContacts.id})`)
       : dir(accounts.createdAt)
 
   return db
@@ -50,12 +51,12 @@ export async function listAccountsForAdmin(
       email: accounts.email,
       brokerage: accounts.brokerage,
       createdAt: accounts.createdAt,
-      contactCount: sql<number>`count(${contacts.id})::int`,
+      contactCount: sql<number>`count(${liveContacts.id})::int`,
       role: accounts.role,
       lastLoggedInAt: accounts.lastLoggedInAt,
     })
     .from(accounts)
-    .leftJoin(contacts, eq(contacts.accountId, accounts.id))
+    .leftJoin(liveContacts, eq(liveContacts.accountId, accounts.id))
     .where(search ? and(search) : undefined)
     .groupBy(accounts.id)
     .orderBy(order)

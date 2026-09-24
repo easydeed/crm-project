@@ -1,6 +1,7 @@
 import { and, eq, isNull, sql } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
-import { contactSubscriptions, contacts, sends, sendRecipients } from '@/db/schema'
+import { contactSubscriptions, sends, sendRecipients } from '@/db/schema'
+import { liveContacts } from '@/db/live-contacts'
 import { buildDigestInput } from '@/digest/build-input'
 import { renderDigest } from '@/digest/render'
 import { NOTHING_NEW_REASON, UNMATCHED_REASON } from '@/digest/skip-copy'
@@ -26,21 +27,21 @@ export const composeSend: JobHandler = async (payload, ctx) => {
   if (send.state === 'skipped' || send.state === 'done') return
 
   const people = await db
-    .select({ id: contacts.id, email: contacts.email })
-    .from(contacts)
+    .select({ id: liveContacts.id, email: liveContacts.email })
+    .from(liveContacts)
     .innerJoin(
       contactSubscriptions,
       and(
-        eq(contactSubscriptions.contactId, contacts.id),
+        eq(contactSubscriptions.contactId, liveContacts.id),
         eq(contactSubscriptions.scope, 'monthly'),
         isNull(contactSubscriptions.unsubscribedAt),
       ),
     )
     .where(
       and(
-        eq(contacts.accountId, accountId),
-        eq(contacts.status, 'matched'),
-        sql`${contacts.parcelId} is not null`,
+        eq(liveContacts.accountId, accountId),
+        eq(liveContacts.status, 'matched'),
+        sql`${liveContacts.parcelId} is not null`,
       ),
     )
 

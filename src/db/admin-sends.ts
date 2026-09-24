@@ -2,14 +2,8 @@ import { and, desc, eq, inArray, sql } from 'drizzle-orm'
 import { blocksInStoredHtml, groupSkipReasons } from '@/admin/delivery-math'
 import { getAccountById } from '@/db/accounts'
 import { getRuntimeDb } from '@/db/runtime'
-import {
-  accounts,
-  contacts,
-  jobs,
-  mailEvents,
-  sendRecipients,
-  sends,
-} from '@/db/schema'
+import { accounts, jobs, mailEvents, sendRecipients, sends } from '@/db/schema'
+import { contactsIncludingDeleted } from '@/db/live-contacts'
 
 export type SendListRow = {
   id: string
@@ -63,12 +57,12 @@ export async function listSendsForAdmin(
   const recipients = await db
     .select({
       sendId: sendRecipients.sendId,
-      email: contacts.email,
+      email: contactsIncludingDeleted.email,
       sentAt: sendRecipients.sentAt,
       error: sendRecipients.error,
     })
     .from(sendRecipients)
-    .innerJoin(contacts, eq(contacts.id, sendRecipients.contactId))
+    .innerJoin(contactsIncludingDeleted, eq(contactsIncludingDeleted.id, sendRecipients.contactId))
     .where(inArray(sendRecipients.sendId, ids))
   const emails = [...new Set(recipients.map((row) => row.email.toLowerCase()))]
   const events = emails.length
@@ -164,8 +158,8 @@ export async function getSendForAdmin(
   const recipients = await db
     .select({
       id: sendRecipients.id,
-      name: contacts.name,
-      email: contacts.email,
+      name: contactsIncludingDeleted.name,
+      email: contactsIncludingDeleted.email,
       subject: sendRecipients.subject,
       html: sendRecipients.html,
       error: sendRecipients.error,
@@ -173,7 +167,7 @@ export async function getSendForAdmin(
       sentAt: sendRecipients.sentAt,
     })
     .from(sendRecipients)
-    .innerJoin(contacts, eq(contacts.id, sendRecipients.contactId))
+    .innerJoin(contactsIncludingDeleted, eq(contactsIncludingDeleted.id, sendRecipients.contactId))
     .where(eq(sendRecipients.sendId, sendId))
   const attemptRows = await db
     .select({ attempts: jobs.attempts })

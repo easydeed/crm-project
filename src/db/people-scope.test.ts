@@ -61,7 +61,7 @@ test('listContactsForAccount does not silently truncate', () => {
   )
   expect(listFn).not.toMatch(/\.limit\(/)
   expect(listFn).not.toMatch(/\.slice\(/)
-  expect(source).toContain('phone: contacts.phone')
+  expect(source).toContain('phone: liveContacts.phone')
 })
 
 test('mutations assertWritable before they write', () => {

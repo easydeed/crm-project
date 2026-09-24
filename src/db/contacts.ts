@@ -1,13 +1,7 @@
 import { and, asc, eq, inArray } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
-import {
-  contactMatchCandidates,
-  contactSubscriptions,
-  contacts,
-  groupMembers,
-  groups,
-  parcels,
-} from '@/db/schema'
+import { contactMatchCandidates, contactSubscriptions, groupMembers, groups, parcels } from '@/db/schema'
+import { liveContacts } from '@/db/live-contacts'
 import {
   contactStatusLabel,
   type ContactMatchStatus,
@@ -60,21 +54,21 @@ type ListedRow = {
 }
 
 const listColumns = {
-  id: contacts.id,
-  name: contacts.name,
-  email: contacts.email,
-  phone: contacts.phone,
-  addressRaw: contacts.addressRaw,
-  closeDate: contacts.closeDate,
-  notes: contacts.notes,
-  status: contacts.status,
-  reviewState: contacts.reviewState,
-  parcelId: contacts.parcelId,
+  id: liveContacts.id,
+  name: liveContacts.name,
+  email: liveContacts.email,
+  phone: liveContacts.phone,
+  addressRaw: liveContacts.addressRaw,
+  closeDate: liveContacts.closeDate,
+  notes: liveContacts.notes,
+  status: liveContacts.status,
+  reviewState: liveContacts.reviewState,
+  parcelId: liveContacts.parcelId,
   parcelStreet: parcels.address,
   parcelCity: parcels.city,
   parcelZip: parcels.zip,
   parcelApn: parcels.apn,
-  homeownerAddressAt: contacts.homeownerAddressAt,
+  homeownerAddressAt: liveContacts.homeownerAddressAt,
 }
 
 function formatParcelAddress(row: ListedRow) {
@@ -89,14 +83,14 @@ export async function listContactsForAccount(
   const { db } = getRuntimeDb()
   const rows = await db
     .select(listColumns)
-    .from(contacts)
-    .leftJoin(parcels, eq(contacts.parcelId, parcels.id))
+    .from(liveContacts)
+    .leftJoin(parcels, eq(liveContacts.parcelId, parcels.id))
     .where(
       filters?.status
-        ? and(eq(contacts.accountId, accountId), eq(contacts.status, filters.status))
-        : eq(contacts.accountId, accountId),
+        ? and(eq(liveContacts.accountId, accountId), eq(liveContacts.status, filters.status))
+        : eq(liveContacts.accountId, accountId),
     )
-    .orderBy(asc(contacts.name))
+    .orderBy(asc(liveContacts.name))
 
   return hydrateContacts(accountId, rows)
 }
@@ -108,9 +102,9 @@ export async function getContactForAccount(
   const { db } = getRuntimeDb()
   const rows = await db
     .select(listColumns)
-    .from(contacts)
-    .leftJoin(parcels, eq(contacts.parcelId, parcels.id))
-    .where(and(eq(contacts.accountId, accountId), eq(contacts.id, contactId)))
+    .from(liveContacts)
+    .leftJoin(parcels, eq(liveContacts.parcelId, parcels.id))
+    .where(and(eq(liveContacts.accountId, accountId), eq(liveContacts.id, contactId)))
     .limit(1)
   const [row] = await hydrateContacts(accountId, rows)
   return row ?? null

@@ -1,6 +1,7 @@
 import { and, eq, inArray } from 'drizzle-orm'
 import type { createDb } from '@/db/client'
-import { contactSubscriptions, contacts, parcelEvents, parcels } from '@/db/schema'
+import { contactSubscriptions, parcelEvents, parcels } from '@/db/schema'
+import { liveContacts } from '@/db/live-contacts'
 import { callListEntries, callLog } from '@/db/schema-call-lists'
 import { GRANT_DEED } from '@/digest/types'
 import type { PriorCall, SignalContact, SignalEvent, StreetSale } from '@/signals/types'
@@ -22,10 +23,10 @@ function asInt(value: number | string | null | undefined) {
 export async function loadCallListInput(db: Db, accountId: string, asOf: Date) {
   const people = await db
     .select({
-      id: contacts.id,
-      name: contacts.name,
-      status: contacts.status,
-      closeDate: contacts.closeDate,
+      id: liveContacts.id,
+      name: liveContacts.name,
+      status: liveContacts.status,
+      closeDate: liveContacts.closeDate,
       parcelId: parcels.id,
       address: parcels.address,
       zip: parcels.zip,
@@ -35,16 +36,16 @@ export async function loadCallListInput(db: Db, accountId: string, asOf: Date) {
       subContactId: contactSubscriptions.contactId,
       unsubscribedAt: contactSubscriptions.unsubscribedAt,
     })
-    .from(contacts)
-    .leftJoin(parcels, eq(parcels.id, contacts.parcelId))
+    .from(liveContacts)
+    .leftJoin(parcels, eq(parcels.id, liveContacts.parcelId))
     .leftJoin(
       contactSubscriptions,
       and(
-        eq(contactSubscriptions.contactId, contacts.id),
+        eq(contactSubscriptions.contactId, liveContacts.id),
         eq(contactSubscriptions.scope, 'monthly'),
       ),
     )
-    .where(eq(contacts.accountId, accountId))
+    .where(eq(liveContacts.accountId, accountId))
 
   const parcelIds = people.map((row) => row.parcelId).filter((id): id is string => Boolean(id))
   const events = parcelIds.length

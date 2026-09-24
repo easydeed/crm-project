@@ -86,15 +86,17 @@ export const contacts = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     accountId: uuid('account_id')
       .notNull()
-      .references(() => accounts.id),
+      .references(() => accounts.id, { onDelete: 'cascade' }),
     name: text('name').notNull(),
     email: text('email').notNull(),
     phone: text('phone'),
     addressRaw: text('address_raw').notNull(),
-    parcelId: uuid('parcel_id').references(() => parcels.id),
+    parcelId: uuid('parcel_id').references(() => parcels.id, { onDelete: 'restrict' }),
     closeDate: date('close_date'),
     notes: text('notes'),
     homeownerAddressAt: timestamp('homeowner_address_at', { withTimezone: true }),
+    /** Soft delete. Read contacts only through src/db/live-contacts.ts. */
+    deletedAt: timestamp('deleted_at', { withTimezone: true }),
     status: contactStatusEnum('status').notNull(),
     reviewState: contactReviewStateEnum('review_state').notNull().default('pending'),
     matchSource: contactMatchSourceEnum('match_source').notNull().default('auto'),
@@ -127,7 +129,7 @@ export const groups = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     accountId: uuid('account_id')
       .notNull()
-      .references(() => accounts.id),
+      .references(() => accounts.id, { onDelete: 'cascade' }),
     name: text('name').notNull(),
   },
   (t) => [
@@ -154,7 +156,7 @@ export const parcelEvents = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     parcelId: uuid('parcel_id')
       .notNull()
-      .references(() => parcels.id),
+      .references(() => parcels.id, { onDelete: 'cascade' }),
     county: text('county').notNull(),
     kind: text('kind').notNull(),
     docNumber: text('doc_number').notNull(),
@@ -192,7 +194,7 @@ export const sends = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     accountId: uuid('account_id')
       .notNull()
-      .references(() => accounts.id),
+      .references(() => accounts.id, { onDelete: 'cascade' }),
     scheduledFor: timestamp('scheduled_for', { withTimezone: true }).notNull(),
     state: text('state').notNull(),
     composedCount: integer('composed_count').notNull().default(0),
@@ -209,10 +211,10 @@ export const sendRecipients = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     sendId: uuid('send_id')
       .notNull()
-      .references(() => sends.id),
+      .references(() => sends.id, { onDelete: 'cascade' }),
     contactId: uuid('contact_id')
       .notNull()
-      .references(() => contacts.id),
+      .references(() => contacts.id, { onDelete: 'no action' }), // deferred to commit: migration 0009
     html: text('html'),
     plainText: text('plain_text'),
     subject: text('subject'),
@@ -228,10 +230,10 @@ export const events = pgTable('events', {
   id: uuid('id').defaultRandom().primaryKey(),
   contactId: uuid('contact_id')
     .notNull()
-    .references(() => contacts.id),
+    .references(() => contacts.id, { onDelete: 'no action' }), // deferred to commit: migration 0009
   sendId: uuid('send_id')
     .notNull()
-    .references(() => sends.id),
+    .references(() => sends.id, { onDelete: 'cascade' }),
   kind: eventKindEnum('kind').notNull(),
   section: text('section'),
   createdAt: createdAt(),
@@ -240,7 +242,7 @@ export const events = pgTable('events', {
 export const subscriptions = pgTable('subscriptions', {
   accountId: uuid('account_id')
     .primaryKey()
-    .references(() => accounts.id),
+    .references(() => accounts.id, { onDelete: 'no action' }),
   stripeCustomerId: text('stripe_customer_id'),
   stripeSubId: text('stripe_sub_id'),
   plan: text('plan').notNull(),
@@ -252,7 +254,7 @@ export const accountAddons = pgTable(
   {
     accountId: uuid('account_id')
       .notNull()
-      .references(() => accounts.id),
+      .references(() => accounts.id, { onDelete: 'cascade' }),
     addonKey: text('addon_key').notNull(),
     enabled: boolean('enabled').notNull().default(false),
     config: jsonb('config').$type<Record<string, unknown>>().notNull().default({}),
@@ -263,10 +265,9 @@ export const accountAddons = pgTable(
 
 export const adminActions = pgTable('admin_actions', {
   id: uuid('id').defaultRandom().primaryKey(),
-  adminAccountId: uuid('admin_account_id').references(() => accounts.id),
-  targetAccountId: uuid('target_account_id')
-    .notNull()
-    .references(() => accounts.id),
+  adminAccountId: uuid('admin_account_id').references(() => accounts.id, { onDelete: 'set null' }),
+  // An audit log that deletes itself with the thing it audited is not an audit log.
+  targetAccountId: uuid('target_account_id').references(() => accounts.id, { onDelete: 'set null' }),
   action: text('action').notNull(),
   detail: jsonb('detail').$type<Record<string, unknown>>().notNull().default({}),
   createdAt: createdAt(),
@@ -281,7 +282,7 @@ export const contactMatchCandidates = pgTable(
       .references(() => contacts.id, { onDelete: 'cascade' }),
     parcelId: uuid('parcel_id')
       .notNull()
-      .references(() => parcels.id),
+      .references(() => parcels.id, { onDelete: 'cascade' }),
     confidence: doublePrecision('confidence').notNull(),
     reason: text('reason').notNull(),
     rank: integer('rank').notNull(),

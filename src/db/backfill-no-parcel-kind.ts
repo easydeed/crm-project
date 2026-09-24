@@ -1,21 +1,21 @@
 import { and, eq, inArray } from 'drizzle-orm'
-import { contacts } from '@/db/schema'
+import { contactsTable, liveContacts } from '@/db/live-contacts'
 import type { ParcelDb } from '@/matching/candidates'
 import { noParcelKindFor } from '@/matching/no-parcel-kind'
 
 export async function backfillNoParcelKind(db: ParcelDb, contactIds?: string[]) {
   const rows = await db
     .select({
-      id: contacts.id,
-      status: contacts.status,
-      addressRaw: contacts.addressRaw,
-      noParcelKind: contacts.noParcelKind,
+      id: liveContacts.id,
+      status: liveContacts.status,
+      addressRaw: liveContacts.addressRaw,
+      noParcelKind: liveContacts.noParcelKind,
     })
-    .from(contacts)
+    .from(liveContacts)
     .where(
       and(
-        eq(contacts.status, 'no_parcel'),
-        contactIds?.length ? inArray(contacts.id, contactIds) : undefined,
+        eq(liveContacts.status, 'no_parcel'),
+        contactIds?.length ? inArray(liveContacts.id, contactIds) : undefined,
       ),
     )
 
@@ -24,9 +24,9 @@ export async function backfillNoParcelKind(db: ParcelDb, contactIds?: string[]) 
     const kind = noParcelKindFor(row.status, row.addressRaw)
     if (!kind || kind === row.noParcelKind) continue
     await db
-      .update(contacts)
+      .update(contactsTable)
       .set({ noParcelKind: kind })
-      .where(and(eq(contacts.id, row.id), eq(contacts.status, 'no_parcel')))
+      .where(and(eq(contactsTable.id, row.id), eq(contactsTable.status, 'no_parcel')))
     updated += 1
   }
   return { total: rows.length, updated }

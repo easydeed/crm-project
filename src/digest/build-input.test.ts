@@ -10,7 +10,7 @@ test('buildDigestInput takes db, accountId, contactId, and asOf', () => {
   expect(src).toContain(
     'export async function buildDigestInput(\n  db: DigestDb,\n  accountId: string,\n  contactId: string,\n  asOf: Date,',
   )
-  expect(src).toContain('eq(contacts.accountId, accountId)')
+  expect(src).toContain('eq(liveContacts.accountId, accountId)')
   expect(src).toContain('streetNameNorm')
   expect(src).toContain('withinTrailingMonths')
   expect(src).not.toMatch(/Date\.now\s*\(/)

@@ -188,16 +188,14 @@ describe.skipIf(!databaseUrl)('OR-017b call log against the database', () => {
     expect(JSON.stringify(panel)).not.toMatch(/balance|owe|remaining|payoff/i)
   })
 
-  test('deleting a person removes their call log', async () => {
+  test('Delete keeps the call log as history and takes the person off the call list', async () => {
     const accountId = await account('delete')
     const gone = await homeowner(accountId, 'Gone Person')
     await build(accountId, june)
     await logCall(accountId, gone, 'called', june)
-    // Other tables still block deleting a subscribed person (reported, out of scope here).
-    await getRuntimeDb().db.delete(callListEntries).where(eq(callListEntries.contactId, gone))
-    await getRuntimeDb().db.delete(contactSubscriptions).where(eq(contactSubscriptions.contactId, gone))
     expect(await deleteContactsForAccount(accountId, [gone])).toBe(1)
-    const left = await getRuntimeDb().db.select().from(callLog).where(eq(callLog.contactId, gone))
-    expect(left).toHaveLength(0)
+    expect(await getRuntimeDb().db.select().from(callLog).where(eq(callLog.contactId, gone))).toHaveLength(1)
+    const list = await loadCallList(accountId, june)
+    expect(list.kind === 'list' && list.entries.some((entry) => entry.contactId === gone)).toBe(false)
   })
 })
