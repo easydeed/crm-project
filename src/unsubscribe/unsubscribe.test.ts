@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { expect, test } from 'vitest'
 import { GET } from '@/app/u/[token]/route'
 import { listUnsubscribeHeaders } from '@/unsubscribe/links'
+import { stopsState } from '@/suppression/lift'
 import { renderUnsubscribeHtml } from '@/unsubscribe/html'
 import { readUnsubscribeToken, signUnsubscribeToken } from '@/unsubscribe/token'
 import type { UnsubscribeView } from '@/unsubscribe/load'
@@ -43,7 +44,7 @@ test('every message carries both unsubscribe headers', () => {
   expect(src('../jobs/compose.ts')).toContain('applyUnsubscribeLinks')
 })
 
-function view(scopes: UnsubscribeView['scopes'], blocked = false, suppressed = false): UnsubscribeView {
+function view(scopes: UnsubscribeView['scopes'], blocked = false, suppressed = false, reversible = false): UnsubscribeView {
   return {
     contactId: randomUUID(),
     scope: 'monthly',
@@ -53,6 +54,7 @@ function view(scopes: UnsubscribeView['scopes'], blocked = false, suppressed = f
     scopes,
     blocked,
     suppressed,
+    reversible,
     notice: null,
   }
 }
@@ -101,12 +103,28 @@ test('a bounced address cannot sign back up from this page', () => {
   expect(src('../app/u/[token]/route.ts')).toContain("content-type': 'text/plain; charset=utf-8'")
 })
 
-test('once the address is suppressed, the page never offers to keep them coming', () => {
-  const html = renderUnsubscribeHtml(
-    { ...view([{ scope: 'monthly', active: false }], false, true), notice: 'These emails have stopped.' },
-    'token',
-  )
-  expect(html).toContain('These emails have stopped.')
-  expect(html).not.toContain('Actually, keep them coming')
-  expect(src('../app/u/[token]/route.ts')).toContain('const allowed = !current.blocked && !current.suppressed')
+test('keep them coming shows only when every stop is the homeowner’s own unsubscribe', () => {
+  const stopped = (suppressed: boolean, reversible: boolean) =>
+    renderUnsubscribeHtml(
+      { ...view([{ scope: 'monthly', active: false }], false, suppressed, reversible), notice: 'These emails have stopped.' },
+      'token',
+    )
+  expect(stopped(true, true)).toContain('Actually, keep them coming')
+  expect(stopped(true, false)).not.toContain('Actually, keep them coming')
+  expect(src('../app/u/[token]/route.ts')).toContain('keepComing(parsed.contactId, parsed.scope, current.suppressed)')
+})
+
+test('a bounce or complaint anywhere on the address makes it irreversible', () => {
+  const self = { reason: 'unsubscribed', scope: 'monthly', source: 'one_click' }
+  expect(stopsState([self], 'monthly')).toEqual({ blocked: false, suppressed: true, reversible: true })
+  expect(stopsState([{ ...self, source: 'unsubscribe_page' }], 'monthly').reversible).toBe(true)
+  expect(stopsState([self, { reason: 'complained', scope: 'all', source: 'postmark_webhook' }], 'monthly')).toEqual({
+    blocked: true,
+    suppressed: true,
+    reversible: false,
+  })
+  expect(stopsState([{ reason: 'bounced', scope: 'all', source: 'postmark_webhook' }], 'monthly').reversible).toBe(false)
+  expect(stopsState([{ ...self, source: 'backfill' }], 'monthly').reversible).toBe(false)
+  expect(stopsState([], 'monthly')).toEqual({ blocked: false, suppressed: false, reversible: false })
+  expect(stopsState([{ ...self, scope: 'weekly' }], 'monthly').reversible).toBe(false)
 })

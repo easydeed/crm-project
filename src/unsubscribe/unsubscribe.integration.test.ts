@@ -127,7 +127,7 @@ describe.skipIf(!sessionUrl)('homeowner unsubscribe', () => {
     await resetRuntimeDb()
   })
 
-  test('one click leaves for good, and a later token is the same', async () => {
+  test('one click leaves, undo restores, and a later token is the same', async () => {
     const accountId = await newAccount()
     const street = `Leave ${randomUUID().slice(0, 8)} Ave`
     const person = await insertPerson(accountId, `1142 ${street}, La Verne, CA 91750`)
@@ -146,8 +146,8 @@ describe.skipIf(!sessionUrl)('homeowner unsubscribe', () => {
     const formStop = await post(first, 'intent=stop')
     const stopped = await formStop.text()
     expect(stopped).toContain('These emails have stopped.')
-    // OR-014a: a stop writes a suppression, and nothing lifts it — so no undo is offered.
-    expect(stopped).not.toContain('Actually, keep them coming')
+    // OR-014b: the homeowner's own unsubscribe is the one stop they can undo.
+    expect(stopped).toContain('Actually, keep them coming')
     expect(stopped).not.toMatch(/are you sure|miss out|before you go/i)
 
     const response = await post(first, 'List-Unsubscribe=One-Click')
@@ -181,12 +181,12 @@ describe.skipIf(!sessionUrl)('homeowner unsubscribe', () => {
     expect(rows.map((row) => row.contactId)).not.toContain(person.id)
 
     const undo = await post(first, 'intent=keep')
-    expect(await undo.text()).not.toContain('These emails will keep coming.')
-    const [still] = await db
+    expect(await undo.text()).toContain('These emails will keep coming.')
+    const [restored] = await db
       .select()
       .from(contactSubscriptions)
       .where(eq(contactSubscriptions.contactId, person.id))
-    expect(still?.unsubscribedAt).toBeTruthy()
+    expect(restored?.unsubscribedAt).toBeNull()
   })
 
   test('a failed rematch stays subscribed and a match confirms the new house', async () => {

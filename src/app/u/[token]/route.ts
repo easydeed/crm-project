@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { addressNotice, keepScope, stopScope, updateHomeownerAddress } from '@/unsubscribe/act'
+import { addressNotice, keepComing, stopScope, updateHomeownerAddress } from '@/unsubscribe/act'
 import { loadUnsubscribeView } from '@/unsubscribe/load'
 import { renderUnsubscribeHtml } from '@/unsubscribe/html'
 import { readUnsubscribeToken } from '@/unsubscribe/token'
@@ -59,9 +59,8 @@ export async function POST(
   }
 
   if (intent === 'keep') {
-    const allowed = !current.blocked && !current.suppressed
-    if (allowed) await keepScope(parsed.contactId, parsed.scope)
-    return page(token, allowed ? 'These emails will keep coming.' : null)
+    const kept = await keepComing(parsed.contactId, parsed.scope, current.suppressed)
+    return page(token, kept ? 'These emails will keep coming.' : null)
   }
 
   await stopScope(parsed.contactId, parsed.scope, fromForm ? 'unsubscribe_page' : 'one_click')

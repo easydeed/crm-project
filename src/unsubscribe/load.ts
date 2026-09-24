@@ -1,7 +1,7 @@
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts, contactSubscriptions, contacts, mailEvents, parcels } from '@/db/schema'
-import { isSuppressed } from '@/suppression/suppressions'
+import { addressStops, stopsState } from '@/suppression/lift'
 import { readUnsubscribeToken, type UnsubscribeScope } from '@/unsubscribe/token'
 
 export type ScopeRow = { scope: UnsubscribeScope; active: boolean }
@@ -14,8 +14,10 @@ export type UnsubscribeView = {
   agentName: string
   scopes: ScopeRow[]
   blocked: boolean
-  /** This address is on the suppression list for this scope; nothing can lift it. */
+  /** This address is on the suppression list for this scope. */
   suppressed: boolean
+  /** Every stop on this address is the homeowner's own unsubscribe, so they may undo it. */
+  reversible: boolean
   notice: string | null
 }
 
@@ -63,6 +65,8 @@ export async function loadUnsubscribeView(token: string): Promise<UnsubscribeVie
     )
     .limit(1)
 
+  const state = stopsState(await addressStops(db, row.email), parsed.scope)
+
   const scopes: ScopeRow[] = subs
     .filter((sub) => sub.scope === 'monthly' || sub.scope === 'weekly')
     .map((sub) => ({
@@ -77,8 +81,9 @@ export async function loadUnsubscribeView(token: string): Promise<UnsubscribeVie
     addressRaw: row.addressRaw,
     agentName: row.agentName,
     scopes,
-    blocked: Boolean(blocked),
-    suppressed: await isSuppressed(db, row.email, parsed.scope),
+    blocked: Boolean(blocked) || state.blocked,
+    suppressed: state.suppressed,
+    reversible: state.reversible,
     notice: null,
   }
 }
