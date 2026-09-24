@@ -108,12 +108,13 @@ export const contacts = pgTable(
     ),
   ],
 )
+// Created with every contact by trigger contacts_subscribe_on_insert (migration 0006); opt-outs live in suppressions.
 export const contactSubscriptions = pgTable(
   'contact_subscriptions',
   {
     contactId: uuid('contact_id')
       .notNull()
-      .references(() => contacts.id),
+      .references(() => contacts.id, { onDelete: 'cascade' }),
     scope: subscriptionScopeEnum('scope').notNull(),
     unsubscribedAt: timestamp('unsubscribed_at', { withTimezone: true }),
   },

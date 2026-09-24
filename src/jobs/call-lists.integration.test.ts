@@ -117,7 +117,6 @@ describe.skipIf(!databaseUrl)('call lists against the session pooler', () => {
       status: 'matched',
     })
     contactIds.push(contactId)
-    await db.insert(contactSubscriptions).values({ contactId, scope: 'monthly' })
 
     const payload = { accountId: created.accountId, asOf: '2026-06-15T16:00:00.000Z' }
     const ctx = { jobId: 'or016', attempt: 1, now: new Date(payload.asOf) }

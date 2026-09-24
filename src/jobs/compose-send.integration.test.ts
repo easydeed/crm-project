@@ -100,9 +100,6 @@ async function insertPerson(
     status: parcelId ? status : 'no_parcel',
     parcelId,
   })
-  if (status === 'matched' && parcelId) {
-    await db.insert(contactSubscriptions).values({ contactId: id, scope: 'monthly' })
-  }
   return id
 }
 

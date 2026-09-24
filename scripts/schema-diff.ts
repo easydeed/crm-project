@@ -27,7 +27,17 @@ async function describe(client: Client) {
   const extensions = await client<{ line: string }[]>`
     select format('extension %s in %s', e.extname, n.nspname) as line
     from pg_extension e join pg_namespace n on n.oid = e.extnamespace where e.extname = 'pg_trgm'`
-  for (const set of [tables, columns, constraints, indexes, enums, extensions]) {
+  // Triggers and our own functions carry behavior (subscribe_new_contact); extension functions are excluded.
+  const triggers = await client<{ line: string }[]>`
+    select format('trigger %s', pg_get_triggerdef(t.oid)) as line
+    from pg_trigger t join pg_class rel on rel.oid = t.tgrelid join pg_namespace ns on ns.oid = rel.relnamespace
+    where ns.nspname = 'public' and not t.tgisinternal`
+  const functions = await client<{ line: string }[]>`
+    select format('function %s', regexp_replace(pg_get_functiondef(p.oid), '[[:space:]]+', ' ', 'g')) as line
+    from pg_proc p join pg_namespace ns on ns.oid = p.pronamespace
+    where ns.nspname = 'public'
+      and not exists (select 1 from pg_depend d where d.objid = p.oid and d.deptype = 'e')`
+  for (const set of [tables, columns, constraints, indexes, enums, extensions, triggers, functions]) {
     for (const row of set) lines.push(row.line)
   }
   return new Set(lines)

@@ -90,7 +90,6 @@ describe.skipIf(!databaseUrl)('OR-014b keep them coming against the database', (
     emails.push(email)
     const contactId = randomUUID()
     await db.insert(contacts).values({ id: contactId, accountId, name: 'Marilyn Okafor', email, addressRaw: `1142 ${street}, La Verne, CA 91750`, closeDate: '2019-03-14', status: 'matched', parcelId: home })
-    await db.insert(contactSubscriptions).values({ contactId, scope: 'monthly' })
     return { accountId, contactId, email, token: signUnsubscribeToken(contactId, 'monthly') }
   }
 
@@ -144,7 +143,7 @@ describe.skipIf(!databaseUrl)('OR-014b keep them coming against the database', (
     expect(await (await post(token, 'intent=keep')).text()).toContain(BLOCKED)
     expect((await stops(email)).map((s) => s.reason)).toEqual(['bounced'])
     const [sub] = await getRuntimeDb().db.select().from(contactSubscriptions).where(eq(contactSubscriptions.contactId, contactId))
-    expect(sub?.unsubscribedAt).not.toBeNull()
+    expect(sub?.unsubscribedAt).toBeInstanceOf(Date)
     expect(await getRuntimeDb().db.select().from(suppressionLifts).where(eq(suppressionLifts.emailHash, emailHash(email)))).toHaveLength(0)
   })
 
@@ -159,7 +158,7 @@ describe.skipIf(!databaseUrl)('OR-014b keep them coming against the database', (
       .db.select()
       .from(contactSubscriptions)
       .where(and(eq(contactSubscriptions.contactId, contactId), eq(contactSubscriptions.scope, 'monthly')))
-    expect(sub?.unsubscribedAt).not.toBeNull()
+    expect(sub?.unsubscribedAt).toBeInstanceOf(Date)
     expect(await getRuntimeDb().db.select().from(suppressionLifts).where(eq(suppressionLifts.emailHash, emailHash(email)))).toHaveLength(0)
   })
 })
