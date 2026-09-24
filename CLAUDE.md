@@ -17,6 +17,8 @@ These apply to every task without being restated. A change that violates one of 
 9. **Every MLS-sourced block renders `<MlsAttribution>`.** No exceptions, including previews and sample pages.
 10. **Accessibility**: visible focus rings, 4.5:1 contrast minimum, nothing under 15px carries information, `prefers-reduced-motion` respected.
 
+**Child tables of contacts.** Any query on a table with a contact_id must decide whether it includes soft-deleted contacts, and join through liveContacts unless it deliberately includes them. The contacts-access source test cannot see this shape. When adding a table that references contacts, write the live-join decision into its first query and say which you chose in the report. `CONTACT_CHILD_TABLES` in `src/db/live-contacts.ts` records each decision; `contact-child-tables.test.ts` fails the build until a new table is listed there.
+
 ## Before coding, always
 
 1. Inspect the actual code path. Do not guess file names, field names, or function signatures.

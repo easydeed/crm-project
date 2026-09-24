@@ -13,12 +13,16 @@ const HELPER = 'src/db/live-contacts.ts'
 const SCHEMA = /^src\/db\/schema[\w-]*\.ts$/
 const NAMESPACE_SCHEMA_OK = ['src/db/client.ts', 'src/matching/candidates.ts']
 
-function sourceFiles(dir: string): string[] {
+function sourceFilesAll(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const full = path.join(dir, name)
-    if (statSync(full).isDirectory()) return sourceFiles(full)
-    return /\.(ts|tsx)$/.test(name) && !/\.test\.ts$/.test(name) ? [full] : []
+    if (statSync(full).isDirectory()) return sourceFilesAll(full)
+    return /\.(ts|tsx|mjs)$/.test(name) ? [full] : []
   })
+}
+
+function sourceFiles(dir: string): string[] {
+  return sourceFilesAll(dir).filter((file) => /\.(ts|tsx)$/.test(file) && !/\.test\.ts$/.test(file))
 }
 
 /** Every way a file could reach the contacts table other than the one it is allowed. */
@@ -57,6 +61,50 @@ export function contactAccessViolations(file: string, src: string): string[] {
   }
   return found
 }
+
+/**
+ * Tests and scripts read contacts directly on purpose: fixtures must see raw rows to prove a
+ * delete. What they must never do is hand src a door, so they are scanned for that alone.
+ */
+export function contactDoorExports(src: string): string[] {
+  const found: string[] = []
+  const names = String.raw`\b(contacts|contactsTable|contactsIncludingDeleted)\b`
+  if (new RegExp(String.raw`export\s*\{[^}]*` + names + String.raw`[^}]*\}`).test(src)) found.push('exports a contacts binding')
+  if (new RegExp(String.raw`export\s+(const|let|var)\s+\w+\s*=\s*[^;\n]*` + names).test(src)) found.push('exports an alias of contacts')
+  if (/export\s+[^;]*from\s*['"][^'"]*(schema|live-contacts)['"]/.test(src)) found.push('re-exports the schema or live-contacts')
+  return found
+}
+
+function relative(full: string) {
+  return path.relative(root, full).split(path.sep).join('/')
+}
+
+test('no test file or script hands src a door to contacts, and src imports from neither', () => {
+  const tests = sourceFilesAll(path.join(root, 'src')).filter((f) => /\.test\.ts$/.test(f))
+  const scripts = sourceFilesAll(path.join(root, 'scripts'))
+  const doors = [...tests, ...scripts]
+    .map(relative)
+    .filter((file) => file !== 'src/db/contacts-access.test.ts')
+    .flatMap((file) => contactDoorExports(readFileSync(path.join(root, file), 'utf8')).map((why) => `${file}: ${why}`))
+  expect(doors).toEqual([])
+  const crossings = sourceFiles(path.join(root, 'src')).flatMap((full) => {
+    const text = readFileSync(full, 'utf8')
+    return /from\s*['"][^'"]*(\.test['"]|\.test\.ts['"]|scripts\/)/.test(text) ? [relative(full)] : []
+  })
+  expect(crossings).toEqual([])
+})
+
+test('the door check catches each way a test or script could export one', () => {
+  const doors = [
+    "export { contactsTable as people } from '@/db/live-contacts'",
+    "export { contacts } from '@/db/schema'",
+    "import { contacts } from '@/db/schema'\nexport { contacts as people }",
+    "import { contactsTable } from '@/db/live-contacts'\nexport const people = contactsTable",
+    "export * from '@/db/live-contacts'",
+  ]
+  for (const door of doors) expect(contactDoorExports(door), door).not.toEqual([])
+  expect(contactDoorExports("import { contacts } from '@/db/schema'\nawait db.select().from(contacts)")).toEqual([])
+})
 
 test('every read of contacts goes through live-contacts, and only the allowlist sees deleted people', () => {
   const problems = sourceFiles(path.join(root, 'src')).flatMap((full) => {
