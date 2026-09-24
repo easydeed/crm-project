@@ -46,3 +46,9 @@ export const callLog = pgTable(
   },
   (t) => [uniqueIndex('call_log_account_contact_period_uidx').on(t.accountId, t.contactId, t.period)],
 )
+
+export const contactNotes = pgTable('contact_notes', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  contactId: uuid('contact_id').notNull().references(() => contacts.id, { onDelete: 'cascade' }),
+  body: text('body').notNull(),
+})
