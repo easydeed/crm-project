@@ -1,7 +1,8 @@
 import { and, desc, eq, ne } from 'drizzle-orm'
 import { CA_TAX } from '@/config/ca-tax'
 import type { createDb } from '@/db/client'
-import { accounts, contacts, parcelEvents, parcels } from '@/db/schema'
+import { accounts, parcelEvents, parcels } from '@/db/schema'
+import { liveContacts } from '@/db/live-contacts'
 import { withinTrailingMonths } from '@/digest/format'
 import { GRANT_DEED } from '@/digest/types'
 import type { DigestEvent, DigestInput, DigestParcel } from '@/digest/types'
@@ -89,9 +90,9 @@ export async function buildDigestInput(
 ): Promise<DigestInput | null> {
   const [row] = await db
     .select({
-      name: contacts.name,
-      closeDate: contacts.closeDate,
-      parcelId: contacts.parcelId,
+      name: liveContacts.name,
+      closeDate: liveContacts.closeDate,
+      parcelId: liveContacts.parcelId,
       agentName: accounts.name,
       brokerage: accounts.brokerage,
       dre: accounts.dre,
@@ -109,10 +110,10 @@ export async function buildDigestInput(
       useCode: parcels.useCode,
       assessedValue: parcels.assessedValue,
     })
-    .from(contacts)
-    .innerJoin(accounts, eq(accounts.id, contacts.accountId))
-    .leftJoin(parcels, eq(parcels.id, contacts.parcelId))
-    .where(and(eq(contacts.id, contactId), eq(contacts.accountId, accountId)))
+    .from(liveContacts)
+    .innerJoin(accounts, eq(accounts.id, liveContacts.accountId))
+    .leftJoin(parcels, eq(parcels.id, liveContacts.parcelId))
+    .where(and(eq(liveContacts.id, contactId), eq(liveContacts.accountId, accountId)))
     .limit(1)
 
   if (!row?.parcelId || !row.address || !row.city || !row.zip) return null

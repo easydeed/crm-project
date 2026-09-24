@@ -1,6 +1,7 @@
 import { and, asc, eq, inArray, sql } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
-import { contacts, groupMembers, groups } from '@/db/schema'
+import { groupMembers, groups } from '@/db/schema'
+import { liveContacts } from '@/db/live-contacts'
 
 export type GroupListRow = {
   id: string
@@ -18,10 +19,12 @@ export async function listGroupsForAccount(accountId: string): Promise<GroupList
     .select({
       id: groups.id,
       name: groups.name,
-      count: sql<number>`count(${groupMembers.contactId})::int`,
+      // Soft-deleted people keep their membership (a restore brings it back) but are not counted.
+      count: sql<number>`count(${liveContacts.id})::int`,
     })
     .from(groups)
     .leftJoin(groupMembers, eq(groupMembers.groupId, groups.id))
+    .leftJoin(liveContacts, eq(liveContacts.id, groupMembers.contactId))
     .where(eq(groups.accountId, accountId))
     .groupBy(groups.id, groups.name)
     .orderBy(asc(groups.name))
@@ -90,9 +93,9 @@ async function ownedGroupAndContacts(
   if (!group) return { ok: false as const, error: 'We could not find that group.' }
   if (!contactIds.length) return { ok: true as const, ids: [] as string[] }
   const owned = await db
-    .select({ id: contacts.id })
-    .from(contacts)
-    .where(and(eq(contacts.accountId, accountId), inArray(contacts.id, contactIds)))
+    .select({ id: liveContacts.id })
+    .from(liveContacts)
+    .where(and(eq(liveContacts.accountId, accountId), inArray(liveContacts.id, contactIds)))
   if (owned.length !== contactIds.length) {
     return { ok: false as const, error: 'Some of those people are not on your list.' }
   }

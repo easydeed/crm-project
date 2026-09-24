@@ -1,12 +1,7 @@
 import { and, eq, isNull } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
-import {
-  accounts,
-  contactSubscriptions,
-  contacts,
-  sendRecipients,
-  sends,
-} from '@/db/schema'
+import { accounts, contactSubscriptions, sendRecipients, sends } from '@/db/schema'
+import { liveContacts } from '@/db/live-contacts'
 import { deliverRecipient, isPermanentDeliveryError } from '@/jobs/deliver'
 import { maybePauseForComplaints } from '@/jobs/complaint-pause'
 import { isSuppressed } from '@/suppression/suppressions'
@@ -50,9 +45,9 @@ export const sendMail: JobHandler = async (payload, ctx) => {
   let retryable = 0
   await mapLimit(pending, SEND_CONCURRENCY, async (row) => {
     const [contact] = await db
-      .select({ email: contacts.email })
-      .from(contacts)
-      .where(and(eq(contacts.id, row.contactId), eq(contacts.accountId, account.id)))
+      .select({ email: liveContacts.email })
+      .from(liveContacts)
+      .where(and(eq(liveContacts.id, row.contactId), eq(liveContacts.accountId, account.id)))
       .limit(1)
     if (!contact) {
       await db

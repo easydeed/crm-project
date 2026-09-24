@@ -2,7 +2,8 @@ import { and, asc, count, eq, inArray, or } from 'drizzle-orm'
 import { recordedOwnersForParcels } from '@/db/recorded-owner'
 import type { ReviewCandidateCard, ReviewQueueItem } from '@/db/review-types'
 import { getRuntimeDb } from '@/db/runtime'
-import { contactMatchCandidates, contacts, parcels } from '@/db/schema'
+import { contactMatchCandidates, parcels } from '@/db/schema'
+import { liveContacts } from '@/db/live-contacts'
 import type { ParcelDb } from '@/matching/candidates'
 import {
   resolveAddressMatch,
@@ -21,29 +22,29 @@ type ContactRow = {
 }
 
 const contactCols = {
-  id: contacts.id,
-  name: contacts.name,
-  addressRaw: contacts.addressRaw,
-  status: contacts.status,
-  reviewState: contacts.reviewState,
-  parcelId: contacts.parcelId,
+  id: liveContacts.id,
+  name: liveContacts.name,
+  addressRaw: liveContacts.addressRaw,
+  status: liveContacts.status,
+  reviewState: liveContacts.reviewState,
+  parcelId: liveContacts.parcelId,
 }
 
 export async function listReviewQueueForAccount(accountId: string) {
   const { db } = getRuntimeDb()
   const rows = await db
     .select(contactCols)
-    .from(contacts)
+    .from(liveContacts)
     .where(
       and(
-        eq(contacts.accountId, accountId),
+        eq(liveContacts.accountId, accountId),
         or(
-          eq(contacts.status, 'needs_review'),
-          and(eq(contacts.status, 'no_parcel'), eq(contacts.reviewState, 'pending')),
+          eq(liveContacts.status, 'needs_review'),
+          and(eq(liveContacts.status, 'no_parcel'), eq(liveContacts.reviewState, 'pending')),
         ),
       ),
     )
-    .orderBy(asc(contacts.name), asc(contacts.id))
+    .orderBy(asc(liveContacts.name), asc(liveContacts.id))
   return hydrateQueueItems(rows)
 }
 
@@ -51,8 +52,8 @@ export async function getReviewItemForAccount(accountId: string, contactId: stri
   const { db } = getRuntimeDb()
   const [row] = await db
     .select(contactCols)
-    .from(contacts)
-    .where(and(eq(contacts.accountId, accountId), eq(contacts.id, contactId)))
+    .from(liveContacts)
+    .where(and(eq(liveContacts.accountId, accountId), eq(liveContacts.id, contactId)))
     .limit(1)
   if (!row) return null
   const [item] = await hydrateQueueItems([row])
@@ -63,12 +64,12 @@ export async function countLeftOutForAccount(accountId: string) {
   const { db } = getRuntimeDb()
   const [row] = await db
     .select({ n: count() })
-    .from(contacts)
+    .from(liveContacts)
     .where(
       and(
-        eq(contacts.accountId, accountId),
-        eq(contacts.status, 'no_parcel'),
-        eq(contacts.reviewState, 'reviewed'),
+        eq(liveContacts.accountId, accountId),
+        eq(liveContacts.status, 'no_parcel'),
+        eq(liveContacts.reviewState, 'reviewed'),
       ),
     )
   return row?.n ?? 0
@@ -78,8 +79,8 @@ export async function loadWrongHouseReview(accountId: string, contactId: string)
   const { db } = getRuntimeDb()
   const [row] = await db
     .select(contactCols)
-    .from(contacts)
-    .where(and(eq(contacts.accountId, accountId), eq(contacts.id, contactId)))
+    .from(liveContacts)
+    .where(and(eq(liveContacts.accountId, accountId), eq(liveContacts.id, contactId)))
     .limit(1)
   if (!row || row.status !== 'matched' || !row.parcelId) return null
   const match = await resolveAddressMatch(db, row.addressRaw, undefined, row.parcelId)

@@ -1,7 +1,8 @@
 import { and, eq, gte, inArray, sql } from 'drizzle-orm'
 import { tallyDelivery } from '@/admin/delivery-math'
 import { getRuntimeDb } from '@/db/runtime'
-import { contactSubscriptions, contacts, mailEvents, sendRecipients, sends } from '@/db/schema'
+import { contactSubscriptions, mailEvents, sendRecipients, sends } from '@/db/schema'
+import { contactsIncludingDeleted } from '@/db/live-contacts'
 
 const WINDOW_MS = 30 * 24 * 60 * 60 * 1000
 
@@ -9,10 +10,10 @@ export async function loadDeliveryTotals(now = new Date(), accountId?: string) {
   const since = new Date(now.getTime() - WINDOW_MS)
   const { db } = getRuntimeDb()
   const sent = await db
-    .select({ email: contacts.email })
+    .select({ email: contactsIncludingDeleted.email })
     .from(sendRecipients)
     .innerJoin(sends, eq(sends.id, sendRecipients.sendId))
-    .innerJoin(contacts, eq(contacts.id, sendRecipients.contactId))
+    .innerJoin(contactsIncludingDeleted, eq(contactsIncludingDeleted.id, sendRecipients.contactId))
     .where(
       and(
         gte(sendRecipients.sentAt, since),
@@ -31,11 +32,11 @@ export async function loadDeliveryTotals(now = new Date(), accountId?: string) {
   const [unsub] = await db
     .select({ count: sql<number>`count(*)::int` })
     .from(contactSubscriptions)
-    .innerJoin(contacts, eq(contacts.id, contactSubscriptions.contactId))
+    .innerJoin(contactsIncludingDeleted, eq(contactsIncludingDeleted.id, contactSubscriptions.contactId))
     .where(
       and(
         gte(contactSubscriptions.unsubscribedAt, since),
-        accountId ? eq(contacts.accountId, accountId) : undefined,
+        accountId ? eq(contactsIncludingDeleted.accountId, accountId) : undefined,
       ),
     )
   return tallyDelivery(sent, events, unsub?.count ?? 0)

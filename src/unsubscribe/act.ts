@@ -1,7 +1,8 @@
 import { and, eq } from 'drizzle-orm'
 import { persistContactCandidates } from '@/db/persist-contact-candidates'
 import { getRuntimeDb } from '@/db/runtime'
-import { contactSubscriptions, contacts, parcels } from '@/db/schema'
+import { contactSubscriptions, parcels } from '@/db/schema'
+import { contactsIncludingDeleted, contactsTable } from '@/db/live-contacts'
 import { resolveAddressMatch } from '@/matching/resolve-match'
 import { liftSelfUnsubscribe } from '@/suppression/lift'
 import { suppress } from '@/suppression/suppressions'
@@ -15,7 +16,7 @@ export async function stopScope(
   now = new Date(),
 ) {
   const { db } = getRuntimeDb()
-  const [contact] = await db.select({ email: contacts.email }).from(contacts).where(eq(contacts.id, contactId)).limit(1)
+  const [contact] = await db.select({ email: contactsIncludingDeleted.email }).from(contactsIncludingDeleted).where(eq(contactsIncludingDeleted.id, contactId)).limit(1)
   if (contact) await suppress(db, contact.email, 'unsubscribed', scope, source, now)
   await db
     .insert(contactSubscriptions)
@@ -44,7 +45,7 @@ export async function keepScope(contactId: string, scope: UnsubscribeScope) {
 export async function keepComing(contactId: string, scope: UnsubscribeScope, suppressed: boolean) {
   const { db } = getRuntimeDb()
   if (suppressed) {
-    const [contact] = await db.select({ email: contacts.email }).from(contacts).where(eq(contacts.id, contactId)).limit(1)
+    const [contact] = await db.select({ email: contactsIncludingDeleted.email }).from(contactsIncludingDeleted).where(eq(contactsIncludingDeleted.id, contactId)).limit(1)
     if (!contact || !(await liftSelfUnsubscribe(db, contact.email, scope))) return false
   }
   await keepScope(contactId, scope)
@@ -66,7 +67,7 @@ export async function updateHomeownerAddress(
   const match = await resolveAddressMatch(db, trimmed)
   await db.transaction(async (tx) => {
     await tx
-      .update(contacts)
+      .update(contactsTable)
       .set({
         addressRaw: trimmed,
         status: match.status,
@@ -76,7 +77,7 @@ export async function updateHomeownerAddress(
         noParcelKind: match.noParcelKind,
         homeownerAddressAt: now,
       })
-      .where(eq(contacts.id, contactId))
+      .where(eq(contactsIncludingDeleted.id, contactId))
     await persistContactCandidates(tx, contactId, match.candidates, 'replace')
   })
   if (match.status === 'matched' && match.parcelId) {

@@ -56,6 +56,8 @@ pnpm db:migrate   # apply pending migrations
 
 Use `pnpm verify:fast` in the inner loop. Run the full `pnpm verify` once before opening the PR, and before reporting completion. Do not report PASS on unrun checks.
 
+Check `pnpm verify`'s exit code, never filtered output. A grep for success lines will miss a failure that stops the run early.
+
 Schema changes ship as generated SQL files in `drizzle/`, committed in the same PR. Never `drizzle-kit push`. CI builds a scratch database from zero for every run. crm-dev receives migrations only from CI after merge to main.
 
 ## Completion report

@@ -57,6 +57,20 @@
       "when": 1790214538398,
       "tag": "0007_subscriptions_cascade",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790227854006,
+      "tag": "0008_contact_cascade",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1790228228515,
+      "tag": "0009_deferred_history_fks",
+      "breakpoints": true
     }
   ]
 }

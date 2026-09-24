@@ -10,6 +10,13 @@ export function ImportResultView({ result }: { result: ImportSummary }) {
       <h2 className="text-[18px] font-semibold">
         {result.added === 1 ? '1 person is in.' : `${result.added} people are in.`}
       </h2>
+      {result.restored > 0 ? (
+        <p className="mt-3 text-[15px]">
+          {result.restored === 1
+            ? '1 person was already on your list and came back.'
+            : `${result.restored} people were already on your list and came back.`}
+        </p>
+      ) : null}
       <ul className="mt-4 flex flex-col gap-2 text-[15px]">
         <li>{result.matched} on the map</li>
         <li>{result.needsReview} need a look</li>

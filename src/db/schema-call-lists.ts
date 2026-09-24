@@ -7,10 +7,10 @@ export const callListEntries = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     accountId: uuid('account_id')
       .notNull()
-      .references(() => accounts.id),
+      .references(() => accounts.id, { onDelete: 'cascade' }),
     contactId: uuid('contact_id')
       .notNull()
-      .references(() => contacts.id),
+      .references(() => contacts.id, { onDelete: 'cascade' }),
     kind: text('kind').notNull(),
     detail: text('detail').notNull(),
     score: integer('score').notNull(),
@@ -35,7 +35,7 @@ export const callLog = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     accountId: uuid('account_id')
       .notNull()
-      .references(() => accounts.id),
+      .references(() => accounts.id, { onDelete: 'cascade' }),
     contactId: uuid('contact_id')
       .notNull()
       .references(() => contacts.id, { onDelete: 'cascade' }),

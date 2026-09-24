@@ -1,7 +1,8 @@
 import { and, eq, sql } from 'drizzle-orm'
 import { toCallList, type CallList, type CallPanel } from '@/app/app/call-list-view'
 import { getRuntimeDb } from '@/db/runtime'
-import { accounts, contacts, parcels } from '@/db/schema'
+import { accounts, parcels } from '@/db/schema'
+import { liveContacts } from '@/db/live-contacts'
 import { callListEntries, callLog } from '@/db/schema-call-lists'
 import { renderLoan } from '@/digest/blocks/loan'
 import { renderRecord } from '@/digest/blocks/record'
@@ -37,27 +38,27 @@ export async function loadCallList(accountId: string, now = new Date()): Promise
   const [counts] = await db
     .select({
       people: sql<number>`count(*)::int`,
-      matched: sql<number>`count(*) filter (where ${contacts.status} = 'matched')::int`,
+      matched: sql<number>`count(*) filter (where ${liveContacts.status} = 'matched')::int`,
     })
-    .from(contacts)
-    .where(eq(contacts.accountId, accountId))
+    .from(liveContacts)
+    .where(eq(liveContacts.accountId, accountId))
 
   const rows = await db
     .select({
       contactId: callListEntries.contactId,
-      name: contacts.name,
-      email: contacts.email,
-      phone: contacts.phone,
+      name: liveContacts.name,
+      email: liveContacts.email,
+      phone: liveContacts.phone,
       kind: callListEntries.kind,
       detail: callListEntries.detail,
       score: callListEntries.score,
       address: parcels.address,
-      closeDate: contacts.closeDate,
+      closeDate: liveContacts.closeDate,
       outcome: callLog.outcome,
     })
     .from(callListEntries)
-    .innerJoin(contacts, eq(contacts.id, callListEntries.contactId))
-    .leftJoin(parcels, eq(parcels.id, contacts.parcelId))
+    .innerJoin(liveContacts, eq(liveContacts.id, callListEntries.contactId))
+    .leftJoin(parcels, eq(parcels.id, liveContacts.parcelId))
     .leftJoin(
       callLog,
       and(

@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
-import { contactSubscriptions, contacts, mailEvents } from '@/db/schema'
+import { contactSubscriptions, mailEvents } from '@/db/schema'
+import { contactsIncludingDeleted } from '@/db/live-contacts'
 import { suppress } from '@/suppression/suppressions'
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -41,9 +42,9 @@ export async function recordPostmarkEvent(body: unknown, now = new Date()) {
   // Recorded by address, so it holds even when no contact matches or the contact is later deleted.
   await suppress(db, email, stop === 'spam_complaint' ? 'complained' : 'bounced', 'all', 'postmark_webhook', now)
   const matches = await db
-    .select({ id: contacts.id })
-    .from(contacts)
-    .where(sql`lower(${contacts.email}) = ${email.toLowerCase()}`)
+    .select({ id: contactsIncludingDeleted.id })
+    .from(contactsIncludingDeleted)
+    .where(sql`lower(${contactsIncludingDeleted.email}) = ${email.toLowerCase()}`)
   for (const contact of matches) {
     await db
       .insert(contactSubscriptions)

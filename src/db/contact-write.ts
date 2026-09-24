@@ -1,7 +1,7 @@
 import { and, eq, inArray } from 'drizzle-orm'
 import { persistContactCandidates } from '@/db/persist-contact-candidates'
 import { getRuntimeDb } from '@/db/runtime'
-import { contacts } from '@/db/schema'
+import { contactsTable, isLiveContact, liveContacts } from '@/db/live-contacts'
 import { resolveAddressMatch } from '@/matching/resolve-match'
 
 export type ContactWriteInput = {
@@ -21,11 +21,11 @@ export async function updateContactForAccount(
   const { db } = getRuntimeDb()
   const [existing] = await db
     .select({
-      id: contacts.id,
-      addressRaw: contacts.addressRaw,
+      id: liveContacts.id,
+      addressRaw: liveContacts.addressRaw,
     })
-    .from(contacts)
-    .where(and(eq(contacts.id, contactId), eq(contacts.accountId, accountId)))
+    .from(liveContacts)
+    .where(and(eq(liveContacts.id, contactId), eq(liveContacts.accountId, accountId)))
     .limit(1)
   if (!existing) return { ok: false, error: 'We could not find that person.' }
 
@@ -35,7 +35,7 @@ export async function updateContactForAccount(
   try {
     await db.transaction(async (tx) => {
       await tx
-        .update(contacts)
+        .update(contactsTable)
         .set({
           name: input.name,
           email: input.email,
@@ -54,7 +54,7 @@ export async function updateContactForAccount(
             : {}),
           ...(rematch ? { homeownerAddressAt: null } : {}),
         })
-        .where(and(eq(contacts.id, contactId), eq(contacts.accountId, accountId)))
+        .where(and(eq(contactsTable.id, contactId), eq(contactsTable.accountId, accountId), isLiveContact))
       if (match) {
         await persistContactCandidates(tx, contactId, match.candidates, 'replace')
       }
@@ -69,15 +69,21 @@ export async function updateContactForAccount(
   return { ok: true, rematched: Boolean(match) }
 }
 
+/**
+ * The agent's Delete: a soft delete. The person leaves every live read and every send path;
+ * their send history survives, and re-importing the address restores the row.
+ */
 export async function deleteContactsForAccount(
   accountId: string,
   contactIds: string[],
+  now = new Date(),
 ) {
   if (!contactIds.length) return 0
   const { db } = getRuntimeDb()
   const deleted = await db
-    .delete(contacts)
-    .where(and(eq(contacts.accountId, accountId), inArray(contacts.id, contactIds)))
-    .returning({ id: contacts.id })
+    .update(contactsTable)
+    .set({ deletedAt: now })
+    .where(and(eq(contactsTable.accountId, accountId), inArray(contactsTable.id, contactIds), isLiveContact))
+    .returning({ id: contactsTable.id })
   return deleted.length
 }

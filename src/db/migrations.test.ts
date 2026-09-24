@@ -35,3 +35,11 @@ test('drizzle-kit generate does not need DATABASE_URL', () => {
   expect(config).toContain('if (!url) return undefined')
   expect(config).toContain('assertSafeDatabaseUrl(url)')
 })
+
+test('every foreign key in the schema declares what happens on delete', () => {
+  for (const file of ['src/db/schema.ts', 'src/db/schema-call-lists.ts', 'src/db/schema-suppressions.ts', 'src/db/schema-jobs.ts', 'src/db/schema-mail.ts']) {
+    for (const call of read(file).match(/\.references\([^)]*\)[^)]*\)/g) ?? []) {
+      expect(call, file).toMatch(/onDelete: '(cascade|restrict|no action|set null)'/)
+    }
+  }
+})

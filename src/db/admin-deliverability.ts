@@ -3,7 +3,9 @@ import { getAccountById } from '@/db/accounts'
 import { loadDeliveryTotals } from '@/db/delivery-window'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts, adminActions } from '@/db/schema'
-import { EMAIL_HASH_SQL } from '@/suppression/hash'
+import { liveContacts } from '@/db/live-contacts'
+import { suppressions } from '@/db/schema-suppressions'
+import { EMAIL_HASH_SQL, emailHash } from '@/suppression/hash'
 import { ADMIN_UNPAUSE, COMPLAINT_PAUSE } from '@/db/system-pause'
 
 export type SuppressionRow = {
@@ -29,21 +31,28 @@ const REASON_LABEL: Record<string, string> = {
 }
 
 /**
- * Read from suppressions, which hold hashes only. An address shows when a contact
- * with that address still exists; otherwise it is not recoverable, by design.
+ * Read from suppressions, which hold hashes only. An address shows when a live contact
+ * with that address exists; otherwise it is not recoverable, by design.
  */
 async function listSuppressions(): Promise<SuppressionRow[]> {
   const { db } = getRuntimeDb()
-  const rows = await db.execute<{ id: string; reason: string; at: Date | string; email: string | null }>(sql.raw(`
-    select s.id, s.reason::text as reason, s.created_at as at,
-      (select c.email from contacts c where ${EMAIL_HASH_SQL('c.email')} = s.email_hash limit 1) as email
-    from suppressions s
-    order by s.created_at desc`))
+  const rows = await db
+    .select({ id: suppressions.id, emailHash: suppressions.emailHash, reason: suppressions.reason, at: suppressions.createdAt })
+    .from(suppressions)
+    .orderBy(desc(suppressions.createdAt))
+  const hashes = [...new Set(rows.map((row) => row.emailHash))]
+  const liveEmails = hashes.length
+    ? await db
+        .select({ email: liveContacts.email })
+        .from(liveContacts)
+        .where(inArray(sql.raw(EMAIL_HASH_SQL('"live_contacts"."email"')), hashes))
+    : []
+  const byHash = new Map(liveEmails.map((row) => [emailHash(row.email), row.email]))
   return rows.map((row) => ({
     id: row.id,
-    email: row.email,
+    email: byHash.get(row.emailHash) ?? null,
     reason: REASON_LABEL[row.reason] ?? row.reason,
-    at: new Date(row.at),
+    at: row.at,
   }))
 }
 

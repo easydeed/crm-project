@@ -1,6 +1,7 @@
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
-import { accounts, contactSubscriptions, contacts, mailEvents, parcels } from '@/db/schema'
+import { accounts, contactSubscriptions, mailEvents, parcels } from '@/db/schema'
+import { contactsIncludingDeleted } from '@/db/live-contacts'
 import { addressStops, stopsState } from '@/suppression/lift'
 import { readUnsubscribeToken, type UnsubscribeScope } from '@/unsubscribe/token'
 
@@ -31,18 +32,18 @@ export async function loadUnsubscribeView(token: string): Promise<UnsubscribeVie
   const { db } = getRuntimeDb()
   const [row] = await db
     .select({
-      id: contacts.id,
-      email: contacts.email,
-      addressRaw: contacts.addressRaw,
+      id: contactsIncludingDeleted.id,
+      email: contactsIncludingDeleted.email,
+      addressRaw: contactsIncludingDeleted.addressRaw,
       agentName: accounts.name,
       parcelAddress: parcels.address,
       parcelCity: parcels.city,
       parcelZip: parcels.zip,
     })
-    .from(contacts)
-    .innerJoin(accounts, eq(accounts.id, contacts.accountId))
-    .leftJoin(parcels, eq(parcels.id, contacts.parcelId))
-    .where(eq(contacts.id, parsed.contactId))
+    .from(contactsIncludingDeleted)
+    .innerJoin(accounts, eq(accounts.id, contactsIncludingDeleted.accountId))
+    .leftJoin(parcels, eq(parcels.id, contactsIncludingDeleted.parcelId))
+    .where(eq(contactsIncludingDeleted.id, parsed.contactId))
     .limit(1)
   if (!row) return null
 

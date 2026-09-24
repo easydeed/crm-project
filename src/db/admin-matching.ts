@@ -13,12 +13,8 @@ import {
 import { getAccountById } from '@/db/accounts'
 import { getRuntimeDb } from '@/db/runtime'
 import type { ContactMatchSource } from '@/db/review-types'
-import {
-  accounts,
-  contactMatchCandidates,
-  contacts,
-  parcels,
-} from '@/db/schema'
+import { accounts, contactMatchCandidates, parcels } from '@/db/schema'
+import { liveContacts } from '@/db/live-contacts'
 import type { NoParcelKind } from '@/matching/no-parcel-kind'
 import type { ContactMatchStatus } from '@/people/status'
 
@@ -55,14 +51,14 @@ export async function listMatchingOverviewForAdmin(adminAccountId: string) {
   const { db } = getRuntimeDb()
   const rows = await db
     .select({
-      accountId: contacts.accountId,
+      accountId: liveContacts.accountId,
       accountName: accounts.name,
-      status: contacts.status,
-      matchSource: contacts.matchSource,
-      noParcelKind: contacts.noParcelKind,
+      status: liveContacts.status,
+      matchSource: liveContacts.matchSource,
+      noParcelKind: liveContacts.noParcelKind,
     })
-    .from(contacts)
-    .innerJoin(accounts, eq(accounts.id, contacts.accountId))
+    .from(liveContacts)
+    .innerJoin(accounts, eq(accounts.id, liveContacts.accountId))
   const overall = matchingRates(rows)
   const byAccount = new Map<string, typeof rows>()
   for (const row of rows) {
@@ -93,21 +89,21 @@ export async function listMatchingFailuresForAdmin(
   const { db } = getRuntimeDb()
   const rows = await db
     .select({
-      contactId: contacts.id,
-      accountId: contacts.accountId,
+      contactId: liveContacts.id,
+      accountId: liveContacts.accountId,
       accountName: accounts.name,
-      addressRaw: contacts.addressRaw,
-      status: contacts.status,
-      matchSource: contacts.matchSource,
-      noParcelKind: contacts.noParcelKind,
-      reviewState: contacts.reviewState,
+      addressRaw: liveContacts.addressRaw,
+      status: liveContacts.status,
+      matchSource: liveContacts.matchSource,
+      noParcelKind: liveContacts.noParcelKind,
+      reviewState: liveContacts.reviewState,
       parcelApn: parcels.apn,
     })
-    .from(contacts)
-    .innerJoin(accounts, eq(accounts.id, contacts.accountId))
-    .leftJoin(parcels, eq(parcels.id, contacts.parcelId))
-    .where(filters.accountId ? eq(contacts.accountId, filters.accountId) : undefined)
-    .orderBy(asc(accounts.name), asc(contacts.addressRaw), asc(contacts.id))
+    .from(liveContacts)
+    .innerJoin(accounts, eq(accounts.id, liveContacts.accountId))
+    .leftJoin(parcels, eq(parcels.id, liveContacts.parcelId))
+    .where(filters.accountId ? eq(liveContacts.accountId, filters.accountId) : undefined)
+    .orderBy(asc(accounts.name), asc(liveContacts.addressRaw), asc(liveContacts.id))
 
   const failed = rows.filter((row) => {
     if (!isMatchingFailure(row)) return false

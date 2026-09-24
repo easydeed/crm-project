@@ -239,7 +239,7 @@ describe.skipIf(!sessionUrl)('OR-006 people list', { timeout: 120_000 }, () => {
     expect(stored.length).toBe(afterReview?.candidates.length)
   })
 
-  test('hard delete names the person path and cascades members and candidates', async () => {
+  test('Delete is a soft delete: the person leaves the list, their rows stay for a restore', async () => {
     await ensureReviewStreet()
     const accountId = await newAccount()
     const personId = await insertPerson(accountId, {
@@ -271,12 +271,11 @@ describe.skipIf(!sessionUrl)('OR-006 people list', { timeout: 120_000 }, () => {
       .select()
       .from(groupMembers)
       .where(eq(groupMembers.contactId, personId))
-    const leftover = await db
-      .select()
-      .from(contactMatchCandidates)
-      .where(eq(contactMatchCandidates.contactId, personId))
-    expect(members).toHaveLength(0)
-    expect(leftover).toHaveLength(0)
+    // OR-006a: Delete is a soft delete. Memberships and candidates stay so a re-import restores them.
+    expect(members).toHaveLength(1)
+    expect((await listGroupsForAccount(accountId)).find((g) => g.id === created.group.id)?.count).toBe(0)
+    const [row] = await db.select({ deletedAt: contacts.deletedAt }).from(contacts).where(eq(contacts.id, personId))
+    expect(row?.deletedAt).toBeInstanceOf(Date)
     const groupStill = await db.select().from(groups).where(eq(groups.id, created.group.id))
     expect(groupStill).toHaveLength(1)
   })
