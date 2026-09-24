@@ -43,6 +43,20 @@
       "when": 1790213989634,
       "tag": "0005_suppression_lifts",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790214465486,
+      "tag": "0006_subscribe_on_create",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790214538398,
+      "tag": "0007_subscriptions_cascade",
+      "breakpoints": true
     }
   ]
 }

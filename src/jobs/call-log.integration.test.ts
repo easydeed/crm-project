@@ -90,7 +90,6 @@ describe.skipIf(!databaseUrl)('OR-017b call log against the database', () => {
       closeDate: '2017-04-02',
       status: 'matched',
     })
-    await db.insert(contactSubscriptions).values({ contactId: id, scope: 'monthly' })
     return id
   }
 

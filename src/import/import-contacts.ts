@@ -39,7 +39,7 @@ export async function importContacts(
   }> = []
   const candidateRows: ReturnType<typeof candidateInsertRows> = []
   const optedOut: SkippedRow[] = []
-  const stopped: Array<{ contactId: string; scope: 'monthly' | 'weekly'; unsubscribedAt: Date }> = []
+  const stopped: Array<{ contactId: string; scope: 'weekly'; unsubscribedAt: Date }> = []
   const emails = rows.map((row) => row.email)
   const monthly = await suppressedHashes(db, emails, 'monthly')
   const weekly = await suppressedHashes(db, emails, 'weekly')
@@ -82,8 +82,8 @@ export async function importContacts(
     })
     candidateRows.push(...candidateInsertRows(contactId, match.candidates))
     // A suppressed address still joins the list, but lands unsubscribed. Never silently subscribed.
+    // The monthly row comes from the contacts_subscribe_on_insert trigger (migration 0006).
     const hash = emailHash(email)
-    if (monthly.has(hash)) stopped.push({ contactId, scope: 'monthly', unsubscribedAt: new Date() })
     if (weekly.has(hash)) stopped.push({ contactId, scope: 'weekly', unsubscribedAt: new Date() })
     if (monthly.has(hash) || weekly.has(hash)) {
       optedOut.push({ line: row.line, name: name || email, reason: SUPPRESSED_REASON })
@@ -98,7 +98,7 @@ export async function importContacts(
       if (candidateRows.length) {
         await tx.insert(contactMatchCandidates).values(candidateRows)
       }
-      if (stopped.length) await tx.insert(contactSubscriptions).values(stopped)
+      if (stopped.length) await tx.insert(contactSubscriptions).values(stopped).onConflictDoNothing()
     })
   }
 

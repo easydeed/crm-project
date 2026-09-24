@@ -403,11 +403,10 @@ describe.skipIf(!sessionUrl)('admin sends', () => {
       { kind: 'hard_bounce', email: gmail, payload: { source: 'or015' } },
       { kind: 'spam_complaint', email: yahoo, payload: { source: 'or015' } },
     ])
-    await db.insert(contactSubscriptions).values({
-      contactId: people[2].id,
-      scope: 'monthly',
-      unsubscribedAt: now,
-    })
+    await db
+      .update(contactSubscriptions)
+      .set({ unsubscribedAt: now })
+      .where(eq(contactSubscriptions.contactId, people[2].id))
     // The write paths (webhook, unsubscribe page) record these; the list reads only suppressions.
     await suppress(db, gmail, 'bounced', 'all', 'postmark_webhook', now)
     await suppress(db, yahoo, 'complained', 'all', 'postmark_webhook', now)

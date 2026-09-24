@@ -40,6 +40,7 @@ A subscription service that emails a real estate agent's past clients one messag
 - Consumer SMS is $9/mo including 250 segments, 2¢ overage. Not $2.
 - Top bar navigation. No sidebar.
 - Groups live inside People. One people table.
+- Suppression is global, not per agent. An address that unsubscribed, bounced, or complained is suppressed across every account. Bounces and complaints are facts about the mailbox and the sending domain. A self-unsubscribe is global too, because a homeowner experiences one email, not one per agent, and resubscribing them through another agent's upload generates complaints. Reversal is limited to self-made unsubscribes from the page or one-click; backfilled unsubscribes have no recorded origin and are not reversible.
 
 ## Enforcement, not instruction
 

@@ -82,7 +82,6 @@ async function insertPerson(accountId: string, addressRaw: string) {
     status: 'matched',
     parcelId: await insertParcel(addressRaw.split(',')[0] ?? addressRaw),
   })
-  await db.insert(contactSubscriptions).values({ contactId: id, scope: 'monthly' })
   return { id, email }
 }
 

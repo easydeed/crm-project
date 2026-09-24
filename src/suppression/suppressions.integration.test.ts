@@ -82,7 +82,7 @@ describe.skipIf(!databaseUrl)('OR-014a suppressions against the database', () =>
     return email
   }
 
-  async function person(accountId: string, email: string, subscribed = true) {
+  async function person(accountId: string, email: string) {
     const { db } = getRuntimeDb()
     const parcelId = randomUUID()
     parcelIds.push(parcelId)
@@ -91,7 +91,6 @@ describe.skipIf(!databaseUrl)('OR-014a suppressions against the database', () =>
     )
     const id = randomUUID()
     await db.insert(contacts).values({ id, accountId, name: 'Pat Doe', email, addressRaw: 'x', parcelId, status: 'matched' })
-    if (subscribed) await db.insert(contactSubscriptions).values({ contactId: id, scope: 'monthly' })
     return id
   }
 
@@ -163,7 +162,7 @@ describe.skipIf(!databaseUrl)('OR-014a suppressions against the database', () =>
     expect(summary.optedOut).toEqual([{ line: 2, name: 'Pat Doe', reason: SUPPRESSED_REASON }])
     const [back] = await db.select().from(contacts).where(and(eq(contacts.accountId, accountId), sql`lower(${contacts.email}) = ${email}`))
     const [sub] = await db.select().from(contactSubscriptions).where(and(eq(contactSubscriptions.contactId, back!.id), eq(contactSubscriptions.scope, 'monthly')))
-    expect(sub?.unsubscribedAt).not.toBeNull()
+    expect(sub?.unsubscribedAt).toBeInstanceOf(Date)
 
     // Worst case: something later turns their subscription back on and a recipient row exists.
     await db.update(contactSubscriptions).set({ unsubscribedAt: null }).where(eq(contactSubscriptions.contactId, back!.id))
@@ -183,14 +182,12 @@ describe.skipIf(!databaseUrl)('OR-014a suppressions against the database', () =>
     const accountId = await account()
     const [plain, weekly, complained] = [address(), address(), address()]
     const { db } = getRuntimeDb()
-    const a = await person(accountId, plain, false)
-    const b = await person(accountId, weekly, false)
-    const c = await person(accountId, complained, false)
-    await db.insert(contactSubscriptions).values([
-      { contactId: a, scope: 'monthly', unsubscribedAt: ctx.now },
-      { contactId: b, scope: 'weekly', unsubscribedAt: ctx.now },
-      { contactId: c, scope: 'monthly', unsubscribedAt: ctx.now },
-    ])
+    const a = await person(accountId, plain)
+    const b = await person(accountId, weekly)
+    const c = await person(accountId, complained)
+    // Opt-outs recorded the pre-OR-014a way: only unsubscribed_at, no suppression yet.
+    await db.update(contactSubscriptions).set({ unsubscribedAt: ctx.now }).where(inArray(contactSubscriptions.contactId, [a, c]))
+    await db.insert(contactSubscriptions).values({ contactId: b, scope: 'weekly', unsubscribedAt: ctx.now })
     await db.insert(mailEvents).values({ kind: 'spam_complaint', email: complained, payload: {} })
     for (const statement of readFileSync('drizzle/0004_backfill_suppressions.sql', 'utf8').split('--> statement-breakpoint')) {
       await db.execute(sql.raw(statement))
@@ -211,7 +208,7 @@ describe.skipIf(!databaseUrl)('OR-014a suppressions against the database', () =>
     const adminId = await account('admin')
     const kept = address()
     const gone = address()
-    await person(adminId, kept, false)
+    await person(adminId, kept)
     await recordPostmarkEvent({ RecordType: 'Bounce', Type: 'HardBounce', Email: kept })
     await recordPostmarkEvent({ RecordType: 'Bounce', Type: 'HardBounce', Email: gone })
     const view = await loadDeliverabilityForAdmin(adminId)
