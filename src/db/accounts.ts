@@ -1,7 +1,7 @@
 import { eq, sql } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts } from '@/db/schema'
-import { people } from '@/db/people-alias'
+import { liveContacts } from '@/db/live-contacts'
 
 export type AccountRecord = {
   id: string
@@ -55,7 +55,7 @@ export async function countContactsForAccount(accountId: string): Promise<number
   const { db } = getRuntimeDb()
   const [row] = await db
     .select({ count: sql<number>`count(*)::int` })
-    .from(people)
-    .where(eq(people.accountId, accountId))
+    .from(liveContacts)
+    .where(eq(liveContacts.accountId, accountId))
   return row?.count ?? 0
 }
