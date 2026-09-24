@@ -130,7 +130,7 @@ export function PersonDetail({
         <form
           action={action}
           onSubmit={(event) => {
-            if (!window.confirm(`Delete ${person.name}? This cannot be undone.`)) {
+            if (!window.confirm(`Delete ${person.name}? They'll stop getting the monthly note. If you import them again later, they'll come back.`)) {
               event.preventDefault()
             }
           }}

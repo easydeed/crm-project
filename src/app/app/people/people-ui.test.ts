@@ -116,3 +116,12 @@ test('person review opens the queue at that contact', () => {
   expect(review).toContain('getContactForAccount')
   expect(review).toContain('reviewQueueHref(person.id)')
 })
+
+test('the delete confirmation says what really happens: a re-import brings them back', () => {
+  const copy = "They'll stop getting the monthly note. If you import them again later, they'll come back."
+  for (const file of ['./[id]/person-detail.tsx', './people-bulk-bar.tsx']) {
+    const text = readFileSync(new URL(file, import.meta.url), 'utf8')
+    expect(text).toContain(copy)
+    expect(text).not.toMatch(/cannot be undone/i)
+  }
+})
