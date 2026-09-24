@@ -1,3 +1,4 @@
+import type { SUPPRESSED_REASON } from '@/suppression/suppressions'
 import type { SkipReason } from '@/import/skip-reasons'
 
 export type ImportRow = {
@@ -11,7 +12,7 @@ export type ImportRow = {
 export type SkippedRow = {
   line: number
   name: string
-  reason: SkipReason
+  reason: SkipReason | typeof SUPPRESSED_REASON
 }
 
 export type ImportSummary = {
@@ -20,6 +21,8 @@ export type ImportSummary = {
   needsReview: number
   noParcel: number
   skipped: SkippedRow[]
+  /** Added, but unsubscribed: their address is on the suppression list. */
+  optedOut: SkippedRow[]
   elapsedMs: number
 }
 

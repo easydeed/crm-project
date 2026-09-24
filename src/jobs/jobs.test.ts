@@ -48,6 +48,7 @@ test('assertSendAllowed throws under default env', () => {
     assertSendAllowed({
       recipientEmail: 'a@example.com',
       unsubscribed: false,
+      suppressed: false,
       accountPaused: false,
     }),
   ).toThrow(/SEND_ENABLED/)
@@ -60,6 +61,7 @@ test('assertSendAllowed throws for domain outside allowlist', () => {
     assertSendAllowed({
       recipientEmail: 'a@other.test',
       unsubscribed: false,
+      suppressed: false,
       accountPaused: false,
     }),
   ).toThrow(/allowlist/)
@@ -72,6 +74,7 @@ test('assertSendAllowed throws for unsubscribed and paused', () => {
     assertSendAllowed({
       recipientEmail: 'a@example.com',
       unsubscribed: true,
+      suppressed: false,
       accountPaused: false,
     }),
   ).toThrow(/unsubscribed/)
@@ -79,9 +82,28 @@ test('assertSendAllowed throws for unsubscribed and paused', () => {
     assertSendAllowed({
       recipientEmail: 'a@example.com',
       unsubscribed: false,
+      suppressed: false,
       accountPaused: true,
     }),
   ).toThrow(/paused/)
+})
+
+test('assertSendAllowed throws for a suppressed address, even with a live subscription', () => {
+  process.env.SEND_ENABLED = 'true'
+  process.env.SEND_ALLOWLIST = 'example.com'
+  expect(() =>
+    assertSendAllowed({
+      recipientEmail: 'a@example.com',
+      unsubscribed: false,
+      suppressed: true,
+      accountPaused: false,
+    }),
+  ).toThrow(/suppressed/)
+})
+
+test('the send job loads suppression by address for the guard', () => {
+  const sendJob = readFileSync(fileURLToPath(new URL('./send-job.ts', import.meta.url)), 'utf8')
+  expect(sendJob).toContain("suppressed: await isSuppressed(db, contact.email, 'monthly')")
 })
 
 test('every send entry point calls assertSendAllowed and throws on default env', async () => {
@@ -125,6 +147,7 @@ test('deliverRecipient throws under default env before the mailer is called', as
     deliverRecipient(mailer, {
       recipientEmail: msg.to,
       unsubscribed: false,
+      suppressed: false,
       accountPaused: false,
     }, msg),
   ).rejects.toThrow(/SEND_ENABLED/)

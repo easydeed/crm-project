@@ -1,11 +1,13 @@
 import { randomUUID } from 'node:crypto'
 import { eq } from 'drizzle-orm'
 import { candidateInsertRows } from '@/db/persist-contact-candidates'
-import { contactMatchCandidates, contacts } from '@/db/schema'
+import { contactMatchCandidates, contactSubscriptions, contacts } from '@/db/schema'
 import { CONTACT_LIMIT, SKIP } from '@/import/skip-reasons'
 import type { ImportRow, ImportSummary, SkippedRow } from '@/import/types'
 import { type ParcelDb, type ParcelRecord } from '@/matching/candidates'
 import { resolveAddressMatch } from '@/matching/resolve-match'
+import { emailHash } from '@/suppression/hash'
+import { SUPPRESSED_REASON, suppressedHashes } from '@/suppression/suppressions'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -36,6 +38,11 @@ export async function importContacts(
     noParcelKind: 'non_address' | 'unmatched' | null
   }> = []
   const candidateRows: ReturnType<typeof candidateInsertRows> = []
+  const optedOut: SkippedRow[] = []
+  const stopped: Array<{ contactId: string; scope: 'monthly' | 'weekly'; unsubscribedAt: Date }> = []
+  const emails = rows.map((row) => row.email)
+  const monthly = await suppressedHashes(db, emails, 'monthly')
+  const weekly = await suppressedHashes(db, emails, 'weekly')
   const cache = new Map<string, ParcelRecord[]>()
 
   for (const row of rows) {
@@ -74,6 +81,13 @@ export async function importContacts(
       noParcelKind: match.noParcelKind,
     })
     candidateRows.push(...candidateInsertRows(contactId, match.candidates))
+    // A suppressed address still joins the list, but lands unsubscribed. Never silently subscribed.
+    const hash = emailHash(email)
+    if (monthly.has(hash)) stopped.push({ contactId, scope: 'monthly', unsubscribedAt: new Date() })
+    if (weekly.has(hash)) stopped.push({ contactId, scope: 'weekly', unsubscribedAt: new Date() })
+    if (monthly.has(hash) || weekly.has(hash)) {
+      optedOut.push({ line: row.line, name: name || email, reason: SUPPRESSED_REASON })
+    }
     seen.add(email.toLowerCase())
     remaining -= 1
   }
@@ -84,6 +98,7 @@ export async function importContacts(
       if (candidateRows.length) {
         await tx.insert(contactMatchCandidates).values(candidateRows)
       }
+      if (stopped.length) await tx.insert(contactSubscriptions).values(stopped)
     })
   }
 
@@ -93,6 +108,7 @@ export async function importContacts(
     needsReview: toInsert.filter((row) => row.status === 'needs_review').length,
     noParcel: toInsert.filter((row) => row.status === 'no_parcel').length,
     skipped,
+    optedOut,
     elapsedMs: Date.now() - started,
   }
 }

@@ -15,6 +15,22 @@ export function ImportResultView({ result }: { result: ImportSummary }) {
         <li>{result.needsReview} need a look</li>
         <li>{result.noParcel} have no house on the record</li>
       </ul>
+      {result.optedOut.length > 0 ? (
+        <div className="mt-6 text-[15px]">
+          <p>
+            {result.optedOut.length === 1
+              ? '1 person is on your list but won’t get the note.'
+              : `${result.optedOut.length} people are on your list but won’t get the note.`}
+          </p>
+          <ul className="mt-2 flex flex-col gap-2">
+            {result.optedOut.map((row) => (
+              <li key={`opted-${row.line}`}>
+                Line {row.line} · {row.name} — {row.reason}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       {result.skipped.length > 0 ? (
         <details className="mt-6 text-[15px]">
           <summary className="cursor-pointer underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">

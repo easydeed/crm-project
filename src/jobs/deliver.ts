@@ -5,7 +5,7 @@ const PERMANENT_POSTMARK_CODES = new Set([300, 406])
 
 export function isPermanentDeliveryError(err: unknown): boolean {
   if (!(err instanceof Error)) return false
-  if (/unsubscribed/i.test(err.message)) return true
+  if (/unsubscribed|suppressed/i.test(err.message)) return true
   const code = (err as { code?: number }).code
   return typeof code === 'number' && PERMANENT_POSTMARK_CODES.has(code)
 }

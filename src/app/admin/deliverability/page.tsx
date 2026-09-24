@@ -81,7 +81,7 @@ export default async function DeliverabilityPage() {
       )}
       <h2 className="mt-10 text-[18px] font-semibold">Suppression list</h2>
       {view.suppressed.length === 0 ? (
-        <p className="mt-3 text-[15px]">No suppressed addresses.</p>
+        <p className="mt-3 text-[15px]">No one has opted out.</p>
       ) : (
         <table className="mt-4 w-full border-collapse text-left text-[15px]">
           <thead>
@@ -93,8 +93,10 @@ export default async function DeliverabilityPage() {
           </thead>
           <tbody>
             {view.suppressed.map((row) => (
-              <tr key={row.email} className="border-b border-black/10">
-                <td className="py-2 pr-4">{row.email}</td>
+              <tr key={row.id} className="border-b border-black/10">
+                <td className="py-2 pr-4">
+                  {row.email ?? <span className="sr-only">No contact has this address</span>}
+                </td>
                 <td className="py-2 pr-4">{row.reason}</td>
                 <td className="py-2">{formatWhen(row.at)}</td>
               </tr>

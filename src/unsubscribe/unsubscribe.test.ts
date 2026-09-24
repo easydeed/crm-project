@@ -43,7 +43,7 @@ test('every message carries both unsubscribe headers', () => {
   expect(src('../jobs/compose.ts')).toContain('applyUnsubscribeLinks')
 })
 
-function view(scopes: UnsubscribeView['scopes'], blocked = false): UnsubscribeView {
+function view(scopes: UnsubscribeView['scopes'], blocked = false, suppressed = false): UnsubscribeView {
   return {
     contactId: randomUUID(),
     scope: 'monthly',
@@ -52,6 +52,7 @@ function view(scopes: UnsubscribeView['scopes'], blocked = false): UnsubscribeVi
     agentName: 'OR014 Agent',
     scopes,
     blocked,
+    suppressed,
     notice: null,
   }
 }
@@ -98,4 +99,14 @@ test('a bounced address cannot sign back up from this page', () => {
   expect(html).not.toContain('Actually, keep them coming')
   expect(src('../app/u/[token]/route.ts')).toContain("if (current.blocked && intent !== 'stop')")
   expect(src('../app/u/[token]/route.ts')).toContain("content-type': 'text/plain; charset=utf-8'")
+})
+
+test('once the address is suppressed, the page never offers to keep them coming', () => {
+  const html = renderUnsubscribeHtml(
+    { ...view([{ scope: 'monthly', active: false }], false, true), notice: 'These emails have stopped.' },
+    'token',
+  )
+  expect(html).toContain('These emails have stopped.')
+  expect(html).not.toContain('Actually, keep them coming')
+  expect(src('../app/u/[token]/route.ts')).toContain('const allowed = !current.blocked && !current.suppressed')
 })

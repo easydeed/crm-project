@@ -59,11 +59,12 @@ export async function POST(
   }
 
   if (intent === 'keep') {
-    if (!current.blocked) await keepScope(parsed.contactId, parsed.scope)
-    return page(token, current.blocked ? null : 'These emails will keep coming.')
+    const allowed = !current.blocked && !current.suppressed
+    if (allowed) await keepScope(parsed.contactId, parsed.scope)
+    return page(token, allowed ? 'These emails will keep coming.' : null)
   }
 
-  await stopScope(parsed.contactId, parsed.scope)
+  await stopScope(parsed.contactId, parsed.scope, fromForm ? 'unsubscribe_page' : 'one_click')
   if (!fromForm) {
     return new NextResponse('Unsubscribed', {
       status: 200,

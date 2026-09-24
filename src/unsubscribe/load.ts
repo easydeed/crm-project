@@ -1,6 +1,7 @@
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts, contactSubscriptions, contacts, mailEvents, parcels } from '@/db/schema'
+import { isSuppressed } from '@/suppression/suppressions'
 import { readUnsubscribeToken, type UnsubscribeScope } from '@/unsubscribe/token'
 
 export type ScopeRow = { scope: UnsubscribeScope; active: boolean }
@@ -13,6 +14,8 @@ export type UnsubscribeView = {
   agentName: string
   scopes: ScopeRow[]
   blocked: boolean
+  /** This address is on the suppression list for this scope; nothing can lift it. */
+  suppressed: boolean
   notice: string | null
 }
 
@@ -75,6 +78,7 @@ export async function loadUnsubscribeView(token: string): Promise<UnsubscribeVie
     agentName: row.agentName,
     scopes,
     blocked: Boolean(blocked),
+    suppressed: await isSuppressed(db, row.email, parsed.scope),
     notice: null,
   }
 }

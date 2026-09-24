@@ -10,7 +10,9 @@ DIR=${SCRATCH_PG_DIR:-/tmp/onrecord-scratch-pg}
 as_root() { if [ "$(id -u)" = 0 ]; then "$@"; else sudo "$@"; fi; }
 as_postgres() { as_root su postgres -s /bin/bash -c "$1"; }
 
-if [ -f "$DIR/data/postmaster.pid" ]; then as_postgres "$BIN/pg_ctl -D $DIR/data -w stop >/dev/null"; fi
+if [ -f "$DIR/data/postmaster.pid" ] && as_postgres "$BIN/pg_ctl -D $DIR/data status >/dev/null"; then
+  as_postgres "$BIN/pg_ctl -D $DIR/data -w stop >/dev/null"
+fi
 as_root rm -rf "$DIR"
 as_root mkdir -p "$DIR"
 as_root chown postgres "$DIR"

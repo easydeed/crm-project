@@ -1,6 +1,8 @@
 export type SendGuardContext = {
   recipientEmail: string
   unsubscribed: boolean
+  /** From the suppressions table, by address. Required so no caller can leave it out. */
+  suppressed: boolean
   accountPaused: boolean
 }
 
@@ -38,6 +40,9 @@ export function assertSendAllowed(ctx: SendGuardContext): void {
   }
   if (ctx.unsubscribed) {
     throw new Error('Send blocked: contact is unsubscribed')
+  }
+  if (ctx.suppressed) {
+    throw new Error('Send blocked: address is suppressed')
   }
   if (ctx.accountPaused) {
     throw new Error('Send blocked: account is paused')
