@@ -19,6 +19,7 @@ export default defineConfig({
     './src/db/schema-jobs.ts',
     './src/db/schema-mail.ts',
     './src/db/schema-call-lists.ts',
+    './src/db/schema-suppressions.ts',
   ],
   out: './drizzle',
   dialect: 'postgresql',

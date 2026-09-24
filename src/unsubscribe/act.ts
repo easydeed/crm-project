@@ -3,10 +3,19 @@ import { persistContactCandidates } from '@/db/persist-contact-candidates'
 import { getRuntimeDb } from '@/db/runtime'
 import { contactSubscriptions, contacts, parcels } from '@/db/schema'
 import { resolveAddressMatch } from '@/matching/resolve-match'
+import { suppress } from '@/suppression/suppressions'
 import type { UnsubscribeScope } from '@/unsubscribe/token'
 
-export async function stopScope(contactId: string, scope: UnsubscribeScope, now = new Date()) {
+/** The contact row is the fast path; the suppression outlives the contact. */
+export async function stopScope(
+  contactId: string,
+  scope: UnsubscribeScope,
+  source: 'unsubscribe_page' | 'one_click',
+  now = new Date(),
+) {
   const { db } = getRuntimeDb()
+  const [contact] = await db.select({ email: contacts.email }).from(contacts).where(eq(contacts.id, contactId)).limit(1)
+  if (contact) await suppress(db, contact.email, 'unsubscribed', scope, source, now)
   await db
     .insert(contactSubscriptions)
     .values({ contactId, scope, unsubscribedAt: now })

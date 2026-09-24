@@ -9,6 +9,7 @@ import {
 } from '@/db/schema'
 import { deliverRecipient, isPermanentDeliveryError } from '@/jobs/deliver'
 import { maybePauseForComplaints } from '@/jobs/complaint-pause'
+import { isSuppressed } from '@/suppression/suppressions'
 import { mapLimit } from '@/jobs/pool'
 import type { JobHandler } from '@/jobs/types'
 import { getMailer } from '@/mail/current'
@@ -77,6 +78,7 @@ export const sendMail: JobHandler = async (payload, ctx) => {
         {
           recipientEmail: contact.email,
           unsubscribed: Boolean(sub?.unsubscribedAt),
+          suppressed: await isSuppressed(db, contact.email, 'monthly'),
           accountPaused: account.paused,
         },
         {

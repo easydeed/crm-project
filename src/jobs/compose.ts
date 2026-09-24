@@ -5,6 +5,8 @@ import { buildDigestInput } from '@/digest/build-input'
 import { renderDigest } from '@/digest/render'
 import { NOTHING_NEW_REASON, UNMATCHED_REASON } from '@/digest/skip-copy'
 import type { JobHandler } from '@/jobs/types'
+import { emailHash } from '@/suppression/hash'
+import { SUPPRESSED_REASON, suppressedHashes } from '@/suppression/suppressions'
 import { applyUnsubscribeLinks, unsubscribeUrl } from '@/unsubscribe/links'
 
 type Skip = { contactId: string; reason: string }
@@ -24,7 +26,7 @@ export const composeSend: JobHandler = async (payload, ctx) => {
   if (send.state === 'skipped' || send.state === 'done') return
 
   const people = await db
-    .select({ id: contacts.id })
+    .select({ id: contacts.id, email: contacts.email })
     .from(contacts)
     .innerJoin(
       contactSubscriptions,
@@ -43,7 +45,12 @@ export const composeSend: JobHandler = async (payload, ctx) => {
     )
 
   const skips: Skip[] = []
+  const suppressed = await suppressedHashes(db, people.map((person) => person.email), 'monthly')
   for (const person of people) {
+    if (suppressed.has(emailHash(person.email))) {
+      skips.push({ contactId: person.id, reason: SUPPRESSED_REASON })
+      continue
+    }
     const input = await buildDigestInput(db, accountId, person.id, ctx.now)
     if (!input) {
       skips.push({ contactId: person.id, reason: UNMATCHED_REASON })

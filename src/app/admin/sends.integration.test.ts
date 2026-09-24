@@ -3,6 +3,7 @@ import { and, eq, inArray, sql } from 'drizzle-orm'
 import { afterAll, beforeAll, describe, expect, test } from 'vitest'
 import { registerAccount } from '@/auth/register-account'
 import { updateAccountSending } from '@/db/account-settings'
+import { suppress } from '@/suppression/suppressions'
 import { loadDeliverabilityForAdmin } from '@/db/admin-deliverability'
 import { getSendForAdmin, listSendsForAdmin } from '@/db/admin-sends'
 import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
@@ -407,6 +408,10 @@ describe.skipIf(!sessionUrl)('admin sends', () => {
       scope: 'monthly',
       unsubscribedAt: now,
     })
+    // The write paths (webhook, unsubscribe page) record these; the list reads only suppressions.
+    await suppress(db, gmail, 'bounced', 'all', 'postmark_webhook', now)
+    await suppress(db, yahoo, 'complained', 'all', 'postmark_webhook', now)
+    await suppress(db, outlook, 'unsubscribed', 'monthly', 'unsubscribe_page', now)
     const after = await loadDeliverabilityForAdmin(admin, now)
     expect(after?.totals.sent).toBe((before?.totals.sent ?? 0) + 3)
     expect(after?.totals.bounced).toBe((before?.totals.bounced ?? 0) + 1)

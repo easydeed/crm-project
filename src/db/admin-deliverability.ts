@@ -1,12 +1,14 @@
-import { and, desc, eq, inArray, isNotNull } from 'drizzle-orm'
+import { desc, eq, inArray, sql } from 'drizzle-orm'
 import { getAccountById } from '@/db/accounts'
 import { loadDeliveryTotals } from '@/db/delivery-window'
 import { getRuntimeDb } from '@/db/runtime'
-import { accounts, adminActions, contactSubscriptions, contacts, mailEvents } from '@/db/schema'
+import { accounts, adminActions } from '@/db/schema'
+import { EMAIL_HASH_SQL } from '@/suppression/hash'
 import { ADMIN_UNPAUSE, COMPLAINT_PAUSE } from '@/db/system-pause'
 
 export type SuppressionRow = {
-  email: string
+  id: string
+  email: string | null
   reason: string
   at: Date
 }
@@ -20,47 +22,29 @@ export async function loadDeliverabilityForAdmin(adminAccountId: string, now = n
   return { totals, suppressed, paused }
 }
 
+const REASON_LABEL: Record<string, string> = {
+  unsubscribed: 'Unsubscribed',
+  bounced: 'Hard bounce',
+  complained: 'Spam complaint',
+}
+
+/**
+ * Read from suppressions, which hold hashes only. An address shows when a contact
+ * with that address still exists; otherwise it is not recoverable, by design.
+ */
 async function listSuppressions(): Promise<SuppressionRow[]> {
   const { db } = getRuntimeDb()
-  const events = await db
-    .select({
-      email: mailEvents.email,
-      kind: mailEvents.kind,
-      at: mailEvents.createdAt,
-    })
-    .from(mailEvents)
-    .where(inArray(mailEvents.kind, ['hard_bounce', 'spam_complaint']))
-    .orderBy(desc(mailEvents.createdAt))
-  const subs = await db
-    .select({
-      email: contacts.email,
-      at: contactSubscriptions.unsubscribedAt,
-    })
-    .from(contactSubscriptions)
-    .innerJoin(contacts, eq(contacts.id, contactSubscriptions.contactId))
-    .where(
-      and(
-        isNotNull(contactSubscriptions.unsubscribedAt),
-        inArray(contactSubscriptions.scope, ['monthly', 'weekly']),
-      ),
-    )
-
-  const byEmail = new Map<string, SuppressionRow>()
-  for (const event of events) {
-    const email = event.email?.trim().toLowerCase()
-    if (!email || byEmail.has(email)) continue
-    byEmail.set(email, {
-      email,
-      reason: event.kind === 'spam_complaint' ? 'Spam complaint' : 'Hard bounce',
-      at: event.at,
-    })
-  }
-  for (const sub of subs) {
-    const email = sub.email.trim().toLowerCase()
-    if (!sub.at || byEmail.has(email)) continue
-    byEmail.set(email, { email, reason: 'Unsubscribed', at: sub.at })
-  }
-  return [...byEmail.values()].sort((left, right) => right.at.getTime() - left.at.getTime())
+  const rows = await db.execute<{ id: string; reason: string; at: Date | string; email: string | null }>(sql.raw(`
+    select s.id, s.reason::text as reason, s.created_at as at,
+      (select c.email from contacts c where ${EMAIL_HASH_SQL('c.email')} = s.email_hash limit 1) as email
+    from suppressions s
+    order by s.created_at desc`))
+  return rows.map((row) => ({
+    id: row.id,
+    email: row.email,
+    reason: REASON_LABEL[row.reason] ?? row.reason,
+    at: new Date(row.at),
+  }))
 }
 
 async function listSystemPaused() {
