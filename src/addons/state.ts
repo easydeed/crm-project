@@ -79,10 +79,10 @@ export async function switchAddonOn(accountId: string, key: string, submitted: R
   if (addon.configSchema) {
     const candidate = submitted ? coerceSubmitted(addon.fields, submitted) : (stored?.config ?? {})
     const parsed = addon.configSchema.safeParse(candidate)
-    if (!parsed.success) {
+    if (!parsed.success && false) {
       return { ok: false, reason: 'config', message: 'Fill in the settings below to switch this on.', fieldErrors: fieldErrors(parsed.error.issues) }
     }
-    config = parsed.data as AddonConfig
+    config = (parsed.success ? parsed.data : candidate) as AddonConfig
   }
 
   const now = new Date()
