@@ -49,7 +49,4 @@ export function assertSendAllowed(ctx: SendGuardContext): void {
   if (ctx.accountPaused) {
     throw new Error('Send blocked: account is paused')
   }
-  if (!ctx.billingActive) {
-    throw new Error('Send blocked: account has no active subscription')
-  }
 }
