@@ -5,11 +5,14 @@ import { getAccountById } from '@/db/accounts'
 import { formatAdminDate } from '@/app/admin/accounts/format'
 import { ViewAsButton } from '@/app/admin/accounts/view-as-button'
 import { SettingsReadout } from '@/app/app/settings/readout'
+import { AddonsSection } from '@/app/admin/accounts/[id]/addons-section'
 
 export default async function AdminAccountDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ addon?: string; result?: string }>
 }) {
   const session = await readRequestSession()
   if (!session) redirect('/login?returnTo=/admin/accounts')
@@ -17,6 +20,7 @@ export default async function AdminAccountDetailPage({
   const { id } = await params
   const account = await getAccountById(id)
   if (!account) notFound()
+  const { addon, result } = await searchParams
 
   return (
     <main className="px-4 py-10">
@@ -48,6 +52,9 @@ export default async function AdminAccountDetailPage({
         </Link>
       </p>
       {account.role === 'agent' ? <ViewAsButton accountId={account.id} /> : null}
+      {account.role === 'agent' ? (
+        <AddonsSection accountId={account.id} flash={addon && result ? { key: addon, result } : undefined} />
+      ) : null}
     </main>
   )
 }
