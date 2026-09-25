@@ -4,13 +4,13 @@ import { COST_RATES, type CostRates } from '@/config/costs'
 
 export type ProviderName = 'property' | 'listing'
 
-const lookupCents = 4
+export const lookupCents = 4
 
 export type ProviderCall = { provider: ProviderName; operation: string; accountId: string | null; count: number }
 
 /** Cost at the rate in force, or null while that rate is not set. */
 export function callCostCents(call: Pick<ProviderCall, 'provider' | 'operation' | 'count'>, rates: CostRates = COST_RATES): number | null {
-  const rate = rates.providerCallCents[`${call.provider}:${call.operation}`] ?? lookupCents
+  const rate = rates.providerCallCents[`${call.provider}:${call.operation}`]
   return rate == null ? null : rate * call.count
 }
 
