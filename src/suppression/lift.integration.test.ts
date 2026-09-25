@@ -6,7 +6,8 @@ import { registerAccount } from '@/auth/register-account'
 import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { withStreetNameNorm } from '@/db/parcel-write'
 import { getRuntimeDb, resetRuntimeDb } from '@/db/runtime'
-import { accounts, contactSubscriptions, contacts, mailEvents, parcelEvents, parcels, sendRecipients, sends } from '@/db/schema'
+import { accounts, contactSubscriptions, contacts, mailEvents, parcelEvents, parcels, sendRecipients, sends, subscriptions } from '@/db/schema'
+import { giveActiveSubscription } from '@/billing/subscription-fixture'
 import { suppressionLifts, suppressions } from '@/db/schema-suppressions'
 import { GRANT_DEED } from '@/digest/types'
 import { composeSend } from '@/jobs/compose'
@@ -48,6 +49,7 @@ describe.skipIf(!databaseUrl)('OR-014b keep them coming against the database', (
       const ids = (await db.select({ id: contacts.id }).from(contacts).where(eq(contacts.accountId, accountId))).map((r) => r.id)
       if (ids.length) await db.delete(contactSubscriptions).where(inArray(contactSubscriptions.contactId, ids))
       await db.delete(contacts).where(eq(contacts.accountId, accountId))
+      await db.delete(subscriptions).where(eq(subscriptions.accountId, accountId))
       await db.delete(accounts).where(eq(accounts.id, accountId))
     }
     if (parcelIds.length) {
@@ -76,6 +78,7 @@ describe.skipIf(!databaseUrl)('OR-014b keep them coming against the database', (
     })
     if (!created.ok) throw new Error('could not register')
     const accountId = created.accountId
+    await giveActiveSubscription(accountId)
     accountIds.push(accountId)
     const { db } = getRuntimeDb()
     await db.update(accounts).set({ sendDay: 15, sendTime: '09:00', timezone: 'America/Los_Angeles' }).where(eq(accounts.id, accountId))

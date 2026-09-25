@@ -15,6 +15,9 @@ export function AdminNav() {
       <Link className={linkClass} href="/admin/deliverability">
         Deliverability
       </Link>
+      <Link className={linkClass} href="/admin/costs">
+        Costs
+      </Link>
     </p>
   )
 }

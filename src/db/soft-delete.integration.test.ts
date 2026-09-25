@@ -20,7 +20,8 @@ import { withStreetNameNorm } from '@/db/parcel-write'
 import { getReviewItemForAccount, listReviewQueueForAccount } from '@/db/review-queue'
 import { leaveOutContactForAccount } from '@/db/review-write'
 import { getRuntimeDb, resetRuntimeDb } from '@/db/runtime'
-import { accounts, contactSubscriptions, contacts, groupMembers, parcelEvents, parcels, sendRecipients, sends } from '@/db/schema'
+import { accounts, contactSubscriptions, contacts, groupMembers, parcelEvents, parcels, sendRecipients, sends, subscriptions } from '@/db/schema'
+import { giveActiveSubscription } from '@/billing/subscription-fixture'
 import { callListEntries } from '@/db/schema-call-lists'
 import { buildDigestInput } from '@/digest/build-input'
 import { GRANT_DEED } from '@/digest/types'
@@ -61,6 +62,7 @@ describe.skipIf(!databaseUrl)('OR-006a soft delete: gone from every live read, k
     const register = async (label: string) => {
       const created = await registerAccount({ name: `OR006a ${label}`, email: `or006a-${label}-${randomUUID()}@example.com`, password: 'long-enough-password', brokerage: 'Hill Realty', dre: '02000601', phone: '909-555-0161' })
       if (!created.ok) throw new Error('could not register')
+      await giveActiveSubscription(created.accountId)
       return created.accountId
     }
     accountId = await register('agent')
@@ -94,6 +96,7 @@ describe.skipIf(!databaseUrl)('OR-006a soft delete: gone from every live read, k
     delete process.env.SEND_ENABLED
     delete process.env.SEND_ALLOWLIST
     const { db, client } = getRuntimeDb()
+    await db.delete(subscriptions).where(inArray(subscriptions.accountId, [accountId, adminId]))
     await db.delete(accounts).where(inArray(accounts.id, [accountId, adminId]))
     await client.end({ timeout: 2 })
     await resetRuntimeDb()

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { readRequestSession } from '@/auth/current-session'
 import { effectiveAccountId } from '@/auth/effective-account'
@@ -37,6 +38,17 @@ export default async function SettingsPage() {
       <DetailsForm account={account} readOnly={readOnly} />
       <AppearanceForm account={account} readOnly={readOnly} preview={preview} />
       <SendingForm account={account} readOnly={readOnly} systemPaused={systemPaused} />
+      <section>
+        <h2 className="text-[17px] font-semibold">Billing</h2>
+        <p className="mt-2 text-[15px]">
+          <Link
+            className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            href="/app/settings/billing"
+          >
+            Plan, card, invoices, and canceling
+          </Link>
+        </p>
+      </section>
     </main>
   )
 }

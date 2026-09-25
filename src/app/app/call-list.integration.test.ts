@@ -7,7 +7,8 @@ import { registerAccount } from '@/auth/register-account'
 import { withStreetNameNorm } from '@/db/parcel-write'
 import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { getRuntimeDb, resetRuntimeDb } from '@/db/runtime'
-import { accounts, contacts, parcels } from '@/db/schema'
+import { accounts, contacts, parcels, subscriptions } from '@/db/schema'
+import { giveActiveSubscription } from '@/billing/subscription-fixture'
 import { callListEntries } from '@/db/schema-call-lists'
 
 const databaseUrl = tryLoadIntegrationDatabaseUrl()
@@ -28,6 +29,7 @@ describe.skipIf(!databaseUrl)('dashboard call list against the session pooler', 
     for (const id of accountIds) await db.delete(callListEntries).where(eq(callListEntries.accountId, id))
     for (const id of contactIds) await db.delete(contacts).where(eq(contacts.id, id))
     for (const id of parcelIds) await db.delete(parcels).where(eq(parcels.id, id))
+    for (const id of accountIds) await db.delete(subscriptions).where(eq(subscriptions.accountId, id))
     for (const id of accountIds) await db.delete(accounts).where(eq(accounts.id, id))
     await client.end({ timeout: 2 })
     await resetRuntimeDb()
@@ -48,6 +50,7 @@ describe.skipIf(!databaseUrl)('dashboard call list against the session pooler', 
       .db.update(accounts)
       .set({ sendDay: 15, sendTime: '09:00', timezone: 'America/Los_Angeles' })
       .where(eq(accounts.id, created.accountId))
+    await giveActiveSubscription(created.accountId)
     return created.accountId
   }
 

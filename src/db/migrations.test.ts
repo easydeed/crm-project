@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { expect, test } from 'vitest'
+import { schemaModuleFiles } from '@/db/find-schema-modules'
 
 const read = (file: string) => readFileSync(new URL(`../../${file}`, import.meta.url), 'utf8')
 
@@ -37,7 +38,9 @@ test('drizzle-kit generate does not need DATABASE_URL', () => {
 })
 
 test('every foreign key in the schema declares what happens on delete', () => {
-  for (const file of ['src/db/schema.ts', 'src/db/schema-call-lists.ts', 'src/db/schema-suppressions.ts', 'src/db/schema-jobs.ts', 'src/db/schema-mail.ts']) {
+  const files = schemaModuleFiles().map((name) => `src/db/${name}`)
+  expect(files).toContain('src/db/schema-billing.ts')
+  for (const file of files) {
     for (const call of read(file).match(/\.references\([^)]*\)[^)]*\)/g) ?? []) {
       expect(call, file).toMatch(/onDelete: '(cascade|restrict|no action|set null)'/)
     }

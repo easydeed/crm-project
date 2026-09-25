@@ -15,7 +15,9 @@ import {
   parcels,
   sendRecipients,
   sends,
+  subscriptions,
 } from '@/db/schema'
+import { giveActiveSubscription } from '@/billing/subscription-fixture'
 import { loadHomeSend } from '@/app/app/home-send'
 import { composeSend } from '@/jobs/compose'
 import { signUnsubscribeToken } from '@/unsubscribe/token'
@@ -43,6 +45,7 @@ async function newAccount() {
     .update(accounts)
     .set({ sendDay: 15, sendTime: '09:00', timezone: 'America/Los_Angeles' })
     .where(eq(accounts.id, created.accountId))
+  await giveActiveSubscription(created.accountId)
   return created.accountId
 }
 
@@ -119,6 +122,7 @@ describe.skipIf(!sessionUrl)('homeowner unsubscribe', () => {
         await db.delete(contactSubscriptions).where(inArray(contactSubscriptions.contactId, ids))
         await db.delete(contacts).where(inArray(contacts.id, ids))
       }
+      await db.delete(subscriptions).where(inArray(subscriptions.accountId, accountIds))
       await db.delete(accounts).where(inArray(accounts.id, accountIds))
     }
     if (parcelIds.length) await db.delete(parcels).where(inArray(parcels.id, parcelIds))

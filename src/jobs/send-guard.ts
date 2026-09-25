@@ -4,6 +4,8 @@ export type SendGuardContext = {
   /** From the suppressions table, by address. Required so no caller can leave it out. */
   suppressed: boolean
   accountPaused: boolean
+  /** From billingAllowsSending: an active subscription, not past its cancel date. Required so no caller can leave it out. */
+  billingActive: boolean
 }
 
 function emailDomain(email: string): string {
@@ -46,5 +48,8 @@ export function assertSendAllowed(ctx: SendGuardContext): void {
   }
   if (ctx.accountPaused) {
     throw new Error('Send blocked: account is paused')
+  }
+  if (!ctx.billingActive) {
+    throw new Error('Send blocked: account has no active subscription')
   }
 }

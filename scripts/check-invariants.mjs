@@ -35,7 +35,17 @@ const RULES = [
     scope: /\.(ts|tsx)$/,
     allow: /config\/ca-tax\.ts$/,
   },
+  {
+    id: 'no-inline-cost-rates',
+    re: /\b(?:[a-z][A-Za-z0-9_]*(?:Cost|Rate|Price|Cents)|cost|rate|price|cents)[A-Za-z0-9_]*\s*[:=]\s*-?(?:[1-9]|0\.\d)/,
+    msg: 'Prices and cost rates live in src/config/costs.ts with an effective date.',
+    scope: /\.(ts|tsx)$/,
+    allow: /config\/(costs|ca-tax)\.ts$/,
+  },
 ]
+
+// A live Stripe key is refused in every tracked file, tests and workflows included.
+const LIVE_KEY = /\b(?:sk|rk|pk)_live_[A-Za-z0-9]/
 
 const files = execSync('git ls-files "*.ts" "*.tsx" "*.sql" "*.md"', { encoding: 'utf8' })
   .split('\n')
@@ -57,6 +67,21 @@ for (const f of files) {
       }
     })
   }
+}
+
+for (const f of execSync('git ls-files', { encoding: 'utf8' }).split('\n').filter(Boolean)) {
+  let src
+  try {
+    src = readFileSync(f, 'utf8')
+  } catch {
+    continue
+  }
+  src.split('\n').forEach((line, i) => {
+    if (LIVE_KEY.test(line)) {
+      console.error(`${f}:${i + 1}  [no-live-stripe-key]  Stripe runs in test mode only. Never commit a live key.`)
+      failed++
+    }
+  })
 }
 
 if (failed) {

@@ -5,6 +5,7 @@ import {
   unpauseAction,
 } from '@/app/app/send-actions'
 import type { HomeSend } from '@/app/app/home-send'
+import { HomeBillingCard } from '@/app/app/home-billing-card'
 
 const buttonClass =
   'mt-6 inline-block rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
@@ -28,6 +29,8 @@ export function HomeSendCard({
   view: HomeSend
   readOnly: boolean
 }) {
+  if (view.kind === 'billing') return <HomeBillingCard issue={view.issue} />
+
   if (view.kind === 'system-paused') {
     return (
       <section className="px-4 py-10">

@@ -239,16 +239,6 @@ export const events = pgTable('events', {
   createdAt: createdAt(),
 })
 
-export const subscriptions = pgTable('subscriptions', {
-  accountId: uuid('account_id')
-    .primaryKey()
-    .references(() => accounts.id, { onDelete: 'no action' }),
-  stripeCustomerId: text('stripe_customer_id'),
-  stripeSubId: text('stripe_sub_id'),
-  plan: text('plan').notNull(),
-  status: text('status').notNull(),
-})
-
 export const accountAddons = pgTable(
   'account_addons',
   {
@@ -297,3 +287,4 @@ export const contactMatchCandidates = pgTable(
 
 export { jobs } from './schema-jobs'
 export { mailEvents } from './schema-mail'
+export { subscriptions } from './schema-billing'

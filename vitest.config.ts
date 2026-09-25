@@ -16,6 +16,9 @@ const env = {
   APP_ORIGIN: process.env.APP_ORIGIN ?? 'http://localhost:3000',
 }
 
+// Components render with React's automatic runtime, as Next compiles them.
+const esbuild = { jsx: 'automatic' as const }
+
 const shared = {
   resolve: { alias },
   environment: 'node' as const,
@@ -24,6 +27,7 @@ const shared = {
 
 export const unitProject = {
   resolve: { alias },
+  esbuild,
   test: {
     name: 'unit',
     environment: shared.environment,
@@ -37,6 +41,7 @@ export const unitProject = {
 
 export const integrationProject = {
   resolve: { alias },
+  esbuild,
   test: {
     name: 'integration',
     environment: shared.environment,
