@@ -4,8 +4,6 @@ import { COST_RATES, type CostRates } from '@/config/costs'
 
 export type ProviderName = 'property' | 'listing'
 
-export const lookupCents = 4
-
 export type ProviderCall = { provider: ProviderName; operation: string; accountId: string | null; count: number }
 
 /** Cost at the rate in force, or null while that rate is not set. */
