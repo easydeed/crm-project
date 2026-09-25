@@ -17,7 +17,9 @@ import {
   mailEvents,
   sendRecipients,
   sends,
+  subscriptions,
 } from '@/db/schema'
+import { giveActiveSubscription } from '@/billing/subscription-fixture'
 import { maybePauseForComplaints } from '@/jobs/complaint-pause'
 import { adminUnpause, rerunSend } from '@/jobs/rerun-send'
 import { sendMail } from '@/jobs/send-job'
@@ -47,6 +49,7 @@ async function newAccount(name: string, role: 'admin' | 'agent' = 'agent') {
     const { db } = getRuntimeDb()
     await db.update(accounts).set({ role: 'admin' }).where(eq(accounts.id, created.accountId))
   }
+  await giveActiveSubscription(created.accountId)
   return created.accountId
 }
 
@@ -131,6 +134,7 @@ describe.skipIf(!sessionUrl)('admin sends', () => {
         await db.delete(contactSubscriptions).where(inArray(contactSubscriptions.contactId, ids))
         await db.delete(contacts).where(inArray(contacts.id, ids))
       }
+      await db.delete(subscriptions).where(inArray(subscriptions.accountId, accountIds))
       await db.delete(accounts).where(inArray(accounts.id, accountIds))
     }
     if (emails.length) await db.delete(mailEvents).where(inArray(mailEvents.email, emails))

@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { registerAccount } from '@/auth/register-account'
+import { startCheckout } from '@/billing/account-billing'
 import {
   SESSION_COOKIE,
   createSessionValue,
@@ -37,5 +38,12 @@ export async function registerAction(
     createSessionValue(result.accountId, 'agent'),
     sessionCookieOptions(),
   )
-  redirect('/app')
+  // Straight to Stripe Checkout. If it can't open, the dashboard says the plan isn't active and links to billing.
+  let next = '/app'
+  try {
+    next = await startCheckout(result.accountId)
+  } catch (err) {
+    console.error('[billing] checkout at signup failed', err)
+  }
+  redirect(next)
 }

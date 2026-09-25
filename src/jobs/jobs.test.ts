@@ -50,6 +50,7 @@ test('assertSendAllowed throws under default env', () => {
       unsubscribed: false,
       suppressed: false,
       accountPaused: false,
+      billingActive: true,
     }),
   ).toThrow(/SEND_ENABLED/)
 })
@@ -63,6 +64,7 @@ test('assertSendAllowed throws for domain outside allowlist', () => {
       unsubscribed: false,
       suppressed: false,
       accountPaused: false,
+      billingActive: true,
     }),
   ).toThrow(/allowlist/)
 })
@@ -76,6 +78,7 @@ test('assertSendAllowed throws for unsubscribed and paused', () => {
       unsubscribed: true,
       suppressed: false,
       accountPaused: false,
+      billingActive: true,
     }),
   ).toThrow(/unsubscribed/)
   expect(() =>
@@ -84,6 +87,7 @@ test('assertSendAllowed throws for unsubscribed and paused', () => {
       unsubscribed: false,
       suppressed: false,
       accountPaused: true,
+      billingActive: true,
     }),
   ).toThrow(/paused/)
 })
@@ -97,6 +101,7 @@ test('assertSendAllowed throws for a suppressed address, even with a live subscr
       unsubscribed: false,
       suppressed: true,
       accountPaused: false,
+      billingActive: true,
     }),
   ).toThrow(/suppressed/)
 })
@@ -149,6 +154,7 @@ test('deliverRecipient throws under default env before the mailer is called', as
       unsubscribed: false,
       suppressed: false,
       accountPaused: false,
+      billingActive: true,
     }, msg),
   ).rejects.toThrow(/SEND_ENABLED/)
   expect(mailer.calls).toHaveLength(0)

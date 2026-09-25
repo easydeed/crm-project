@@ -15,7 +15,9 @@ import {
   parcels,
   sendRecipients,
   sends,
+  subscriptions,
 } from '@/db/schema'
+import { giveActiveSubscription } from '@/billing/subscription-fixture'
 import { loadHomeSend } from '@/app/app/home-send'
 import { composeSend } from '@/jobs/compose'
 import { sendMail } from '@/jobs/send-job'
@@ -58,6 +60,7 @@ async function newAccount() {
       timezone: 'America/Los_Angeles',
     })
     .where(eq(accounts.id, created.accountId))
+  await giveActiveSubscription(created.accountId)
   return created.accountId
 }
 
@@ -151,6 +154,7 @@ describe.skipIf(!sessionUrl)('compose and send', () => {
       for (const accountId of accountIds) {
         await db.delete(jobs).where(sql`${jobs.payload}->>'accountId' = ${accountId}`)
       }
+      await db.delete(subscriptions).where(inArray(subscriptions.accountId, accountIds))
       await db.delete(accounts).where(inArray(accounts.id, accountIds))
     }
     for (const sendId of sendIds) {

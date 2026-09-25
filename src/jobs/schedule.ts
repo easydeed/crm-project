@@ -2,6 +2,8 @@ import { and, eq } from 'drizzle-orm'
 import { isSendDay, isSendTime, isTimezone } from '@/config/settings'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts, sends } from '@/db/schema'
+import { loadBillingState } from '@/billing/load-state'
+import { billingAllowsSending } from '@/billing/status'
 import { enqueue } from '@/jobs/enqueue'
 import { addDays, atLocalTime, localDate } from '@/jobs/schedule-time'
 
@@ -84,11 +86,13 @@ export async function scheduleAccountById(accountId: string, now = new Date()) {
     .limit(1)
   if (!row || row.sendDay == null || !row.sendTime || !row.timezone) return
   if (!isSendDay(row.sendDay) || !isSendTime(row.sendTime) || !isTimezone(row.timezone)) return
+  // No active subscription stops the mail the same way a pause does. The call list still builds.
+  const billing = await loadBillingState(db, row.id)
   await scheduleAccount(
     db,
     { id: row.id, sendDay: row.sendDay, sendTime: row.sendTime, timezone: row.timezone },
     now,
-    row.paused,
+    row.paused || !billingAllowsSending(billing, now),
   )
 }
 

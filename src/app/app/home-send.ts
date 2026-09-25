@@ -5,9 +5,12 @@ import { liveContacts } from '@/db/live-contacts'
 import { formatSendDay, nextEmailSentence, nextSendInstant } from '@/jobs/schedule-time'
 import { isSendDay, isSendTime, isTimezone } from '@/config/settings'
 import { systemPauseState } from '@/db/system-pause'
+import { loadBillingState } from '@/billing/load-state'
+import { billingIssue, type BillingIssue } from '@/billing/status'
 
 export type HomeSend =
   | { kind: 'missing-account' }
+  | { kind: 'billing'; issue: BillingIssue }
   | { kind: 'paused' }
   | { kind: 'system-paused' }
   | { kind: 'settings' }
@@ -37,6 +40,8 @@ export async function loadHomeSend(accountId: string, now = new Date()): Promise
     .where(eq(accounts.id, accountId))
     .limit(1)
   if (!account) return { kind: 'missing-account' }
+  const issue = billingIssue(await loadBillingState(db, accountId), now)
+  if (issue) return { kind: 'billing', issue }
   if (account.paused) {
     if (await systemPauseState(accountId)) return { kind: 'system-paused' }
     return { kind: 'paused' }

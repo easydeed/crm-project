@@ -7,7 +7,8 @@ import { registerAccount } from '@/auth/register-account'
 import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { withStreetNameNorm } from '@/db/parcel-write'
 import { getRuntimeDb, resetRuntimeDb } from '@/db/runtime'
-import { accounts, contactSubscriptions, contacts, parcelEvents, parcels, sendRecipients, sends } from '@/db/schema'
+import { accounts, contactSubscriptions, contacts, parcelEvents, parcels, sendRecipients, sends, subscriptions } from '@/db/schema'
+import { giveActiveSubscription } from '@/billing/subscription-fixture'
 import { suppressions } from '@/db/schema-suppressions'
 import { GRANT_DEED } from '@/digest/types'
 import { importContacts } from '@/import/import-contacts'
@@ -46,6 +47,7 @@ describe.skipIf(!databaseUrl)('OR-013a every contact is subscribed from the star
       for (const send of sendRows) await db.delete(sendRecipients).where(eq(sendRecipients.sendId, send.id))
       await db.delete(sends).where(eq(sends.accountId, accountId))
       await db.delete(contacts).where(eq(contacts.accountId, accountId))
+      await db.delete(subscriptions).where(eq(subscriptions.accountId, accountId))
       await db.delete(accounts).where(eq(accounts.id, accountId))
     }
     if (parcelIds.length) {
@@ -69,6 +71,7 @@ describe.skipIf(!databaseUrl)('OR-013a every contact is subscribed from the star
     })
     if (!created.ok) throw new Error('could not register')
     const accountId = created.accountId
+    await giveActiveSubscription(accountId)
     accountIds.push(accountId)
     const { db } = getRuntimeDb()
     await db.update(accounts).set({ sendDay: 15, sendTime: '09:00', timezone: 'America/Los_Angeles' }).where(eq(accounts.id, accountId))

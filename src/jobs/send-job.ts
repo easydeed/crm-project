@@ -3,6 +3,8 @@ import { getRuntimeDb } from '@/db/runtime'
 import { accounts, contactSubscriptions, sendRecipients, sends } from '@/db/schema'
 import { liveContacts } from '@/db/live-contacts'
 import { deliverRecipient, isPermanentDeliveryError } from '@/jobs/deliver'
+import { loadBillingState } from '@/billing/load-state'
+import { billingAllowsSending } from '@/billing/status'
 import { maybePauseForComplaints } from '@/jobs/complaint-pause'
 import { isSuppressed } from '@/suppression/suppressions'
 import { mapLimit } from '@/jobs/pool'
@@ -29,6 +31,7 @@ export const sendMail: JobHandler = async (payload, ctx) => {
     .limit(1)
   if (!account) throw new Error('Account not found')
 
+  const billing = await loadBillingState(db, account.id)
   const from = monthlyFromAddress(account.senderName)
   const replyTo = account.replyTo?.trim() || account.email
   const pending = await db
@@ -75,6 +78,7 @@ export const sendMail: JobHandler = async (payload, ctx) => {
           unsubscribed: Boolean(sub?.unsubscribedAt),
           suppressed: await isSuppressed(db, contact.email, 'monthly'),
           accountPaused: account.paused,
+          billingActive: billingAllowsSending(billing, ctx.now),
         },
         {
           to: contact.email,

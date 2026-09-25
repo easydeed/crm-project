@@ -3,6 +3,7 @@
 import { useActionState } from 'react'
 import { registerAction, type RegisterState } from '@/app/register/actions'
 import { PASSWORD_REQUIREMENTS } from '@/auth/password-rules'
+import { PLAN_LINE } from '@/app/app/settings/billing/billing-copy'
 
 const fieldClass =
   'mt-1 w-full rounded-md border border-foreground/20 bg-background px-3 py-2 text-[15px] text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'
@@ -87,6 +88,9 @@ export function RegisterForm() {
       >
         {pending ? 'Creating account…' : 'Create account'}
       </button>
+      <p className="text-[15px]">
+        Next you add a card in Stripe: {PLAN_LINE}. Cancel any time from Settings.
+      </p>
     </form>
   )
 }
