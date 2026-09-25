@@ -11,6 +11,15 @@ export const PLAN = {
   contactLimit: 250,
 } as const
 
+/**
+ * Monthly price of each add-on, keyed by add-on key. The registry reads prices from
+ * here and refuses to register an add-on without one, so a price lives in one place.
+ */
+export const ADDON_PRICES: { effectiveDate: string; cents: Record<string, number> } = {
+  effectiveDate: '2026-09-25',
+  cents: {},
+}
+
 export type CostRates = {
   effectiveDate: string
   /** Per call, keyed `${provider}:${operation}` as the metering wrapper records it. */
