@@ -33,7 +33,7 @@ export function assertTextAllowed(ctx: TextGuardContext): void {
     throw new Error('Text blocked: account has no active subscription')
   }
   if (ctx.purpose === 'call_list') {
-    if (!ctx.verifiedPhone) {
+    if (!ctx.verifiedPhone || ctx.to !== ctx.verifiedPhone) {
       throw new Error("Text blocked: destination is not the account's verified phone")
     }
     if (!ctx.addonEnabled) {
