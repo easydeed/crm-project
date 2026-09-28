@@ -72,3 +72,56 @@ jobs:
           DRIFT_ZERO_URL: postgres://postgres@localhost:5432/postgres
           DRIFT_DEV_URL: ${{ secrets.DATABASE_URL }}
         run: pnpm db:drift
+
+  # Browser pass at 390px and 1440px against its own scratch database. A separate job so the
+  # verify job never waits on a browser. Uses the runner's preinstalled Google Chrome; no browser
+  # is downloaded. Desktop pixel comparison runs on one machine only (PW_DESKTOP_COMPARE).
+  mobile:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgres://postgres@localhost:5432/postgres
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Scratch-only unsubscribe secret
+        run: echo "UNSUBSCRIBE_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+
+      - name: Start scratch Postgres
+        run: bash scripts/scratch-postgres.sh
+
+      - name: Migrate from zero
+        run: pnpm db:migrate
+
+      - name: Seed
+        run: pnpm db:seed
+
+      - name: Build
+        run: pnpm build
+
+      - name: Prepare the scratch database for the browser
+        run: pnpm e2e:setup
+
+      - name: Screens at 390px and 1440px
+        run: pnpm e2e --project=setup --project=mobile --project=desktop
+
+      - name: Keep the screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screens
+          path: e2e/screenshots/
+          if-no-files-found: ignore

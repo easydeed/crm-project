@@ -35,7 +35,7 @@ export function PersonDetail({
   return (
     <main className="px-4 py-10">
       <p>
-        <Link className={linkClass} href="/app/people">
+        <Link className={`tap ${linkClass}`} href="/app/people">
           Back to your people
         </Link>
       </p>
@@ -103,7 +103,7 @@ export function PersonDetail({
             {person.parcelApn ? ` · APN ${person.parcelApn}` : ''}
           </p>
           <p className="mt-2">
-            <Link className={linkClass} href={reviewQueueHref(person.id, 'wrong-house')}>
+            <Link className={`tap ${linkClass}`} href={reviewQueueHref(person.id, 'wrong-house')}>
               {REVIEW_WRONG_HOUSE}
             </Link>
           </p>

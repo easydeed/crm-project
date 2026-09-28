@@ -1,4 +1,5 @@
 import { createDb, createRuntimeDb } from './client'
+import { isLocalE2E } from '../config/e2e'
 import { tryLoadIntegrationDatabaseUrl } from './integration-session'
 
 type RuntimeDb = ReturnType<typeof createRuntimeDb>
@@ -15,7 +16,7 @@ function createTestSessionDb() {
 
 export function getRuntimeDb() {
   if (!globalForDb.__onrecordRuntimeDb) {
-    globalForDb.__onrecordRuntimeDb = process.env.VITEST
+    globalForDb.__onrecordRuntimeDb = process.env.VITEST || isLocalE2E()
       ? createTestSessionDb()
       : createRuntimeDb()
   }

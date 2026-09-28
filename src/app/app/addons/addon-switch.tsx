@@ -16,7 +16,7 @@ export function AddonSwitch({
     <button
       aria-checked={checked}
       aria-label={label}
-      className="flex items-center gap-3 rounded-md px-1 py-1 text-[15px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:cursor-not-allowed"
+      className="flex items-center gap-3 rounded-md px-1 py-1 text-[15px] max-sm:-my-1 max-sm:py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:cursor-not-allowed"
       disabled={disabled}
       onClick={onToggle}
       role="switch"

@@ -15,3 +15,8 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 /preview/
+e2e/.state.json
+test-results/
+playwright-report/
+e2e/__snapshots-local__/
+e2e/screenshots/

@@ -8,7 +8,7 @@ function Phone({ phone }: { phone: string | null }) {
   if (!digits) return <dd>{phone}</dd>
   return (
     <dd>
-      <a className={linkClass} href={`tel:+1${digits}`}>
+      <a className={`tap ${linkClass}`} href={`tel:+1${digits}`}>
         {formatUsPhone(digits)}
       </a>
     </dd>
@@ -28,7 +28,7 @@ export function CallPanel({ id, panel, address }: { id: string; panel: CallPanel
         <div>
           <dt className="font-medium">Email</dt>
           <dd className="break-all">
-            <a className={linkClass} href={`mailto:${panel.email}`}>
+            <a className={`tap ${linkClass}`} href={`mailto:${panel.email}`}>
               {panel.email}
             </a>
           </dd>

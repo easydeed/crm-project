@@ -54,7 +54,7 @@ export function AppearanceForm({
           <legend className="text-[15px]">Accent color</legend>
           <div className="mt-2 flex flex-wrap gap-3">
             {ACCENT_COLORS.map((color) => (
-              <label key={color.value} className="text-[15px]">
+              <label key={color.value} className="block text-[15px] max-sm:-m-1 max-sm:p-1">
                 <input
                   className="peer sr-only"
                   type="radio"

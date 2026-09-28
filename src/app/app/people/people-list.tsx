@@ -19,7 +19,7 @@ export function PeopleList({
 
   return (
     <div className="mt-6">
-      <label className="flex items-center gap-2 text-[15px]">
+      <label className="flex items-center gap-2 text-[15px] max-sm:min-h-11">
         <input
           className="size-4 accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           type="checkbox"
@@ -35,13 +35,15 @@ export function PeopleList({
             key={row.id}
             className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-x-3 text-[15px]"
           >
-            <input
-              className="mt-1 size-4 accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-              type="checkbox"
-              checked={selectedSet.has(row.id)}
-              onChange={() => onToggle(row.id)}
-              aria-label={`Select ${row.name}`}
-            />
+            <label className="mt-1 flex max-sm:-mx-3.5 max-sm:-my-3.5 max-sm:p-3.5">
+              <input
+                className="size-4 accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                type="checkbox"
+                checked={selectedSet.has(row.id)}
+                onChange={() => onToggle(row.id)}
+                aria-label={`Select ${row.name}`}
+              />
+            </label>
             <div className="min-w-0">
               <Link className={`${linkClass} font-medium no-underline hover:underline`} href={`/app/people/${row.id}`}>
                 {row.name}
