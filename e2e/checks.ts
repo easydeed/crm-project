@@ -13,9 +13,12 @@ export type Problem = { rule: string; what: string }
 export async function layoutProblems(page: Page, { tapTargets }: { tapTargets: boolean }): Promise<Problem[]> {
   return page.evaluate((checkTaps) => {
     const problems: { rule: string; what: string }[] = []
-    const vw = window.innerWidth
+    // A phone widens its layout viewport to fit content that is too wide, so innerWidth grows
+    // with the page. clientWidth stays at the device width the page must fit.
     const doc = document.documentElement
+    const vw = doc.clientWidth
     if (doc.scrollWidth > vw) problems.push({ rule: 'no-horizontal-scroll', what: `scrollWidth ${doc.scrollWidth} > ${vw}` })
+    if (window.innerWidth > vw) problems.push({ rule: 'no-horizontal-scroll', what: `layout viewport widened to ${window.innerWidth}` })
 
     const visible = (el: Element) => {
       const r = el.getBoundingClientRect()
@@ -71,6 +74,6 @@ export async function layoutProblems(page: Page, { tapTargets }: { tapTargets: b
 /** Tap targets are a touch rule: checked on the phone viewport, where the buyer taps. Desktop keeps its layout. */
 export async function expectCleanLayout(page: Page, { tapTargets }: { tapTargets: boolean }) {
   expect(await layoutProblems(page, { tapTargets })).toEqual([])
-  const { scrollWidth, width } = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, width: window.innerWidth }))
-  expect(scrollWidth).toBe(width)
+  const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
+  expect(scrollWidth).toBe(page.viewportSize()?.width)
 }
