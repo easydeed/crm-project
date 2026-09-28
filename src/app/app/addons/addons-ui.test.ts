@@ -12,7 +12,7 @@ const src = (relative: string) => readFileSync(new URL(relative, import.meta.url
 function rowsFrom(enabled: Record<string, boolean> = {}): AddonRowData[] {
   return fixtureRegistry().list().map((addon) => ({
     key: addon.key, title: addon.title, blurb: addon.blurb, priceCents: addon.priceCents, priceNote: addon.priceNote,
-    band: addon.band, requiresConfig: addon.requiresConfig, fields: addon.fields, enabled: enabled[addon.key] === true, config: {},
+    band: addon.band, requiresConfig: addon.requiresConfig, fields: addon.fields, summary: null, enabled: enabled[addon.key] === true, config: {},
   }))
 }
 

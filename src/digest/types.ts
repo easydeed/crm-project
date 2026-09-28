@@ -54,6 +54,15 @@ export type DigestListing = {
   listingAgent: string | null
 }
 
+/** The agent's lender partner, from the lender add-on. Null when the add-on is off or unset. */
+export type DigestLender = {
+  name: string
+  nmls: string
+  email: string
+  phone: string | null
+  company: string | null
+}
+
 export type DigestInput = {
   asOf: Date
   agent: DigestAgent
@@ -63,6 +72,7 @@ export type DigestInput = {
   streetSales: DigestEvent[]
   nearbyListing: DigestListing | null
   tax: typeof CA_TAX
+  lender: DigestLender | null
 }
 
 export type ContentBlockName =

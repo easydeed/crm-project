@@ -2,6 +2,7 @@ import { renderFooter } from '@/digest/blocks/footer'
 import { renderFourDoors } from '@/digest/blocks/four-doors'
 import { pickHeadline, renderGreeting } from '@/digest/blocks/greeting'
 import { renderHeader } from '@/digest/blocks/header'
+import { renderLender } from '@/digest/blocks/lender'
 import { renderLoan } from '@/digest/blocks/loan'
 import { renderRecord } from '@/digest/blocks/record'
 import { renderReply } from '@/digest/blocks/reply'
@@ -31,12 +32,15 @@ export function renderDigest(input: DigestInput): DigestResult {
   const header = renderHeader(input.agent, accent)
   const greeting = renderGreeting(input.contact.firstName, headline)
   const reply = renderReply(input.agent, accent)
-  const footer = renderFooter(input.agent)
+  // The lender block carries the agent's line, so the footer does not repeat it.
+  const lender = input.lender ? renderLender(input.agent, input.lender) : null
+  const footer = renderFooter(input.agent, { withAgentLine: !lender })
   const html = wrapEmail(headline, [
     header.html,
     greeting.html,
     ...content.map((block) => `<!--block:${block.name}-->${block.html}`),
     reply.html,
+    ...(lender ? [`<!--block:lender-->${lender.html}`] : []),
     footer.html,
   ], accent)
   const text = [
@@ -44,6 +48,7 @@ export function renderDigest(input: DigestInput): DigestResult {
     greeting.text,
     ...content.map((block) => block.text),
     reply.text,
+    ...(lender ? [lender.text] : []),
     footer.text,
   ].join('\n\n')
 

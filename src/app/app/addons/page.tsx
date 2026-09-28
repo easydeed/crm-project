@@ -22,6 +22,8 @@ export default async function AddonsPage() {
     requiresConfig: addon.requiresConfig,
     fields: addon.fields,
     configHref: addon.configHref,
+    summary: addon.summary && Object.keys(config).length > 0 ? addon.summary(config) : null,
+    rowNote: addon.rowNote,
     enabled,
     config,
   }))

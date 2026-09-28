@@ -1,6 +1,7 @@
 import { configFields } from '@/addons/config-fields'
 import type { Addon, AddonDefinition } from '@/addons/types'
 import { ADDON_PRICES } from '@/config/costs'
+import { LENDER } from '@/addons/lender'
 import { TEXT_CALL_LIST } from '@/addons/text-call-list'
 
 export type AddonRegistry = {
@@ -27,7 +28,7 @@ export function createRegistry(definitions: AddonDefinition[], prices: Record<st
 }
 
 /** Production add-ons. */
-const PRODUCTION = createRegistry([TEXT_CALL_LIST])
+const PRODUCTION = createRegistry([TEXT_CALL_LIST, LENDER])
 
 let current: AddonRegistry = PRODUCTION
 

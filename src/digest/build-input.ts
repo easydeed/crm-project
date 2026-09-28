@@ -5,7 +5,9 @@ import { accounts, parcelEvents, parcels } from '@/db/schema'
 import { liveContacts } from '@/db/live-contacts'
 import { withinTrailingMonths } from '@/digest/format'
 import { GRANT_DEED } from '@/digest/types'
-import type { DigestEvent, DigestInput, DigestParcel } from '@/digest/types'
+import type { DigestEvent, DigestInput, DigestLender, DigestParcel } from '@/digest/types'
+import { addonConfig } from '@/addons/state'
+import { LENDER_KEY, parseLender, type LenderConfig } from '@/addons/lender'
 
 export type DigestDb = ReturnType<typeof createDb>['db']
 
@@ -80,6 +82,11 @@ async function loadStreetSales(
   return rows
     .map((row) => toEvent(row))
     .filter((sale) => sale.recordedAt && withinTrailingMonths(sale.recordedAt, args.asOf, 12))
+}
+
+function toDigestLender(lender: LenderConfig | null): DigestLender | null {
+  if (!lender) return null
+  return { name: lender.name, nmls: lender.nmls, email: lender.email, phone: lender.phone ?? null, company: lender.company ?? null }
 }
 
 export async function buildDigestInput(
@@ -166,5 +173,6 @@ export async function buildDigestInput(
     }),
     nearbyListing: null,
     tax: CA_TAX,
+    lender: toDigestLender(parseLender(await addonConfig(accountId, LENDER_KEY))),
   }
 }

@@ -9,7 +9,7 @@ test('registering the same key twice fails at startup', () => {
 })
 
 test('production registers only the add-ons that exist', () => {
-  expect(getAddonRegistry().list().map((addon) => addon.key)).toEqual(['text_call_list'])
+  expect(getAddonRegistry().list().map((addon) => addon.key)).toEqual(['text_call_list', 'lender'])
 })
 
 test('a resolved config renders no form and must say where it is set up', () => {

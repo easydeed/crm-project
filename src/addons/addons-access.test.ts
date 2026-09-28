@@ -39,7 +39,7 @@ test('the door check catches a direct import and raw SQL', () => {
 test('every add-on state function takes accountId as its required first parameter', () => {
   const state = readFileSync(path.join(root, STATE), 'utf8')
   const exported = [...state.matchAll(/export (?:async )?function (\w+)\(([^)]*)\)/g)]
-  expect(exported.map((m) => m[1])).toEqual(['isAddonEnabled', 'loadAddonStates', 'switchAddonOn', 'switchAddonOff', 'forceEnableAddon'])
+  expect(exported.map((m) => m[1])).toEqual(['isAddonEnabled', 'addonConfig', 'loadAddonStates', 'switchAddonOn', 'switchAddonOff', 'forceEnableAddon'])
   for (const [, name, params] of exported) expect(params, name).toMatch(/^accountId: string(,|$)/)
 })
 
