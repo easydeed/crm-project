@@ -44,17 +44,18 @@ export async function textCallList(accountId: string, period: string, asOf: Date
       .values({ accountId, kind: 'call_list', period, toPhone: phone ?? 'unverified', createdAt: now })
       .onConflictDoNothing()
       .returning({ id: textMessages.id })
+    if (!claimed) return 'already'
     try {
       const { providerId } = await deliverText(
         accountId,
         { purpose: 'call_list', to: phone ?? '', verifiedPhone: phone, billingActive: await billingActive(db, accountId, now), addonEnabled: true },
         { to: phone ?? '', body, idempotencyKey: `${accountId}:${period}` },
       )
-      await db.update(textMessages).set({ providerId }).where(eq(textMessages.id, claimed?.id ?? ''))
+      await db.update(textMessages).set({ providerId }).where(eq(textMessages.id, claimed.id))
       return 'sent'
     } catch (err) {
       const permanent = isPermanentTextError(err)
-      await db.update(textMessages).set({ error: err instanceof Error ? err.message : String(err), permanentFailure: permanent }).where(eq(textMessages.id, claimed?.id ?? ''))
+      await db.update(textMessages).set({ error: err instanceof Error ? err.message : String(err), permanentFailure: permanent }).where(eq(textMessages.id, claimed.id))
       if (permanent && phone) {
         await stopTexting(db, accountId, phone, err instanceof TextSendError && err.code === STOPPED_CODE ? 'stop_received' : 'call_list', now)
       }
