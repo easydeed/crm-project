@@ -6,7 +6,7 @@ export const LENDER_KEY = 'lender'
 
 export const lenderSchema = z.object({
   name: z.string().trim().min(2, "Enter the lender's full name.").describe("Lender's full name"),
-  nmls: z.string().trim().regex(/^\d{6,8}$/, 'NMLS is 6 to 8 digits, numbers only.').describe('NMLS number'),
+  nmls: z.string().trim().regex(/^[\d-]{6,8}$/, 'NMLS is 6 to 8 digits, numbers only.').describe('NMLS number'),
   email: z.string().trim().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Enter an email like name@lender.com.').describe("Lender's email"),
   phone: z
     .string()
