@@ -39,6 +39,21 @@ export async function isAddonEnabled(accountId: string, key: string): Promise<bo
   return row?.enabled === true
 }
 
+/**
+ * The stored config of an add-on that is registered and on, else null. How a feature reads
+ * an add-on's settings: the digest gets the lender this way, never from account_addons.
+ */
+export async function addonConfig(accountId: string, key: string): Promise<AddonConfig | null> {
+  if (!getAddonRegistry().get(key)) return null
+  const { db } = getRuntimeDb()
+  const [row] = await db
+    .select({ enabled: accountAddons.enabled, config: accountAddons.config })
+    .from(accountAddons)
+    .where(and(eq(accountAddons.accountId, accountId), eq(accountAddons.addonKey, key)))
+    .limit(1)
+  return row?.enabled ? (row.config as AddonConfig) : null
+}
+
 /** Every registered add-on with this account's state, plus rows whose key nothing registers. */
 export async function loadAddonStates(accountId: string): Promise<{ states: AddonState[]; unknown: UnknownAddonRow[] }> {
   const registry = getAddonRegistry()

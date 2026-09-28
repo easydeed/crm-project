@@ -109,6 +109,7 @@ function input(extra: Partial<DigestInput>): DigestInput {
     streetSales: sales,
     nearbyListing: null,
     tax: CA_TAX,
+    lender: null,
     ...extra,
   }
 }

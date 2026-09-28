@@ -19,6 +19,7 @@ export const ADDON_PRICES: { effectiveDate: string; cents: Record<string, number
   effectiveDate: '2026-09-25',
   cents: {
     text_call_list: 200,
+    lender: 0,
   },
 }
 

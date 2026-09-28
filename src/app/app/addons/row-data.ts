@@ -13,6 +13,9 @@ export type AddonRowData = {
   fields: ConfigField[]
   /** Where the agent sets up a config the server resolves, instead of a form. */
   configHref?: string
+  /** Saved config in one line, e.g. the lender's name and NMLS. Null until there is one. */
+  summary: string | null
+  rowNote?: string
   enabled: boolean
   config: AddonConfig
 }

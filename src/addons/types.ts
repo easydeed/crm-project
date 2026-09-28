@@ -27,6 +27,10 @@ export type AddonDefinition = {
    */
   resolveConfig?(accountId: string): Promise<{ ok: true; config: Record<string, unknown> } | { ok: false; message: string }>
   configHref?: string
+  /** One line under the row title once config is saved, e.g. who the lender is. */
+  summary?(config: AddonConfig): string | null
+  /** One muted line on the row, e.g. when a change takes effect. */
+  rowNote?: string
   onEnable?(accountId: string, config: AddonConfig): Promise<void>
   onDisable?(accountId: string): Promise<void>
 }
