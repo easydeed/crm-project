@@ -7,6 +7,7 @@ import { callListAsOf } from '@/jobs/call-list-period'
 import type { JobHandler } from '@/jobs/types'
 import { computeSignals } from '@/signals/compute'
 import { periodOf } from '@/signals/period'
+import { textCallList } from '@/text/call-list-text'
 
 function readAsOf(value: unknown, fallback: Date) {
   if (value == null || value === '') return fallback
@@ -53,4 +54,7 @@ export const buildCallLists: JobHandler = async (payload, ctx) => {
   await db
     .delete(callListEntries)
     .where(ids.length ? and(periodMatch, notInArray(callListEntries.contactId, ids)) : periodMatch)
+
+  // After the list is written. Never throws: a failed text does not fail this job.
+  await textCallList(accountId, period, asOf, ctx.now)
 }

@@ -25,6 +25,8 @@ const EXPECTED: Record<string, string> = {
   admin_actions_admin_account_id_accounts_id_fk: 'set null',
   admin_actions_target_account_id_accounts_id_fk: 'set null',
   provider_calls_account_id_accounts_id_fk: 'set null',
+  phone_verifications_account_id_accounts_id_fk: 'cascade',
+  text_messages_account_id_accounts_id_fk: 'cascade',
   contact_subscriptions_contact_id_contacts_id_fk: 'cascade',
   group_members_contact_id_contacts_id_fk: 'cascade',
   contact_match_candidates_contact_id_contacts_id_fk: 'cascade',

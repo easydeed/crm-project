@@ -2,7 +2,7 @@ import { getRuntimeDb } from '@/db/runtime'
 import { providerCalls } from '@/db/schema-billing'
 import { COST_RATES, type CostRates } from '@/config/costs'
 
-export type ProviderName = 'property' | 'listing'
+export type ProviderName = 'property' | 'listing' | 'text'
 
 export type ProviderCall = { provider: ProviderName; operation: string; accountId: string | null; count: number }
 

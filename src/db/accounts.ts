@@ -11,6 +11,7 @@ export type AccountRecord = {
   brokerage: string | null
   dre: string | null
   phone: string | null
+  phoneVerifiedAt: Date | null
   senderName: string | null
   replyTo: string | null
   accentColor: string | null
@@ -30,6 +31,7 @@ const accountColumns = {
   brokerage: accounts.brokerage,
   dre: accounts.dre,
   phone: accounts.phone,
+  phoneVerifiedAt: accounts.phoneVerifiedAt,
   senderName: accounts.senderName,
   replyTo: accounts.replyTo,
   accentColor: accounts.accentColor,

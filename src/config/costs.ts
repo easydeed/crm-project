@@ -17,7 +17,9 @@ export const PLAN = {
  */
 export const ADDON_PRICES: { effectiveDate: string; cents: Record<string, number> } = {
   effectiveDate: '2026-09-25',
-  cents: {},
+  cents: {
+    text_call_list: 200,
+  },
 }
 
 export type CostRates = {
@@ -35,6 +37,7 @@ export const COST_RATES: CostRates = {
   providerCallCents: {
     'property:lookupParcel': null,
     'listing:listingsNear': null,
+    'text:send': null,
   },
   sendCents: null,
   fixedMonthlyCents: { email: null, hosting: null },

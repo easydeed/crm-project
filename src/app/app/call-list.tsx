@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { CallEntryItem } from '@/app/app/call-entry'
 import type { CallList } from '@/app/app/call-list-view'
+import { TextNoticeLine } from '@/app/app/text-notice'
+import type { TextNotice } from '@/text/text-notice'
 import { linkClass, mutedClass } from '@/app/app/people/ui'
 
 function Empty({ href, label, text }: { href: string; label: string; text: string }) {
@@ -14,12 +16,13 @@ function Empty({ href, label, text }: { href: string; label: string; text: strin
   )
 }
 
-export function CallListSection({ list, readOnly }: { list: CallList; readOnly: boolean }) {
+export function CallListSection({ list, readOnly, textNotice = null }: { list: CallList; readOnly: boolean; textNotice?: TextNotice }) {
   return (
     <section aria-labelledby="call-list-heading" className="px-4 py-8">
       <h2 className="text-[19px] font-semibold" id="call-list-heading">
         Worth a call this month
       </h2>
+      <TextNoticeLine notice={textNotice} />
       {list.kind === 'no-people' ? (
         <Empty
           href="/app/people/import"

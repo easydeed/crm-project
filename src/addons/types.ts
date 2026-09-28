@@ -20,6 +20,13 @@ export type AddonDefinition = {
   band: AddonBand
   requiresConfig: boolean
   configSchema?: AddonConfigSchema
+  /**
+   * For config the client cannot be trusted to assert. When set, the server builds the
+   * config from the database and ignores anything submitted; the add-on shows no form,
+   * and configHref says where the agent sets it up instead.
+   */
+  resolveConfig?(accountId: string): Promise<{ ok: true; config: Record<string, unknown> } | { ok: false; message: string }>
+  configHref?: string
   onEnable?(accountId: string, config: AddonConfig): Promise<void>
   onDisable?(accountId: string): Promise<void>
 }

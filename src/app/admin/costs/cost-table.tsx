@@ -29,6 +29,7 @@ function Row({ row }: { row: AccountCost }) {
       <td className={td}>{formatDollars(row.revenueCents)}</td>
       <td className={td}>{line(row.parcel)}</td>
       <td className={td}>{line(row.mls)}</td>
+      <td className={td}>{line(row.texts)}</td>
       <td className={td}>{line(row.sends)}</td>
       <td className={td}>{money(row.otherCents)}</td>
       <td className={td}>{money(row.cogsCents)}</td>
@@ -49,6 +50,7 @@ export function CostTable({ report }: { report: CostReport }) {
             <th className={th}>Revenue</th>
             <th className={th}>Parcel lookups</th>
             <th className={th}>MLS calls</th>
+            <th className={th}>Texts</th>
             <th className={th}>Sends</th>
             <th className={th}>Other (email, hosting)</th>
             <th className={th}>COGS</th>
@@ -60,12 +62,13 @@ export function CostTable({ report }: { report: CostReport }) {
           {report.rows.map((row) => (
             <Row key={row.id} row={row} />
           ))}
-          {unattributed.parcel.count + unattributed.mls.count > 0 ? (
+          {unattributed.parcel.count + unattributed.mls.count + unattributed.texts.count > 0 ? (
             <tr className="border-b border-black/10">
               <td className={td}>Not tied to an account</td>
               <td className={td}>{formatDollars(0)}</td>
               <td className={td}>{line(unattributed.parcel)}</td>
               <td className={td}>{line(unattributed.mls)}</td>
+              <td className={td}>{line(unattributed.texts)}</td>
               <td className={td} colSpan={5} />
             </tr>
           ) : null}

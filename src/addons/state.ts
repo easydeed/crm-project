@@ -77,7 +77,14 @@ export async function switchAddonOn(accountId: string, key: string, submitted: R
 
   let config: AddonConfig | undefined
   if (addon.configSchema) {
-    const candidate = submitted ? coerceSubmitted(addon.fields, submitted) : (stored?.config ?? {})
+    let candidate: unknown
+    if (addon.resolveConfig) {
+      const resolved = await addon.resolveConfig(accountId)
+      if (!resolved.ok) return { ok: false, reason: 'config', message: resolved.message }
+      candidate = resolved.config
+    } else {
+      candidate = submitted ? coerceSubmitted(addon.fields, submitted) : (stored?.config ?? {})
+    }
     const parsed = addon.configSchema.safeParse(candidate)
     if (!parsed.success) {
       return { ok: false, reason: 'config', message: 'Fill in the settings below to switch this on.', fieldErrors: fieldErrors(parsed.error.issues) }

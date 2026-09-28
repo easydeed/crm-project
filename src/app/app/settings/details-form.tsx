@@ -69,6 +69,11 @@ export function DetailsForm({
       </label>
       {readOnly ? <Muted>Viewing as another agent is read only.</Muted> : null}
       <FieldError message={state.error} />
+      {state.notice ? (
+        <p className="text-[15px]" role="status">
+          {state.notice}
+        </p>
+      ) : null}
       <SaveButton pending={pending} savedAt={state.savedAt} readOnly={readOnly} />
     </form>
   )

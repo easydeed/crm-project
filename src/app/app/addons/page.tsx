@@ -21,6 +21,7 @@ export default async function AddonsPage() {
     band: addon.band,
     requiresConfig: addon.requiresConfig,
     fields: addon.fields,
+    configHref: addon.configHref,
     enabled,
     config,
   }))

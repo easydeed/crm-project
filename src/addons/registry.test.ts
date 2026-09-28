@@ -8,8 +8,14 @@ test('registering the same key twice fails at startup', () => {
   expect(() => createRegistry([FIXTURE_PLAIN, { ...FIXTURE_PLAIN, title: 'Again' }], FIXTURE_PRICES)).toThrow(/fixture_plain is registered twice/)
 })
 
-test('production registers no add-on yet', () => {
-  expect(getAddonRegistry().list()).toEqual([])
+test('production registers only the add-ons that exist', () => {
+  expect(getAddonRegistry().list().map((addon) => addon.key)).toEqual(['text_call_list'])
+})
+
+test('a resolved config renders no form and must say where it is set up', () => {
+  const resolved = { ...FIXTURE_CONFIG, key: 'resolved', resolveConfig: async () => ({ ok: true as const, config: {} }) }
+  expect(() => createRegistry([resolved], { resolved: 0 })).toThrow(/no configHref/)
+  expect(createRegistry([{ ...resolved, configHref: '/app/settings' }], { resolved: 0 }).get('resolved')?.fields).toEqual([])
 })
 
 test('a price comes only from ADDON_PRICES; an add-on without one cannot register', () => {

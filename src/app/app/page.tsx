@@ -6,6 +6,7 @@ import { loadHomeSend } from '@/app/app/home-send'
 import { HomeownersSection } from '@/app/app/homeowners-section'
 import { readRequestSession } from '@/auth/current-session'
 import { effectiveAccountId } from '@/auth/effective-account'
+import { loadTextNotice } from '@/text/text-notice'
 
 export default async function AppHomePage() {
   const session = await readRequestSession()
@@ -27,11 +28,12 @@ export default async function AppHomePage() {
 
   // Order is fixed: send status, then the call list, then homeowners. Nothing else.
   const list = await loadCallList(accountId)
+  const textNotice = await loadTextNotice(accountId)
   const readOnly = Boolean(session.viewingAsAccountId)
   return (
     <main>
       <HomeSendCard readOnly={readOnly} view={view} />
-      <CallListSection list={list} readOnly={readOnly} />
+      <CallListSection list={list} readOnly={readOnly} textNotice={textNotice} />
       <HomeownersSection />
     </main>
   )
