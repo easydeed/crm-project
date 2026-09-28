@@ -31,7 +31,6 @@ export function withMetering<T extends { billable: boolean }>(
   name: ProviderName,
   options: { accountId?: string | null; record?: (call: ProviderCall) => Promise<void> } = {},
 ): T {
-  if (!provider.billable) return provider
   const record = options.record ?? ((call: ProviderCall) => recordProviderCall(call, COST_RATES, provider.billable))
   return new Proxy(provider, {
     get(target, key, receiver) {
