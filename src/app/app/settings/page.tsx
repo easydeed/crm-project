@@ -8,6 +8,7 @@ import { getRuntimeDb } from '@/db/runtime'
 import { AppearanceForm } from '@/app/app/settings/appearance-form'
 import { DetailsForm } from '@/app/app/settings/details-form'
 import { SendingForm } from '@/app/app/settings/sending-form'
+import { PhoneVerification } from '@/app/app/settings/phone-verification'
 import { loadSettingsPreview } from '@/digest/load-settings-preview'
 
 export default async function SettingsPage() {
@@ -36,6 +37,7 @@ export default async function SettingsPage() {
     <main className="flex flex-col gap-10 px-4 py-10">
       <h1 className="text-[22px] font-semibold">Settings</h1>
       <DetailsForm account={account} readOnly={readOnly} />
+      <PhoneVerification key={account.phone ?? 'none'} phone={account.phone} readOnly={readOnly} verified={Boolean(account.phoneVerifiedAt)} />
       <AppearanceForm account={account} readOnly={readOnly} preview={preview} />
       <SendingForm account={account} readOnly={readOnly} systemPaused={systemPaused} />
       <section>

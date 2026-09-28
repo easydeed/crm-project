@@ -16,6 +16,7 @@ export type AccountCost = {
   revenueCents: number
   parcel: LineCost
   mls: LineCost
+  texts: LineCost
   sends: LineCost
   otherCents: number | null
   cogsCents: number | null
@@ -25,7 +26,7 @@ export type AccountCost = {
 
 export type CostReport = {
   rows: AccountCost[]
-  unattributed: { parcel: LineCost; mls: LineCost }
+  unattributed: { parcel: LineCost; mls: LineCost; texts: LineCost }
   totals: { mrrCents: number; cogsCents: number | null; marginCents: number | null; marginPct: number | null }
   providerCallCount: number
 }
@@ -63,10 +64,11 @@ export function computeCosts(input: CostInputs, rates: CostRates, planPriceCents
     const sends: LineCost = { count: sendCount, costCents: sendCount === 0 ? 0 : rates.sendCents === null ? null : sendCount * rates.sendCents }
     const parcel = providerLine(input.providerCalls, account.id, 'property')
     const mls = providerLine(input.providerCalls, account.id, 'listing')
+    const texts = providerLine(input.providerCalls, account.id, 'text')
     const revenueCents = account.active ? planPriceCents : 0
-    const cogsCents = sum([parcel.costCents, mls.costCents, sends.costCents, perAccountOther])
+    const cogsCents = sum([parcel.costCents, mls.costCents, texts.costCents, sends.costCents, perAccountOther])
     const marginCents = cogsCents === null ? null : revenueCents - cogsCents
-    return { ...account, revenueCents, parcel, mls, sends, otherCents: perAccountOther, cogsCents, marginCents, marginPct: percent(marginCents, revenueCents) }
+    return { ...account, revenueCents, parcel, mls, texts, sends, otherCents: perAccountOther, cogsCents, marginCents, marginPct: percent(marginCents, revenueCents) }
   })
 
   // Unknown margins first: they are the ones that need a rate before anyone can judge them.
@@ -75,9 +77,13 @@ export function computeCosts(input: CostInputs, rates: CostRates, planPriceCents
     return a.marginCents - b.marginCents || a.name.localeCompare(b.name)
   })
 
-  const unattributed = { parcel: providerLine(input.providerCalls, null, 'property'), mls: providerLine(input.providerCalls, null, 'listing') }
+  const unattributed = {
+    parcel: providerLine(input.providerCalls, null, 'property'),
+    mls: providerLine(input.providerCalls, null, 'listing'),
+    texts: providerLine(input.providerCalls, null, 'text'),
+  }
   const mrrCents = rows.reduce((total, row) => total + row.revenueCents, 0)
-  const cogsCents = sum([...rows.map((row) => row.cogsCents), unattributed.parcel.costCents, unattributed.mls.costCents])
+  const cogsCents = sum([...rows.map((row) => row.cogsCents), unattributed.parcel.costCents, unattributed.mls.costCents, unattributed.texts.costCents])
   const marginCents = cogsCents === null ? null : mrrCents - cogsCents
   const providerCallCount = input.providerCalls.reduce((total, call) => total + call.count, 0)
   return { rows, unattributed, totals: { mrrCents, cogsCents, marginCents, marginPct: percent(marginCents, mrrCents) }, providerCallCount }

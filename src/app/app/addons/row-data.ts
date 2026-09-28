@@ -11,6 +11,8 @@ export type AddonRowData = {
   band: AddonBand
   requiresConfig: boolean
   fields: ConfigField[]
+  /** Where the agent sets up a config the server resolves, instead of a form. */
+  configHref?: string
   enabled: boolean
   config: AddonConfig
 }

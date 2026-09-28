@@ -24,3 +24,9 @@ export function parseOptionalUsPhone(value: string) {
   }
   return { ok: true as const, phone: normalized }
 }
+
+/** A stored US phone, however it was typed, as E.164: the form Twilio sends and receives. Null if it is not one. */
+export function usPhoneToE164(stored: string | null): string | null {
+  const digits = stored ? normalizeUsPhone(stored) : null
+  return digits ? `+1${digits}` : null
+}

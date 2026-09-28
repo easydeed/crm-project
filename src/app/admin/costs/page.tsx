@@ -52,7 +52,7 @@ export default async function CostsPage() {
       ) : null}
       {report.providerCallCount === 0 ? (
         <p className="mt-3 max-w-3xl text-[15px]">
-          No billable lookups yet. Parcel and MLS calls are counted here once a real data provider is connected.
+          No billable lookups yet. Parcel and MLS calls are counted here once a real data provider is connected, and texts once texting is on.
         </p>
       ) : null}
       {report.rows.length === 0 ? (

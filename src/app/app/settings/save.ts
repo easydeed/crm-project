@@ -9,6 +9,8 @@ import {
   updateAccountSending,
 } from '@/db/account-settings'
 import type { AppearanceState, DetailsState, SendingState } from '@/app/app/settings/types'
+import { getAccountById } from '@/db/accounts'
+import { onPhoneChanged, PHONE_CHANGED_ADDON_OFF } from '@/text/verification'
 
 export async function saveDetails(session: SessionPayload, formData: FormData): Promise<DetailsState> {
   const gate = assertWritable(session)
@@ -23,12 +25,17 @@ export async function saveDetails(session: SessionPayload, formData: FormData): 
   if (!phone.ok) errors.phone = phone.message
   if (!name.ok || !dre.ok || !phone.ok) return errors
 
+  const before = await getAccountById(session.accountId)
   await updateAccountDetails(session.accountId, {
     name: name.name,
     brokerage: String(formData.get('brokerage') ?? '').trim() || null,
     dre: dre.dre,
     phone: phone.phone,
   })
+  if (before && before.phone !== phone.phone) {
+    const { addonTurnedOff } = await onPhoneChanged(session.accountId)
+    if (addonTurnedOff) return { savedAt: Date.now(), notice: PHONE_CHANGED_ADDON_OFF }
+  }
   return { savedAt: Date.now() }
 }
 

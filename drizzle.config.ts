@@ -21,6 +21,7 @@ export default defineConfig({
     './src/db/schema-call-lists.ts',
     './src/db/schema-suppressions.ts',
     './src/db/schema-billing.ts',
+    './src/db/schema-text.ts',
   ],
   out: './drizzle',
   dialect: 'postgresql',

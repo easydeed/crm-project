@@ -1,6 +1,7 @@
 import { configFields } from '@/addons/config-fields'
 import type { Addon, AddonDefinition } from '@/addons/types'
 import { ADDON_PRICES } from '@/config/costs'
+import { TEXT_CALL_LIST } from '@/addons/text-call-list'
 
 export type AddonRegistry = {
   list(): Addon[]
@@ -16,15 +17,17 @@ export function createRegistry(definitions: AddonDefinition[], prices: Record<st
     const priceCents = prices[key]
     if (priceCents === undefined) throw new Error(`Add-on ${key} has no price in ADDON_PRICES (src/config/costs.ts)`)
     if (definition.requiresConfig && !definition.configSchema) throw new Error(`Add-on ${key} requires config but has no configSchema`)
+    if (definition.resolveConfig && !definition.configHref) throw new Error(`Add-on ${key} resolves its config but has no configHref`)
     const fields = definition.configSchema ? configFields(key, definition.configSchema) : []
-    byKey.set(key, { ...definition, priceCents, fields })
+    // A resolved config never renders a form: the server decides it, not the agent.
+    byKey.set(key, { ...definition, priceCents, fields: definition.resolveConfig ? [] : fields })
   }
   const all = [...byKey.values()]
   return { list: () => all, get: (key) => byKey.get(key) }
 }
 
-/** Production add-ons. None yet: OR-022 and OR-023 register the first two. */
-const PRODUCTION = createRegistry([])
+/** Production add-ons. */
+const PRODUCTION = createRegistry([TEXT_CALL_LIST])
 
 let current: AddonRegistry = PRODUCTION
 

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, useTransition } from 'react'
 import { disableAddonAction, enableAddonAction } from '@/app/app/addons/actions'
 import { AddonConfigForm } from '@/app/app/addons/addon-config-form'
@@ -42,7 +43,7 @@ export function AddonRow({
     }
     setMessage(result.message)
     setErrors(result.fieldErrors ?? {})
-    if (result.reason === 'config') setOpen(true)
+    if (result.reason === 'config' && row.fields.length > 0) setOpen(true)
   }
 
   function toggle() {
@@ -50,7 +51,7 @@ export function AddonRow({
       startTransition(async () => settle(await disableAddonAction(row.key), false))
       return
     }
-    if (row.requiresConfig && (open || Object.keys(config).length === 0)) {
+    if (row.requiresConfig && row.fields.length > 0 && (open || Object.keys(config).length === 0)) {
       setOpen(true)
       setMessage(SAVE_FIRST)
       return
@@ -75,6 +76,14 @@ export function AddonRow({
       {message ? (
         <p className="mt-3 text-[15px]" role="status">
           {message}
+          {row.configHref && !enabled ? (
+            <>
+              {' '}
+              <Link className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" href={row.configHref}>
+                Go to Settings
+              </Link>
+            </>
+          ) : null}
         </p>
       ) : null}
       {open && !enabled && !readOnly ? (

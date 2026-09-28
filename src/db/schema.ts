@@ -36,6 +36,8 @@ export const accounts = pgTable('accounts', {
   brokerage: text('brokerage'),
   dre: text('dre'),
   phone: text('phone'),
+  /** Set when the agent confirms a texted code; cleared when the phone changes or they reply STOP. */
+  phoneVerifiedAt: timestamp('phone_verified_at', { withTimezone: true }),
   role: accountRoleEnum('role').notNull(),
   senderName: text('sender_name'),
   replyTo: text('reply_to'),
