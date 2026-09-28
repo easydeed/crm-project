@@ -29,15 +29,15 @@ test('every call to a billable provider records one row, including a failed call
   expect(provider.billable).toBe(true)
 })
 
-test('fixtures are not billable and are never metered', async () => {
-  const calls: ProviderCall[] = []
-  const record = async (call: ProviderCall) => void calls.push(call)
+test('fixtures are metered too, one row per call, at a true cost of zero', async () => {
+  const calls: [ProviderCall, number | null][] = []
   const property = new FixturePropertyProvider()
   const listing = new FixtureListingProvider()
-  expect(withMetering(property, 'property', { record })).toBe(property)
-  expect(withMetering(listing, 'listing', { record })).toBe(listing)
-  await withMetering(property, 'property', { record }).lookupParcel({ county: 'Los Angeles', apn: 'none' })
-  expect(calls).toHaveLength(0)
+  const record = async (call: ProviderCall) => void calls.push([call, null])
+  expect(withMetering(property, 'property', { record })).not.toBe(property)
+  await withMetering(property, 'property', { accountId: 'acct-1', record }).lookupParcel({ county: 'Los Angeles', apn: 'none' })
+  await withMetering(listing, 'listing', { accountId: 'acct-1', record }).closedByAgent('CRMLS-P9999')
+  expect(calls.map(([call]) => `${call.provider}:${call.operation}`)).toEqual(['property:lookupParcel', 'listing:closedByAgent'])
 })
 
 test('cost is the rate in force times the count, or null while the rate is not set', () => {

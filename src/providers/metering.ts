@@ -12,23 +12,26 @@ export function callCostCents(call: Pick<ProviderCall, 'provider' | 'operation' 
   return rate == null ? null : rate * call.count
 }
 
-export async function recordProviderCall(call: ProviderCall, rates: CostRates = COST_RATES) {
+/** A fixture's cost is a true zero, not a missing rate. */
+export async function recordProviderCall(call: ProviderCall, rates: CostRates = COST_RATES, billable = true) {
   const { db } = getRuntimeDb()
-  await db.insert(providerCalls).values({ ...call, costCents: callCostCents(call, rates) })
+  await db.insert(providerCalls).values({ ...call, costCents: billable ? callCostCents(call, rates) : 0 })
 }
 
 /**
- * Wraps every method of a billable provider so each call writes one provider_calls row,
- * whether the call succeeds or fails: the vendor bills the request either way.
- * A non-billable provider (fixtures) is returned as it is.
+ * Wraps every method of a provider so each call writes one provider_calls row, whether
+ * the call succeeds or fails: the vendor bills the request either way.
+ *
+ * One rule for every provider. A billable one records the rate in costs.ts, null until it
+ * is set. A fixture records zero, so /admin/costs shows the real call volume before a
+ * paid feed replaces it.
  */
 export function withMetering<T extends { billable: boolean }>(
   provider: T,
   name: ProviderName,
   options: { accountId?: string | null; record?: (call: ProviderCall) => Promise<void> } = {},
 ): T {
-  if (!provider.billable) return provider
-  const record = options.record ?? ((call: ProviderCall) => recordProviderCall(call))
+  const record = options.record ?? ((call: ProviderCall) => recordProviderCall(call, COST_RATES, provider.billable))
   return new Proxy(provider, {
     get(target, key, receiver) {
       const value = Reflect.get(target, key, receiver)
