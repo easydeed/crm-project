@@ -38,9 +38,9 @@ export function renderDigest(input: DigestInput): DigestResult {
   const html = wrapEmail(headline, [
     header.html,
     greeting.html,
-    ...(lender ? [`<!--block:lender-->${lender.html}`] : []),
     ...content.map((block) => `<!--block:${block.name}-->${block.html}`),
     reply.html,
+    ...(lender ? [`<!--block:lender-->${lender.html}`] : []),
     footer.html,
   ], accent)
   const text = [
