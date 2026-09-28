@@ -37,7 +37,7 @@ export function CandidateCards({
             {facts ? <p className={`mt-3 ${mutedClass}`}>{facts}</p> : null}
             <p className="mt-3">{card.reason}</p>
             <button
-              className={`${buttonClass} mt-4 w-[420px] md:w-auto`}
+              className={`${buttonClass} mt-4 w-full md:w-auto`}
               type="button"
               disabled={disabled}
               onClick={() => onChoose(card.parcelId)}
