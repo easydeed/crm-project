@@ -67,6 +67,7 @@ export function renderUnsubscribeHtml(view: UnsubscribeView, token: string) {
   button { margin-top: 16px; font: 16px Georgia, serif; padding: 8px 12px; }
   button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid #0E1729; outline-offset: 2px; }
   form:first-of-type button { font-size: 18px; font-weight: 600; }
+  @media (max-width: 639.98px) { input, button { min-height: 44px; } input { box-sizing: border-box; } }
 </style>
 </head>
 <body>

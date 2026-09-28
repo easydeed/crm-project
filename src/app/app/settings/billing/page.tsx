@@ -88,7 +88,7 @@ function PlanActions({ view }: { view: Extract<Awaited<ReturnType<typeof loadBil
   if (view.status === 'active') {
     return (
       <p className="mt-6">
-        <Link className={linkClass} href="/app/settings/billing/cancel">
+        <Link className={`tap ${linkClass}`} href="/app/settings/billing/cancel">
           Cancel my plan
         </Link>
       </p>

@@ -44,7 +44,7 @@ export default async function SettingsPage() {
         <h2 className="text-[17px] font-semibold">Billing</h2>
         <p className="mt-2 text-[15px]">
           <Link
-            className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="tap underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             href="/app/settings/billing"
           >
             Plan, card, invoices, and canceling

@@ -78,7 +78,7 @@ export function AddToGroup({
         </form>
       )}
       <p className="mt-4">
-        <Link className={linkClass} href="/app/people">
+        <Link className={`tap ${linkClass}`} href="/app/people">
           Manage groups
         </Link>
       </p>

@@ -75,7 +75,7 @@ export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly:
   const called = status === 'called'
   return (
     <li className={`border-t border-foreground/15 py-5 ${called ? 'bg-foreground/5 px-3' : ''}`}>
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-4 max-sm:flex-col max-sm:items-stretch">
         <div className="min-w-0 flex-1">
           <p className={`text-[17px] font-semibold ${called ? 'text-[#3d3d3d] dark:text-[#c8c8c8]' : ''}`}>
             {entry.name}
@@ -95,7 +95,7 @@ export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly:
         <button
           aria-controls={panelId}
           aria-expanded={expanded}
-          className={`${buttonClass} min-h-11`}
+          className={`${buttonClass} min-h-11 max-sm:w-full`}
           onClick={() => setExpanded((open) => !open)}
           type="button"
         >

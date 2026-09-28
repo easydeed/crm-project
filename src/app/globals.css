@@ -35,3 +35,25 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * Phones: every control is at least 44px in its smaller dimension (WCAG 2.5.8).
+ * Desktop keeps its sizes. `.tap` is for a link that stands on its own line;
+ * a link inside a sentence is exempt and keeps its text height.
+ */
+@media (max-width: 639.98px) {
+  button,
+  [role='button'],
+  summary,
+  select,
+  textarea,
+  input:not([type='checkbox']):not([type='radio']):not([type='hidden']) {
+    min-height: 44px;
+  }
+
+  .tap {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}

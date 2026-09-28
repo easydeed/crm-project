@@ -70,7 +70,7 @@ export function SendingForm({
         <FieldError message={state.timezone} />
       </label>
       <div>
-        <label className="flex items-center gap-2 text-[15px]">
+        <label className="flex items-center gap-2 text-[15px] max-sm:min-h-11">
           <input
             className="h-4 w-4 accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             type="checkbox"

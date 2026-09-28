@@ -61,3 +61,16 @@ export function loadDatabasePoolerUrl() {
 export function usesTransactionPooler(url: string) {
   return /:6543(?:\/|$|\?)/.test(url)
 }
+
+/**
+ * True only when the database host is this machine. The e2e path and the e2e setup
+ * script (which sets a known password) both refuse anything else, by host, not by flag.
+ */
+export function isLocalDatabaseUrl(url: string | undefined): boolean {
+  if (!url) return false
+  try {
+    return ['localhost', '127.0.0.1', '::1', '[::1]'].includes(new URL(url).hostname)
+  } catch {
+    return false
+  }
+}
