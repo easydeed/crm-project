@@ -31,6 +31,6 @@ export class FixtureListingProvider implements ListingProvider {
   async closedByAgent(agentId: string): Promise<ClosedListing[]> {
     // Own keys only: an id like "constructor" is unknown, not a prototype method.
     const rows = Object.hasOwn(CLOSED_LISTINGS, agentId) ? CLOSED_LISTINGS[agentId]! : []
-    return rows.map((row) => ({ ...row, sqft: row.sqft ?? 0 })).sort(newestCloseFirst)
+    return rows.map((row) => ({ ...row })).sort(newestCloseFirst)
   }
 }
