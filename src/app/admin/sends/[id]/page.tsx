@@ -73,7 +73,7 @@ function Composed({
   rows: {
     id: string
     name: string
-    email: string
+    email: string | null
     subject: string
     html: string
     blocks: string[]
@@ -100,7 +100,7 @@ function Composed({
           {rows.map((row) => (
             <tr key={row.id} className="border-b border-black/10">
               <td className="py-2 pr-4 align-top">{row.name}</td>
-              <td className="py-2 pr-4 align-top">{row.email}</td>
+              <td className="py-2 pr-4 align-top">{row.email ?? 'No email on file'}</td>
               <td className="py-2 pr-4 align-top">{row.subject}</td>
               <td className="py-2 pr-4 align-top">{row.blocks.join(', ') || '—'}</td>
               <td className="py-2 align-top">
@@ -140,7 +140,7 @@ function Skipped({ rows }: { rows: { reason: string; count: number }[] }) {
 function Failed({
   rows,
 }: {
-  rows: { name: string; email: string; error: string; attempts: number; permanent: boolean }[]
+  rows: { id: string; name: string; email: string | null; error: string; attempts: number; permanent: boolean }[]
 }) {
   if (!rows.length) return <p className="mt-6 text-[15px]">No failures on this run.</p>
   return (
@@ -155,10 +155,10 @@ function Failed({
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr key={row.email} className="border-b border-black/10">
+          <tr key={row.id} className="border-b border-black/10">
             <td className="py-2 pr-4 align-top">
               {row.name}
-              <span className="block">{row.email}</span>
+              <span className="block">{row.email ?? 'No email on file'}</span>
             </td>
             <td className="py-2 pr-4 align-top">{row.error}</td>
             <td className="py-2 pr-4 align-top">{row.attempts}</td>

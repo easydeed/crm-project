@@ -64,7 +64,7 @@ export async function listSendsForAdmin(
     .from(sendRecipients)
     .innerJoin(contactsIncludingDeleted, eq(contactsIncludingDeleted.id, sendRecipients.contactId))
     .where(inArray(sendRecipients.sendId, ids))
-  const emails = [...new Set(recipients.map((row) => row.email.toLowerCase()))]
+  const emails = [...new Set(recipients.flatMap((row) => (row.email ? [row.email.toLowerCase()] : [])))]
   const events = emails.length
     ? await db
         .select({ email: mailEvents.email, kind: mailEvents.kind })
@@ -96,8 +96,8 @@ export async function listSendsForAdmin(
       ...row,
       sent: mine.filter((item) => item.sentAt).length,
       failed: mine.filter((item) => !item.sentAt && item.error).length,
-      bounced: mine.filter((item) => item.sentAt && bounced.has(item.email.toLowerCase())).length,
-      complained: mine.filter((item) => item.sentAt && complained.has(item.email.toLowerCase()))
+      bounced: mine.filter((item) => item.sentAt && item.email && bounced.has(item.email.toLowerCase())).length,
+      complained: mine.filter((item) => item.sentAt && item.email && complained.has(item.email.toLowerCase()))
         .length,
     }
   })
@@ -117,15 +117,16 @@ export type SendDetail = {
   composed: {
     id: string
     name: string
-    email: string
+    email: string | null
     subject: string
     html: string
     blocks: string[]
   }[]
   skipped: { reason: string; count: number }[]
   failedRows: {
+    id: string
     name: string
-    email: string
+    email: string | null
     error: string
     attempts: number
     permanent: boolean
@@ -198,6 +199,7 @@ export async function getSendForAdmin(
     failedRows: recipients
       .filter((row) => !row.sentAt && row.error)
       .map((row) => ({
+        id: row.id,
         name: row.name,
         email: row.email,
         error: row.error ?? '',

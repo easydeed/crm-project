@@ -14,7 +14,7 @@ import { contactsToCsv, downloadCsv, peopleExportFilename } from '@/people/expor
 import { filterPeople } from '@/people/filter'
 import { isInReviewQueue } from '@/people/review-state'
 import type { ContactMatchStatus } from '@/people/status'
-import { parseLeftOutParam, parseStatusParam } from '@/people/url'
+import { parseLeftOutParam, parseNoEmailParam, parseStatusParam } from '@/people/url'
 
 export function PeopleBoard({
   rows,
@@ -23,6 +23,7 @@ export function PeopleBoard({
   statusFromUrl,
   groupFromUrl,
   leftOutFromUrl,
+  noEmailFromUrl,
 }: {
   rows: ContactListRow[]
   groups: GroupListRow[]
@@ -30,11 +31,13 @@ export function PeopleBoard({
   statusFromUrl?: ContactMatchStatus
   groupFromUrl?: string
   leftOutFromUrl?: boolean
+  noEmailFromUrl?: boolean
 }) {
   const router = useRouter()
   const params = useSearchParams()
   const status = parseStatusParam(params.get('status')) ?? statusFromUrl
   const leftOut = parseLeftOutParam(params.get('leftOut')) || Boolean(leftOutFromUrl)
+  const noEmail = parseNoEmailParam(params.get('noEmail')) || Boolean(noEmailFromUrl)
   const queueCount = rows.filter((row) => isInReviewQueue(row.status, row.reviewState)).length
   const groupId =
     (params.get('group') ?? groupFromUrl ?? undefined) &&
@@ -45,8 +48,8 @@ export function PeopleBoard({
   const [selected, setSelected] = useState<string[]>([])
 
   const visible = useMemo(
-    () => filterPeople(rows, { status, groupId, q: query, leftOut }),
-    [rows, status, groupId, query, leftOut],
+    () => filterPeople(rows, { status, groupId, q: query, leftOut, noEmail }),
+    [rows, status, groupId, query, leftOut, noEmail],
   )
   const selectedSet = new Set(selected)
   const selectedRows = rows.filter((row) => selectedSet.has(row.id))
@@ -87,7 +90,7 @@ export function PeopleBoard({
               placeholder="Name, email, or address"
             />
           </label>
-          <PeopleFilters rows={rows} groups={groups} status={status} groupId={groupId} />
+          <PeopleFilters rows={rows} groups={groups} status={status} groupId={groupId} noEmail={noEmail} />
           {visible.length === 0 ? (
             <p className="mt-6 max-w-xl text-[15px]">
               {query.trim()

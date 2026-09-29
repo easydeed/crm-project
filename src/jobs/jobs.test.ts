@@ -41,6 +41,22 @@ test('payload key is stable across key order', () => {
   )
 })
 
+test('assertSendAllowed refuses a contact with no email, whatever else is allowed', () => {
+  process.env.SEND_ENABLED = 'true'
+  process.env.SEND_ALLOWLIST = 'example.com'
+  for (const recipientEmail of [null, '', '   ']) {
+    expect(() =>
+      assertSendAllowed({
+        recipientEmail,
+        unsubscribed: false,
+        suppressed: false,
+        accountPaused: false,
+        billingActive: true,
+      }),
+    ).toThrow(/no email address/)
+  }
+})
+
 test('assertSendAllowed throws under default env', () => {
   delete process.env.SEND_ENABLED
   delete process.env.SEND_ALLOWLIST

@@ -1,4 +1,4 @@
-import { parseOptionalDre, parseOptionalReplyTo, parseRequiredName } from '@/config/account-fields'
+import { parseOptionalDre, parseOptionalMlsAgentId, parseOptionalReplyTo, parseRequiredName } from '@/config/account-fields'
 import { parseOptionalUsPhone } from '@/config/phone'
 import { isAccentColor, isSendDay, isSendTime, isTimezone } from '@/config/settings'
 import type { SessionPayload } from '@/auth/session'
@@ -19,11 +19,13 @@ export async function saveDetails(session: SessionPayload, formData: FormData): 
   const name = parseRequiredName(String(formData.get('name') ?? ''))
   const dre = parseOptionalDre(String(formData.get('dre') ?? ''))
   const phone = parseOptionalUsPhone(String(formData.get('phone') ?? ''))
+  const mls = parseOptionalMlsAgentId(String(formData.get('mlsAgentId') ?? ''))
   const errors: DetailsState = {}
   if (!name.ok) errors.name = name.message
   if (!dre.ok) errors.dre = dre.message
   if (!phone.ok) errors.phone = phone.message
-  if (!name.ok || !dre.ok || !phone.ok) return errors
+  if (!mls.ok) errors.mlsAgentId = mls.message
+  if (!name.ok || !dre.ok || !phone.ok || !mls.ok) return errors
 
   const before = await getAccountById(session.accountId)
   await updateAccountDetails(session.accountId, {
@@ -31,6 +33,7 @@ export async function saveDetails(session: SessionPayload, formData: FormData): 
     brokerage: String(formData.get('brokerage') ?? '').trim() || null,
     dre: dre.dre,
     phone: phone.phone,
+    mlsAgentId: mls.mlsAgentId,
   })
   if (before && before.phone !== phone.phone) {
     const { addonTurnedOff } = await onPhoneChanged(session.accountId)

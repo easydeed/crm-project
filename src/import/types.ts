@@ -4,7 +4,12 @@ import type { SkipReason } from '@/import/skip-reasons'
 export type ImportRow = {
   line: number
   name: string
-  email: string
+  /**
+   * Null when the source has no email field at all (an MLS closing): the row is imported
+   * without one and deduped by address. A CSV row always has a string, and an empty or
+   * invalid one is still skipped.
+   */
+  email: string | null
   address: string
   closeDate: string | null
 }

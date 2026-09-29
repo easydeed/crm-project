@@ -1,6 +1,9 @@
 'use client'
 
+import Link from 'next/link'
 import { useActionState } from 'react'
+import { linkClass } from '@/app/app/people/ui'
+import { startHref } from '@/signup/start-href'
 import { formatUsPhone } from '@/config/phone'
 import type { AccountRecord } from '@/db/accounts'
 import { saveDetailsAction, type DetailsState } from '@/app/app/settings/actions'
@@ -67,6 +70,22 @@ export function DetailsForm({
         />
         <FieldError message={state.phone} />
       </label>
+      <label className="text-[15px]">
+        MLS agent ID
+        <input
+          className={fieldClass}
+          name="mlsAgentId"
+          defaultValue={account.mlsAgentId ?? ''}
+          aria-invalid={state.mlsAgentId ? true : undefined}
+        />
+        <FieldError message={state.mlsAgentId} />
+        <Muted>It&apos;s on your MLS profile page.</Muted>
+      </label>
+      <p className="text-[15px]">
+        <Link className={`tap ${linkClass}`} href={startHref(account.mlsAgentId)}>
+          Find my closings again
+        </Link>
+      </p>
       {readOnly ? <Muted>Viewing as another agent is read only.</Muted> : null}
       <FieldError message={state.error} />
       {state.notice ? (

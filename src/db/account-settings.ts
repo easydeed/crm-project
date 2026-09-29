@@ -9,6 +9,7 @@ export type AccountDetailsInput = {
   brokerage: string | null
   dre: string | null
   phone: string | null
+  mlsAgentId: string | null
 }
 
 export type AccountAppearanceInput = {
@@ -36,6 +37,7 @@ export async function updateAccountDetails(
       brokerage: input.brokerage,
       dre: input.dre,
       phone: input.phone,
+      mlsAgentId: input.mlsAgentId,
     })
     .where(eq(accounts.id, accountId))
   return getAccountById(accountId)

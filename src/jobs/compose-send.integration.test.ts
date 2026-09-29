@@ -24,7 +24,7 @@ import { sendMail } from '@/jobs/send-job'
 import { scheduleAccountById } from '@/jobs/schedule'
 import { resumeUpcomingSend, skipUpcomingSend } from '@/jobs/send-controls'
 import { GRANT_DEED } from '@/digest/types'
-import { NOTHING_NEW_REASON } from '@/digest/skip-copy'
+import { NO_EMAIL_REASON, NOTHING_NEW_REASON } from '@/digest/skip-copy'
 import { setMailer } from '@/mail/current'
 import { FakeMailer } from '@/mail/fake-mailer'
 import { PostmarkMailer } from '@/mail/postmark-mailer'
@@ -88,7 +88,7 @@ async function insertParcel(address: string, zip: string) {
 async function insertPerson(
   accountId: string,
   parcelId: string | null,
-  email: string,
+  email: string | null,
   status: 'matched' | 'needs_review' = 'matched',
 ) {
   const { db } = getRuntimeDb()
@@ -221,6 +221,28 @@ describe.skipIf(!sessionUrl)('compose and send', () => {
     expect(send?.composedCount).toBe(1)
     expect(send?.skippedCount).toBe(1)
     expect(send?.skips).toEqual([{ contactId: skipped, reason: NOTHING_NEW_REASON }])
+  })
+
+  test('a contact with no email is skipped at compose, with the reason recorded for /admin/sends', async () => {
+    const accountId = await newAccount()
+    const zip = '91750'
+    const street = `Nomail ${accountId.slice(0, 8)} Ave`
+    const home = await insertParcel(`1142 ${street}`, zip)
+    const neighbor = await insertParcel(`1108 ${street}`, zip)
+    const { db } = getRuntimeDb()
+    await db.insert(parcelEvents).values([
+      { parcelId: home, county: 'Los Angeles', kind: GRANT_DEED, docNumber: `NE-${accountId.slice(0, 8)}`, recordedAt: '2019-03-14', amount: 712000, party: 'Marilyn Okafor', raw: {} },
+      { parcelId: neighbor, county: 'Los Angeles', kind: GRANT_DEED, docNumber: `NN-${accountId.slice(0, 8)}`, recordedAt: '2026-05-01', amount: 1120000, party: 'Neighbor', raw: {} },
+    ])
+    const noEmail = await insertPerson(accountId, home, null)
+    const sendId = await newSend(accountId)
+
+    await composeSend({ accountId, sendId }, ctx)
+
+    const rows = await db.select().from(sendRecipients).where(eq(sendRecipients.sendId, sendId))
+    expect(rows).toHaveLength(0)
+    const [send] = await db.select().from(sends).where(eq(sends.id, sendId))
+    expect(send?.skips).toEqual([{ contactId: noEmail, reason: NO_EMAIL_REASON }])
   })
 
   test('default env composes and sends nothing', async () => {

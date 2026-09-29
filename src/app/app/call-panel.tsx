@@ -27,11 +27,15 @@ export function CallPanel({ id, panel, address }: { id: string; panel: CallPanel
         </div>
         <div>
           <dt className="font-medium">Email</dt>
-          <dd className="break-all">
-            <a className={`tap ${linkClass}`} href={`mailto:${panel.email}`}>
-              {panel.email}
-            </a>
-          </dd>
+          {panel.email ? (
+            <dd className="break-all">
+              <a className={`tap ${linkClass}`} href={`mailto:${panel.email}`}>
+                {panel.email}
+              </a>
+            </dd>
+          ) : (
+            <dd>No email on file</dd>
+          )}
         </div>
         <div>
           <dt className="font-medium">House</dt>

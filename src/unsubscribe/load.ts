@@ -55,18 +55,22 @@ export async function loadUnsubscribeView(token: string): Promise<UnsubscribeVie
     .from(contactSubscriptions)
     .where(eq(contactSubscriptions.contactId, row.id))
 
-  const [blocked] = await db
-    .select({ kind: mailEvents.kind })
-    .from(mailEvents)
-    .where(
-      and(
-        sql`lower(${mailEvents.email}) = ${row.email.toLowerCase()}`,
-        inArray(mailEvents.kind, ['hard_bounce', 'spam_complaint']),
-      ),
-    )
-    .limit(1)
+  // A contact with no email has never been mailed, so no bounce or suppression can name them.
+  const email = row.email
+  const [blocked] = email
+    ? await db
+        .select({ kind: mailEvents.kind })
+        .from(mailEvents)
+        .where(
+          and(
+            sql`lower(${mailEvents.email}) = ${email.toLowerCase()}`,
+            inArray(mailEvents.kind, ['hard_bounce', 'spam_complaint']),
+          ),
+        )
+        .limit(1)
+    : []
 
-  const state = stopsState(await addressStops(db, row.email), parsed.scope)
+  const state = stopsState(email ? await addressStops(db, email) : [], parsed.scope)
 
   const scopes: ScopeRow[] = subs
     .filter((sub) => sub.scope === 'monthly' || sub.scope === 'weekly')

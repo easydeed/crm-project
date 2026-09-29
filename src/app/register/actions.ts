@@ -38,10 +38,11 @@ export async function registerAction(
     createSessionValue(result.accountId, 'agent'),
     sessionCookieOptions(),
   )
-  // Straight to Stripe Checkout. If it can't open, the dashboard says the plan isn't active and links to billing.
-  let next = '/app'
+  // Straight to Stripe Checkout, which returns to step 2. If it can't open, step 2 anyway:
+  // the dashboard says the plan isn't active and links to billing.
+  let next = '/app/start'
   try {
-    next = await startCheckout(result.accountId)
+    next = await startCheckout(result.accountId, { successPath: '/app/start' })
   } catch (err) {
     console.error('[billing] checkout at signup failed', err)
   }
