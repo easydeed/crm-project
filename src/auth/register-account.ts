@@ -2,6 +2,7 @@ import { hashPassword } from '@/auth/password'
 import { passwordMeetsRequirements } from '@/auth/password-rules'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts } from '@/db/schema'
+import { normalizeUsPhone } from '@/config/phone'
 import { sql } from 'drizzle-orm'
 
 export type RegisterInput = {
@@ -16,6 +17,16 @@ export type RegisterInput = {
 export type RegisterResult =
   | { ok: true; accountId: string }
   | { ok: false; field: 'email' | 'password'; message: string }
+
+/**
+ * Stored the way Settings stores it: 10 bare digits. A number that is not a US number is kept as
+ * typed rather than refused, so signup never rejects a number an agent could have entered before.
+ */
+export function signupPhone(value: string): string | null {
+  const trimmed = value.trim()
+  if (!trimmed) return null
+  return normalizeUsPhone(trimmed) ?? trimmed
+}
 
 export async function registerAccount(input: RegisterInput): Promise<RegisterResult> {
   if (!passwordMeetsRequirements(input.password)) {
@@ -47,7 +58,7 @@ export async function registerAccount(input: RegisterInput): Promise<RegisterRes
         name: input.name.trim(),
         brokerage: input.brokerage.trim() || null,
         dre: input.dre.trim() || null,
-        phone: input.phone.trim() || null,
+        phone: signupPhone(input.phone),
         role: 'agent',
       })
       .returning({ id: accounts.id })

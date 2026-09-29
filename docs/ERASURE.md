@@ -37,3 +37,14 @@ The agent's Delete is built (OR-006a). This document covers only erasure.
 2. How long may `sent_at` and `provider_id` be kept for a deliverability dispute?
 3. Who receives the request: the agent (the business the homeowner knows) or onrecord (a service provider)? This decides who verifies identity.
 4. What retention period applies to `mail_events` payloads?
+
+## Deleting an account that ever subscribed (decided, OR-026)
+
+`subscriptions.account_id` stays ON DELETE NO ACTION. An account with a subscription row cannot be deleted, on purpose: Stripe still holds that customer, its invoices, and its tax records, and deleting only the local row leaves a reconciliation gap nobody would notice for months.
+
+It is a deliberate two-step:
+
+1. Cancel in Stripe and remove the customer there.
+2. Remove the local `subscriptions` row, then delete the account.
+
+`deleteAccount()` in `src/db/account-delete.ts` is the only delete path. It refuses step 2 while a subscription row remains, with the plain message "This account has billing history. Cancel in Stripe and remove the customer first." instead of a raw constraint error. No screen calls it yet; exposing account deletion is its own packet.

@@ -32,7 +32,7 @@ test('a closing becomes an import row with no email, a full address, and a name 
 })
 
 test('found copy: the count, the singular, the ticked line, and the button all agree', () => {
-  expect(foundLine(47)).toBe("We found 47 homes you've closed. Untick anyone you'd rather leave out.")
+  expect(foundLine(47)).toBe("We found 47 homes you've sold. Untick any you'd rather leave out.")
   expect(foundLine(1)).toContain('1 home ')
   expect(tickedLine(46, 47)).toBe('46 of 47 ticked')
   expect(confirmLabel(47)).toBe('Use these 47')
@@ -83,4 +83,15 @@ test('People can filter to contacts missing an email, and the link says so', () 
   expect(filterPeople(rows, {})).toHaveLength(2)
   expect(filterPeople(rows, { q: 'main' })).toHaveLength(2)
   expect(peopleListHref({ noEmail: true })).toBe('/app/people?noEmail=1')
+})
+
+test('the MLS import is framed as homes sold, written to whoever lives there now; past clients come from the agent’s own list', () => {
+  expect(START_COPY.intro).toContain("the homes you've sold")
+  expect(START_COPY.intro).toContain('goes to whoever lives there now')
+  expect(START_COPY.listingSideNote).toContain('usually the buyer, not the seller you represented')
+  expect(START_COPY.listingSideNote).toContain('Your past clients come from your own list')
+  expect(foundLine(47)).not.toMatch(/client/i)
+  // The dashboard's empty state covers both lists, so it no longer promises past clients.
+  expect(src('../app/app/call-list.tsx')).not.toContain('past clients')
+  expect(src('../app/app/start/page.tsx')).toContain('START_COPY.intro')
 })

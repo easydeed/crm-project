@@ -82,3 +82,36 @@ DO NOT
 - Lift the sk_test_ enforcement
 - Edit the marketing page
 ```
+
+## Added by the Director after OR-022 through OR-025
+
+```
+7. Text delivery visibility. A call-list text that was claimed but never
+   sent (blocked or transiently failed) currently leaves no trace for the
+   agent. Admin: /admin/accounts/[id] shows this period's text_messages
+   row with its state and error, so a support question is answerable.
+   Agent: no change. Report whether a retry inside the same period is
+   worth building later, and what would guard against double-sending.
+
+8. Phone normalization. Signup stores the phone as typed; Settings stores
+   bare digits. Normalize on write in both paths, backfill accounts.phone,
+   and keep the read-side normalization as a belt-and-braces measure.
+   Signup must not reject a number an existing agent could already have.
+
+9. Signup makes two closedByAgent calls per agent. Cache the search result
+   for 15 minutes so the import reads the cache (closing_searches table;
+   delete rows older than an hour when writing). The server-side re-read
+   stays; it must never trust the posted list.
+
+10. Support address is help@onrecord.com. Put it in one config constant.
+
+11. MLS framing (option 2, decided). CSV import is the sphere path; MLS
+    import is a farming list. Record it in PROJECT_STATE.md, change the
+    dashboard empty state and step 2's intro and found heading. Report the
+    exact copy. Do not edit the marketing page.
+
+Also: A2P 10DLC / toll-free registration in docs/GO_LIVE.md beside
+TEXTING_ENABLED; the support mailbox must exist before launch; the
+invariant checker scans untracked files in src/; the /u address input
+gets box-sizing on desktop too, and the desktop baselines are recaptured.
+```

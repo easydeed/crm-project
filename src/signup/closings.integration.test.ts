@@ -6,6 +6,7 @@ import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { getRuntimeDb, resetRuntimeDb } from '@/db/runtime'
 import { accounts, contactMatchCandidates, contactSubscriptions, contacts } from '@/db/schema'
 import { providerCalls } from '@/db/schema-billing'
+import { closingSearches } from '@/db/schema-signup'
 import { importContacts } from '@/import/import-contacts'
 import { SKIP } from '@/import/skip-reasons'
 import { FixtureListingProvider } from '@/providers/fixture-providers'
@@ -131,11 +132,37 @@ describe.skipIf(!databaseUrl)('OR-025 signup closings against the database', () 
     expect(await peopleOf(id)).toHaveLength(0)
   })
 
-  test('every search and every import reads the provider through the meter', async () => {
-    const id = await account('metered')
-    await searchClosings(id, CLOSED_LISTING_AGENTS.thin)
-    await importClosings(id, CLOSED_LISTING_AGENTS.thin, ['CR30001'])
+  async function providerCallsFor(id: string) {
     const rows = await getRuntimeDb().db.select().from(providerCalls).where(eq(providerCalls.accountId, id))
-    expect(rows.map((row) => `${row.provider}:${row.operation}`)).toEqual(['listing:closedByAgent', 'listing:closedByAgent'])
+    return rows.map((row) => `${row.provider}:${row.operation}`)
+  }
+
+  test('a signup costs one metered call: the import reads the 15-minute search cache', async () => {
+    const id = await account('metered')
+    const now = new Date('2026-10-01T17:00:00Z')
+    await searchClosings(id, CLOSED_LISTING_AGENTS.thin, now)
+    const result = await importClosings(id, CLOSED_LISTING_AGENTS.thin, ['CR30001', 'FORGED-9'], new Date(now.getTime() + 14 * 60_000))
+    expect('added' in result && result.added).toBe(1)
+    expect(await providerCallsFor(id)).toEqual(['listing:closedByAgent'])
+  })
+
+  test('a stale search, or a different agent id, reads the provider again', async () => {
+    const id = await account('stale')
+    const now = new Date('2026-10-01T17:00:00Z')
+    await searchClosings(id, CLOSED_LISTING_AGENTS.thin, now)
+    await importClosings(id, CLOSED_LISTING_AGENTS.thin, ['CR30001'], new Date(now.getTime() + 16 * 60_000))
+    await importClosings(id, CLOSED_LISTING_AGENTS.many, ['CR25005'], now)
+    expect(await providerCallsFor(id)).toEqual(Array(3).fill('listing:closedByAgent'))
+  })
+
+  test('writing a search deletes any search older than an hour, from every account', async () => {
+    const old = await account('old-search')
+    const fresh = await account('new-search')
+    const now = new Date('2026-10-01T17:00:00Z')
+    await searchClosings(old, CLOSED_LISTING_AGENTS.none, new Date(now.getTime() - 61 * 60_000))
+    await searchClosings(fresh, CLOSED_LISTING_AGENTS.none, now)
+    const { db } = getRuntimeDb()
+    const rows = await db.select({ accountId: closingSearches.accountId }).from(closingSearches).where(inArray(closingSearches.accountId, [old, fresh]))
+    expect(rows.map((row) => row.accountId)).toEqual([fresh])
   })
 })

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Catches the domain violations that are cheap to detect and expensive to ship.
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { execSync } from 'node:child_process'
 
 const RULES = [
@@ -47,9 +47,16 @@ const RULES = [
 // A live Stripe key is refused in every tracked file, tests and workflows included.
 const LIVE_KEY = /\b(?:sk|rk|pk)_live_[A-Za-z0-9]/
 
-const files = execSync('git ls-files "*.ts" "*.tsx" "*.sql" "*.md"', { encoding: 'utf8' })
-  .split('\n')
-  .filter(Boolean)
+// Tracked files, plus untracked ones under src/: a new file is checked the moment it exists,
+// not the moment it is staged. A file deleted but not yet staged is skipped.
+function listed(args) {
+  return execSync(`git ls-files ${args}`, { encoding: 'utf8' }).split('\n').filter(Boolean)
+}
+const untrackedSrc = listed('--others --exclude-standard -- src')
+const present = (f) => existsSync(f)
+
+const files = [...new Set([...listed('"*.ts" "*.tsx" "*.sql" "*.md"'), ...untrackedSrc.filter((f) => /\.(ts|tsx|sql|md)$/.test(f))])]
+  .filter(present)
   .filter((f) => !/\.test\.|\.spec\.|fixtures\/|PROJECT_STATE\.md|CLAUDE\.md|docs\/|^reference\//.test(f))
 
 let failed = 0
@@ -69,7 +76,7 @@ for (const f of files) {
   }
 }
 
-for (const f of execSync('git ls-files', { encoding: 'utf8' }).split('\n').filter(Boolean)) {
+for (const f of [...new Set([...listed(''), ...untrackedSrc])]) {
   let src
   try {
     src = readFileSync(f, 'utf8')

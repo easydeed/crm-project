@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto'
 import { eq, inArray, sql } from 'drizzle-orm'
 import { afterAll, beforeAll, describe, expect, test } from 'vitest'
 import { registerAccount } from '@/auth/register-account'
+import { giveActiveSubscription } from '@/billing/subscription-fixture'
+import { BILLING_HISTORY_BLOCKS_DELETE, deleteAccount } from '@/db/account-delete'
 import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { withStreetNameNorm } from '@/db/parcel-write'
 import { getRuntimeDb, resetRuntimeDb } from '@/db/runtime'
@@ -10,6 +12,7 @@ import {
   events, groupMembers, groups, parcels, sendRecipients, sends,
 } from '@/db/schema'
 import { callListEntries, callLog } from '@/db/schema-call-lists'
+import { subscriptions } from '@/db/schema-billing'
 
 const databaseUrl = tryLoadIntegrationDatabaseUrl()
 
@@ -27,6 +30,7 @@ const EXPECTED: Record<string, string> = {
   provider_calls_account_id_accounts_id_fk: 'set null',
   phone_verifications_account_id_accounts_id_fk: 'cascade',
   text_messages_account_id_accounts_id_fk: 'cascade',
+  closing_searches_account_id_accounts_id_fk: 'cascade',
   contact_subscriptions_contact_id_contacts_id_fk: 'cascade',
   group_members_contact_id_contacts_id_fk: 'cascade',
   contact_match_candidates_contact_id_contacts_id_fk: 'cascade',
@@ -124,5 +128,26 @@ describe.skipIf(!databaseUrl)('OR-006a foreign keys and account deletion', () =>
     const [kept] = await db.select().from(adminActions).where(eq(adminActions.id, audit!.id))
     expect(kept).toMatchObject({ adminAccountId: adminId, targetAccountId: null, action: 'view_as' })
     expect(await db.select().from(parcels).where(eq(parcels.id, parcelId))).toHaveLength(1)
+  })
+
+  test('an account with billing history is refused in plain words, and nothing is deleted', async () => {
+    const accountId = await account('billed')
+    await giveActiveSubscription(accountId)
+    const { db } = getRuntimeDb()
+
+    expect(await deleteAccount(accountId)).toEqual({ ok: false, reason: BILLING_HISTORY_BLOCKS_DELETE })
+    expect(await db.select().from(accounts).where(eq(accounts.id, accountId))).toHaveLength(1)
+    expect(await db.select().from(subscriptions).where(eq(subscriptions.accountId, accountId))).toHaveLength(1)
+
+    // The two-step: once the subscription row is gone (customer removed in Stripe first), delete goes through.
+    await db.delete(subscriptions).where(eq(subscriptions.accountId, accountId))
+    expect(await deleteAccount(accountId)).toEqual({ ok: true })
+    expect(await db.select().from(accounts).where(eq(accounts.id, accountId))).toHaveLength(0)
+  })
+
+  test('an account that never subscribed deletes through the same function', async () => {
+    const accountId = await account('never-billed')
+    expect(await deleteAccount(accountId)).toEqual({ ok: true })
+    expect(await getRuntimeDb().db.select().from(accounts).where(eq(accounts.id, accountId))).toHaveLength(0)
   })
 })
