@@ -65,9 +65,9 @@ export async function importClosings(
   const parsed = parseOptionalMlsAgentId(agentId)
   if (!parsed.ok || !parsed.mlsAgentId) return { error: 'Search for your closings first.' }
   const wanted = new Set(selectedMlsIds)
-  void freshClosingSearch
-  void now
-  const listings = await getListingProvider(accountId).closedByAgent(parsed.mlsAgentId)
+  const listings =
+    (await freshClosingSearch(accountId, parsed.mlsAgentId, now)) ??
+    (await getListingProvider(accountId).closedByAgent(parsed.mlsAgentId))
   const rows = listings
     .filter((listing) => wanted.has(listing.mlsId))
     .map((listing, index) => closingToImportRow(listing, index + 1))
