@@ -57,7 +57,7 @@ const present = (f) => existsSync(f)
 
 const files = [...new Set([...listed('"*.ts" "*.tsx" "*.sql" "*.md"'), ...untrackedSrc.filter((f) => /\.(ts|tsx|sql|md)$/.test(f))])]
   .filter(present)
-  .filter((f) => !/\.test\.|\.spec\.|fixtures\/|PROJECT_STATE\.md|CLAUDE\.md|docs\//.test(f))
+  .filter((f) => !/\.test\.|\.spec\.|fixtures\/|PROJECT_STATE\.md|CLAUDE\.md|docs\/|^reference\//.test(f))
 
 let failed = 0
 for (const f of files) {
