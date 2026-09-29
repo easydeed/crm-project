@@ -20,7 +20,7 @@ export async function deleteAccount(accountId: string): Promise<{ ok: true } | {
       .from(subscriptions)
       .where(eq(subscriptions.accountId, accountId))
       .limit(1)
-    void billing
+    if (billing) return { ok: false as const, reason: BILLING_HISTORY_BLOCKS_DELETE }
     await tx.delete(accounts).where(eq(accounts.id, accountId))
     return { ok: true as const }
   })
