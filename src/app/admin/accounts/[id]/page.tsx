@@ -6,6 +6,7 @@ import { formatAdminDate } from '@/app/admin/accounts/format'
 import { ViewAsButton } from '@/app/admin/accounts/view-as-button'
 import { SettingsReadout } from '@/app/app/settings/readout'
 import { AddonsSection } from '@/app/admin/accounts/[id]/addons-section'
+import { TextSection } from '@/app/admin/accounts/[id]/text-section'
 
 export default async function AdminAccountDetailPage({
   params,
@@ -55,6 +56,7 @@ export default async function AdminAccountDetailPage({
       {account.role === 'agent' ? (
         <AddonsSection accountId={account.id} flash={addon && result ? { key: addon, result } : undefined} />
       ) : null}
+      {account.role === 'agent' ? <TextSection accountId={account.id} /> : null}
     </main>
   )
 }

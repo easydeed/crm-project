@@ -63,11 +63,11 @@ export function renderUnsubscribeHtml(view: UnsubscribeView, token: string) {
   main { max-width: 32rem; margin: 0 auto; }
   h1 { font-size: 22px; font-weight: 600; margin: 0 0 12px; }
   p, label, button { font-size: 16px; }
-  input { display: block; width: 100%; margin-top: 8px; font: 16px Georgia, serif; padding: 8px; }
+  input { display: block; box-sizing: border-box; width: 100%; margin-top: 8px; font: 16px Georgia, serif; padding: 8px; }
   button { margin-top: 16px; font: 16px Georgia, serif; padding: 8px 12px; }
   button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid #0E1729; outline-offset: 2px; }
   form:first-of-type button { font-size: 18px; font-weight: 600; }
-  @media (max-width: 639.98px) { input, button { min-height: 44px; } input { box-sizing: border-box; } }
+  @media (max-width: 639.98px) { input, button { min-height: 44px; } }
 </style>
 </head>
 <body>

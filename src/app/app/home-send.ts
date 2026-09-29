@@ -12,7 +12,7 @@ export type HomeSend =
   | { kind: 'missing-account' }
   | { kind: 'billing'; issue: BillingIssue }
   | { kind: 'paused' }
-  | { kind: 'system-paused' }
+  | { kind: 'system-paused'; accountId: string }
   | { kind: 'settings' }
   | { kind: 'import' }
   | { kind: 'review' }
@@ -43,7 +43,7 @@ export async function loadHomeSend(accountId: string, now = new Date()): Promise
   const issue = billingIssue(await loadBillingState(db, accountId), now)
   if (issue) return { kind: 'billing', issue }
   if (account.paused) {
-    if (await systemPauseState(accountId)) return { kind: 'system-paused' }
+    if (await systemPauseState(accountId)) return { kind: 'system-paused', accountId }
     return { kind: 'paused' }
   }
   if (

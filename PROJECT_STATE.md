@@ -8,7 +8,7 @@ Last updated: 2026-09-23
 
 ## Product
 
-A subscription service that emails a real estate agent's past clients one message a month about their own house, built from California county recorded documents and assessment data, and hands the agent three names worth calling.
+A subscription service that emails a real estate agent's sphere one message a month about their own house, built from California county recorded documents and assessment data, and hands the agent three names worth calling. The sphere is people the agent supplies (their past clients, from their own list). The MLS import adds houses the agent sold, and the note for those goes to whoever lives there now: usually the buyer, not the client.
 
 **Not** a CRM. **Not** lead generation. **Not** a newsletter platform.
 
@@ -32,7 +32,7 @@ A subscription service that emails a real estate agent's past clients one messag
 
 - Prop 13 / Prop 19 as the hero insight, not equity. No lender is monetizing it, which is why it's unbuilt.
 - "Four doors down": compare a nearby MLS listing to the subject home on beds/baths/sqft from the assessor roll.
-- Signup via MLS agent ID → pull closed listings → "here are the 47 homes you've sold, untick anyone."
+- Signup via MLS agent ID → pull closed listings → "here are the 47 homes you've sold, untick any." Decided in OR-026 (option 2): CSV import is the sphere path, where an agent's actual past clients and their emails come from. The MLS import is a farming list, a bonus: houses the agent sold, written to whoever lives there now, and the copy says so plainly.
 - Three agent call signals: a past client's home just listed (highest priority), a neighbor listed or sold, a reconveyance recorded.
 - Two sending domains and two consent scopes from day one.
 - Parcel-first send pipeline: refresh by parcel and ZIP, not per person.

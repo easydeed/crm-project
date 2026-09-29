@@ -92,6 +92,20 @@
       "when": 1790704703436,
       "tag": "0012_contact_email_optional",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1790714939968,
+      "tag": "0013_closing_searches",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1790714946188,
+      "tag": "0014_account_phone_backfill",
+      "breakpoints": true
     }
   ]
 }

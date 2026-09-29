@@ -3,6 +3,7 @@ import { StartFlow } from '@/app/app/start/start-flow'
 import { readRequestSession } from '@/auth/current-session'
 import { effectiveAccountId } from '@/auth/effective-account'
 import { getAccountById } from '@/db/accounts'
+import { START_COPY } from '@/signup/copy'
 
 export default async function StartPage({
   searchParams,
@@ -18,9 +19,7 @@ export default async function StartPage({
   return (
     <main className="px-4 py-10">
       <h1 className="text-[22px] font-semibold">Add your people</h1>
-      <p className="mt-3 max-w-xl text-[15px]">
-        The homes you&apos;ve sold are the fastest start. You can add more at any time.
-      </p>
+      <p className="mt-3 max-w-xl text-[15px]">{START_COPY.intro}</p>
       <StartFlow
         agentName={account.name}
         initialAgentId={params.agent ?? account.mlsAgentId ?? ''}

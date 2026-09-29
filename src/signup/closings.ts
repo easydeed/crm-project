@@ -6,6 +6,7 @@ import { importContacts } from '@/import/import-contacts'
 import type { ImportRow, ImportSummary } from '@/import/types'
 import { getListingProvider } from '@/providers/current'
 import type { ClosedListing } from '@/providers/types'
+import { freshClosingSearch, saveClosingSearch } from '@/signup/search-cache'
 
 export type ClosingsSearch =
   | { kind: 'malformed'; message: string }
@@ -36,7 +37,7 @@ export function closingToImportRow(listing: ClosedListing, line: number): Import
  * cannot be an MLS handle is refused, because the feed answers the same empty list for an
  * id it does not know.
  */
-export async function searchClosings(accountId: string, raw: string): Promise<ClosingsSearch> {
+export async function searchClosings(accountId: string, raw: string, now = new Date()): Promise<ClosingsSearch> {
   const parsed = parseOptionalMlsAgentId(raw)
   if (!parsed.ok) return { kind: 'malformed', message: parsed.message }
   if (!parsed.mlsAgentId) return { kind: 'malformed', message: 'Enter your MLS agent ID.' }
@@ -45,23 +46,28 @@ export async function searchClosings(accountId: string, raw: string): Promise<Cl
   const { db } = getRuntimeDb()
   await db.update(accounts).set({ mlsAgentId: agentId }).where(eq(accounts.id, accountId))
   const listings = await getListingProvider(accountId).closedByAgent(agentId)
+  await saveClosingSearch(accountId, agentId, listings, now)
   return { kind: 'found', agentId, listings }
 }
 
 /**
  * Imports the closings the agent left ticked, through the one import path. The list is read
- * again from the provider here: the ids posted back only choose among the agent's own
- * closings, so a forged or stale id selects nothing.
+ * again server-side, from this account's search if it is under 15 minutes old, otherwise from
+ * the provider: the ids posted back only choose among the agent's own closings, so a forged or
+ * stale id selects nothing.
  */
 export async function importClosings(
   accountId: string,
   agentId: string,
   selectedMlsIds: string[],
+  now = new Date(),
 ): Promise<ImportSummary | { error: string }> {
   const parsed = parseOptionalMlsAgentId(agentId)
   if (!parsed.ok || !parsed.mlsAgentId) return { error: 'Search for your closings first.' }
   const wanted = new Set(selectedMlsIds)
-  const listings = await getListingProvider(accountId).closedByAgent(parsed.mlsAgentId)
+  const listings =
+    (await freshClosingSearch(accountId, parsed.mlsAgentId, now)) ??
+    (await getListingProvider(accountId).closedByAgent(parsed.mlsAgentId))
   const rows = listings
     .filter((listing) => wanted.has(listing.mlsId))
     .map((listing, index) => closingToImportRow(listing, index + 1))

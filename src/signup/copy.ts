@@ -2,14 +2,17 @@ import { FEW_CLOSINGS } from '@/signup/closings-count'
 
 /** Every sentence on the step-2 screen, in one place so the tests read the same words. */
 export const START_COPY = {
+  intro:
+    "Add the homes you've sold, upload your own list of past clients, or both. For a home you sold, the monthly note goes to whoever lives there now, who may not be your client.",
   findTitle: 'Find my closings',
   idLabel: 'Your MLS agent ID',
   idHelp: "It's on your MLS profile page. Not sure? Use the next option.",
   uploadTitle: 'Upload a list',
   skip: 'Skip for now',
   searching: 'Searching your MLS.',
+  /** Said plainly, at full contrast: the recipient of a listing-side sale is the buyer, not the agent's client. */
   listingSideNote:
-    'These are homes where you were the listing agent. If you represented buyers too, you can add those next.',
+    "The note goes to whoever lives there now. For a home you listed, that's usually the buyer, not the seller you represented. Your past clients come from your own list, which you can upload below.",
   /** Followed by fewLink, which points at the upload section. */
   fewNote: "That's fewer than we'd expect. Buyer-side sales usually aren't listed under your ID —",
   fewLink: 'add those here',
@@ -23,8 +26,8 @@ export const START_COPY = {
 
 export function foundLine(count: number) {
   return count === 1
-    ? "We found 1 home you've closed. Untick it if you'd rather leave it out."
-    : `We found ${count} homes you've closed. Untick anyone you'd rather leave out.`
+    ? "We found 1 home you've sold. Untick it if you'd rather leave it out."
+    : `We found ${count} homes you've sold. Untick any you'd rather leave out.`
 }
 
 export function isFew(count: number) {

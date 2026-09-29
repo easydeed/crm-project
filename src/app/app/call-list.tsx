@@ -27,7 +27,7 @@ export function CallListSection({ list, readOnly, textNotice = null }: { list: C
         <Empty
           href="/app/people/import"
           label="Add your people"
-          text="Names show up here once your past clients are in and matched to a house."
+          text="Names show up here once your people are in and matched to a house."
         />
       ) : null}
       {list.kind === 'no-matches' ? (

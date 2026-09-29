@@ -55,7 +55,7 @@ export const SCREENS: Screen[] = [
     path: '/app/start',
     prepare: async (page) => {
       await findClosings(page, MLS.many)
-      await expect(page.getByText("We found 47 homes you've closed.", { exact: false })).toBeVisible()
+      await expect(page.getByText("We found 47 homes you've sold.", { exact: false })).toBeVisible()
       await expect(page.getByText('47 of 47 ticked')).toBeVisible()
       await expect(page.getByRole('checkbox')).toHaveCount(47)
       await expect(page.locator('[data-mls-attribution]')).toHaveCount(47)
