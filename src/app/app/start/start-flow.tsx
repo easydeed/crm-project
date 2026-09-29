@@ -83,7 +83,7 @@ export function StartFlow({
           />
         ) : null}
         {!pending && found && found.listings.length === 0 ? (
-          <p className="mt-6 max-w-xl text-[15px] text-red-700" role="alert">
+          <p className="mt-6 max-w-xl text-[15px]" role="status">
             {START_COPY.nothing}
           </p>
         ) : null}
