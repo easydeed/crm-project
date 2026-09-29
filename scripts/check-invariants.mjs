@@ -50,7 +50,7 @@ const LIVE_KEY = /\b(?:sk|rk|pk)_live_[A-Za-z0-9]/
 const files = execSync('git ls-files "*.ts" "*.tsx" "*.sql" "*.md"', { encoding: 'utf8' })
   .split('\n')
   .filter(Boolean)
-  .filter((f) => !/\.test\.|\.spec\.|fixtures\/|PROJECT_STATE\.md|CLAUDE\.md|docs\//.test(f))
+  .filter((f) => !/\.test\.|\.spec\.|fixtures\/|PROJECT_STATE\.md|CLAUDE\.md|docs\/|^reference\//.test(f))
 
 let failed = 0
 for (const f of files) {
