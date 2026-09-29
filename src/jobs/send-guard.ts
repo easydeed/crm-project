@@ -34,10 +34,13 @@ function allowlistAllows(domain: string): boolean {
  * contact_subscriptions.unsubscribed_at already exist when callers load them.
  */
 export function assertSendAllowed(ctx: SendGuardContext): void {
+  if (!ctx.recipientEmail?.trim()) {
+    throw new Error('Send blocked: contact has no email address')
+  }
   if (process.env.SEND_ENABLED !== 'true') {
     throw new Error('Send blocked: SEND_ENABLED is not true')
   }
-  const domain = emailDomain(ctx.recipientEmail ?? '')
+  const domain = emailDomain(ctx.recipientEmail)
   if (!domain || !allowlistAllows(domain)) {
     throw new Error('Send blocked: recipient domain is not allowlisted')
   }
