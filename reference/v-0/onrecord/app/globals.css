@@ -1,0 +1,310 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* onrecord palette */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted-ink: var(--muted-ink);
+  --color-blue: var(--blue);
+  --color-blue-soft: var(--blue-soft);
+  --color-coral: var(--coral);
+  --color-coral-soft: var(--coral-soft);
+  --color-green: var(--green);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+
+  --default-font-feature-settings: 'tnum' 1;
+}
+
+:root {
+  color-scheme: light;
+
+  --bg: #ffffff;
+  --surface: #f2f5fa;
+  --line: #dce3ee;
+  --ink: #0e1729;
+  --muted-ink: #63708a;
+  --blue: #2f5bff;
+  --blue-soft: #e7edff;
+  --coral: #ff4a2b;
+  --coral-soft: #ffefeb;
+  --green: #0e9f6e;
+
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --card: var(--bg);
+  --card-foreground: var(--ink);
+  --popover: var(--bg);
+  --popover-foreground: var(--ink);
+  --primary: var(--blue);
+  --primary-foreground: #ffffff;
+  --secondary: var(--surface);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface);
+  --muted-foreground: var(--muted-ink);
+  --accent: var(--blue-soft);
+  --accent-foreground: var(--ink);
+  --destructive: var(--coral);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--blue);
+
+  --radius: 0.5625rem; /* 9px */
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    font-variant-numeric: tabular-nums;
+  }
+  body {
+    @apply bg-surface text-foreground;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer utilities {
+  /* Surveyor's-plat grid: grounded in the deed/parcel subject, faded at the edges */
+  .plat-grid {
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(
+        to right,
+        color-mix(in oklab, var(--line) 60%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--line) 60%, transparent) 1px,
+        transparent 1px
+      );
+    background-size: 34px 34px;
+  }
+  .plat-fade {
+    -webkit-mask-image: radial-gradient(
+      ellipse 78% 72% at 50% 28%,
+      #000 52%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      ellipse 78% 72% at 50% 28%,
+      #000 52%,
+      transparent 100%
+    );
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes soft-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
+.reveal {
+  animation: reveal-up 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.pulse-dot {
+  animation: soft-pulse 2.2s ease-in-out infinite;
+}
+
+/* Scroll-triggered reveal, toggled by the Reveal component */
+.reveal-fx {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Line that draws itself in when its Reveal parent enters view */
+.draw-x {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal-in .draw-x {
+  transform: scaleX(1);
+}
+.draw-y {
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 1s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal-in .draw-y {
+  transform: scaleY(1);
+}
+
+/* Coral strike that sweeps across a word when revealed */
+.strike {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.reveal-in .strike {
+  transform: scaleX(1);
+}
+
+/* Bar that grows from the baseline when revealed */
+.grow-up {
+  transform: scaleY(0);
+  transform-origin: bottom center;
+  transition: transform 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal-in .grow-up {
+  transform: scaleY(1);
+}
+
+/* Ink-drawn survey boundary */
+@keyframes plat-draw {
+  from {
+    stroke-dashoffset: var(--len, 2700);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.plat-draw {
+  stroke-dasharray: var(--len, 2700);
+  animation: plat-draw 2.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Rotating proof line on the auth showcase panel */
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.fade-rise {
+  animation: fade-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fade-rise {
+    animation: none;
+  }
+}
+
+/* Chat bubble that pops into the thread when its parent reveals */
+.chat-pop {
+  opacity: 0;
+  transform: translateY(10px) scale(0.96);
+  transform-origin: bottom;
+  transition:
+    opacity 0.45s ease,
+    transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal-in .chat-pop {
+  opacity: 1;
+  transform: none;
+}
+
+/* Three-dot typing indicator */
+@keyframes type-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+.type-dot {
+  animation: type-bounce 1.3s infinite ease-in-out;
+}
+
+/* Gentle float for the incoming-lead toast */
+@keyframes soft-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.soft-float {
+  animation: soft-float 4.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Never leave scroll-reveal content stuck invisible */
+  .reveal-fx {
+    opacity: 1;
+    transform: none;
+  }
+}
