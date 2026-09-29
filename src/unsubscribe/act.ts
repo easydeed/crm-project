@@ -17,7 +17,8 @@ export async function stopScope(
 ) {
   const { db } = getRuntimeDb()
   const [contact] = await db.select({ email: contactsIncludingDeleted.email }).from(contactsIncludingDeleted).where(eq(contactsIncludingDeleted.id, contactId)).limit(1)
-  if (contact) await suppress(db, contact.email, 'unsubscribed', scope, source, now)
+  // No email, nothing to suppress: the subscription row below still stops them.
+  if (contact?.email) await suppress(db, contact.email, 'unsubscribed', scope, source, now)
   await db
     .insert(contactSubscriptions)
     .values({ contactId, scope, unsubscribedAt: now })
@@ -46,7 +47,7 @@ export async function keepComing(contactId: string, scope: UnsubscribeScope, sup
   const { db } = getRuntimeDb()
   if (suppressed) {
     const [contact] = await db.select({ email: contactsIncludingDeleted.email }).from(contactsIncludingDeleted).where(eq(contactsIncludingDeleted.id, contactId)).limit(1)
-    if (!contact || !(await liftSelfUnsubscribe(db, contact.email, scope))) return false
+    if (!contact?.email || !(await liftSelfUnsubscribe(db, contact.email, scope))) return false
   }
   await keepScope(contactId, scope)
   return true

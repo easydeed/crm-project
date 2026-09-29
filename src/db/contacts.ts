@@ -13,7 +13,8 @@ export { contactStatusLabel }
 export type ContactListRow = {
   id: string
   name: string
-  email: string
+  /** Null for an MLS closing until the agent adds one. */
+  email: string | null
   phone: string | null
   addressRaw: string
   closeDate: string | null
@@ -38,7 +39,7 @@ export type ContactListRow = {
 type ListedRow = {
   id: string
   name: string
-  email: string
+  email: string | null
   phone: string | null
   addressRaw: string
   closeDate: string | null

@@ -47,7 +47,7 @@ async function listSuppressions(): Promise<SuppressionRow[]> {
         .from(liveContacts)
         .where(inArray(sql.raw(EMAIL_HASH_SQL('"live_contacts"."email"')), hashes))
     : []
-  const byHash = new Map(liveEmails.map((row) => [emailHash(row.email), row.email]))
+  const byHash = new Map(liveEmails.flatMap((row) => (row.email ? [[emailHash(row.email), row.email] as const] : [])))
   return rows.map((row) => ({
     id: row.id,
     email: byHash.get(row.emailHash) ?? null,

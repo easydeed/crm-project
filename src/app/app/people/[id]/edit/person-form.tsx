@@ -59,7 +59,7 @@ export function PersonForm({
           name="email"
           type="email"
           required
-          defaultValue={person.email}
+          defaultValue={person.email ?? ''}
           aria-invalid={state.email ? true : undefined}
         />
         <FieldError message={state.email} />

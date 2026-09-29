@@ -93,7 +93,7 @@ test('detail shows the listed fields, review href, and add to group', () => {
 test('edit form pre-fills every field and names the rematch save', () => {
   const form = src('./[id]/edit/person-form.tsx')
   expect(form).toContain('defaultValue={person.name}')
-  expect(form).toContain('defaultValue={person.email}')
+  expect(form).toContain("defaultValue={person.email ?? ''}")
   expect(form).toContain('phoneValue(person.phone)')
   expect(form).toContain('defaultValue={person.addressRaw}')
   expect(form).toContain('defaultValue={person.closeDate ?? \'\'}')

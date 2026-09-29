@@ -5,6 +5,14 @@ const state = JSON.parse(readFileSync('e2e/.state.json', 'utf8')) as { personId:
 
 type Screen = { name: string; path: string; prepare?: (page: Page) => Promise<void> }
 
+/** Agent ids in the OR-024 fixture corpus (src/providers/fixtures/closed-listings.ts). */
+const MLS = { many: 'CRMLS-P4700', thin: 'CRMLS-P0300', none: 'CRMLS-P0000' }
+
+async function findClosings(page: Page, agentId: string) {
+  await page.getByLabel('Your MLS agent ID').fill(agentId)
+  await page.getByRole('button', { name: 'Find my closings' }).click()
+}
+
 /** Every agent-facing screen, and the homeowner's unsubscribe page. /admin is desktop only by design. */
 export const SCREENS: Screen[] = [
   { name: 'dashboard', path: '/app' },
@@ -40,4 +48,57 @@ export const SCREENS: Screen[] = [
     },
   },
   { name: 'unsubscribe', path: `/u/${state.unsubscribeToken}` },
+  // Signup step 2, against the fixture corpus. Nothing is imported, so the screens above stay as they were.
+  { name: 'start', path: '/app/start' },
+  {
+    name: 'start-found',
+    path: '/app/start',
+    prepare: async (page) => {
+      await findClosings(page, MLS.many)
+      await expect(page.getByText("We found 47 homes you've closed.", { exact: false })).toBeVisible()
+      await expect(page.getByText('47 of 47 ticked')).toBeVisible()
+      await expect(page.getByRole('checkbox')).toHaveCount(47)
+      await expect(page.locator('[data-mls-attribution]')).toHaveCount(47)
+      // Unticking updates the count and the button, and leaves that box out of the form.
+      const first = page.getByRole('checkbox').first()
+      await first.uncheck()
+      await expect(first).not.toBeChecked()
+      await expect(page.getByText('46 of 47 ticked')).toBeVisible()
+      await expect(page.getByRole('button', { name: 'Use these 46' })).toBeEnabled()
+    },
+  },
+  {
+    name: 'start-few',
+    path: '/app/start',
+    prepare: async (page) => {
+      await findClosings(page, MLS.thin)
+      await expect(page.getByText('3 of 3 ticked')).toBeVisible()
+      await expect(page.getByText("That's fewer than we'd expect.", { exact: false })).toBeVisible()
+    },
+  },
+  {
+    name: 'start-nothing',
+    path: '/app/start',
+    prepare: async (page) => {
+      await findClosings(page, MLS.none)
+      const line = page.getByText("We couldn't find closings under that ID.", { exact: false })
+      await expect(line).toBeVisible()
+      await expect(line).toHaveAttribute('role', 'status')
+      // The field still shows the id that was searched, not the one saved before.
+      await expect(page.getByLabel('Your MLS agent ID')).toHaveValue(MLS.none)
+      await expect(page.locator('main').getByRole('alert')).toHaveCount(0)
+      await expect(page.getByRole('heading', { name: 'Upload a list' })).toBeVisible()
+    },
+  },
+  {
+    name: 'start-malformed',
+    path: '/app/start',
+    prepare: async (page) => {
+      await findClosings(page, 'dana whitfield')
+      await expect(page.locator('main').getByRole('alert')).toContainText("doesn't look like an MLS agent ID")
+      await expect(page.getByLabel('Your MLS agent ID')).toHaveAttribute('aria-invalid', 'true')
+      await expect(page.getByText('Where do I find my agent ID?')).toBeVisible()
+      await expect(page.getByText("We couldn't find closings", { exact: false })).toHaveCount(0)
+    },
+  },
 ]

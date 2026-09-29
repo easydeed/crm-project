@@ -16,9 +16,15 @@ export function mlsAttributionHtml(office: string | null, agent: string | null) 
 export function MlsAttribution({
   office,
   agent,
+  variant = 'email',
 }: {
   office: string | null
   agent: string | null
+  /**
+   * The email keeps its 12px ink. An app screen takes 15px, the smallest size that carries
+   * information there, in the page's own color so it holds contrast in dark mode.
+   */
+  variant?: 'email' | 'app'
 }) {
   return createElement(
     'p',
@@ -27,8 +33,8 @@ export function MlsAttribution({
       style: {
         margin: '10px 0 0 0',
         fontFamily: LABEL_FONT,
-        fontSize: 12,
-        color: ink,
+        fontSize: variant === 'app' ? 15 : 12,
+        color: variant === 'app' ? 'inherit' : ink,
       },
     },
     mlsAttributionText(office, agent),

@@ -90,7 +90,8 @@ export const contacts = pgTable(
       .notNull()
       .references(() => accounts.id, { onDelete: 'cascade' }),
     name: text('name').notNull(),
-    email: text('email').notNull(),
+    /** Null when the source had none: an MLS closing carries no email. Such a contact is never sent to. */
+    email: text('email'),
     phone: text('phone'),
     addressRaw: text('address_raw').notNull(),
     parcelId: uuid('parcel_id').references(() => parcels.id, { onDelete: 'restrict' }),

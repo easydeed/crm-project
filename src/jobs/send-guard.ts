@@ -1,5 +1,6 @@
 export type SendGuardContext = {
-  recipientEmail: string
+  /** Null for a contact with no email (an MLS closing). Refused explicitly: the column no longer forbids it. */
+  recipientEmail: string | null
   unsubscribed: boolean
   /** From the suppressions table, by address. Required so no caller can leave it out. */
   suppressed: boolean
@@ -33,6 +34,9 @@ function allowlistAllows(domain: string): boolean {
  * contact_subscriptions.unsubscribed_at already exist when callers load them.
  */
 export function assertSendAllowed(ctx: SendGuardContext): void {
+  if (!ctx.recipientEmail?.trim()) {
+    throw new Error('Send blocked: contact has no email address')
+  }
   if (process.env.SEND_ENABLED !== 'true') {
     throw new Error('Send blocked: SEND_ENABLED is not true')
   }

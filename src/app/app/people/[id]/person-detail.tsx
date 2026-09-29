@@ -43,7 +43,7 @@ export function PersonDetail({
       <dl className="mt-6 flex max-w-xl flex-col gap-3 text-[15px]">
         <div>
           <dt className="font-medium">Email</dt>
-          <dd>{person.email}</dd>
+          <dd>{person.email ?? "None yet. We can't send without one."}</dd>
         </div>
         <div>
           <dt className="font-medium">Phone</dt>

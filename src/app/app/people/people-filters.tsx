@@ -10,12 +10,15 @@ export function PeopleFilters({
   groups,
   status,
   groupId,
+  noEmail,
 }: {
-  rows: Array<{ status: ContactMatchStatus; groupIds: string[] }>
+  rows: Array<{ status: ContactMatchStatus; groupIds: string[]; email: string | null }>
   groups: GroupListRow[]
   status?: ContactMatchStatus
   groupId?: string
+  noEmail?: boolean
 }) {
+  const missingEmail = rows.filter((row) => !row.email).length
   const forStatus = groupId ? rows.filter((row) => row.groupIds.includes(groupId)) : rows
   const forGroups = status ? rows.filter((row) => row.status === status) : rows
   const statusCounts = countByStatus(forStatus)
@@ -32,7 +35,7 @@ export function PeopleFilters({
             const href =
               item.id === 'needs_review'
                 ? '/app/people/review'
-                : peopleListHref({ status: id, groupId })
+                : peopleListHref({ status: id, groupId, noEmail })
             return (
               <Link
                 key={item.id}
@@ -52,7 +55,7 @@ export function PeopleFilters({
           <p className="mt-2 flex flex-wrap gap-x-3 gap-y-2">
             <Link
               className={`${linkClass} ${!groupId ? 'font-semibold' : ''}`}
-              href={peopleListHref({ status })}
+              href={peopleListHref({ status, noEmail })}
               aria-current={!groupId ? 'page' : undefined}
             >
               All people ({forGroups.length})
@@ -64,13 +67,34 @@ export function PeopleFilters({
                 <Link
                   key={group.id}
                   className={`${linkClass} ${active ? 'font-semibold' : ''}`}
-                  href={peopleListHref({ status, groupId: group.id })}
+                  href={peopleListHref({ status, groupId: group.id, noEmail })}
                   aria-current={active ? 'page' : undefined}
                 >
                   {group.name} ({count})
                 </Link>
               )
             })}
+          </p>
+        </div>
+      ) : null}
+      {missingEmail > 0 || noEmail ? (
+        <div>
+          <p className="font-medium">Email</p>
+          <p className="mt-2 flex flex-wrap gap-x-3 gap-y-2">
+            <Link
+              className={`${linkClass} ${!noEmail ? 'font-semibold' : ''}`}
+              href={peopleListHref({ status, groupId })}
+              aria-current={!noEmail ? 'page' : undefined}
+            >
+              Everyone ({rows.length})
+            </Link>
+            <Link
+              className={`${linkClass} ${noEmail ? 'font-semibold' : ''}`}
+              href={peopleListHref({ status, groupId, noEmail: true })}
+              aria-current={noEmail ? 'page' : undefined}
+            >
+              Missing an email ({missingEmail})
+            </Link>
           </p>
         </div>
       ) : null}

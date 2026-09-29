@@ -6,7 +6,7 @@ export const CALL_LIST_SIZE = 3
 /** What the agent needs on the phone: how to reach them and what the record says. */
 export type CallPanel = {
   phone: string | null
-  email: string
+  email: string | null
   record: string[]
   loan: string[]
 }

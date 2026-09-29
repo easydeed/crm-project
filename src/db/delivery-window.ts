@@ -39,5 +39,7 @@ export async function loadDeliveryTotals(now = new Date(), accountId?: string) {
         accountId ? eq(contactsIncludingDeleted.accountId, accountId) : undefined,
       ),
     )
-  return tallyDelivery(sent, events, unsub?.count ?? 0)
+  // A contact whose email was since removed has no domain to count it under.
+  const withEmail = sent.flatMap((row) => (row.email ? [{ email: row.email }] : []))
+  return tallyDelivery(withEmail, events, unsub?.count ?? 0)
 }

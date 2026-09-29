@@ -44,6 +44,7 @@ describe.skipIf(!sessionUrl)('settings writes against the session pooler', () =>
       brokerage: 'Hillside',
       dre: '01998432',
       phone: '9095550199',
+      mlsAgentId: 'CRMLS-P0300',
     })
     await updateAccountAppearance(created.accountId, {
       senderName: 'Pat at Hillside',

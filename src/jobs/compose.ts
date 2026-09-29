@@ -4,7 +4,7 @@ import { contactSubscriptions, sends, sendRecipients } from '@/db/schema'
 import { liveContacts } from '@/db/live-contacts'
 import { buildDigestInput } from '@/digest/build-input'
 import { renderDigest } from '@/digest/render'
-import { NOTHING_NEW_REASON, UNMATCHED_REASON } from '@/digest/skip-copy'
+import { NO_EMAIL_REASON, NOTHING_NEW_REASON, UNMATCHED_REASON } from '@/digest/skip-copy'
 import type { JobHandler } from '@/jobs/types'
 import { emailHash } from '@/suppression/hash'
 import { SUPPRESSED_REASON, suppressedHashes } from '@/suppression/suppressions'
@@ -46,8 +46,14 @@ export const composeSend: JobHandler = async (payload, ctx) => {
     )
 
   const skips: Skip[] = []
-  const suppressed = await suppressedHashes(db, people.map((person) => person.email), 'monthly')
+  const emails = people.flatMap((person) => (person.email ? [person.email] : []))
+  const suppressed = await suppressedHashes(db, emails, 'monthly')
   for (const person of people) {
+    // Recorded, so /admin/sends shows why: an MLS closing arrives with no email.
+    if (!person.email) {
+      skips.push({ contactId: person.id, reason: NO_EMAIL_REASON })
+      continue
+    }
     if (suppressed.has(emailHash(person.email))) {
       skips.push({ contactId: person.id, reason: SUPPRESSED_REASON })
       continue

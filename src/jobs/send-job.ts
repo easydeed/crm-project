@@ -7,6 +7,7 @@ import { loadBillingState } from '@/billing/load-state'
 import { billingAllowsSending } from '@/billing/status'
 import { maybePauseForComplaints } from '@/jobs/complaint-pause'
 import { isSuppressed } from '@/suppression/suppressions'
+import { NO_EMAIL_REASON } from '@/digest/skip-copy'
 import { mapLimit } from '@/jobs/pool'
 import type { JobHandler } from '@/jobs/types'
 import { getMailer } from '@/mail/current'
@@ -56,6 +57,14 @@ export const sendMail: JobHandler = async (payload, ctx) => {
       await db
         .update(sendRecipients)
         .set({ error: 'Contact not found', permanentFailure: true })
+        .where(eq(sendRecipients.id, row.id))
+      return
+    }
+    // The email was removed after compose. Permanent: retrying cannot fix it.
+    if (!contact.email) {
+      await db
+        .update(sendRecipients)
+        .set({ error: NO_EMAIL_REASON, permanentFailure: true })
         .where(eq(sendRecipients.id, row.id))
       return
     }

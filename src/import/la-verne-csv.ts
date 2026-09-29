@@ -21,7 +21,7 @@ export function laVerneCsv(headers = 'Name,Email,Address,Close Date'): string {
   const lines = [headers]
   for (const row of laVerneImportRows()) {
     lines.push(
-      [row.name, row.email, row.address, row.closeDate ?? ''].map(csvEscape).join(','),
+      [row.name, row.email ?? '', row.address, row.closeDate ?? ''].map(csvEscape).join(','),
     )
   }
   return lines.join('\n')

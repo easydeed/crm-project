@@ -3,14 +3,14 @@ import type { ContactMatchStatus } from '@/people/status'
 
 export type SearchableContact = {
   name: string
-  email: string
+  email: string | null
   addressRaw: string
 }
 
 export function contactMatchesSearch(row: SearchableContact, query: string) {
   const needle = query.trim().toLowerCase()
   if (!needle) return true
-  return [row.name, row.email, row.addressRaw].some((value) =>
+  return [row.name, row.email ?? '', row.addressRaw].some((value) =>
     value.toLowerCase().includes(needle),
   )
 }
@@ -20,6 +20,8 @@ export type PeopleFilter = {
   groupId?: string
   q?: string
   leftOut?: boolean
+  /** People we can't send to until the agent adds an email: MLS closings arrive without one. */
+  noEmail?: boolean
 }
 
 export function filterPeople<
@@ -31,6 +33,7 @@ export function filterPeople<
 >(rows: T[], filters: PeopleFilter): T[] {
   return rows.filter((row) => {
     if (filters.leftOut && !isLeftOut(row.status, row.reviewState)) return false
+    if (filters.noEmail && row.email) return false
     if (filters.status && row.status !== filters.status) return false
     if (filters.groupId && !row.groupIds.includes(filters.groupId)) return false
     return contactMatchesSearch(row, filters.q ?? '')

@@ -4,6 +4,7 @@ export type DetailsState = {
   name?: string
   dre?: string
   phone?: string
+  mlsAgentId?: string
   /** Something the save did beyond saving, said plainly. */
   notice?: string
 }

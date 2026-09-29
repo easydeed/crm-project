@@ -41,8 +41,12 @@ export async function loadBillingView(accountId: string): Promise<BillingView> {
   }
 }
 
-/** A Stripe Checkout URL for the plan. A returning account reuses its Stripe customer. */
-export async function startCheckout(accountId: string): Promise<string> {
+/**
+ * A Stripe Checkout URL for the plan. A returning account reuses its Stripe customer.
+ * Signup passes /app/start so a new agent lands on finding their closings; a canceled
+ * checkout always returns to billing, where the plan can be started.
+ */
+export async function startCheckout(accountId: string, options: { successPath?: string } = {}): Promise<string> {
   const { db } = getRuntimeDb()
   const [account] = await db.select({ email: accounts.email }).from(accounts).where(eq(accounts.id, accountId)).limit(1)
   if (!account) throw new Error('Account not found')
@@ -52,7 +56,7 @@ export async function startCheckout(accountId: string): Promise<string> {
     accountId,
     email: account.email,
     customerId: row?.stripeCustomerId ?? null,
-    successUrl: `${billingUrl}?checkout=done`,
+    successUrl: options.successPath ? `${publicOrigin()}${options.successPath}` : `${billingUrl}?checkout=done`,
     cancelUrl: billingUrl,
   })
   return url

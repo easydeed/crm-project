@@ -3,7 +3,7 @@ import { contactStatusLabel, type ContactMatchStatus } from '@/people/status'
 
 export type ExportContact = {
   name: string
-  email: string
+  email: string | null
   phone: string | null
   addressRaw: string
   closeDate: string | null
@@ -44,7 +44,7 @@ export function contactsToCsv(rows: ExportContact[]) {
     ...rows.map((row) =>
       [
         row.name,
-        row.email,
+        row.email ?? '',
         phoneOut(row.phone),
         row.addressRaw,
         row.closeDate ?? '',

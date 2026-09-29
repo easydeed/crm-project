@@ -13,15 +13,21 @@ export function parseLeftOutParam(value: string | null | undefined) {
   return value === '1' || value === 'true'
 }
 
+export function parseNoEmailParam(value: string | null | undefined) {
+  return value === '1' || value === 'true'
+}
+
 export function peopleListHref(filters: {
   status?: ContactMatchStatus
   groupId?: string
   leftOut?: boolean
+  noEmail?: boolean
 }) {
   const params = new URLSearchParams()
   if (filters.status) params.set('status', filters.status)
   if (filters.groupId) params.set('group', filters.groupId)
   if (filters.leftOut) params.set('leftOut', '1')
+  if (filters.noEmail) params.set('noEmail', '1')
   const query = params.toString()
   return query ? `/app/people?${query}` : '/app/people'
 }
