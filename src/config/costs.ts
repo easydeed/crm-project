@@ -38,6 +38,7 @@ export const COST_RATES: CostRates = {
   providerCallCents: {
     'property:lookupParcel': null,
     'listing:listingsNear': null,
+    'listing:closedByAgent': null,
     'text:send': null,
   },
   sendCents: null,
