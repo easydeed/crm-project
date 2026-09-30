@@ -1,0 +1,80 @@
+import { readFileSync } from 'node:fs'
+import { describe, expect, test } from 'vitest'
+
+const css = readFileSync(new URL('./globals.css', import.meta.url), 'utf8')
+
+/** The custom properties declared in the first `:root { … }` after `from`. */
+function tokensAfter(from: number): Record<string, string> {
+  const open = css.indexOf(':root {', from)
+  const block = css.slice(open, css.indexOf('}', open))
+  return Object.fromEntries([...block.matchAll(/--([\w-]+):\s*(#[0-9a-f]{6});/gi)].map((m) => [m[1]!, m[2]!.toLowerCase()]))
+}
+
+const light = tokensAfter(0)
+const dark = tokensAfter(css.indexOf('@media (prefers-color-scheme: dark)'))
+
+function luminance(hex: string) {
+  const n = parseInt(hex.slice(1), 16)
+  const [r, g, b] = [n >> 16, (n >> 8) & 255, n & 255].map((v) => {
+    const c = v / 255
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+  })
+  return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!
+}
+
+function contrast(a: string, b: string) {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+  return (hi! + 0.05) / (lo! + 0.05)
+}
+
+const TEXT = 4.5
+const NON_TEXT = 3
+
+/**
+ * The pairs the system is built to use: [foreground, background, floor]. Anything drawn with
+ * these tokens goes through one of these. --rule is decorative and deliberately absent.
+ */
+const PAIRS: Array<[string, string, number]> = [
+  ['foreground', 'background', TEXT],
+  ['background', 'foreground', TEXT],
+  ['foreground', 'surface', TEXT],
+  ['foreground', 'blue-soft', TEXT],
+  ['foreground', 'coral-soft', TEXT],
+  ['foreground', 'green-soft', TEXT],
+  ['muted-ink', 'background', TEXT],
+  ['muted-ink', 'surface', TEXT],
+  ['blue', 'background', TEXT],
+  ['on-blue', 'blue', TEXT],
+  ['coral-text', 'background', TEXT],
+  ['coral-text', 'coral-soft', TEXT],
+  ['green-text', 'background', TEXT],
+  ['green-text', 'green-soft', TEXT],
+  ['border', 'background', NON_TEXT],
+  ['border', 'surface', NON_TEXT],
+  ['coral', 'background', NON_TEXT],
+  ['coral', 'surface', NON_TEXT],
+  ['green', 'background', NON_TEXT],
+  ['green', 'surface', NON_TEXT],
+  ['blue', 'surface', NON_TEXT],
+]
+
+test('every colour token has a light and a dark value', () => {
+  expect(Object.keys(light).length).toBeGreaterThan(10)
+  expect(Object.keys(dark).sort()).toEqual(Object.keys(light).sort())
+})
+
+describe.each([
+  ['light', light],
+  ['dark', dark],
+])('%s scheme', (_scheme, tokens) => {
+  test.each(PAIRS)('%s on %s clears %s:1', (fg, bg, floor) => {
+    expect(tokens[fg], `--${fg} is not a token`).toBeDefined()
+    expect(tokens[bg], `--${bg} is not a token`).toBeDefined()
+    expect(contrast(tokens[fg]!, tokens[bg]!)).toBeGreaterThanOrEqual(floor)
+  })
+})
+
+test('the ratio is the WCAG one', () => {
+  expect(contrast('#000000', '#ffffff')).toBeCloseTo(21, 5)
+  expect(contrast('#767676', '#ffffff')).toBeCloseTo(4.54, 2)
+})
