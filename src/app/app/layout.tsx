@@ -23,9 +23,9 @@ export default async function AppLayout({
     <div className={`min-h-screen ${viewed ? 'pt-14' : ''}`}>
       {viewed ? <ViewAsBanner name={viewed.name} /> : null}
       <TopBar />
-      <form action={logoutAction} className="px-4">
+      <form action={logoutAction} className="px-4 pt-2">
         <button
-          className="text-[15px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="text-[15px] text-foreground underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
           type="submit"
         >
           Log out

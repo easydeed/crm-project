@@ -459,7 +459,8 @@ The export satisfies only three of the markup tests: the inline call panel, the 
 | **OR-033** | Add-ons | The off-row test forbids the export's badge swap; keep the switch as the only difference |
 | **OR-034** | Settings and billing | The preview stays the real `loadSettingsPreview` iframe path |
 | **OR-035** | `/app/start` and import | No export equivalent; restyle only, and keep the status/alert semantics and `MlsAttribution` |
-| Later / separate | `/login`, `/register`, `/u/[token]` (server HTML, its own CSS), `/sample` | `/u` is not React and needs its own small packet. The marketing page and `/admin` stay out of the re-skin. |
+| **OR-036** | Auth screens: `/login` and `/register` | Added by the Director after OR-028. Clears the two auth input outlines in `src/app/design-debt.test.ts`. |
+| Later / separate | `/u/[token]` (server HTML, its own CSS), `/sample` | `/u` is not React and needs its own small packet. The marketing page and `/admin` stay out of the re-skin. |
 
 **Where I would start:** OR-028, the tokens alone, after the Director's v0 design-system prompt settles the three open token questions:
 
