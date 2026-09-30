@@ -20,6 +20,7 @@ export function CandidateCards({
         return (
           <li
             key={card.parcelId}
+            onClick={() => onChoose(card.parcelId)}
             className="rounded-md border border-border p-4 text-[15px]"
           >
             <p className="font-medium">
