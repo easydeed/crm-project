@@ -6,7 +6,7 @@ const linkClass =
 export function TopBar() {
   return (
     <header className="flex items-center justify-between gap-3 px-4 py-3">
-      <Link className={`${linkClass} font-semibold no-underline`} href="/app">
+      <Link className={`${linkClass} font-semibold font-serif no-underline`} href="/app">
         onrecord
       </Link>
       <nav className="flex flex-nowrap items-center gap-3" aria-label="App">
