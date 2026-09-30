@@ -14,7 +14,7 @@ export const UNDO_SECONDS = 5
 type Status = 'open' | 'called' | 'dismissed'
 
 const secondaryClass =
-  'min-h-11 rounded-md border border-foreground/40 px-4 py-2 text-[15px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-60'
+  'min-h-11 rounded-md border border-border px-4 py-2 text-[15px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-60'
 
 export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly: boolean }) {
   const router = useRouter()
@@ -64,7 +64,7 @@ export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly:
 
   if (status === 'dismissed') {
     return (
-      <li className="flex flex-wrap items-center gap-4 border-t border-foreground/15 py-5" aria-live="polite">
+      <li className="flex flex-wrap items-center gap-4 border-t border-rule py-5" aria-live="polite">
         <p className={mutedClass}>{entry.name} is off the list until next month.</p>
         {undoButton}
         {error ? <p className="text-[15px]" role="alert">{error}</p> : null}
@@ -74,10 +74,10 @@ export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly:
 
   const called = status === 'called'
   return (
-    <li className={`border-t border-foreground/15 py-5 ${called ? 'bg-foreground/5 px-3' : ''}`}>
+    <li className={`border-t border-rule py-5 ${called ? 'bg-surface px-3' : ''}`}>
       <div className="flex flex-wrap items-start justify-between gap-4 max-sm:flex-col max-sm:items-stretch">
         <div className="min-w-0 flex-1">
-          <p className={`text-[17px] font-semibold ${called ? 'text-[#3d3d3d] dark:text-[#c8c8c8]' : ''}`}>
+          <p className={`text-[17px] font-semibold ${called ? 'text-muted-ink' : ''}`}>
             {entry.name}
           </p>
           <p className="mt-2">

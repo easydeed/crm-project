@@ -13,36 +13,14 @@ import { expect, test } from 'vitest'
  * fix that forgot to delete its entry. A screen packet clears its entries and deletes them; the
  * owner says which packet that is. When only permanent entries remain, the debt is paid.
  */
-type Owner = 'OR-030' | 'OR-031' | 'OR-032' | 'OR-033' | 'OR-034' | 'OR-035' | 'OR-036' | 'permanent'
+type Owner = 'OR-031' | 'OR-032' | 'OR-033' | 'OR-034' | 'OR-035' | 'OR-036' | 'permanent'
 type Debt = { owner: Owner; why: string; colours: Record<string, number> }
 
-const OWNERS: Owner[] = ['OR-030', 'OR-031', 'OR-032', 'OR-033', 'OR-034', 'OR-035', 'OR-036', 'permanent']
+const OWNERS: Owner[] = ['OR-031', 'OR-032', 'OR-033', 'OR-034', 'OR-035', 'OR-036', 'permanent']
 
 const DEBT: Record<string, Debt> = {
-  // OR-030: /app, the call list
-  'app/call-entry.tsx': {
-    owner: 'OR-030',
-    why: 'called name in fixed greys (--muted-ink); entry borders and tint at foreground opacity (--rule, --surface)',
-    colours: { '#3d3d3d': 1, '#c8c8c8': 1, 'border-foreground/40': 1, 'border-foreground/15': 2, 'bg-foreground/5': 1 },
-  },
-  'app/call-panel.tsx': { owner: 'OR-030', why: 'panel border (--rule)', colours: { 'border-foreground/20': 1 } },
-  'app/call-tags.ts': {
-    owner: 'OR-030',
-    why: 'tag tints and text, light and dark (--coral/--green/--blue-soft pairs, --muted-ink on --surface)',
-    colours: {
-      '#ffe3d9': 1, '#9c3a1f': 1, '#4a1f12': 1, '#ffc9b8': 1,
-      '#dcf1e2': 1, '#1d6336': 1, '#10331d': 1, '#b6e6c4': 1,
-      '#dde9f8': 1, '#1c4a82': 1, '#132a47': 1, '#bcd6f5': 1,
-      '#e6e6e6': 1, '#3d3d3d': 1, '#333333': 1, '#dedede': 1,
-    },
-  },
-
   // OR-031: People
-  'app/people/ui.ts': {
-    owner: 'OR-031',
-    why: 'muted text in fixed greys (--muted-ink); input outline ~1.5:1 (--border)',
-    colours: { '#3d3d3d': 1, '#c8c8c8': 1, 'border-foreground/20': 1 },
-  },
+  'app/people/ui.ts': { owner: 'OR-031', why: 'input outline ~1.5:1 (--border)', colours: { 'border-foreground/20': 1 } },
   'app/people/people-bulk-bar.tsx': { owner: 'OR-031', why: 'bar divider (--rule)', colours: { 'border-foreground/20': 1 } },
   'app/people/group-manager.tsx': { owner: 'OR-031', why: 'secondary text (--muted-ink)', colours: { 'text-foreground/80': 1 } },
   'app/people/[id]/add-to-group.tsx': { owner: 'OR-031', why: 'secondary text (--muted-ink)', colours: { 'text-foreground/80': 1 } },

@@ -42,6 +42,9 @@ const PAIRS: Array<[string, string, number]> = [
   ['foreground', 'coral-soft', TEXT],
   ['foreground', 'green-soft', TEXT],
   ['muted-ink', 'background', TEXT],
+  // 4.56:1 light, 0.06 above the floor. Depends on it: the grey call tag (call-tags.ts) and
+  // mutedClass (people/ui.ts) wherever it sits on --surface, including called call-list rows.
+  // Darken --surface and this fails first; re-derive --muted-ink with it.
   ['muted-ink', 'surface', TEXT],
   ['blue', 'background', TEXT],
   ['on-blue', 'blue', TEXT],

@@ -151,3 +151,17 @@ test('the person page shows the dates they were marked as called', () => {
   expect(detail).toContain('You called them on {day}.')
   expect(page).toContain('listCalledDates(accountId, person.id)')
 })
+
+test('each call tag is a token pair the contrast test checks, never blue text on blue-soft', () => {
+  const pairs = src('../tokens.test.ts')
+  const expected = {
+    sold_nearby: ['coral-text', 'coral-soft'],
+    loan_paid_off: ['green-text', 'green-soft'],
+    tax_upside: ['foreground', 'blue-soft'],
+    quiet_a_while: ['muted-ink', 'surface'],
+  } as const
+  for (const [kind, [fg, bg]] of Object.entries(expected)) {
+    expect(CALL_TAGS[kind as keyof typeof expected].className).toBe(`bg-${bg} text-${fg}`)
+    expect(pairs).toContain(`['${fg}', '${bg}', TEXT]`)
+  }
+})
