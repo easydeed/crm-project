@@ -13,18 +13,12 @@ import { expect, test } from 'vitest'
  * fix that forgot to delete its entry. A screen packet clears its entries and deletes them; the
  * owner says which packet that is. When only permanent entries remain, the debt is paid.
  */
-type Owner = 'OR-031' | 'OR-032' | 'OR-033' | 'OR-034' | 'OR-035' | 'OR-036' | 'permanent'
+type Owner = 'OR-032' | 'OR-033' | 'OR-034' | 'OR-035' | 'OR-036' | 'permanent'
 type Debt = { owner: Owner; why: string; colours: Record<string, number> }
 
-const OWNERS: Owner[] = ['OR-031', 'OR-032', 'OR-033', 'OR-034', 'OR-035', 'OR-036', 'permanent']
+const OWNERS: Owner[] = ['OR-032', 'OR-033', 'OR-034', 'OR-035', 'OR-036', 'permanent']
 
 const DEBT: Record<string, Debt> = {
-  // OR-031: People
-  'app/people/ui.ts': { owner: 'OR-031', why: 'input outline ~1.5:1 (--border)', colours: { 'border-foreground/20': 1 } },
-  'app/people/people-bulk-bar.tsx': { owner: 'OR-031', why: 'bar divider (--rule)', colours: { 'border-foreground/20': 1 } },
-  'app/people/group-manager.tsx': { owner: 'OR-031', why: 'secondary text (--muted-ink)', colours: { 'text-foreground/80': 1 } },
-  'app/people/[id]/add-to-group.tsx': { owner: 'OR-031', why: 'secondary text (--muted-ink)', colours: { 'text-foreground/80': 1 } },
-
   // OR-032: review queue
   'app/people/review/candidate-cards.tsx': { owner: 'OR-032', why: 'card border (--rule)', colours: { 'border-foreground/20': 1 } },
 

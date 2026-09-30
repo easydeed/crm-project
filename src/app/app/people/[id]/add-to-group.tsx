@@ -4,7 +4,7 @@ import { useActionState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { addToGroupAction, createGroupAction, type GroupFormState } from '@/app/app/people/actions'
-import { buttonClass, fieldClass, linkClass } from '@/app/app/people/ui'
+import { buttonClass, fieldClass, linkClass, mutedClass } from '@/app/app/people/ui'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
 import type { GroupListRow } from '@/db/groups'
 
@@ -44,7 +44,7 @@ export function AddToGroup({
       ) : null}
       {groups.length === 0 ? (
         <>
-          <p className="mt-3 text-[15px] text-foreground/80">
+          <p className={`mt-3 ${mutedClass}`}>
             Groups are optional. Make one if you want to sort people.
           </p>
           <form action={createAction} className="mt-4 flex flex-col gap-3">

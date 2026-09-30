@@ -125,3 +125,36 @@ test('the delete confirmation says what really happens: a re-import brings them 
     expect(text).not.toMatch(/cannot be undone/i)
   }
 })
+
+test('each status is a tag in a token pair the contrast test checks; the label still carries it', async () => {
+  const { STATUS_TAG_CLASS, UNSUBSCRIBED_TAG_CLASS } = await import('@/app/app/people/status-tag')
+  const pairs = src('../../tokens.test.ts')
+  const expected = {
+    matched: ['green-text', 'green-soft'],
+    needs_review: ['coral-text', 'coral-soft'],
+    no_parcel: ['muted-ink', 'surface'],
+  } as const
+  for (const [status, [fg, bg]] of Object.entries(expected)) {
+    expect(STATUS_TAG_CLASS[status as keyof typeof expected]).toContain(`bg-${bg} text-${fg}`)
+    expect(pairs).toContain(`['${fg}', '${bg}', TEXT]`)
+  }
+  expect(UNSUBSCRIBED_TAG_CLASS).toContain('bg-surface text-muted-ink')
+  expect(src('./people-list.tsx')).toContain('{contactStatusLabel(row.status)}</span>')
+})
+
+test('Delete is the outlined coral button on both screens, and the question it asks is unchanged', () => {
+  const ui = src('./ui.ts')
+  expect(ui).toMatch(/destructiveButtonClass =\s*'[^']*border-border[^']*text-coral-text/)
+  for (const file of ['./[id]/person-detail.tsx', './people-bulk-bar.tsx']) {
+    const text = src(file)
+    expect(text).toMatch(/<button className=\{destructiveButtonClass\}[^>]*>\s*Delete/)
+    expect(text).toContain('window.confirm(')
+  }
+})
+
+test('the current filter is marked like the top bar: dark text on blue-soft, with aria-current', () => {
+  const filters = src('./people-filters.tsx')
+  expect(filters).toContain("const currentClass = 'rounded-md bg-blue-soft px-2 font-semibold text-foreground'")
+  expect(filters).not.toMatch(/text-blue\b/)
+  expect(filters.match(/aria-current=/g)?.length).toBe(5)
+})

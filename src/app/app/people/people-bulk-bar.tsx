@@ -8,7 +8,7 @@ import {
   type BulkContactState,
   type GroupFormState,
 } from '@/app/app/people/actions'
-import { buttonClass, fieldClass } from '@/app/app/people/ui'
+import { buttonClass, destructiveButtonClass, fieldClass } from '@/app/app/people/ui'
 import type { GroupListRow } from '@/db/groups'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
 
@@ -47,7 +47,7 @@ export function PeopleBulkBar({
   const pending = addPending || removePending || deletePending
 
   return (
-    <div className="sticky bottom-0 z-10 mt-6 border-t border-foreground/20 bg-background py-3">
+    <div className="sticky bottom-0 z-10 mt-6 border-t border-rule bg-background py-3">
       <p className="text-[15px]">
         {selected.length === 1 ? '1 person selected' : `${selected.length} people selected`}
       </p>
@@ -112,7 +112,7 @@ export function PeopleBulkBar({
           {selected.map((id) => (
             <input key={`del-${id}`} type="hidden" name="contactId" value={id} />
           ))}
-          <button className={buttonClass} type="submit" disabled={readOnly || pending}>
+          <button className={destructiveButtonClass} type="submit" disabled={readOnly || pending}>
             Delete
           </button>
         </form>
