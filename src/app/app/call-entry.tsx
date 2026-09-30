@@ -81,7 +81,7 @@ export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly:
             {entry.name}
           </p>
           <p className="mt-2">
-            <span className={`inline-block rounded-full border-[#ffc9b8] px-3 py-0.5 text-[15px] ${tag.className}`} data-tag-color={tag.color}>
+            <span className={`inline-block rounded-full px-3 py-0.5 text-[15px] ${tag.className}`} data-tag-color={tag.color}>
               {tag.label}
             </span>
           </p>
