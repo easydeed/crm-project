@@ -105,7 +105,7 @@ export function PeopleBulkBar({
             const label =
               names.length === 1
                 ? `Delete ${names[0]}? They'll stop getting the monthly note. If you import them again later, they'll come back.`
-                : `Delete ${names.length} people? This cannot be undone. They'll stop getting the monthly note. If you import them again later, they'll come back.`
+                : `Delete ${names.length} people? They'll stop getting the monthly note. If you import them again later, they'll come back.`
             if (!window.confirm(label)) event.preventDefault()
           }}
         >
