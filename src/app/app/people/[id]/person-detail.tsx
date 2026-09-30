@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useActionState } from 'react'
 import { AddToGroup } from '@/app/app/people/[id]/add-to-group'
 import { deleteContactAction, type ContactFormState } from '@/app/app/people/actions'
-import { buttonClass, linkClass } from '@/app/app/people/ui'
+import { buttonClass, destructiveButtonClass, linkClass } from '@/app/app/people/ui'
 import { formatUsPhone } from '@/config/phone'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
 import type { ContactListRow } from '@/db/contacts'
@@ -136,7 +136,7 @@ export function PersonDetail({
           }}
         >
           <input type="hidden" name="contactId" value={person.id} />
-          <button className={buttonClass} type="submit" disabled={readOnly}>
+          <button className={destructiveButtonClass} type="submit" disabled={readOnly}>
             Delete
           </button>
         </form>

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { linkClass } from '@/app/app/people/ui'
+import { STATUS_TAG_CLASS, UNSUBSCRIBED_TAG_CLASS } from '@/app/app/people/status-tag'
 import type { ContactListRow } from '@/db/contacts'
 import { contactStatusLabel } from '@/people/status'
 
@@ -54,8 +55,12 @@ export function PeopleList({
               </Link>
             </div>
             <p className="text-right">
-              {contactStatusLabel(row.status)}
-              {row.unsubscribed ? <span className="block">Unsubscribed</span> : null}
+              <span className={STATUS_TAG_CLASS[row.status]}>{contactStatusLabel(row.status)}</span>
+              {row.unsubscribed ? (
+                <span className="mt-1 block">
+                  <span className={UNSUBSCRIBED_TAG_CLASS}>Unsubscribed</span>
+                </span>
+              ) : null}
             </p>
           </li>
         ))}
