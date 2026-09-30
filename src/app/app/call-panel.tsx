@@ -19,7 +19,7 @@ function Phone({ phone }: { phone: string | null }) {
 export function CallPanel({ id, panel, address }: { id: string; panel: CallPanelData; address: string }) {
   const empty = !panel.record.length && !panel.loan.length
   return (
-    <div className="mt-4 rounded-md border border-foreground/20 p-4 text-[15px]" id={id}>
+    <div className="mt-4 rounded-lg border border-rule bg-surface p-4 text-[15px]" id={id}>
       <dl className="flex flex-col gap-3">
         <div>
           <dt className="font-medium">Phone</dt>

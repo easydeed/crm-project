@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { sendCardClass } from '@/app/app/people/ui'
 import type { BillingIssue } from '@/billing/status'
 
 const buttonClass =
@@ -31,7 +32,7 @@ const COPY: Record<BillingIssue, { title: string; body: string; action: string }
 export function HomeBillingCard({ issue }: { issue: BillingIssue }) {
   const copy = COPY[issue]
   return (
-    <section className="px-4 py-10">
+    <section className={sendCardClass}>
       <h1 className="text-[22px] font-semibold">{copy.title}</h1>
       <p className="mt-3 max-w-xl text-[15px]">{copy.body}</p>
       <Link className={buttonClass} href="/app/settings/billing">
