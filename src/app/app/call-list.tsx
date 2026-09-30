@@ -39,7 +39,6 @@ export function CallListSection({ list, readOnly, textNotice = null }: { list: C
       ) : null}
       {list.kind === 'list' ? (
         <>
-          <p className="mt-2 text-[15px]">{list.entries.length}</p>
           {list.entries.length ? (
             <ul className="mt-4 max-w-2xl">
               {list.entries.map((entry) => (
