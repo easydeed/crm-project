@@ -56,7 +56,6 @@ export function PeopleList({
             </div>
             <p className="text-right">
               <span className={STATUS_TAG_CLASS[row.status]}>{contactStatusLabel(row.status)}</span>
-              <span className="mt-1 block">Opening</span>
               {row.unsubscribed ? (
                 <span className="mt-1 block">
                   <span className={UNSUBSCRIBED_TAG_CLASS}>Unsubscribed</span>
