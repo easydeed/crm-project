@@ -59,7 +59,8 @@ const MATCHED_NAMES = [
   'Diego Flores',
   'Grace Liu',
   'Marcus Hale',
-  'Teresa Nguyen',
+  // Names beyond ASCII, so the bundled latin-ext and vietnamese font ranges appear on screen.
+  'Teresa Nguyễn',
   'Andre Cole',
   'Fatima Noor',
   'Ryan Keller',
@@ -67,7 +68,7 @@ const MATCHED_NAMES = [
   'Jonah Price',
   'Camila Ruiz',
   'Ethan Shaw',
-  'Nora Blake',
+  'Nora Dvořák',
   'Victor Tran',
   'Isabel Mora',
   'Ben Carter',
@@ -234,7 +235,7 @@ export function buildLaVerneFixtures() {
       lastRefreshedAt: refreshed,
     })
 
-    const slug = name.toLowerCase().replace(' ', '.')
+    const slug = name.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(' ', '.')
     contacts.push({
       id: id(300 + i),
       name,
