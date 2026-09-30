@@ -67,8 +67,8 @@
   --color-green-soft: var(--green-soft);
 
   /* Inter everywhere. Fraunces is the marketing page's serif and nothing else's. */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-inter), var(--font-inter-latin-ext), var(--font-inter-vietnamese), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), var(--font-fraunces-latin-ext), var(--font-fraunces-vietnamese), ui-serif, Georgia, serif;
 
   /* The export's radius scale, from a 9px base. */
   --radius-sm: 0.3375rem;
@@ -83,7 +83,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-inter), var(--font-inter-latin-ext), var(--font-inter-vietnamese), ui-sans-serif, system-ui, sans-serif;
 }
 
 @media (prefers-reduced-motion: reduce) {

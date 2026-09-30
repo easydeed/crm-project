@@ -35,3 +35,11 @@ test('the email keeps its own design: nothing in src/digest reads an app token',
   })
   expect(offenders).toEqual([])
 })
+
+test('fonts are bundled: nothing imports next/font/google, so no build fetches from Google', () => {
+  const offenders = sourceFiles(srcRoot)
+    .filter((file) => /from\s+['"]next\/font\/google['"]|import\(\s*['"]next\/font\/google['"]/.test(read(file)))
+    .map(rel)
+  expect(offenders).toEqual([])
+  expect(read(path.join(srcRoot, 'app/fonts/fonts.ts'))).toContain("from 'next/font/local'")
+})
