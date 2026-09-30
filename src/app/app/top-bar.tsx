@@ -10,7 +10,7 @@ export function TopBar() {
       >
         onrecord
       </Link>
-      <nav className="flex items-center gap-1" aria-label="App">
+      <nav className="flex flex-nowrap items-center gap-1" aria-label="App">
         <NavLink href="/app/people">People</NavLink>
         <NavLink href="/app/addons">Add-ons</NavLink>
         <NavLink href="/app/settings">Settings</NavLink>
