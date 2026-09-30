@@ -22,6 +22,7 @@ old threshold. OR-030's five muted-text screens are the change it would have hid
 | OR-029a seed | 1f422fa → b550639 | people, people-bulk-bar | people, people-bulk-bar | Re-measured exactly; matches. |
 | OR-030 dashboard | b550639 → 1f74935 | dashboard, dashboard-call-open, review-queue, start, start-few, start-found, start-nothing | The same seven | Re-measured exactly; matches. OR-030 was already measured this way. The 0.2 comparison it replaced passed five of them (review-queue and the four start screens). |
 | OR-031 People | 2a9ff1c → fd469f2 | people, people-bulk-bar, person-detail, start, start-few, start-found, start-malformed, start-nothing | Measured exactly | People's own three, plus the five /app/start screens through the shared fieldClass (see below). review-queue did not change: its captured state shows no fieldClass input. |
+| OR-032 review queue | 41d5940 → 8a06bdd | review-queue | review-queue only | The card outline (--border, the documented exception to --rule) and the "Name matches" tag. The linkClass swap in review-queue.tsx and error.tsx moved nothing; the error screen is not captured, and its classes are the same set in a different order. |
 
 ## Shared classes move screens early
 
@@ -46,6 +47,20 @@ Same values on every screen it touches (People, the edit form, the review queue'
 /app/start): the inputs all sit on --background. Floor for a control boundary: 3:1.
 
 `unsubscribe` (`/u/[token]`) is server HTML with its own CSS and has not changed in any packet.
+
+## Found, not fixed
+
+Items a packet found that are not colour debt and that no packet owns. Each stays here until a
+decision closes it.
+
+- **Assessor facts shown without their source (raised in OR-032).** The review queue's candidate
+  cards show beds, baths and sq ft from the assessor roll (`parcels`) with no source label.
+  PROJECT_STATE principle 3 asks that every figure be legible as county record or MLS. The same
+  figures appear unlabelled in the digest's four-doors-down comparison
+  (`src/digest/blocks/four-doors.ts`): "That listing" is followed by its MLS attribution, while
+  "Your house", from the assessor roll, carries none. So this is a product question about how
+  assessor data is labelled everywhere, not one screen's copy. It is not colour debt, and no
+  packet owns it.
 
 ## How to measure a packet
 
