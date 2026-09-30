@@ -26,6 +26,7 @@ for (const screen of SCREENS) {
     await expect(page).toHaveScreenshot(`${screen.name}.png`, {
       fullPage: true,
       animations: 'disabled',
+      threshold: 0,
       maxDiffPixels: 0,
     })
   })
