@@ -13,15 +13,12 @@ import { expect, test } from 'vitest'
  * fix that forgot to delete its entry. A screen packet clears its entries and deletes them; the
  * owner says which packet that is. When only permanent entries remain, the debt is paid.
  */
-type Owner = 'OR-032' | 'OR-033' | 'OR-034' | 'OR-035' | 'OR-036' | 'permanent'
+type Owner = 'OR-033' | 'OR-034' | 'OR-035' | 'OR-036' | 'permanent'
 type Debt = { owner: Owner; why: string; colours: Record<string, number> }
 
-const OWNERS: Owner[] = ['OR-032', 'OR-033', 'OR-034', 'OR-035', 'OR-036', 'permanent']
+const OWNERS: Owner[] = ['OR-033', 'OR-034', 'OR-035', 'OR-036', 'permanent']
 
 const DEBT: Record<string, Debt> = {
-  // OR-032: review queue
-  'app/people/review/candidate-cards.tsx': { owner: 'OR-032', why: 'card border (--rule)', colours: { 'border-foreground/20': 1 } },
-
   // OR-033: add-ons
   'app/addons/addon-row.tsx': {
     owner: 'OR-033',

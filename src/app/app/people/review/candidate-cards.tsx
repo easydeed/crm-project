@@ -1,3 +1,4 @@
+import { NAME_MATCH_TAG_CLASS } from '@/app/app/people/status-tag'
 import { buttonClass, mutedClass } from '@/app/app/people/ui'
 import type { ReviewCandidateCard } from '@/db/review-types'
 import { REVIEW_NAME_MATCHES, REVIEW_RECORDED_OWNER, REVIEW_THIS_ONE } from '@/people/review-copy'
@@ -19,7 +20,7 @@ export function CandidateCards({
         return (
           <li
             key={card.parcelId}
-            className="rounded-md border border-foreground/20 p-4 text-[15px]"
+            className="rounded-md border border-border p-4 text-[15px]"
           >
             <p className="font-medium">
               {card.street}
@@ -32,7 +33,9 @@ export function CandidateCards({
               </p>
             ) : null}
             {card.nameMatches ? (
-              <p className="mt-2 font-medium">{REVIEW_NAME_MATCHES}</p>
+              <p className="mt-2">
+                <span className={NAME_MATCH_TAG_CLASS}>{REVIEW_NAME_MATCHES}</span>
+              </p>
             ) : null}
             {facts ? <p className={`mt-3 ${mutedClass}`}>{facts}</p> : null}
             <p className="mt-3">{card.reason}</p>

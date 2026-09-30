@@ -13,3 +13,9 @@ export const STATUS_TAG_CLASS: Record<ContactMatchStatus, string> = {
 }
 
 export const UNSUBSCRIBED_TAG_CLASS = `${tag} bg-surface text-muted-ink`
+
+/**
+ * "Name matches" on a review card: the neutral pair, not green. Green means "On the map"; a name
+ * match is evidence about a candidate house, not an answer, so the colour must not assert one.
+ */
+export const NAME_MATCH_TAG_CLASS = `${tag} bg-blue-soft text-foreground`
