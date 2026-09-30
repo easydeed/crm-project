@@ -143,3 +143,19 @@ Amendments to OR-029:
    itself stays a server component and that no data crosses the
    boundary — the nav needs only the pathname.
 ```
+
+## Second-round answers (Director)
+
+```
+1. One list, per colour. The tree test reads its allowlist from the
+   entries in design-debt.test.ts (file + exact colour). It fails on new
+   debt and on a fix that forgot to delete its entry.
+2. Owners stand, including the new debt for OR-032 and OR-033. Each file
+   goes to the packet that owns its screen.
+3. view-as-banner.tsx stays out: INK_COLOR is a named value in config,
+   and the banner is deliberately outside the app's visual system. The
+   debt file says so, so nobody adds it later thinking it was missed.
+Addition: the scan also catches named Tailwind palette colours
+(text-white, bg-black, text-gray-500, ...). Any found today become owned
+entries; if none, the rule still guards the packets ahead.
+```
