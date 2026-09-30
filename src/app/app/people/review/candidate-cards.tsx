@@ -1,7 +1,7 @@
 import { NAME_MATCH_TAG_CLASS } from '@/app/app/people/status-tag'
 import { buttonClass, mutedClass } from '@/app/app/people/ui'
 import type { ReviewCandidateCard } from '@/db/review-types'
-import { REVIEW_RECORDED_OWNER, REVIEW_THIS_ONE } from '@/people/review-copy'
+import { REVIEW_NAME_MATCHES, REVIEW_RECORDED_OWNER, REVIEW_THIS_ONE } from '@/people/review-copy'
 import { formatHouseFacts } from '@/people/review-state'
 
 export function CandidateCards({
@@ -34,7 +34,7 @@ export function CandidateCards({
             ) : null}
             {card.nameMatches ? (
               <p className="mt-2">
-                <span className={NAME_MATCH_TAG_CLASS} aria-hidden="true" />
+                <span className={NAME_MATCH_TAG_CLASS}>{REVIEW_NAME_MATCHES}</span>
               </p>
             ) : null}
             {facts ? <p className={`mt-3 ${mutedClass}`}>{facts}</p> : null}
