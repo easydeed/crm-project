@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { loadDatabaseUrl } from '../src/config/database-url'
+import { isLocalDatabaseUrl, loadDatabaseUrl } from '../src/config/database-url'
 import { createDb } from '../src/db/client'
 import { buildLaVerneFixtures } from '../src/db/fixtures/la-verne'
 import { persistReviewCandidates } from '../src/db/persist-review-candidates'
@@ -16,6 +16,16 @@ const env = z
   })
   .parse({ DATABASE_URL: loadDatabaseUrl() })
 
+// The seed truncates every table, so it runs only against a database on this machine: the same
+// check, by host, that e2e-setup uses.
+if (!isLocalDatabaseUrl(env.DATABASE_URL)) {
+  let host = 'an unreadable URL'
+  try {
+    host = new URL(env.DATABASE_URL).hostname
+  } catch {}
+  console.error(`seed refuses to run: DATABASE_URL points at ${host}, not a database on this machine. It truncates every table.`)
+  process.exit(1)
+}
 
 async function seed() {
   const { client, db } = createDb(env.DATABASE_URL)
