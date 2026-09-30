@@ -18,7 +18,7 @@
     "digest:preview": "tsx scripts/digest-preview.ts",
     "e2e": "playwright test",
     "e2e:setup": "tsx scripts/e2e-setup.ts",
-    "e2e:baseline": "PW_DESKTOP_COMPARE=1 playwright test --project=setup --project=desktop --update-snapshots",
+    "e2e:baseline": "PW_DESKTOP_COMPARE=1 playwright test --project=setup --project=desktop --update-snapshots=all",
     "e2e:compare": "PW_DESKTOP_COMPARE=1 playwright test --project=setup --project=desktop"
   },
   "dependencies": {
