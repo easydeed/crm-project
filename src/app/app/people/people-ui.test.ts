@@ -158,3 +158,16 @@ test('the current filter is marked like the top bar: dark text on blue-soft, wit
   expect(filters).not.toMatch(/text-blue\b/)
   expect(filters.match(/aria-current=/g)?.length).toBe(5)
 })
+
+test('the status column says only the schema status and Unsubscribed, never an engagement label', () => {
+  const list = src('./people-list.tsx')
+  // The export's engagement tags. Only the statuses the schema defines may appear here.
+  expect(list).not.toMatch(/\bOpening\b|Never opened|\bQuiet\b|May have moved/)
+  const start = list.indexOf('<p className="text-right">')
+  const cell = list.slice(start, list.indexOf('</p>', start))
+  // The words a reader sees: JSX text between tags, less the {expressions} and the JS around them.
+  const words = [...cell.matchAll(/>([^<>]*)</g)]
+    .flatMap((m) => m[1]!.replace(/\{[^{}]*\}/g, ' ').split(/\s+/))
+    .filter((word) => /^[A-Za-z][A-Za-z'-]*$/.test(word) && word !== 'null')
+  expect(words).toEqual(['Unsubscribed'])
+})
