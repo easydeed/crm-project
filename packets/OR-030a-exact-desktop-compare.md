@@ -131,3 +131,28 @@ Amendments to OR-030a:
 Builder's note on amendment 2: OR-030's comparison was already exact
 (byte-for-byte fresh captures). The counts known to undercount are OR-028
 and OR-029. The one timed re-measurement is OR-028's.
+
+## Addition to scope (Director)
+
+```
+Additional to OR-030a scope:
+
+scripts/seed.ts truncates every table and has no host guard, while
+scripts/e2e-setup.ts refuses any non-local DATABASE_URL. Give seed.ts
+the same guard, reusing e2e-setup's check rather than writing a second
+one — a host that is not localhost, 127.0.0.1 or ::1 refuses with exit 1
+and a message naming the host it saw.
+
+Prove it: point DATABASE_URL at a non-local host and confirm exit 1 with
+nothing written.
+
+Do NOT chain the seed into e2e:baseline or e2e:compare. Stale data
+causing false positives is a documented gotcha, not a reason to give two
+frequently-run scripts the power to truncate.
+
+Instead: e2e:compare fails with a clear message if the database does not
+match a fresh seed — or, if that is awkward to detect, the spec's comment
+says to reseed first and names the command.
+```
+
+The re-measurements all matched; the log says "re-measured exactly, matches" (Director).

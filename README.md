@@ -37,7 +37,7 @@ pnpm verify:fast  # inner loop: no build, unit tests only
 pnpm verify       # build + typecheck + lint + all tests + file length + invariants
 pnpm db:generate  # write a SQL migration from a schema change
 pnpm db:migrate   # apply pending migrations
-pnpm db:seed      # load La Verne fixtures
+pnpm db:seed      # load La Verne fixtures (local database only; it truncates every table)
 ```
 
 `pnpm verify` must pass before any task is reported complete.
