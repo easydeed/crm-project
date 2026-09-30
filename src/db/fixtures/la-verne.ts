@@ -60,7 +60,7 @@ const MATCHED_NAMES = [
   'Grace Liu',
   'Marcus Hale',
   // Names beyond ASCII, so the bundled latin-ext and vietnamese font ranges appear on screen.
-  'Teresa Nguyễn',
+  'Teresa Nguyen',
   'Andre Cole',
   'Fatima Noor',
   'Ryan Keller',
