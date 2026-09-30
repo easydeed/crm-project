@@ -11,6 +11,10 @@ import { SCREENS } from './screens'
  * on one machine are byte-stable, so any differing pixel is a real change. The baseline script
  * rewrites every file (--update-snapshots=all); the default mode rewrites only failing screens,
  * which leaves baselines older than they look.
+ *
+ * Reseed (`pnpm db:seed`, then `pnpm e2e:setup`) before each run: the browser pass changes data that
+ * shows on screen, and an unseeded comparison reports screens that did not change. Record each
+ * packet's result in docs/audits/reskin-screen-log.md.
  */
 test.skip(process.env.PW_DESKTOP_COMPARE !== '1', 'on-demand, same-machine comparison')
 
