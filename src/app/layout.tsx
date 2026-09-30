@@ -1,19 +1,6 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { fontVariables } from "@/app/fonts/fonts";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-// The marketing page's serif. Not preloaded: nothing in the app uses it.
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  weight: ["500", "600"],
-  preload: false,
-});
 
 export const metadata: Metadata = {
   title: "onrecord",
@@ -28,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${fraunces.variable} antialiased`}
+        className={`${fontVariables} antialiased`}
       >
         {children}
       </body>
