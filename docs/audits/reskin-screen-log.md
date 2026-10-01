@@ -66,7 +66,8 @@ decision closes it.
   assessor data is labelled everywhere, not one screen's copy. It is not colour debt, and no
   packet owns it.
 
-- **Inline copies of linkClass's string (raised in OR-033a).** There are 21 copies outside /admin.
+- **Inline copies of linkClass's string (raised in OR-033a).** There were 21 copies outside /admin.
+  OR-034 fixed its six (settings and billing); 15 remain.
   linkClass is `text-[15px] underline underline-offset-4` plus the focus ring. None is colour debt:
   every copy draws in the same colour.
   - "Identical": the string is linkClass's, letter for letter.
@@ -78,12 +79,6 @@ decision closes it.
 
   | Owner | File | Differs from linkClass |
   |---|---|---|
-  | OR-034 | app/settings/error.tsx | +mt-6 |
-  | OR-034 | app/settings/page.tsx | "tap" variant (adds `tap`), no 15px |
-  | OR-034 | app/settings/billing/error.tsx | +mt-6 |
-  | OR-034 | app/settings/billing/page.tsx | identical |
-  | OR-034 | app/settings/billing/cancel/page.tsx | identical |
-  | OR-034 | app/settings/billing/invoice-list.tsx | no 15px |
   | OR-035 | app/start/error.tsx (two links) | "tap" variant, no 15px |
   | OR-035 | app/people/import/import-result.tsx:5 | adds `inline-block` |
   | OR-035 | app/people/import/import-result.tsx:43 | a `<summary>`: adds `cursor-pointer`, no 15px |
@@ -103,6 +98,13 @@ decision closes it.
   - import-form.tsx's selected tab underlines a tab; it is not a link.
   - view-as-banner.tsx is exempt (white on INK_COLOR).
   - /admin stays unstyled.
+
+- **Copies of buttonClass's string (raised in OR-034).** Three remain outside /admin, all on
+  `<Link>`s, which never take a disabled state. `src/app/shared-classes.test.ts` lists them and fails
+  both ways.
+  - app/home-card.tsx and app/home-billing-card.tsx: dashboard links styled as buttons. They add
+    `mt-6 inline-block` and lack the focus colour. Final sweep.
+  - home-story.tsx: the marketing page. It adds `inline-block`. Final sweep, with its linkClass copy.
 
 ## How to measure a packet
 

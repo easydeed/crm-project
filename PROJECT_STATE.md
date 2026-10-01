@@ -46,6 +46,10 @@ A subscription service that emails a real estate agent's sphere one message a mo
 
 Rules that only describe correct behavior have failed twice: a CI step reported green while swallowing a non-zero exit, and an agent violated three standing rules it had loaded. What has held is code that throws — `assertSendAllowed`, the source test on `mailer.send`, the test that fails on `continue-on-error`, the single-use baseline. Prefer a check that fails the build over a line in a document.
 
+A test that forbids a concept by keyword guards only the words it names. Prefer an allowlist of what is permitted over a denylist of what is not — the People status column asserts its cell contains only the schema status and "Unsubscribed", rather than listing forbidden engagement words.
+
+A test named for a property must check the property, not a list. Two tests on this project were named for every instance and checked a handful: the People status column (keyword denylist, missed the export's actual labels) and the primary-button test (file list, missed six copies including one real bug). Prefer a whole-tree scan with a shrinking allowlist that fails in both directions — a new instance is red, and a listed instance that is gone is red too.
+
 ## Rejected ideas — do not rebuild
 
 | Rejected | Reason |

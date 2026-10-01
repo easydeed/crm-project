@@ -7,11 +7,7 @@ import { getAccountById } from '@/db/accounts'
 import { resumePlanAction, startCheckoutAction } from '@/app/app/settings/billing/actions'
 import { formatBillingDate, NOTICES, PLAN_LINE, statusWords } from '@/app/app/settings/billing/billing-copy'
 import { InvoiceList } from '@/app/app/settings/billing/invoice-list'
-
-const buttonClass =
-  'rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
-const linkClass =
-  'text-[15px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+import { buttonClass, linkClass } from '@/app/app/people/ui'
 
 function Action({ action, label }: { action: () => Promise<void>; label: string }) {
   return (
