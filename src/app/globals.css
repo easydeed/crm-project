@@ -9,7 +9,8 @@
  * 3:1 is the bar. Words in those colours use --coral-text and --green-text.
  * Rule versus border: --rule is a decorative divider and may be faint. --border outlines a
  * control, so it clears 3:1 against both page and surface.
- * Cards take a --rule border, not a shadow.
+ * Cards take a --rule border, not a shadow. One exception, OR-032: review candidate cards take
+ * --border, because on a phone they stack and the outline says which "This one" picks which house.
  */
 :root {
   --background: #ffffff;

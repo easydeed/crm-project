@@ -82,3 +82,35 @@ test('review UI stays 15px with focus rings', () => {
     }
   }
 })
+
+test('"Name matches" is a tag in the neutral pair, which the contrast test checks: evidence, not an answer', async () => {
+  const { NAME_MATCH_TAG_CLASS } = await import('@/app/app/people/status-tag')
+  expect(NAME_MATCH_TAG_CLASS).toContain('bg-blue-soft text-foreground')
+  expect(NAME_MATCH_TAG_CLASS).not.toMatch(/green|coral/)
+  expect(src('../../../tokens.test.ts')).toContain("['foreground', 'blue-soft', TEXT]")
+  expect(src('./candidate-cards.tsx')).toContain('className={NAME_MATCH_TAG_CLASS}')
+})
+
+test('candidate cards are outlined in --border, the documented exception to --rule', () => {
+  const cards = src('./candidate-cards.tsx')
+  expect(cards).toContain('className="rounded-md border border-border p-4 text-[15px]"')
+  expect(cards).not.toContain('border-rule')
+  expect(src('../../../globals.css')).toMatch(/One exception, OR-032: review candidate cards take\s*\*\s*--border/)
+})
+
+test('"This one" is the only thing that picks a house: the card itself never calls onChoose', () => {
+  const cards = src('./candidate-cards.tsx')
+  const calls = [...cards.matchAll(/onChoose\(/g)]
+  expect(calls).toHaveLength(1)
+  const opening = cards.slice(0, calls[0]!.index).lastIndexOf('<')
+  expect(cards.slice(opening, opening + 7)).toBe('<button')
+})
+
+test('the review screens use linkClass rather than a copy of its string', async () => {
+  const { linkClass } = await import('@/app/app/people/ui')
+  for (const file of ['./review-queue.tsx', './error.tsx']) {
+    const text = src(file)
+    expect(text).not.toContain(linkClass)
+    expect(text).toContain('linkClass')
+  }
+})

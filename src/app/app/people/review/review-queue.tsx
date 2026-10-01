@@ -10,7 +10,7 @@ import {
   leaveOutReviewContactAction,
   undoReviewDecisionAction,
 } from '@/app/app/people/review/actions'
-import { buttonClass, mutedClass } from '@/app/app/people/ui'
+import { buttonClass, linkClass, mutedClass } from '@/app/app/people/ui'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
 import type { ReviewQueueItem, ReviewSnapshot } from '@/db/review-types'
 import { REVIEW_NONE_OF_THESE, REVIEW_UNDO, REVIEW_YOU_GAVE_US } from '@/people/review-copy'
@@ -154,7 +154,7 @@ export function ReviewQueue({
       {showCards ? (
         <p className="mt-6">
           <button
-            className="text-[15px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className={linkClass}
             type="button"
             disabled={pending || readOnly}
             onClick={() => setNoneOfThese(true)}

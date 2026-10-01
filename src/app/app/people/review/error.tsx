@@ -1,5 +1,7 @@
 'use client'
 
+import { linkClass } from '@/app/app/people/ui'
+
 export default function ReviewError({
   reset,
 }: {
@@ -11,7 +13,7 @@ export default function ReviewError({
       <h1 className="text-[22px] font-semibold">We couldn&apos;t load this review.</h1>
       <p className="mt-3 max-w-xl text-[15px]">Try again, or go back to your people.</p>
       <button
-        className="mt-6 text-[15px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        className={`${linkClass} mt-6`}
         type="button"
         onClick={reset}
       >
