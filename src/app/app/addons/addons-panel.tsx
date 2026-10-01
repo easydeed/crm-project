@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { AddonRow } from '@/app/app/addons/addon-row'
 import { BillBar } from '@/app/app/addons/bill-bar'
 import { BANDS, EMPTY_STATE, type AddonRowData } from '@/app/app/addons/row-data'
+import { mutedClass } from '@/app/app/people/ui'
 
 /** The add-on list and the bill. The bill follows the switches as they latch. */
 export function AddonsPanel({ rows, baseCents, readOnly }: { rows: AddonRowData[]; baseCents: number; readOnly: boolean }) {
@@ -17,7 +18,7 @@ export function AddonsPanel({ rows, baseCents, readOnly }: { rows: AddonRowData[
         BANDS.filter(({ band }) => rows.some((row) => row.band === band)).map(({ band, heading, note }) => (
           <section key={band} className="mt-8">
             <h2 className="text-[18px] font-semibold">{heading}</h2>
-            {note ? <p className="mt-2 max-w-xl text-[15px] text-foreground/80">{note}</p> : null}
+            {note ? <p className={`mt-2 max-w-xl ${mutedClass}`}>{note}</p> : null}
             <ul className="mt-2">
               {rows
                 .filter((row) => row.band === band)

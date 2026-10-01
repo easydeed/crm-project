@@ -2,9 +2,7 @@
 
 import type { AddonConfig, ConfigField } from '@/addons/types'
 import { KEEPS_SETTINGS } from '@/app/app/addons/row-data'
-
-const inputClass =
-  'mt-1 w-full max-w-sm rounded-md border border-foreground/40 bg-background px-3 py-2 text-[15px] text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'
+import { fieldClass, mutedClass } from '@/app/app/people/ui'
 
 function Field({ field, value, error, disabled }: { field: ConfigField; value: unknown; error?: string; disabled: boolean }) {
   const id = `addon-field-${field.name}`
@@ -14,7 +12,7 @@ function Field({ field, value, error, disabled }: { field: ConfigField; value: u
     control = <input aria-describedby={described} defaultChecked={value === true} disabled={disabled} id={id} name={field.name} type="checkbox" className="h-5 w-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" />
   } else if (field.kind === 'enum') {
     control = (
-      <select aria-describedby={described} className={inputClass} defaultValue={value === undefined ? '' : String(value)} disabled={disabled} id={id} name={field.name}>
+      <select aria-describedby={described} className={fieldClass} defaultValue={value === undefined ? '' : String(value)} disabled={disabled} id={id} name={field.name}>
         <option value="">Choose one</option>
         {field.options?.map((option) => (
           <option key={option} value={option}>
@@ -27,7 +25,7 @@ function Field({ field, value, error, disabled }: { field: ConfigField; value: u
     control = (
       <input
         aria-describedby={described}
-        className={inputClass}
+        className={fieldClass}
         defaultValue={value === undefined ? '' : String(value)}
         disabled={disabled}
         id={id}
@@ -81,7 +79,7 @@ export function AddonConfigForm({
       {fields.map((field) => (
         <Field key={field.name} disabled={pending} error={errors[field.name]} field={field} value={config[field.name]} />
       ))}
-      <p className="text-[15px] text-foreground/80">{KEEPS_SETTINGS}</p>
+      <p className={mutedClass}>{KEEPS_SETTINGS}</p>
       <button
         className="self-start rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
         disabled={pending}
