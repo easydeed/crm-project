@@ -10,7 +10,7 @@ export const disabledClass =
   'disabled:cursor-not-allowed disabled:bg-surface disabled:text-muted-ink disabled:ring-1 disabled:ring-inset disabled:ring-border'
 
 export const buttonClass =
-  'rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-60 ' + disabledClass
+  'rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground ' + disabledClass
 
 export const fieldClass =
   'mt-1 w-full max-w-sm rounded-md border border-border bg-background px-3 py-2 text-[15px] text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'
