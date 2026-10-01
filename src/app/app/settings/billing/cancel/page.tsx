@@ -32,11 +32,6 @@ export default async function CancelPlanPage() {
             Cancel my plan
           </button>
         </form>
-        <form action="/app/settings">
-          <button className={linkClass} type="submit">
-            Pause my notes instead
-          </button>
-        </form>
         <Link className={linkClass} href="/app/settings/billing">
           Keep my plan
         </Link>
