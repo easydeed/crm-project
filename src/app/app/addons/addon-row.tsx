@@ -67,7 +67,6 @@ export function AddonRow({
   return (
     <li className="border-b border-rule py-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <span aria-hidden="true" className={`size-9 shrink-0 rounded-lg ${enabled ? 'bg-blue text-on-blue' : 'bg-blue-soft text-blue'}`} />
         <div className="max-w-xl">
           <h3 className="text-[17px] font-semibold">{row.title}</h3>
           {row.summary ? <p className="mt-1 text-[15px]">{row.summary}</p> : null}
