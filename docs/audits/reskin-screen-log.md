@@ -25,6 +25,7 @@ old threshold. OR-030's five muted-text screens are the change it would have hid
 | OR-032 review queue | 41d5940 → 8a06bdd | review-queue | review-queue only | The card outline (--border, the documented exception to --rule) and the "Name matches" tag. The linkClass swap in review-queue.tsx and error.tsx moved nothing; the error screen is not captured, and its classes are the same set in a different order. |
 | OR-033 add-ons | c3b8e86 → 429ef0b | addons, addons-lender-form | addons and addons-lender-form only | Row divider (--rule), muted row and band notes, the bill bar's divider and note at full strength. addons-lender-form also shows the config inputs on the shared fieldClass (outline 2.56:1 to 3.61:1 light). The error screen's linkClass swap is not captured. |
 | OR-033a disabled state | 4652436 → 5a33730 | import, people-bulk-bar, start, start-few, start-found, start-malformed, start-nothing | Not predicted; measured | Each diff is one button-sized box, and no screen changed size (the ring is inset). import and the five start screens: the import form's "Import", disabled until there is a file. people-bulk-bar: "Add to group" and "Remove from group", disabled with no groups. Disabled now reads as --surface, --muted-ink and a --border ring instead of 60% opacity. |
+| OR-034 settings and billing | 7d45063 → 0cc5c9d | settings | settings only | The details, appearance and sending inputs on the shared fieldClass (--border, 1.53:1 to 3.61:1 light), and Muted helper lines in --muted-ink. One region, and the page keeps its size. The read-only email field still shows no border. billing and billing-cancel are byte-identical: their buttonClass and linkClass copies differed only in focus colour and disabled state, and neither is captured. |
 
 ## Shared classes move screens early
 
@@ -66,7 +67,8 @@ decision closes it.
   assessor data is labelled everywhere, not one screen's copy. It is not colour debt, and no
   packet owns it.
 
-- **Inline copies of linkClass's string (raised in OR-033a).** There are 21 copies outside /admin.
+- **Inline copies of linkClass's string (raised in OR-033a).** There were 21 copies outside /admin.
+  OR-034 fixed its six (settings and billing); 15 remain.
   linkClass is `text-[15px] underline underline-offset-4` plus the focus ring. None is colour debt:
   every copy draws in the same colour.
   - "Identical": the string is linkClass's, letter for letter.
@@ -78,12 +80,6 @@ decision closes it.
 
   | Owner | File | Differs from linkClass |
   |---|---|---|
-  | OR-034 | app/settings/error.tsx | +mt-6 |
-  | OR-034 | app/settings/page.tsx | "tap" variant (adds `tap`), no 15px |
-  | OR-034 | app/settings/billing/error.tsx | +mt-6 |
-  | OR-034 | app/settings/billing/page.tsx | identical |
-  | OR-034 | app/settings/billing/cancel/page.tsx | identical |
-  | OR-034 | app/settings/billing/invoice-list.tsx | no 15px |
   | OR-035 | app/start/error.tsx (two links) | "tap" variant, no 15px |
   | OR-035 | app/people/import/import-result.tsx:5 | adds `inline-block` |
   | OR-035 | app/people/import/import-result.tsx:43 | a `<summary>`: adds `cursor-pointer`, no 15px |
@@ -103,6 +99,13 @@ decision closes it.
   - import-form.tsx's selected tab underlines a tab; it is not a link.
   - view-as-banner.tsx is exempt (white on INK_COLOR).
   - /admin stays unstyled.
+
+- **Copies of buttonClass's string (raised in OR-034).** Three remain outside /admin, all on
+  `<Link>`s, which never take a disabled state. `src/app/shared-classes.test.ts` lists them and fails
+  both ways.
+  - app/home-card.tsx and app/home-billing-card.tsx: dashboard links styled as buttons. They add
+    `mt-6 inline-block` and lack the focus colour. Final sweep.
+  - home-story.tsx: the marketing page. It adds `inline-block`. Final sweep, with its linkClass copy.
 
 ## How to measure a packet
 

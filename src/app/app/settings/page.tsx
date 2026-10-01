@@ -10,6 +10,7 @@ import { DetailsForm } from '@/app/app/settings/details-form'
 import { SendingForm } from '@/app/app/settings/sending-form'
 import { PhoneVerification } from '@/app/app/settings/phone-verification'
 import { loadSettingsPreview } from '@/digest/load-settings-preview'
+import { linkClass } from '@/app/app/people/ui'
 
 export default async function SettingsPage() {
   const session = await readRequestSession()
@@ -43,10 +44,7 @@ export default async function SettingsPage() {
       <section>
         <h2 className="text-[17px] font-semibold">Billing</h2>
         <p className="mt-2 text-[15px]">
-          <Link
-            className="tap underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            href="/app/settings/billing"
-          >
+          <Link className={`tap ${linkClass}`} href="/app/settings/billing">
             Plan, card, invoices, and canceling
           </Link>
         </p>
