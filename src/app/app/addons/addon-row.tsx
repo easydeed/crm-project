@@ -7,14 +7,15 @@ import { AddonConfigForm } from '@/app/app/addons/addon-config-form'
 import { AddonSwitch } from '@/app/app/addons/addon-switch'
 import { priceLabel, type AddonRowData } from '@/app/app/addons/row-data'
 import type { SwitchResult } from '@/addons/state'
-import { mutedClass } from '@/app/app/people/ui'
+import { linkClass, mutedClass } from '@/app/app/people/ui'
 
 const SAVE_FIRST = 'Fill in the settings below to switch this on.'
 
 /**
  * One add-on. Title, blurb, and price render the same on or off; only the switch changes.
  * A config-gated add-on opens its form instead of latching, and latches only when the
- * server accepts the config.
+ * server accepts the config. An off row never looks disabled: disabledClass (people/ui.ts) is for
+ * controls that will not respond, not for a state the agent chose.
  */
 export function AddonRow({
   row,
@@ -82,7 +83,7 @@ export function AddonRow({
           {row.configHref && !enabled ? (
             <>
               {' '}
-              <Link className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" href={row.configHref}>
+              <Link className={linkClass} href={row.configHref}>
                 Go to Settings
               </Link>
             </>

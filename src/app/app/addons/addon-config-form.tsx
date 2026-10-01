@@ -2,7 +2,7 @@
 
 import type { AddonConfig, ConfigField } from '@/addons/types'
 import { KEEPS_SETTINGS } from '@/app/app/addons/row-data'
-import { fieldClass, mutedClass } from '@/app/app/people/ui'
+import { buttonClass, fieldClass, mutedClass } from '@/app/app/people/ui'
 
 function Field({ field, value, error, disabled }: { field: ConfigField; value: unknown; error?: string; disabled: boolean }) {
   const id = `addon-field-${field.name}`
@@ -81,7 +81,7 @@ export function AddonConfigForm({
       ))}
       <p className={mutedClass}>{KEEPS_SETTINGS}</p>
       <button
-        className="self-start rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+        className={`${buttonClass} self-start`}
         disabled={pending}
         type="submit"
       >

@@ -4,6 +4,7 @@ import { useActionState, useMemo, useState } from 'react'
 import { importContactsAction } from '@/app/app/people/import/actions'
 import { ColumnMapping } from '@/app/app/people/import/column-mapping'
 import { ImportResultView } from '@/app/app/people/import/import-result'
+import { buttonClass } from '@/app/app/people/ui'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
 import {
   applyMapping,
@@ -18,8 +19,6 @@ const fieldClass =
   'mt-2 w-full max-w-xl rounded-md border border-foreground/20 bg-background px-3 py-2 text-[15px] text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'
 const tabClass =
   'px-3 py-2 text-[15px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
-const buttonClass =
-  'mt-6 rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-60'
 
 export function ImportForm({ readOnly }: { readOnly?: boolean }) {
   const [state, action, pending] = useActionState(importContactsAction, {} as ImportState)
@@ -124,7 +123,7 @@ export function ImportForm({ readOnly }: { readOnly?: boolean }) {
         />
       ) : null}
       <input type="hidden" name="rows" value={JSON.stringify(rows)} />
-      <button className={buttonClass} type="submit" disabled={pending || readOnly || !rows.length}>
+      <button className={`${buttonClass} mt-6`} type="submit" disabled={pending || readOnly || !rows.length}>
         {pending ? 'Matching addresses…' : 'Import'}
       </button>
     </form>

@@ -63,6 +63,44 @@ decision closes it.
   assessor data is labelled everywhere, not one screen's copy. It is not colour debt, and no
   packet owns it.
 
+- **Inline copies of linkClass's string (raised in OR-033a).** There are 21 copies outside /admin.
+  linkClass is `text-[15px] underline underline-offset-4` plus the focus ring. None is colour debt:
+  every copy draws in the same colour.
+  - "Identical": the string is linkClass's, letter for letter.
+  - "+mt-6": linkClass plus a margin. It becomes `` `${linkClass} mt-6` ``, as OR-032 and OR-033 did.
+  - "no 15px": the copy lacks `text-[15px]`. It sits inside 15px text, so swapping it moves
+    nothing. Check that before the swap.
+  - The rest are deliberate variants. Keep them as variants, or build them on linkClass. Don't
+    flatten them.
+
+  | Owner | File | Differs from linkClass |
+  |---|---|---|
+  | OR-034 | app/settings/error.tsx | +mt-6 |
+  | OR-034 | app/settings/page.tsx | "tap" variant (adds `tap`), no 15px |
+  | OR-034 | app/settings/billing/error.tsx | +mt-6 |
+  | OR-034 | app/settings/billing/page.tsx | identical |
+  | OR-034 | app/settings/billing/cancel/page.tsx | identical |
+  | OR-034 | app/settings/billing/invoice-list.tsx | no 15px |
+  | OR-035 | app/start/error.tsx (two links) | "tap" variant, no 15px |
+  | OR-035 | app/people/import/import-result.tsx:5 | adds `inline-block` |
+  | OR-035 | app/people/import/import-result.tsx:43 | a `<summary>`: adds `cursor-pointer`, no 15px |
+  | OR-036 | login/page.tsx | identical |
+  | OR-036 | register/page.tsx | identical |
+  | final sweep | app/error.tsx | +mt-6 |
+  | final sweep | app/home-card.tsx | identical |
+  | final sweep | app/layout.tsx ("Log out") | adds `text-foreground focus-visible:outline-foreground` |
+  | final sweep | app/text-notice.tsx (a local `linkClass`) | no 15px |
+  | final sweep | app/people/error.tsx | +mt-6 |
+  | final sweep | app/people/[id]/error.tsx | +mt-6 |
+  | final sweep | app/people/[id]/not-found.tsx | "tap" variant |
+  | final sweep | sample/page.tsx | identical |
+  | final sweep | home-story.tsx | identical |
+
+  Not copies, and left out of the table:
+  - import-form.tsx's selected tab underlines a tab; it is not a link.
+  - view-as-banner.tsx is exempt (white on INK_COLOR).
+  - /admin stays unstyled.
+
 ## How to measure a packet
 
 1. Reseed and set up the local scratch database (`pnpm db:seed`, `pnpm e2e:setup`). The browser run
