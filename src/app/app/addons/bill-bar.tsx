@@ -19,7 +19,7 @@ export function BillBar({ baseCents, rows, enabled }: { baseCents: number; rows:
         <span>Total a month</span>
         <span data-testid="bill-total">{formatDollars(bill.totalCents)}</span>
       </p>
-      <p className="mt-2 text-[15px] text-background/80">{NEXT_BILL}</p>
+      <p className="mt-2 text-[15px] text-background">{NEXT_BILL}</p>
     </section>
   )
 }
