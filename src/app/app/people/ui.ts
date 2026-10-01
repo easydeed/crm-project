@@ -7,7 +7,7 @@ export const linkClass =
  * for a state the agent chose and can reverse, such as an add-on switched off (OR-021).
  */
 export const disabledClass =
-  'disabled:cursor-not-allowed disabled:bg-surface disabled:text-muted-ink disabled:ring-1 disabled:ring-inset disabled:ring-border'
+  'disabled:cursor-not-allowed disabled:bg-coral-soft disabled:text-muted-ink disabled:ring-1 disabled:ring-inset disabled:ring-border'
 
 export const buttonClass =
   'rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground ' + disabledClass
