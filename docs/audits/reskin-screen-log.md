@@ -24,6 +24,7 @@ old threshold. OR-030's five muted-text screens are the change it would have hid
 | OR-031 People | 2a9ff1c → fd469f2 | people, people-bulk-bar, person-detail, start, start-few, start-found, start-malformed, start-nothing | Measured exactly | People's own three, plus the five /app/start screens through the shared fieldClass (see below). review-queue did not change: its captured state shows no fieldClass input. |
 | OR-032 review queue | 41d5940 → 8a06bdd | review-queue | review-queue only | The card outline (--border, the documented exception to --rule) and the "Name matches" tag. The linkClass swap in review-queue.tsx and error.tsx moved nothing; the error screen is not captured, and its classes are the same set in a different order. |
 | OR-033 add-ons | c3b8e86 → 429ef0b | addons, addons-lender-form | addons and addons-lender-form only | Row divider (--rule), muted row and band notes, the bill bar's divider and note at full strength. addons-lender-form also shows the config inputs on the shared fieldClass (outline 2.56:1 to 3.61:1 light). The error screen's linkClass swap is not captured. |
+| OR-033a disabled state | 4652436 → 5a33730 | import, people-bulk-bar, start, start-few, start-found, start-malformed, start-nothing | Not predicted; measured | Each diff is one button-sized box, and no screen changed size (the ring is inset). import and the five start screens: the import form's "Import", disabled until there is a file. people-bulk-bar: "Add to group" and "Remove from group", disabled with no groups. Disabled now reads as --surface, --muted-ink and a --border ring instead of 60% opacity. |
 
 ## Shared classes move screens early
 
@@ -35,6 +36,8 @@ change in a packet that does not own that screen. That is expected, and each pac
 - OR-031: fieldClass's input outline moved the /app/start screens. It also reaches the review
   queue's no-parcel panel, which no captured screen shows. The settings forms use their own
   fieldClass (settings/field.ts, OR-034) and did not move.
+- OR-033a: buttonClass's disabled state (disabledClass) moved every captured screen that shows a
+  disabled button: import, the five /app/start screens and people-bulk-bar.
 
 OR-031's fieldClass change is an accessibility fix that arrived early, not styling that leaked.
 The input outline, against the page behind it:
@@ -62,6 +65,44 @@ decision closes it.
   "Your house", from the assessor roll, carries none. So this is a product question about how
   assessor data is labelled everywhere, not one screen's copy. It is not colour debt, and no
   packet owns it.
+
+- **Inline copies of linkClass's string (raised in OR-033a).** There are 21 copies outside /admin.
+  linkClass is `text-[15px] underline underline-offset-4` plus the focus ring. None is colour debt:
+  every copy draws in the same colour.
+  - "Identical": the string is linkClass's, letter for letter.
+  - "+mt-6": linkClass plus a margin. It becomes `` `${linkClass} mt-6` ``, as OR-032 and OR-033 did.
+  - "no 15px": the copy lacks `text-[15px]`. It sits inside 15px text, so swapping it moves
+    nothing. Check that before the swap.
+  - The rest are deliberate variants. Keep them as variants, or build them on linkClass. Don't
+    flatten them.
+
+  | Owner | File | Differs from linkClass |
+  |---|---|---|
+  | OR-034 | app/settings/error.tsx | +mt-6 |
+  | OR-034 | app/settings/page.tsx | "tap" variant (adds `tap`), no 15px |
+  | OR-034 | app/settings/billing/error.tsx | +mt-6 |
+  | OR-034 | app/settings/billing/page.tsx | identical |
+  | OR-034 | app/settings/billing/cancel/page.tsx | identical |
+  | OR-034 | app/settings/billing/invoice-list.tsx | no 15px |
+  | OR-035 | app/start/error.tsx (two links) | "tap" variant, no 15px |
+  | OR-035 | app/people/import/import-result.tsx:5 | adds `inline-block` |
+  | OR-035 | app/people/import/import-result.tsx:43 | a `<summary>`: adds `cursor-pointer`, no 15px |
+  | OR-036 | login/page.tsx | identical |
+  | OR-036 | register/page.tsx | identical |
+  | final sweep | app/error.tsx | +mt-6 |
+  | final sweep | app/home-card.tsx | identical |
+  | final sweep | app/layout.tsx ("Log out") | adds `text-foreground focus-visible:outline-foreground` |
+  | final sweep | app/text-notice.tsx (a local `linkClass`) | no 15px |
+  | final sweep | app/people/error.tsx | +mt-6 |
+  | final sweep | app/people/[id]/error.tsx | +mt-6 |
+  | final sweep | app/people/[id]/not-found.tsx | "tap" variant |
+  | final sweep | sample/page.tsx | identical |
+  | final sweep | home-story.tsx | identical |
+
+  Not copies, and left out of the table:
+  - import-form.tsx's selected tab underlines a tab; it is not a link.
+  - view-as-banner.tsx is exempt (white on INK_COLOR).
+  - /admin stays unstyled.
 
 ## How to measure a packet
 

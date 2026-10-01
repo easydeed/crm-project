@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { buttonClass } from '@/app/app/people/ui'
 
 export function SaveButton({
   pending,
@@ -22,7 +23,7 @@ export function SaveButton({
 
   return (
     <button
-      className="mt-4 rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-60"
+      className={`${buttonClass} mt-4`}
       type="submit"
       disabled={pending || readOnly}
     >

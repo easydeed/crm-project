@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react'
 import { registerAction, type RegisterState } from '@/app/register/actions'
+import { buttonClass } from '@/app/app/people/ui'
 import { PASSWORD_REQUIREMENTS } from '@/auth/password-rules'
 import { PLAN_LINE } from '@/app/app/settings/billing/billing-copy'
 
@@ -82,7 +83,7 @@ export function RegisterForm() {
       <Field label="DRE number" name="dre" />
       <Field label="Phone" name="phone" type="tel" autoComplete="tel" />
       <button
-        className="rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-60"
+        className={buttonClass}
         type="submit"
         disabled={pending}
       >

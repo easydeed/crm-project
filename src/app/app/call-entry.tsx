@@ -6,15 +6,14 @@ import { logCallAction, undoCallAction } from '@/app/app/call-actions'
 import type { CallEntry } from '@/app/app/call-list-view'
 import { CallPanel } from '@/app/app/call-panel'
 import { CALL_TAGS } from '@/app/app/call-tags'
-import { buttonClass, linkClass, mutedClass } from '@/app/app/people/ui'
+import { buttonClass, disabledClass, linkClass, mutedClass } from '@/app/app/people/ui'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
 
 export const UNDO_SECONDS = 5
 
 type Status = 'open' | 'called' | 'dismissed'
 
-const secondaryClass =
-  'min-h-11 rounded-md border border-border px-4 py-2 text-[15px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-60'
+const secondaryClass = `min-h-11 rounded-md border border-border px-4 py-2 text-[15px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground ${disabledClass}`
 
 export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly: boolean }) {
   const router = useRouter()
