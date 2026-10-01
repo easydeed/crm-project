@@ -23,6 +23,7 @@ old threshold. OR-030's five muted-text screens are the change it would have hid
 | OR-030 dashboard | b550639 → 1f74935 | dashboard, dashboard-call-open, review-queue, start, start-few, start-found, start-nothing | The same seven | Re-measured exactly; matches. OR-030 was already measured this way. The 0.2 comparison it replaced passed five of them (review-queue and the four start screens). |
 | OR-031 People | 2a9ff1c → fd469f2 | people, people-bulk-bar, person-detail, start, start-few, start-found, start-malformed, start-nothing | Measured exactly | People's own three, plus the five /app/start screens through the shared fieldClass (see below). review-queue did not change: its captured state shows no fieldClass input. |
 | OR-032 review queue | 41d5940 → 8a06bdd | review-queue | review-queue only | The card outline (--border, the documented exception to --rule) and the "Name matches" tag. The linkClass swap in review-queue.tsx and error.tsx moved nothing; the error screen is not captured, and its classes are the same set in a different order. |
+| OR-033 add-ons | c3b8e86 → 429ef0b | addons, addons-lender-form | addons and addons-lender-form only | Row divider (--rule), muted row and band notes, the bill bar's divider and note at full strength. addons-lender-form also shows the config inputs on the shared fieldClass (outline 2.56:1 to 3.61:1 light). The error screen's linkClass swap is not captured. |
 
 ## Shared classes move screens early
 

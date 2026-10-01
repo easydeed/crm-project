@@ -13,30 +13,12 @@ import { expect, test } from 'vitest'
  * fix that forgot to delete its entry. A screen packet clears its entries and deletes them; the
  * owner says which packet that is. When only permanent entries remain, the debt is paid.
  */
-type Owner = 'OR-033' | 'OR-034' | 'OR-035' | 'OR-036' | 'permanent'
+type Owner = 'OR-034' | 'OR-035' | 'OR-036' | 'permanent'
 type Debt = { owner: Owner; why: string; colours: Record<string, number> }
 
-const OWNERS: Owner[] = ['OR-033', 'OR-034', 'OR-035', 'OR-036', 'permanent']
+const OWNERS: Owner[] = ['OR-034', 'OR-035', 'OR-036', 'permanent']
 
 const DEBT: Record<string, Debt> = {
-  // OR-033: add-ons
-  'app/addons/addon-row.tsx': {
-    owner: 'OR-033',
-    why: 'row border and secondary text (--rule, --muted-ink)',
-    colours: { 'border-foreground/20': 1, 'text-foreground/80': 1 },
-  },
-  'app/addons/addon-config-form.tsx': {
-    owner: 'OR-033',
-    why: 'form rule and secondary text (--rule or --border, --muted-ink)',
-    colours: { 'border-foreground/40': 1, 'text-foreground/80': 1 },
-  },
-  'app/addons/addons-panel.tsx': { owner: 'OR-033', why: 'secondary text (--muted-ink)', colours: { 'text-foreground/80': 1 } },
-  'app/addons/bill-bar.tsx': {
-    owner: 'OR-033',
-    why: 'inverted bar at background opacity (a token pair for the dark bar)',
-    colours: { 'border-background/40': 1, 'text-background/80': 1 },
-  },
-
   // OR-034: settings and billing
   'app/settings/field.tsx': {
     owner: 'OR-034',

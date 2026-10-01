@@ -7,6 +7,7 @@ import { AddonConfigForm } from '@/app/app/addons/addon-config-form'
 import { AddonSwitch } from '@/app/app/addons/addon-switch'
 import { priceLabel, type AddonRowData } from '@/app/app/addons/row-data'
 import type { SwitchResult } from '@/addons/state'
+import { mutedClass } from '@/app/app/people/ui'
 
 const SAVE_FIRST = 'Fill in the settings below to switch this on.'
 
@@ -64,14 +65,14 @@ export function AddonRow({
   }
 
   return (
-    <li className="border-b border-foreground/20 py-5">
+    <li className="border-b border-rule py-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-xl">
           <h3 className="text-[17px] font-semibold">{row.title}</h3>
           {row.summary ? <p className="mt-1 text-[15px]">{row.summary}</p> : null}
           <p className="mt-1 text-[15px]">{row.blurb}</p>
           <p className="mt-1 text-[15px]">{priceLabel(row)}</p>
-          {row.rowNote ? <p className="mt-1 text-[15px] text-foreground/80">{row.rowNote}</p> : null}
+          {row.rowNote ? <p className={`mt-1 ${mutedClass}`}>{row.rowNote}</p> : null}
         </div>
         <AddonSwitch checked={enabled} disabled={readOnly || pending} label={row.title} onToggle={toggle} />
       </div>
