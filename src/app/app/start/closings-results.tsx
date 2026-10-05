@@ -43,7 +43,7 @@ export function ClosingsResults({
         {agentName}
       </h2>
       <p className="mt-2 text-[15px]">{foundLine(listings.length)}</p>
-      <p className={`mt-3 ${mutedClass}`}>{START_COPY.listingSideNote}</p>
+      <p className="mt-3 text-[15px]">{START_COPY.listingSideNote}</p>
       {isFew(listings.length) ? (
         <p className="mt-3 text-[15px]">
           {START_COPY.fewNote}{' '}
