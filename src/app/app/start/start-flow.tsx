@@ -51,7 +51,7 @@ export function StartFlow({
               <p id="agentId-error" className="text-[15px] font-medium" role="alert">
                 {malformed.message}
               </p>
-              <div id="agentId-where" className="max-w-xl rounded-md border border-foreground/20 p-4 text-[15px]">
+              <div id="agentId-where" className="max-w-xl rounded-md border border-rule p-4 text-[15px]">
                 <p className="font-medium">{START_COPY.whereTitle}</p>
                 <p className="mt-2">{START_COPY.whereBody}</p>
               </div>
@@ -110,7 +110,7 @@ function SearchingSkeleton() {
       <p className="text-[15px]">{START_COPY.searching}</p>
       <ul className="mt-4 flex flex-col gap-3" aria-hidden="true">
         {[0, 1, 2, 3, 4].map((row) => (
-          <li key={row} className="h-12 rounded-md bg-foreground/10" />
+          <li key={row} className="h-12 rounded-md bg-rule" />
         ))}
       </ul>
     </div>

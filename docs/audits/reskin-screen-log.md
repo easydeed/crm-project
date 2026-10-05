@@ -53,6 +53,15 @@ Same values on every screen it touches (People, the edit form, the review queue'
 
 `unsubscribe` (`/u/[token]`) is server HTML with its own CSS and has not changed in any packet.
 
+## A decorative token on a boundary you act on
+
+Twice now a debt note has said `--rule`, the decorative divider, for a boundary that tells someone
+where to act: OR-032's candidate cards and OR-035's drop zone. Both took `--border` instead. The
+test is whether the boundary marks something to act on. A list divider is decoration; the edge of
+a card with its own "This one" button, or of a drop target, is not. The rule under both: a token
+swap must not make something fainter than it is today. For the same reason, OR-035's skeleton rows
+took `--rule` rather than the note's `--surface`, which would have vanished.
+
 ## Found, not fixed
 
 Items a packet found that are not colour debt and that no packet owns. Each stays here until a
@@ -68,7 +77,7 @@ decision closes it.
   packet owns it.
 
 - **Inline copies of linkClass's string (raised in OR-033a).** There were 21 copies outside /admin.
-  OR-034 fixed its six (settings and billing); 15 remain.
+  OR-034 fixed its six (settings and billing) and OR-035 its four (start and import); 11 remain.
   linkClass is `text-[15px] underline underline-offset-4` plus the focus ring. None is colour debt:
   every copy draws in the same colour.
   - "Identical": the string is linkClass's, letter for letter.
@@ -80,9 +89,6 @@ decision closes it.
 
   | Owner | File | Differs from linkClass |
   |---|---|---|
-  | OR-035 | app/start/error.tsx (two links) | "tap" variant, no 15px |
-  | OR-035 | app/people/import/import-result.tsx:5 | adds `inline-block` |
-  | OR-035 | app/people/import/import-result.tsx:43 | a `<summary>`: adds `cursor-pointer`, no 15px |
   | OR-036 | login/page.tsx | identical |
   | OR-036 | register/page.tsx | identical |
   | final sweep | app/error.tsx | +mt-6 |

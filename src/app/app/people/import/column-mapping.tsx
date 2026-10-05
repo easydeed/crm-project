@@ -17,7 +17,7 @@ export function ColumnMapping({
         <label key={`${header}-${index}`} className="flex flex-wrap items-center gap-3 text-[15px]">
           <span className="min-w-[8rem] font-medium">{header || `Column ${index + 1}`}</span>
           <select
-            className="rounded-md border border-foreground/20 bg-background px-3 py-2 text-[15px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+            className="rounded-md border border-border bg-background px-3 py-2 text-[15px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
             value={mapping[index] ?? 'skip'}
             onChange={(event) => onChange(index, event.target.value as FieldRole)}
             aria-label={`This is the ${header || `column ${index + 1}`}`}

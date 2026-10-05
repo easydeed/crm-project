@@ -16,7 +16,7 @@ import { parseDelimited } from '@/import/parse-csv'
 import type { FieldRole, ImportState } from '@/import/types'
 
 const fieldClass =
-  'mt-2 w-full max-w-xl rounded-md border border-foreground/20 bg-background px-3 py-2 text-[15px] text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'
+  'mt-2 w-full max-w-xl rounded-md border border-border bg-background px-3 py-2 text-[15px] text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'
 const tabClass =
   'px-3 py-2 text-[15px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
 
@@ -57,7 +57,7 @@ export function ImportForm({ readOnly }: { readOnly?: boolean }) {
       </div>
       {tab === 'file' ? (
         <div
-          className={`mt-6 max-w-xl rounded-md border border-dashed border-foreground/30 p-6 text-[15px] ${over ? 'bg-foreground/5' : ''}`}
+          className={`mt-6 max-w-xl rounded-md border border-dashed border-border p-6 text-[15px] ${over ? 'bg-surface' : ''}`}
           onDragOver={(event) => {
             event.preventDefault()
             setOver(true)
