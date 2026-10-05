@@ -63,7 +63,7 @@ export function RegisterForm() {
           ))}
         </ul>
         <input
-          className={`${fieldClass} border-foreground/20`}
+          className={fieldClass}
           type="password"
           name="password"
           autoComplete="new-password"
