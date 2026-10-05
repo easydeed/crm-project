@@ -28,6 +28,7 @@ old threshold. OR-030's five muted-text screens are the change it would have hid
 | OR-034 settings and billing | 7d45063 → 0cc5c9d | settings | settings only | The details, appearance and sending inputs on the shared fieldClass (--border, 1.53:1 to 3.61:1 light), and Muted helper lines in --muted-ink. One region, and the page keeps its size. The read-only email field still shows no border. billing and billing-cancel are byte-identical: their buttonClass and linkClass copies differed only in focus colour and disabled state, and neither is captured. |
 | OR-035 start and import | 0e6e759 → 06e79ed | import, start, start-few, start-found, start-malformed, start-nothing | The same six | No page changed size. import, start and start-nothing: one region, the drop zone (dashed --border, 1.96:1 to 3.61:1 light) and the file input outline (--border). start-few and start-found also take the closings list dividers (--rule). start-malformed also takes the where-to-find panel edge (--rule). The skeleton is not captured. The framing sentences did not move. |
 | OR-036 sign in and create account | 57244ab → 9179033 | login, register (of 20) | login and register only | The parent is OR-036's capture-only commit, so both screens have a real before. Each diff is confined to the inputs: the shared fieldClass outline (--border, 1.53:1 to 3.61:1 light). No page changed size. The other 18 screens are byte-identical. |
+| OR-037 final sweep | 477521e → e3b2fb6 | login, register, settings, people, people-bulk-bar, person-detail (of 20) | settings, login, register, person-detail; "any other screen Decision B moves" | login and register: the new <h1> moves the form down. The rest is fieldClass becoming a block, so labels sit above their inputs: settings +225px, people and people-bulk-bar +22px (Search), person-detail +22px (Group name). person-detail was predicted for the email preview, but the seeded person has no note this month, so no preview frame is captured. The preview fix (dark mode) is in no capture. dashboard is byte-identical. |
 
 ## Shared classes move screens early
 
@@ -41,6 +42,8 @@ change in a packet that does not own that screen. That is expected, and each pac
   fieldClass (settings/field.ts, OR-034) and did not move.
 - OR-033a: buttonClass's disabled state (disabledClass) moved every captured screen that shows a
   disabled button: import, the five /app/start screens and people-bulk-bar.
+- OR-037: fieldClass became a block, which moved settings, people, people-bulk-bar and person-detail.
+  It also reaches the uncaptured person edit form, the review queue's no-parcel panel and the group forms.
 
 OR-031's fieldClass change is an accessibility fix that arrived early, not styling that leaked.
 The input outline, against the page behind it:
