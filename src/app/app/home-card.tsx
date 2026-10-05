@@ -6,18 +6,15 @@ import {
 } from '@/app/app/send-actions'
 import type { HomeSend } from '@/app/app/home-send'
 import { HomeBillingCard } from '@/app/app/home-billing-card'
-import { sendCardClass } from '@/app/app/people/ui'
+import { buttonClass, linkClass, sendCardClass } from '@/app/app/people/ui'
 import { pausedAccountMailto } from '@/config/support'
 
-const buttonClass =
-  'mt-6 inline-block rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
-const linkClass =
-  'text-[15px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+const ctaClass = `${buttonClass} mt-6 inline-block`
 
 function Action({ action, label }: { action: () => Promise<void>; label: string }) {
   return (
     <form action={action}>
-      <button className={buttonClass} type="submit">
+      <button className={ctaClass} type="submit">
         {label}
       </button>
     </form>
@@ -65,7 +62,7 @@ export function HomeSendCard({
         <p className="mt-3 max-w-xl text-[15px]">
           Pick a send day, a time, and a timezone.
         </p>
-        <Link className={buttonClass} href="/app/settings">
+        <Link className={ctaClass} href="/app/settings">
           Open settings
         </Link>
       </section>
@@ -80,7 +77,7 @@ export function HomeSendCard({
           Add the folks you&apos;ve closed with and we&apos;ll match each address to the
           county record. Takes about four minutes.
         </p>
-        <Link className={buttonClass} href="/app/people/import">
+        <Link className={ctaClass} href="/app/people/import">
           Add your people
         </Link>
       </section>
@@ -94,7 +91,7 @@ export function HomeSendCard({
         <p className="mt-3 max-w-xl text-[15px]">
           The monthly note only goes to people matched to a county record.
         </p>
-        <Link className={buttonClass} href="/app/people/review">
+        <Link className={ctaClass} href="/app/people/review">
           Open the review queue
         </Link>
       </section>
@@ -108,7 +105,7 @@ export function HomeSendCard({
         <p className="mt-3 max-w-xl text-[15px]">
           People need a matched house and an active monthly note.
         </p>
-        <Link className={buttonClass} href="/app/people">
+        <Link className={ctaClass} href="/app/people">
           Open people
         </Link>
       </section>

@@ -50,6 +50,8 @@ A test that forbids a concept by keyword guards only the words it names. Prefer 
 
 A test named for a property must check the property, not a list. Two tests on this project were named for every instance and checked a handful: the People status column (keyword denylist, missed the export's actual labels) and the primary-button test (file list, missed six copies including one real bug). Prefer a whole-tree scan with a shrinking allowlist that fails in both directions — a new instance is red, and a listed instance that is gone is red too.
 
+Scan trees, not lists. A check scoped to named directories leaves everything outside it unguarded, and nothing announces the gap. The tokens-only scan covered three directories while src/app/digest rendered the email preview at 1.17:1 in dark mode on four screens. Prefer whole-tree coverage with explicit, listed exemptions over an enumerated scope.
+
 ## Rejected ideas — do not rebuild
 
 | Rejected | Reason |

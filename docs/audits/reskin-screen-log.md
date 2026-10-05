@@ -78,60 +78,20 @@ decision closes it.
   assessor data is labelled everywhere, not one screen's copy. It is not colour debt, and no
   packet owns it.
 
-- **Inline copies of linkClass's string (raised in OR-033a).** There were 21 copies outside /admin.
-  OR-034 fixed six (settings and billing), OR-035 four (start and import) and OR-036 two (login and
-  register). The 9 that remain go to the final sweep.
-  linkClass is `text-[15px] underline underline-offset-4` plus the focus ring. None is colour debt:
-  every copy draws in the same colour.
-  - "Identical": the string is linkClass's, letter for letter.
-  - "+mt-6": linkClass plus a margin. It becomes `` `${linkClass} mt-6` ``, as OR-032 and OR-033 did.
-  - "no 15px": the copy lacks `text-[15px]`. It sits inside 15px text, so swapping it moves
-    nothing. Check that before the swap.
-  - The rest are deliberate variants. Keep them as variants, or build them on linkClass. Don't
-    flatten them.
+- **Closed in OR-037, the final sweep.** Each item is enforced now, not just listed:
+  - The 21 inline linkClass copies and the six buttonClass copies are gone. shared-classes.test.ts
+    checks the whole tree for both. The buttonClass list is empty. The linkClass list holds only
+    the exempt view-as banner.
+  - Both auth pages have an `<h1>` ("Sign in", "Create your account").
+  - Labels sit above their inputs everywhere: fieldClass is a block.
+  - The tokens-only scan covers all of src/app. Widening it found two things the directory list had
+    hidden:
+    - src/app/digest/preview-panel.tsx drew its plain-text email preview as #ededed on white in dark
+      mode (1.17:1), on four screens. Fixed.
+    - /admin carried table borders in eight files that the "permanent" entries never recorded. They
+      are listed now.
 
-  | Owner | File | Differs from linkClass |
-  |---|---|---|
-  | final sweep | app/error.tsx | +mt-6 |
-  | final sweep | app/home-card.tsx | identical |
-  | final sweep | app/layout.tsx ("Log out") | adds `text-foreground focus-visible:outline-foreground` |
-  | final sweep | app/text-notice.tsx (a local `linkClass`) | no 15px |
-  | final sweep | app/people/error.tsx | +mt-6 |
-  | final sweep | app/people/[id]/error.tsx | +mt-6 |
-  | final sweep | app/people/[id]/not-found.tsx | "tap" variant |
-  | final sweep | sample/page.tsx | identical |
-  | final sweep | home-story.tsx | identical |
-
-  Not copies, and left out of the table:
-  - import-form.tsx's selected tab underlines a tab; it is not a link.
-  - view-as-banner.tsx is exempt (white on INK_COLOR).
-  - /admin stays unstyled.
-
-- **Copies of buttonClass's string (raised in OR-034).** Three remain outside /admin, all on
-  `<Link>`s, which never take a disabled state. `src/app/shared-classes.test.ts` lists them and fails
-  both ways.
-  - app/home-card.tsx and app/home-billing-card.tsx: dashboard links styled as buttons. They add
-    `mt-6 inline-block` and lack the focus colour. Final sweep.
-  - home-story.tsx: the marketing page. It adds `inline-block`. Final sweep, with its linkClass copy.
-
-- **Neither auth page has an `<h1>` (raised in OR-036).** On /login and /register the wordmark
-  "onrecord" is a `<p>` and the form has no heading, so a screen reader's first heading jump lands
-  nowhere. That is an accessibility defect. The fix adds words ("Sign in", "Create your account"),
-  so it is copy and structure, not colour. Final sweep.
-
-### Inherited by the final sweep
-
-After OR-036, design-debt.test.ts holds only the permanent admin entries. What is left is one
-packet:
-
-- the 9 linkClass copies in the table above
-- the 3 buttonClass copies (home-card, home-billing-card, home-story; shared-classes.test.ts
-  lists them)
-- the missing `<h1>` on /login and /register
-- the settings forms' labels beside their inputs on desktop (from OR-034)
-
-Not the sweep's to fix, but still open: the unlabelled assessor facts. That is a product decision
-about labelling, recorded above.
+What remains open is the unlabelled assessor facts, a product decision recorded above.
 
 ## How to measure a packet
 

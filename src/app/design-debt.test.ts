@@ -21,6 +21,20 @@ const OWNERS: Owner[] = ['permanent']
 const DEBT: Record<string, Debt> = {
   // Permanent: admin is deliberately unstyled. It is an internal tool, outside the re-skin, and
   // these entries stay so the list records what admin carries rather than pretending it is clean.
+  'digest/preview-panel.tsx': {
+    owner: 'permanent',
+    why: "the email's own canvas: the iframe shows the email as an inbox does, white in both themes",
+    colours: { 'bg-white': 1 },
+  },
+  // Listed in OR-037, when the scan first walked all of /admin: the four entries below never covered it.
+  'admin/accounts/table.tsx': { owner: 'permanent', why: 'admin, unstyled by decision', colours: { 'border-foreground/20': 1, 'border-foreground/10': 1 } },
+  'admin/costs/cost-table.tsx': { owner: 'permanent', why: 'admin, unstyled by decision', colours: { 'border-black/20': 1, 'border-black/10': 2 } },
+  'admin/deliverability/page.tsx': { owner: 'permanent', why: 'admin, unstyled by decision', colours: { 'border-black/20': 2, 'border-black/10': 2 } },
+  'admin/jobs/jobs-table.tsx': { owner: 'permanent', why: 'admin, unstyled by decision', colours: { 'border-black/20': 1, 'border-black/10': 1 } },
+  'admin/matching/failure-table.tsx': { owner: 'permanent', why: 'admin, unstyled by decision', colours: { 'border-foreground/20': 1, 'border-foreground/10': 1 } },
+  'admin/matching/rates.tsx': { owner: 'permanent', why: 'admin, unstyled by decision', colours: { 'border-foreground/20': 1, 'border-foreground/10': 1 } },
+  'admin/preview/account-table.tsx': { owner: 'permanent', why: 'admin, unstyled by decision', colours: { 'border-foreground/20': 1, 'border-foreground/10': 1 } },
+  'admin/sends/[id]/page.tsx': { owner: 'permanent', why: 'admin, unstyled by decision', colours: { 'border-black/20': 3, 'border-black/10': 2 } },
   'admin/accounts/search.tsx': { owner: 'permanent', why: 'admin, unstyled by decision', colours: { 'border-foreground/20': 1 } },
   'admin/matching/filters.tsx': { owner: 'permanent', why: 'admin, unstyled by decision', colours: { 'border-foreground/20': 2 } },
   'admin/sends/filters.tsx': { owner: 'permanent', why: 'admin, unstyled by decision', colours: { 'border-foreground/20': 2 } },
@@ -85,10 +99,10 @@ test('every debt entry names a packet that owns it, or is permanent', () => {
   for (const file of Object.keys(EXEMPT)) expect(existsSync(path.join(appRoot, file)), file).toBe(true)
 })
 
-test('/app, /login and /register are tokens only, apart from the debt listed here', () => {
-  // The auth screens sit outside /app. Until OR-036 only their own debt entries checked them, so
-  // deleting those entries would have left them unscanned. They are scanned like /app now.
-  const files = ['app', 'login', 'register'].flatMap((dir) => sourceFiles(dir)).filter((file) => !(file in EXEMPT))
+test('all of src/app is tokens only, apart from the debt listed here', () => {
+  // The whole tree, not a list of directories (OR-037). A list left src/app/digest unscanned while
+  // its plain-text preview drew #ededed on white in dark mode.
+  const files = sourceFiles('').filter((file) => !(file in EXEMPT))
   expect(files.length).toBeGreaterThan(30)
   expect(files.flatMap(mismatches)).toEqual([])
 })

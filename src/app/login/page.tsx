@@ -13,6 +13,7 @@ export default async function LoginPage({
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="flex w-full max-w-sm flex-col items-center gap-6">
         <p className="text-[15px] font-semibold tracking-tight">onrecord</p>
+        <h1 className="text-[22px] font-semibold">Sign in</h1>
         <LoginForm returnTo={safeReturnTo(params.returnTo)} />
         <Link
           className={linkClass}
