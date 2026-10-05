@@ -11,7 +11,7 @@ export function HomeStory({ facts }: { facts: CanonicalFacts }) {
       <h1 className="text-[26px] font-semibold leading-tight">
         A note about their house, from the county record.
       </h1>
-      <p className="text-[17px] leading-relaxed">
+      <p className="text-[17px] leading-relaxed text-gray-600">
         {facts.address}, {facts.city} {facts.zip}. {facts.firstName}.
       </p>
       <p className="text-[17px] leading-relaxed">
