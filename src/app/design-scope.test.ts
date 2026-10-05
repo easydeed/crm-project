@@ -16,8 +16,9 @@ function sourceFiles(dir: string): string[] {
 const read = (file: string) => readFileSync(file, 'utf8')
 const rel = (file: string) => path.relative(srcRoot, file)
 
-test('Fraunces stays on the marketing page: nothing under /app or /admin names it', () => {
-  const offenders = ['app/app', 'app/admin']
+test('Fraunces stays on the marketing page: nothing under /app, /admin, /login or /register names it', () => {
+  // Sign-in is the product's front door, not marketing (OR-036).
+  const offenders = ['app/app', 'app/admin', 'app/login', 'app/register']
     .flatMap((dir) => sourceFiles(path.join(srcRoot, dir)))
     .filter((file) => /fraunces|font-serif/i.test(read(file)))
     .map(rel)

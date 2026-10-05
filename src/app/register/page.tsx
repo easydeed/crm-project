@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { RegisterForm } from '@/app/register/register-form'
+import { linkClass } from '@/app/app/people/ui'
 
 export default function RegisterPage() {
   return (
@@ -8,7 +9,7 @@ export default function RegisterPage() {
         <p className="text-[15px] font-semibold tracking-tight">onrecord</p>
         <RegisterForm />
         <Link
-          className="text-[15px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className={linkClass}
           href="/login"
         >
           Sign in

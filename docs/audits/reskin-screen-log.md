@@ -78,7 +78,8 @@ decision closes it.
   packet owns it.
 
 - **Inline copies of linkClass's string (raised in OR-033a).** There were 21 copies outside /admin.
-  OR-034 fixed its six (settings and billing) and OR-035 its four (start and import); 11 remain.
+  OR-034 fixed six (settings and billing), OR-035 four (start and import) and OR-036 two (login and
+  register). The 9 that remain go to the final sweep.
   linkClass is `text-[15px] underline underline-offset-4` plus the focus ring. None is colour debt:
   every copy draws in the same colour.
   - "Identical": the string is linkClass's, letter for letter.
@@ -90,8 +91,6 @@ decision closes it.
 
   | Owner | File | Differs from linkClass |
   |---|---|---|
-  | OR-036 | login/page.tsx | identical |
-  | OR-036 | register/page.tsx | identical |
   | final sweep | app/error.tsx | +mt-6 |
   | final sweep | app/home-card.tsx | identical |
   | final sweep | app/layout.tsx ("Log out") | adds `text-foreground focus-visible:outline-foreground` |
@@ -113,6 +112,25 @@ decision closes it.
   - app/home-card.tsx and app/home-billing-card.tsx: dashboard links styled as buttons. They add
     `mt-6 inline-block` and lack the focus colour. Final sweep.
   - home-story.tsx: the marketing page. It adds `inline-block`. Final sweep, with its linkClass copy.
+
+- **Neither auth page has an `<h1>` (raised in OR-036).** On /login and /register the wordmark
+  "onrecord" is a `<p>` and the form has no heading, so a screen reader's first heading jump lands
+  nowhere. That is an accessibility defect. The fix adds words ("Sign in", "Create your account"),
+  so it is copy and structure, not colour. Final sweep.
+
+### Inherited by the final sweep
+
+After OR-036, design-debt.test.ts holds only the permanent admin entries. What is left is one
+packet:
+
+- the 9 linkClass copies in the table above
+- the 3 buttonClass copies (home-card, home-billing-card, home-story; shared-classes.test.ts
+  lists them)
+- the missing `<h1>` on /login and /register
+- the settings forms' labels beside their inputs on desktop (from OR-034)
+
+Not the sweep's to fix, but still open: the unlabelled assessor facts. That is a product decision
+about labelling, recorded above.
 
 ## How to measure a packet
 
