@@ -26,6 +26,7 @@ old threshold. OR-030's five muted-text screens are the change it would have hid
 | OR-033 add-ons | c3b8e86 → 429ef0b | addons, addons-lender-form | addons and addons-lender-form only | Row divider (--rule), muted row and band notes, the bill bar's divider and note at full strength. addons-lender-form also shows the config inputs on the shared fieldClass (outline 2.56:1 to 3.61:1 light). The error screen's linkClass swap is not captured. |
 | OR-033a disabled state | 4652436 → 5a33730 | import, people-bulk-bar, start, start-few, start-found, start-malformed, start-nothing | Not predicted; measured | Each diff is one button-sized box, and no screen changed size (the ring is inset). import and the five start screens: the import form's "Import", disabled until there is a file. people-bulk-bar: "Add to group" and "Remove from group", disabled with no groups. Disabled now reads as --surface, --muted-ink and a --border ring instead of 60% opacity. |
 | OR-034 settings and billing | 7d45063 → 0cc5c9d | settings | settings only | The details, appearance and sending inputs on the shared fieldClass (--border, 1.53:1 to 3.61:1 light), and Muted helper lines in --muted-ink. One region, and the page keeps its size. The read-only email field still shows no border. billing and billing-cancel are byte-identical: their buttonClass and linkClass copies differed only in focus colour and disabled state, and neither is captured. |
+| OR-035 start and import | 0e6e759 → 06e79ed | import, start, start-few, start-found, start-malformed, start-nothing | The same six | No page changed size. import, start and start-nothing: one region, the drop zone (dashed --border, 1.96:1 to 3.61:1 light) and the file input outline (--border). start-few and start-found also take the closings list dividers (--rule). start-malformed also takes the where-to-find panel edge (--rule). The skeleton is not captured. The framing sentences did not move. |
 
 ## Shared classes move screens early
 
@@ -53,6 +54,15 @@ Same values on every screen it touches (People, the edit form, the review queue'
 
 `unsubscribe` (`/u/[token]`) is server HTML with its own CSS and has not changed in any packet.
 
+## A decorative token on a boundary you act on
+
+Twice now a debt note has said `--rule`, the decorative divider, for a boundary that tells someone
+where to act: OR-032's candidate cards and OR-035's drop zone. Both took `--border` instead. The
+test is whether the boundary marks something to act on. A list divider is decoration; the edge of
+a card with its own "This one" button, or of a drop target, is not. The rule under both: a token
+swap must not make something fainter than it is today. For the same reason, OR-035's skeleton rows
+took `--rule` rather than the note's `--surface`, which would have vanished.
+
 ## Found, not fixed
 
 Items a packet found that are not colour debt and that no packet owns. Each stays here until a
@@ -68,7 +78,7 @@ decision closes it.
   packet owns it.
 
 - **Inline copies of linkClass's string (raised in OR-033a).** There were 21 copies outside /admin.
-  OR-034 fixed its six (settings and billing); 15 remain.
+  OR-034 fixed its six (settings and billing) and OR-035 its four (start and import); 11 remain.
   linkClass is `text-[15px] underline underline-offset-4` plus the focus ring. None is colour debt:
   every copy draws in the same colour.
   - "Identical": the string is linkClass's, letter for letter.
@@ -80,9 +90,6 @@ decision closes it.
 
   | Owner | File | Differs from linkClass |
   |---|---|---|
-  | OR-035 | app/start/error.tsx (two links) | "tap" variant, no 15px |
-  | OR-035 | app/people/import/import-result.tsx:5 | adds `inline-block` |
-  | OR-035 | app/people/import/import-result.tsx:43 | a `<summary>`: adds `cursor-pointer`, no 15px |
   | OR-036 | login/page.tsx | identical |
   | OR-036 | register/page.tsx | identical |
   | final sweep | app/error.tsx | +mt-6 |

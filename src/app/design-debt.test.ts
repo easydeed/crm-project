@@ -13,30 +13,12 @@ import { expect, test } from 'vitest'
  * fix that forgot to delete its entry. A screen packet clears its entries and deletes them; the
  * owner says which packet that is. When only permanent entries remain, the debt is paid.
  */
-type Owner = 'OR-035' | 'OR-036' | 'permanent'
+type Owner = 'OR-036' | 'permanent'
 type Debt = { owner: Owner; why: string; colours: Record<string, number> }
 
-const OWNERS: Owner[] = ['OR-035', 'OR-036', 'permanent']
+const OWNERS: Owner[] = ['OR-036', 'permanent']
 
 const DEBT: Record<string, Debt> = {
-  // OR-035: /app/start and import
-  'app/start/start-flow.tsx': {
-    owner: 'OR-035',
-    why: 'where-to-find panel border and tint (--rule, --surface)',
-    colours: { 'border-foreground/20': 1, 'bg-foreground/10': 1 },
-  },
-  'app/start/closings-results.tsx': {
-    owner: 'OR-035',
-    why: 'list dividers (--rule)',
-    colours: { 'divide-foreground/15': 1, 'border-foreground/15': 1 },
-  },
-  'app/people/import/import-form.tsx': {
-    owner: 'OR-035',
-    why: 'textarea outline ~1.5:1 (--border); drop zone border and tint (--rule, --surface)',
-    colours: { 'border-foreground/20': 1, 'border-foreground/30': 1, 'bg-foreground/5': 1 },
-  },
-  'app/people/import/column-mapping.tsx': { owner: 'OR-035', why: 'select outline ~1.5:1 (--border)', colours: { 'border-foreground/20': 1 } },
-
   // OR-036: auth screens
   'login/login-form.tsx': { owner: 'OR-036', why: 'input outline ~1.5:1 (--border)', colours: { 'border-foreground/20': 1 } },
   'register/register-form.tsx': { owner: 'OR-036', why: 'input outline ~1.5:1 (--border)', colours: { 'border-foreground/20': 1 } },

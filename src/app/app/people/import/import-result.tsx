@@ -1,8 +1,8 @@
 import Link from 'next/link'
+import { linkClass } from '@/app/app/people/ui'
 import type { ImportSummary } from '@/import/types'
 
-const linkClass =
-  'inline-block text-[15px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+const blockLinkClass = `${linkClass} inline-block`
 
 export function ImportResultView({ result }: { result: ImportSummary }) {
   return (
@@ -40,7 +40,7 @@ export function ImportResultView({ result }: { result: ImportSummary }) {
       ) : null}
       {result.skipped.length > 0 ? (
         <details className="mt-6 text-[15px]">
-          <summary className="cursor-pointer underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
+          <summary className={`cursor-pointer ${linkClass}`}>
             See why {result.skipped.length === 1 ? '1 was skipped' : `${result.skipped.length} were skipped`}
           </summary>
           <ul className="mt-3 flex flex-col gap-2">
@@ -55,11 +55,11 @@ export function ImportResultView({ result }: { result: ImportSummary }) {
       ) : null}
       <p className="mt-8 flex flex-col gap-3">
         {result.needsReview > 0 ? (
-          <Link className={linkClass} href="/app/people/review">
+          <Link className={blockLinkClass} href="/app/people/review">
             Review them
           </Link>
         ) : null}
-        <Link className={linkClass} href="/app/people">
+        <Link className={blockLinkClass} href="/app/people">
           Go to your people
         </Link>
       </p>

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { linkClass } from '@/app/app/people/ui'
 
 export default function StartError({
   reset,
@@ -16,14 +17,14 @@ export default function StartError({
       </p>
       <p className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-[15px]">
         <button
-          className="tap underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className={`tap ${linkClass}`}
           type="button"
           onClick={reset}
         >
           Try again
         </button>
         <Link
-          className="tap underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className={`tap ${linkClass}`}
           href="/app/people/import"
         >
           Add people

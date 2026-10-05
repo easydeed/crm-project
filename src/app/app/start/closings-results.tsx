@@ -55,7 +55,7 @@ export function ClosingsResults({
       ) : null}
       <form action={action} className="mt-6">
         <input type="hidden" name="agentId" value={agentId} />
-        <ul className="flex flex-col divide-y divide-foreground/15 border-y border-foreground/15">
+        <ul className="flex flex-col divide-y divide-rule border-y border-rule">
           {listings.map((listing) => {
             const checked = !unticked.has(listing.mlsId)
             return (
