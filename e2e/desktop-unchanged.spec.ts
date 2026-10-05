@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { SCREENS } from './screens'
+import { openScreen, SCREENS } from './screens'
 
 /**
  * Desktop pixel comparison. Pixel comparison across machines is a flaky-test generator, so this
@@ -20,7 +20,7 @@ test.skip(process.env.PW_DESKTOP_COMPARE !== '1', 'on-demand, same-machine compa
 
 for (const screen of SCREENS) {
   test(`desktop unchanged: ${screen.name}`, async ({ page }) => {
-    await page.goto(screen.path)
+    await openScreen(page, screen)
     await page.waitForLoadState('networkidle')
     await screen.prepare?.(page)
     await expect(page).toHaveScreenshot(`${screen.name}.png`, {

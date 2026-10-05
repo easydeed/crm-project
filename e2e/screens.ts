@@ -3,7 +3,13 @@ import { expect, type Page } from '@playwright/test'
 
 const state = JSON.parse(readFileSync('e2e/.state.json', 'utf8')) as { personId: string; unsubscribeToken: string }
 
-type Screen = { name: string; path: string; prepare?: (page: Page) => Promise<void> }
+type Screen = { name: string; path: string; loggedOut?: boolean; prepare?: (page: Page) => Promise<void> }
+
+/** Visit a screen as its viewer sees it: a logged-out screen gets no session cookie. */
+export async function openScreen(page: Page, screen: Screen) {
+  if (screen.loggedOut) await page.context().clearCookies()
+  return page.goto(screen.path)
+}
 
 /** Agent ids in the OR-024 fixture corpus (src/providers/fixtures/closed-listings.ts). */
 const MLS = { many: 'CRMLS-P4700', thin: 'CRMLS-P0300', none: 'CRMLS-P0000' }
@@ -13,8 +19,10 @@ async function findClosings(page: Page, agentId: string) {
   await page.getByRole('button', { name: 'Find my closings' }).click()
 }
 
-/** Every agent-facing screen, and the homeowner's unsubscribe page. /admin is desktop only by design. */
+/** Every agent-facing screen, signed out and in, and the homeowner's unsubscribe page. /admin is desktop only by design. */
 export const SCREENS: Screen[] = [
+  { name: 'login', path: '/login', loggedOut: true },
+  { name: 'register', path: '/register', loggedOut: true },
   { name: 'dashboard', path: '/app' },
   {
     name: 'dashboard-call-open',

@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test'
 import { writeFileSync } from 'node:fs'
 import { expectCleanLayout, layoutProblems } from './checks'
-import { SCREENS } from './screens'
+import { openScreen, SCREENS } from './screens'
 
 for (const screen of SCREENS) {
   test(screen.name, async ({ page }, info) => {
-    const response = await page.goto(screen.path)
+    const response = await openScreen(page, screen)
     expect(response?.status(), screen.path).toBeLessThan(400)
     await page.waitForLoadState('networkidle')
     await expect(page.getByText(/couldn.t load|could not load/i)).toHaveCount(0)
