@@ -1,9 +1,7 @@
 import type { BillingInvoice } from '@/billing/gateway'
 import { formatDollars } from '@/config/costs'
 import { formatBillingDate } from '@/app/app/settings/billing/billing-copy'
-
-const linkClass =
-  'underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+import { linkClass } from '@/app/app/people/ui'
 
 const INVOICE_STATUS: Record<string, string> = {
   paid: 'Paid',

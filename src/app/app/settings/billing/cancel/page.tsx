@@ -6,11 +6,7 @@ import { loadBillingView } from '@/billing/account-billing'
 import { getAccountById } from '@/db/accounts'
 import { cancelPlanAction } from '@/app/app/settings/billing/actions'
 import { cancelSentence, formatBillingDate } from '@/app/app/settings/billing/billing-copy'
-
-const buttonClass =
-  'rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
-const linkClass =
-  'text-[15px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+import { buttonClass, linkClass } from '@/app/app/people/ui'
 
 /** One screen, one decision, and the two ways out of it. */
 export default async function CancelPlanPage() {

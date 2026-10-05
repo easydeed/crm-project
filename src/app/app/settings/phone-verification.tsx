@@ -3,11 +3,10 @@
 import { useState, useTransition } from 'react'
 import { confirmCodeAction, requestCodeAction } from '@/app/app/settings/phone-actions'
 import { formatUsPhone } from '@/config/phone'
+import { buttonClass } from '@/app/app/people/ui'
 
-const buttonClass =
-  'rounded-md bg-foreground px-4 py-2 text-[15px] text-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'
 const inputClass =
-  'mt-1 w-40 rounded-md border border-foreground/40 bg-background px-3 py-2 text-[15px] tracking-widest text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'
+  'mt-1 w-40 rounded-md border border-border bg-background px-3 py-2 text-[15px] tracking-widest text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'
 
 /** Proves the phone in Settings is the agent's own before anything is texted to it. */
 export function PhoneVerification({ phone, verified, readOnly }: { phone: string | null; verified: boolean; readOnly: boolean }) {
