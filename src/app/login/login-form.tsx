@@ -2,10 +2,7 @@
 
 import { useActionState } from 'react'
 import { loginAction, type LoginState } from '@/app/login/actions'
-import { buttonClass } from '@/app/app/people/ui'
-
-const fieldClass =
-  'mt-1 w-full rounded-md border border-foreground/20 bg-background px-3 py-2 text-[15px] text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'
+import { buttonClass, fieldClass } from '@/app/app/people/ui'
 
 export function LoginForm({ returnTo }: { returnTo: string }) {
   const [state, action, pending] = useActionState(loginAction, {} as LoginState)

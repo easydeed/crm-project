@@ -1,7 +1,7 @@
 # Re-skin: which desktop screens each packet changed
 
-The exact record, from OR-030a on. Each row compares fresh desktop captures (1440×900, all 18
-screens in `e2e/screens.ts`) of a packet's parent commit and its merge. Every file is rewritten
+The exact record, from OR-030a on. Each row compares fresh desktop captures (1440×900, every screen in
+`e2e/screens.ts`: 18 until OR-036 added /login and /register, signed out, for 20) of a packet's parent commit and its merge. Every file is rewritten
 (`--update-snapshots=all`), the database is reseeded before each capture, and the two sets are
 compared byte for byte. Two captures of one build are byte-identical, so a differing file is a real
 change.
@@ -27,6 +27,7 @@ old threshold. OR-030's five muted-text screens are the change it would have hid
 | OR-033a disabled state | 4652436 → 5a33730 | import, people-bulk-bar, start, start-few, start-found, start-malformed, start-nothing | Not predicted; measured | Each diff is one button-sized box, and no screen changed size (the ring is inset). import and the five start screens: the import form's "Import", disabled until there is a file. people-bulk-bar: "Add to group" and "Remove from group", disabled with no groups. Disabled now reads as --surface, --muted-ink and a --border ring instead of 60% opacity. |
 | OR-034 settings and billing | 7d45063 → 0cc5c9d | settings | settings only | The details, appearance and sending inputs on the shared fieldClass (--border, 1.53:1 to 3.61:1 light), and Muted helper lines in --muted-ink. One region, and the page keeps its size. The read-only email field still shows no border. billing and billing-cancel are byte-identical: their buttonClass and linkClass copies differed only in focus colour and disabled state, and neither is captured. |
 | OR-035 start and import | 0e6e759 → 06e79ed | import, start, start-few, start-found, start-malformed, start-nothing | The same six | No page changed size. import, start and start-nothing: one region, the drop zone (dashed --border, 1.96:1 to 3.61:1 light) and the file input outline (--border). start-few and start-found also take the closings list dividers (--rule). start-malformed also takes the where-to-find panel edge (--rule). The skeleton is not captured. The framing sentences did not move. |
+| OR-036 sign in and create account | 57244ab → 9179033 | login, register (of 20) | login and register only | The parent is OR-036's capture-only commit, so both screens have a real before. Each diff is confined to the inputs: the shared fieldClass outline (--border, 1.53:1 to 3.61:1 light). No page changed size. The other 18 screens are byte-identical. |
 
 ## Shared classes move screens early
 
@@ -78,7 +79,8 @@ decision closes it.
   packet owns it.
 
 - **Inline copies of linkClass's string (raised in OR-033a).** There were 21 copies outside /admin.
-  OR-034 fixed its six (settings and billing) and OR-035 its four (start and import); 11 remain.
+  OR-034 fixed six (settings and billing), OR-035 four (start and import) and OR-036 two (login and
+  register). The 9 that remain go to the final sweep.
   linkClass is `text-[15px] underline underline-offset-4` plus the focus ring. None is colour debt:
   every copy draws in the same colour.
   - "Identical": the string is linkClass's, letter for letter.
@@ -90,8 +92,6 @@ decision closes it.
 
   | Owner | File | Differs from linkClass |
   |---|---|---|
-  | OR-036 | login/page.tsx | identical |
-  | OR-036 | register/page.tsx | identical |
   | final sweep | app/error.tsx | +mt-6 |
   | final sweep | app/home-card.tsx | identical |
   | final sweep | app/layout.tsx ("Log out") | adds `text-foreground focus-visible:outline-foreground` |
@@ -113,6 +113,25 @@ decision closes it.
   - app/home-card.tsx and app/home-billing-card.tsx: dashboard links styled as buttons. They add
     `mt-6 inline-block` and lack the focus colour. Final sweep.
   - home-story.tsx: the marketing page. It adds `inline-block`. Final sweep, with its linkClass copy.
+
+- **Neither auth page has an `<h1>` (raised in OR-036).** On /login and /register the wordmark
+  "onrecord" is a `<p>` and the form has no heading, so a screen reader's first heading jump lands
+  nowhere. That is an accessibility defect. The fix adds words ("Sign in", "Create your account"),
+  so it is copy and structure, not colour. Final sweep.
+
+### Inherited by the final sweep
+
+After OR-036, design-debt.test.ts holds only the permanent admin entries. What is left is one
+packet:
+
+- the 9 linkClass copies in the table above
+- the 3 buttonClass copies (home-card, home-billing-card, home-story; shared-classes.test.ts
+  lists them)
+- the missing `<h1>` on /login and /register
+- the settings forms' labels beside their inputs on desktop (from OR-034)
+
+Not the sweep's to fix, but still open: the unlabelled assessor facts. That is a product decision
+about labelling, recorded above.
 
 ## How to measure a packet
 

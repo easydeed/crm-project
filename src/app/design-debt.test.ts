@@ -13,16 +13,12 @@ import { expect, test } from 'vitest'
  * fix that forgot to delete its entry. A screen packet clears its entries and deletes them; the
  * owner says which packet that is. When only permanent entries remain, the debt is paid.
  */
-type Owner = 'OR-036' | 'permanent'
+type Owner = 'permanent'
 type Debt = { owner: Owner; why: string; colours: Record<string, number> }
 
-const OWNERS: Owner[] = ['OR-036', 'permanent']
+const OWNERS: Owner[] = ['permanent']
 
 const DEBT: Record<string, Debt> = {
-  // OR-036: auth screens
-  'login/login-form.tsx': { owner: 'OR-036', why: 'input outline ~1.5:1 (--border)', colours: { 'border-foreground/20': 1 } },
-  'register/register-form.tsx': { owner: 'OR-036', why: 'input outline ~1.5:1 (--border)', colours: { 'border-foreground/20': 1 } },
-
   // Permanent: admin is deliberately unstyled. It is an internal tool, outside the re-skin, and
   // these entries stay so the list records what admin carries rather than pretending it is clean.
   'admin/accounts/search.tsx': { owner: 'permanent', why: 'admin, unstyled by decision', colours: { 'border-foreground/20': 1 } },
@@ -89,8 +85,10 @@ test('every debt entry names a packet that owns it, or is permanent', () => {
   for (const file of Object.keys(EXEMPT)) expect(existsSync(path.join(appRoot, file)), file).toBe(true)
 })
 
-test('/app is tokens only, apart from the debt listed here', () => {
-  const files = sourceFiles('app').filter((file) => !(file in EXEMPT))
+test('/app, /login and /register are tokens only, apart from the debt listed here', () => {
+  // The auth screens sit outside /app. Until OR-036 only their own debt entries checked them, so
+  // deleting those entries would have left them unscanned. They are scanned like /app now.
+  const files = ['app', 'login', 'register'].flatMap((dir) => sourceFiles(dir)).filter((file) => !(file in EXEMPT))
   expect(files.length).toBeGreaterThan(30)
   expect(files.flatMap(mismatches)).toEqual([])
 })

@@ -2,12 +2,9 @@
 
 import { useActionState } from 'react'
 import { registerAction, type RegisterState } from '@/app/register/actions'
-import { buttonClass } from '@/app/app/people/ui'
+import { buttonClass, fieldClass } from '@/app/app/people/ui'
 import { PASSWORD_REQUIREMENTS } from '@/auth/password-rules'
 import { PLAN_LINE } from '@/app/app/settings/billing/billing-copy'
-
-const fieldClass =
-  'mt-1 w-full rounded-md border border-foreground/20 bg-background px-3 py-2 text-[15px] text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'
 
 function Field({
   label,

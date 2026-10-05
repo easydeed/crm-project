@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { LoginForm } from '@/app/login/login-form'
+import { linkClass } from '@/app/app/people/ui'
 import { safeReturnTo } from '@/auth/session'
 
 export default async function LoginPage({
@@ -14,7 +15,7 @@ export default async function LoginPage({
         <p className="text-[15px] font-semibold tracking-tight">onrecord</p>
         <LoginForm returnTo={safeReturnTo(params.returnTo)} />
         <Link
-          className="text-[15px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className={linkClass}
           href="/register"
         >
           Create an account
