@@ -50,7 +50,7 @@ One column, `px-4 py-10` (`review/review-queue.tsx:133`).
    (`:192-203`, `UNDO_MS = 5000` at :19).
 
 In the seed, the four review fixtures (Anita Flores, Darryl Stone, Greg Walsh, Mei Lin) have stored
-candidates (`scripts/seed.ts:120`). Samir Qureshi and Priya Nair are "Needs a look" with **no**
+candidates (`scripts/seed.ts:64`). Samir Qureshi and Priya Nair are "Needs a look" with **no**
 candidates, so their review shows the couldn't-find panel under a "Needs a look" header.
 
 ## Controls

@@ -68,8 +68,22 @@ CI runs the phone pass on every pull request.
   `<summary>` is at least 44px in its *smaller* dimension. A checkbox or radio is measured
   by its label, so the label is the target.
 - **The one exemption.** A link inside a line of text, a sentence with a link in it, is
-  exempt (WCAG 2.5.8). The test decides this from the surrounding text
-  (`e2e/checks.ts:34-39`). A link that stands alone on its line is not exempt.
+  exempt (WCAG 2.5.8). A link that stands alone on its line is not exempt, and on a phone
+  it takes the `.tap` class (`02-system.md`).
+- **The exemption is wider in the test than in the rule. Do not rely on a green run
+  here.** The test decides "inline" from whether the link's nearest block ancestor holds
+  any other text (`e2e/checks.ts:34-40`). A link placed directly in a page column always
+  passes, because the column holds the rest of the page. Measured at 390px while writing
+  this spec (OR-039), these standalone links all pass the check while under 44px:
+  - "See the sample note", the home page's primary button: 39px tall.
+  - "Create an account" on /login: 23px.
+  - "Sign in" on /register: 23px.
+  - "Back" on /sample: 23px.
+  - "Keep my plan" on the cancel screen: 23px.
+  - "Settings" on Billing: 19px.
+
+  The rule is the design rule. Design every standalone link at 44px, whatever the test
+  says. See `05-open.md`.
 - **Why.** Fingers, not cursors. This is the rule the export broke most: its shared button
   and input were 32px.
 - **Enforced by.** `e2e/checks.ts:49` (tap-44). It runs on the phone pass only. Desktop is
@@ -112,6 +126,7 @@ Read this before trusting a green run.
   other capture is light. Dark contrast is held by the token pairs (§2), not by a
   browser.
 - **Focus rings are not measured in the browser.** See §6.
+- **Standalone links can pass the tap-size check while too small.** See §1.2.
 
 ---
 

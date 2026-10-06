@@ -18,7 +18,7 @@ Top to bottom (`src/app/app/settings/page.tsx:38-51`), a single `flex-col gap-10
    input), Brokerage, DRE number, Phone, MLS agent ID with a muted helper, the link
    "Find my closings again", and its own Save button.
 4. **Phone for texts** (`phone-verification.tsx:67-77`), anchored `id="phone"` so the add-ons
-   page can link straight to it (`/app/settings#phone`, `src/addons/text-call-list.ts:72`).
+   page can link straight to it (`/app/settings#phone`, `src/addons/text-call-list.ts:30`).
 5. **How the email looks** form plus **Preview** (`appearance-form.tsx:30-93`): sender name,
    reply-to, five accent swatches, Save; the preview of the real email beside it.
 6. **Sending** form (`sending-form.tsx:22-92`): Send day, Time of day, Timezone (all selects),
