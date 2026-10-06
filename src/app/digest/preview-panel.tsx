@@ -99,7 +99,7 @@ export function DigestPreviewPanel({
 }) {
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-serif text-[18px] font-semibold">{title}</h2>
+      <h2 className="text-[18px] font-semibold">{title}</h2>
       {sampleLabel ? <p className="text-[15px]">{sampleLabel}</p> : null}
       {result.send ? (
         <DigestPreviewFrame html={result.html} text={result.text} />
