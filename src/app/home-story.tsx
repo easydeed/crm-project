@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { buttonClass, linkClass } from '@/app/app/people/ui'
 import type { CanonicalFacts } from '@/digest/canonical-facts'
 
-const ctaClass = `${buttonClass} inline-block`
+const ctaClass = `${buttonClass} inline-block shadow-[0_18px_44px_-40px_rgba(14,23,41,0.4)]`
 
 export function HomeStory({ facts }: { facts: CanonicalFacts }) {
   return (
