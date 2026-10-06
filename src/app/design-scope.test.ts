@@ -5,24 +5,35 @@ import { expect, test } from 'vitest'
 
 const srcRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
-function sourceFiles(dir: string): string[] {
+function sourceFiles(dir: string, pattern = /\.(tsx?|css)$/): string[] {
   return readdirSync(dir).flatMap((name) => {
     const full = path.join(dir, name)
-    if (statSync(full).isDirectory()) return sourceFiles(full)
-    return /\.(tsx?|css)$/.test(name) ? [full] : []
+    if (statSync(full).isDirectory()) return sourceFiles(full, pattern)
+    return pattern.test(name) ? [full] : []
   })
 }
 
 const read = (file: string) => readFileSync(file, 'utf8')
 const rel = (file: string) => path.relative(srcRoot, file)
 
-test('Fraunces stays on the marketing page: nothing under /app, /admin, /login or /register names it', () => {
-  // Sign-in is the product's front door, not marketing (OR-036).
-  const offenders = ['app/app', 'app/admin', 'app/login', 'app/register']
-    .flatMap((dir) => sourceFiles(path.join(srcRoot, dir)))
-    .filter((file) => /fraunces|font-serif/i.test(read(file)))
+/**
+ * The only files that may name Fraunces (OR-038). An allowlist over all of src, failing both ways:
+ * a new file is red, and a listed file that no longer names it is red. The four-directory check this
+ * replaces passed font-serif on the shared preview panel, which renders inside /app.
+ */
+const FRAUNCES: Record<string, string> = {
+  'app/fonts/fonts.ts': 'loads it',
+  'app/fonts/OFL-fraunces.txt': 'its licence',
+  'app/globals.css': 'maps it to --font-serif',
+  'app/home-story.tsx': "the marketing page's <h1>, the one display moment",
+}
+
+test('Fraunces stays on the marketing page: only the listed files under src name it', () => {
+  const naming = sourceFiles(srcRoot, /./)
+    .filter((file) => !/\.test\./.test(file) && /fraunces|font-serif/i.test(read(file)))
     .map(rel)
-  expect(offenders).toEqual([])
+    .sort()
+  expect(naming).toEqual(Object.keys(FRAUNCES).sort())
 })
 
 test('the email keeps its own design: nothing in src/digest reads an app token', () => {

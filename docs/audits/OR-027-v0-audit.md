@@ -126,7 +126,7 @@ Named: sm 4, md 2, lg 1, xl 1, 2xl 1. There are 14 arbitrary shadows, all in mar
 | `/match` | app/match/page.tsx + components/match/* | **Real screen, weak** | Closest is `/app/people/review`. The export's copy is homeowner-facing ("Which home should we watch?", :58). |
 | `/sample` | `<SampleEmail>` | **Real screen** | `/sample`, which renders `fullDigest()` in `DigestPreviewPanel` |
 | `/unsubscribe` | app/unsubscribe/page.tsx | **Real screen** | `/u/[token]` (a server route that returns HTML) |
-| `/` | 11 marketing sections | **Real screen** | `/`. The marketing page is out of scope for re-skin (standing constraint). |
+| `/` | 11 marketing sections | **Real screen** | `/`. The marketing page is out of scope for re-skin (standing constraint). *(Retired in OR-028: the page lives in this repo now. Restyled in OR-038.)* |
 | `/lab`, `/lab/campaigns`, `/lab/campaigns/new`, `/lab/composer` | campaign-index, builder/*, sms-composer | **Rejected /lab** | "Campaign builder in the base plan" |
 | `/lab/templates` | templates-gallery | **Rejected /lab** | Template gallery |
 | `/lab/audiences` | audiences-view | **Rejected /lab** | Audiences, including `{pct}%` of list (:27, :130) = the "% of list" stat |
@@ -435,7 +435,7 @@ The export satisfies only three of the markup tests: the inline call panel, the 
 
 - All of `/lab`, which is rejected.
 - `components/ui/*`: it depends on Base UI, its sizes are 32px, and its focus halo is 2.16:1.
-- `lib/*`, `SampleEmail`, `SampleDigest`, `RecordArtifact`, and every marketing component (the marketing page is off-limits).
+- `lib/*`, `SampleEmail`, `SampleDigest`, `RecordArtifact`, and every marketing component (the marketing page is off-limits). *(The off-limits rule was retired in OR-028. OR-038 restyled the page in place and still took no export component.)*
 - The homeowner `/register`, `/match`, `/why`, `/privacy` and `/terms`.
 - Every piece of forbidden content listed in §3.
 
@@ -460,7 +460,7 @@ The export satisfies only three of the markup tests: the inline call panel, the 
 | **OR-034** | Settings and billing | The preview stays the real `loadSettingsPreview` iframe path |
 | **OR-035** | `/app/start` and import | No export equivalent; restyle only, and keep the status/alert semantics and `MlsAttribution` |
 | **OR-036** | Auth screens: `/login` and `/register` | Added by the Director after OR-028. Clears the two auth input outlines in `src/app/design-debt.test.ts`. |
-| Later / separate | `/u/[token]` (server HTML, its own CSS), `/sample` | `/u` is not React and needs its own small packet. The marketing page and `/admin` stay out of the re-skin. |
+| Later / separate | `/u/[token]` (server HTML, its own CSS), `/sample` | `/u` is not React and needs its own small packet. The marketing page and `/admin` stay out of the re-skin. *(Retired in OR-028: the page lives in this repo now. Restyled in OR-038.)* |
 
 **Where I would start:** OR-028, the tokens alone, after the Director's v0 design-system prompt settles the three open token questions:
 

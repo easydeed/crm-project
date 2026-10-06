@@ -8,7 +8,7 @@ export function HomeStory({ facts }: { facts: CanonicalFacts }) {
   return (
     <main className="mx-auto flex min-h-screen max-w-xl flex-col justify-center gap-6 px-4 py-10">
       <p className="text-[15px] font-semibold tracking-tight">onrecord</p>
-      <h1 className="text-[26px] font-semibold leading-tight">
+      <h1 className="font-serif text-[32px] font-medium leading-tight tracking-[-0.01em] sm:text-[40px]">
         A note about their house, from the county record.
       </h1>
       <p className="text-[17px] leading-relaxed">
