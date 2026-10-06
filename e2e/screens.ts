@@ -3,11 +3,18 @@ import { expect, type Page } from '@playwright/test'
 
 const state = JSON.parse(readFileSync('e2e/.state.json', 'utf8')) as { personId: string; unsubscribeToken: string }
 
-type Screen = { name: string; path: string; loggedOut?: boolean; prepare?: (page: Page) => Promise<void> }
+type Screen = {
+  name: string
+  path: string
+  loggedOut?: boolean
+  colorScheme?: 'light' | 'dark'
+  prepare?: (page: Page) => Promise<void>
+}
 
-/** Visit a screen as its viewer sees it: a logged-out screen gets no session cookie. */
+/** Visit a screen as its viewer sees it: a logged-out screen gets no session cookie, a dark one dark mode. */
 export async function openScreen(page: Page, screen: Screen) {
   if (screen.loggedOut) await page.context().clearCookies()
+  if (screen.colorScheme) await page.emulateMedia({ colorScheme: screen.colorScheme })
   return page.goto(screen.path)
 }
 
@@ -19,8 +26,25 @@ async function findClosings(page: Page, agentId: string) {
   await page.getByRole('button', { name: 'Find my closings' }).click()
 }
 
-/** Every agent-facing screen, signed out and in, and the homeowner's unsubscribe page. /admin is desktop only by design. */
+/** Every agent-facing screen, signed out and in, the marketing pages, and the homeowner's unsubscribe page. /admin is desktop only by design. */
 export const SCREENS: Screen[] = [
+  // What a prospect sees (OR-038).
+  { name: 'home', path: '/', loggedOut: true },
+  { name: 'sample', path: '/sample', loggedOut: true },
+  {
+    // The plain-text preview drew #ededed on white in dark mode until OR-037. This keeps it in a capture.
+    name: 'sample-text-dark',
+    path: '/sample',
+    loggedOut: true,
+    colorScheme: 'dark',
+    prepare: async (page) => {
+      await page.getByRole('button', { name: 'Plain text' }).click()
+      await expect(page.getByRole('button', { name: 'Plain text' })).toHaveAttribute('aria-pressed', 'true')
+      const text = page.locator('pre')
+      await expect(text).toContainText('Hi Marilyn,')
+      await expect(text).not.toHaveCSS('background-color', 'rgb(255, 255, 255)')
+    },
+  },
   { name: 'login', path: '/login', loggedOut: true },
   { name: 'register', path: '/register', loggedOut: true },
   { name: 'dashboard', path: '/app' },
