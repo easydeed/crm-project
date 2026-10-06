@@ -64,7 +64,7 @@ produces the monthly email, run for this person today (`[id]/page.tsx:40-43`). T
 | "Edit" (`:127-129`) | `/app/people/{id}/edit` | A link, never disabled, also in view-as (the edit form's Save is disabled there) | Navigates |
 | "Delete" (`:139-141`) | See below | `disabledClass` (surface fill, muted words, inset border ring) in view-as (`:139`). Not disabled while the request runs | Native dialog |
 | "Group" select, first option "Pick a group", + "Add to group" (`add-to-group.tsx:64-77`) | Adds this person to the chosen group and refreshes | View-as or saving (`:66, 75`) | Stays; the code moves no focus |
-| No groups yet: "Group name" field + "New group" button (`:50-58`) | Creates the group **and** puts this person in it (`src/people/save-groups.ts` createGroup with `contactId`) | View-as or saving | Stays |
+| No groups yet: "Group name" field + "New group" button (`:50-58`) | Creates the group **and** puts this person in it (`src/people/save-groups.ts:21-41`) | View-as or saving | Stays |
 | "Manage groups" (`:81-83`) | Goes to `/app/people`, where groups are renamed and deleted. There is no "remove from group" on this screen; that lives in the People bulk bar | Never | Navigates |
 | "Desktop" / "Phone", "Email" / "Plain text" (`preview-panel.tsx:55-66`) | Switch the preview; `aria-pressed` marks the current one | Never; previews work in view-as (`people-preview.test.ts:8`) | Stays |
 
@@ -125,11 +125,11 @@ became false when OR-006a made delete soft. Focus: the code calls no `focus()`; 
 
 ## What the v0 export did, and why we did not take it
 `reference/v0-export/components/app/contact-detail.tsx`:
-- **No delete confirmation.** "Remove" calls `deleteContact`, toasts `${contact.name} removed.` and routes away (:228-237). Audit row 1 (`docs/audits/OR-027-v0-audit.md:260`): BREAKS the delete-copy test.
+- **No delete confirmation.** "Remove" calls `deleteContact`, toasts `${contact.name} removed.` and routes away (:227-238). Audit row 1 (`docs/audits/OR-027-v0-audit.md:260`): BREAKS the delete-copy test.
 - **Engagement tag** next to the status (:69-70), from `ENGAGEMENT_META` ("Opening", "Quiet", "May have moved", "Never opened"). Invariant 8.
-- **"Flag as moved"**, a manual toggle (:200-224). Ours names the recorded change instead ("Updated by the homeowner on …"); audit :302.
+- **"Flag as moved"**, a manual toggle (:201-226). Ours names the recorded change instead ("Updated by the homeowner on …"); audit :302.
 - **Inline MatchFlow** with a fabricated record on confirm: `recordedPrice: 720000`, `assessedValue: 792000`, `streetMedian: 915000` (:116-135; audit :405). Ours links to the review queue and invents nothing.
 - Notes saved on blur with a toast (:186-193); we edit notes on the edit screen.
-- 36px mail and phone icon buttons (:75-90; audit :216) fail the 44px tap rule.
+- 36px mail and phone icon buttons (:74-90; audit :216) fail the 44px tap rule.
 - No email preview at all (audit :335): the export has no iframe anywhere.
 OR-031 kept our markup and changed only the visual (audit :457).
