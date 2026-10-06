@@ -48,11 +48,11 @@ One column, `px-4 py-10` (`page.tsx:24`), the same at 1440 and 390 apart from th
 | Label (quoted) | What it does | Disabled look / when | Focus after |
 |---|---|---|---|
 | "Add people" (`people-board.tsx:69`) | Goes to `/app/people/import` | Never disabled | Navigates |
-| "Review them" (`:73`) | Goes to the review queue `/app/people/review`. Shown only when at least one person is "Needs a look" or is "Couldn't find" and not yet reviewed (`:41`, `src/people/review-state.ts:5-10`) | Hidden, not disabled, when the queue is empty | Navigates |
-| "Search" field, placeholder "Name, email, or address" (`:84, :90`) | Filters as you type, on the device, across name, email and the typed address (`src/people/filter.ts:1-8`). Not written to the URL | Never | Stays in field |
-| Status: "All", "On the map", "Needs a look", "Couldn't find", each "(n)" (`people-filters.tsx:33-53`, labels `src/people/status.ts:3-18`) | Writes `?status=` to the URL (`src/people/url.ts:19-33`). **"Needs a look" is different: it goes to the review queue, not a filtered list** (`people-filters.tsx:38-41`). Counts respect the current group | Never | Navigates (same page) |
+| "Review them" (`:73`) | Goes to the review queue `/app/people/review`. Shown only when at least one person is "Needs a look" or is "Couldn't find" and not yet reviewed (`:41`, `src/people/review-state.ts:6-10`) | Hidden, not disabled, when the queue is empty | Navigates |
+| "Search" field, placeholder "Name, email, or address" (`:84, :90`) | Filters as you type, on the device, across name, email and the typed address (`src/people/filter.ts:10-16`). Not written to the URL | Never | Stays in field |
+| Status: "All", "On the map", "Needs a look", "Couldn't find", each "(n)" (`people-filters.tsx:33-53`, labels `src/people/status.ts:3-18`) | Writes `?status=` to the URL (`src/people/url.ts:20-33`). **"Needs a look" is different: it goes to the review queue, not a filtered list** (`people-filters.tsx:38-41`). Counts respect the current group | Never | Navigates (same page) |
 | Group: "All people (n)", then each group "Name (n)" (`:59-79`) | Writes `?group=`; counts respect the current status | Never | Navigates |
-| Email: "Everyone (n)", "Missing an email (n)" (`:87-100`) | Writes `?noEmail=1`. MLS closings arrive without an email (`src/people/filter.ts:15`) | Row hidden when everyone has an email | Navigates |
+| Email: "Everyone (n)", "Missing an email (n)" (`:87-100`) | Writes `?noEmail=1`. MLS closings arrive without an email (`src/people/filter.ts:23`) | Row hidden when everyone has an email | Navigates |
 | "Select all" checkbox (`people-list.tsx:24-31`) | Selects every row in the current filtered view; if all of them are already selected, unselects them (`people-board.tsx:111-119`) | Never | Stays |
 | Row checkbox, accessible name "Select {name}" (`people-list.tsx:45`) | Adds or removes that person from the selection. The first one opens the bulk bar | Never | Stays |
 | Row name link (`:49-51`) | Opens `/app/people/{id}` | Never | Navigates |
@@ -103,15 +103,15 @@ After OK the bar unmounts, so focus drops to the page.
 | Selection open | Bulk bar at the bottom, group controls disabled (no groups in the seed) | capture: people-bulk-bar |
 | Empty (no people) | Count "0 people", "Add people" link, then `No people yet. Add a list to get started.` (`people-board.tsx:77-80`); search, filters, list and export are not rendered; the Groups section still is | Not producible from the seed; described from the code |
 | No search results | `No people match that search.` (`:96-98`) | Producible by typing; not captured |
-| Filter matches nobody | `No people match that filter.` (`:98`) | Not producible from seed links (every filter link shown has a count above 0, except a group with 0 members); described from the code |
+| Filter matches nobody | `No people match that filter.` (`:98`) | Not producible from the seed (every filter link it shows has a count above 0); a group with no members would produce it. Described from the code |
 | Loading (route) | `Loading your people…` (`loading.tsx:4`); the same line is the Suspense fallback under the h1 (`page.tsx:26`) | Not captured |
 | Error | `<h1>` `We couldn't load your people.`, `Try again. If it keeps happening, sign out and sign in.`, and a "Try again" text button that re-renders the segment (`error.tsx:13-22`) | Not captured; described from the code |
 | No groups | Groups section: `Groups are optional. Make one if you want to sort people.` + "New group" (`group-manager.tsx:51-56`); no Group filter row | Seed; captured in both people captures |
 | Someone missing an email | Email filter row appears | Not producible from the seed (every seeded person has an email) |
 | Unsubscribed person | Grey "Unsubscribed" tag under the status (`people-list.tsx:59-63`) | Not producible from the seed |
 | View-as | Bulk bar and Groups show `Viewing as another agent is read only.`; every write control disabled; Export still works | Not producible from the seed |
-| Left-out view `?status=no_parcel&leftOut=1` | Reached only from the review queue's "See who was left out" (`review/done-state.tsx:35`). The list shows only people the agent chose to leave out (`src/people/filter.ts:30`), but **nothing on screen says this extra filter is on**: only "Couldn't find" is marked, and its count includes everyone not found | Described from the code |
-| Save error (bulk or group) | The message in a `role="alert"` paragraph (`people-bulk-bar.tsx:55-59`, `group-manager.tsx:65-69`), e.g. `You already have a group with that name.` (`src/db/groups.ts:44`), `Add a group name.` (`src/people/parse-fields.ts`) | Described from the code |
+| Left-out view `?status=no_parcel&leftOut=1` | Reached only from the review queue's "See who was left out" (`review/done-state.tsx:35`). The list shows only people the agent chose to leave out (`src/people/filter.ts:35`, `src/people/review-state.ts:16-17`), but **nothing on screen says this extra filter is on**: only "Couldn't find" is marked, and its count includes everyone not found | Described from the code |
+| Save error (bulk or group) | The message in a `role="alert"` paragraph (`people-bulk-bar.tsx:55-59`, `group-manager.tsx:65-69`), e.g. `You already have a group with that name.` (`src/db/groups.ts:44`), `Add a group name.` (`src/people/parse-fields.ts:42`) | Described from the code |
 
 Status tags (`status-tag.ts:9-15`): "On the map" green-text on green-soft; "Needs a look" coral-text on
 coral-soft; "Couldn't find" and "Unsubscribed" muted-ink on surface. The word carries the meaning;
@@ -142,7 +142,7 @@ colour repeats it.
 - `:162`: status cell words are only "Unsubscribed" (an allowlist, not a denylist).
 - `src/app/disabled-state.test.ts:28`: `buttonClass` and `destructiveButtonClass` end with `disabledClass`; no opacity anywhere (:19).
 - `src/people/filter.test.ts:26, 38, 55, 70`: search fields, 250th row found, status+group combine, left-out filter.
-- `src/people/url.test.ts:9-30`: filter URLs. `src/people/export.test.ts:4, 8`: file name, every column.
+- `src/people/url.test.ts:9, 14, 22, 30`: filter URLs. `src/people/export.test.ts:4, 8`: file name, every column.
 - `src/people/people.integration.test.ts:142, 171, 242, 283, 315`: no 250 cap; groups never delete people; soft delete; view-as refused; account isolation.
 - `src/db/soft-delete.integration.test.ts:105, 181`: deleted people leave list and counts; re-import restores with unsubscribe intact.
 - `e2e/screens.ts:58-66` + `e2e/screens.spec.ts:6-18`: both captures must load without "couldn't load" text, and pass `e2e/checks.ts`: no horizontal scroll at 390, 44px tap targets on the phone (links inside a line of text exempt, checkboxes measured by their label), no text under 15px, no clipping.
