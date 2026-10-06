@@ -1,0 +1,176 @@
+# 05 — Known to be imperfect, and not owned
+
+These are things that are wrong or unfinished today and that no work item owns. Each one is
+recorded so a redesign doesn't copy it as if it were intended. Where an item is a design
+problem, a redesign may fix it. Where it is a product or copy decision, it isn't the
+designer's to settle, and the item says so.
+
+Each item says how it is known:
+
+- **Measured**: seen in a browser.
+- **From the code**: read in the source, but not run.
+- **Logged**: already recorded in `docs/audits/reskin-screen-log.md`, "Found, not fixed".
+
+## Product and copy decisions (not a designer's to make)
+
+1. **Assessor facts are shown without their source.** *Logged.*
+   - Review candidate cards show beds, baths and square feet from the county assessor
+     roll with no label saying so.
+   - The email's "Four doors down" block does the same for "Your house", while the
+     listing beside it carries its MLS attribution.
+   - PROJECT_STATE principle 3 says every figure must be legible as county record or MLS.
+   - How assessor data is labelled everywhere is an open product question.
+
+2. **The marketing page does not answer its own comprehension test.** *Logged.*
+   - The test is in PROJECT_STATE validation 3: after ten seconds on the page, an agent
+     should say "it tells me who to call".
+   - The page talks about the note and the tax difference, and never mentions the call
+     list.
+   - A "who to call" hero rewrite exists and has not shipped. That decision is Jerry's.
+
+3. **There is no privacy policy or terms page.** *Logged. No owner; flagged for Jerry.*
+   - Register collects names, emails and phone numbers.
+   - In California this is a CCPA question, not only a missing page.
+   - Nothing links to either page today, and nothing may until they exist. Do not draw a
+     footer with links to them.
+
+4. **The "Four doors down" listing never appears in a real email.** *From the code.*
+   - The block compares a nearby MLS listing with the homeowner's house. It renders only
+     in fixtures, the sample page and the settings sample.
+   - Real sends always pass no listing: `src/digest/build-input.ts:174` sets
+     `nearbyListing: null`.
+   - Design it as a real block, but know that agents do not see it in their homeowners'
+     mail today.
+
+5. **The MLS listing shows a status but no date.** *From the code.*
+   - CLAUDE.md says MLS figures carry a status and a date.
+   - The block renders status and price (`src/digest/blocks/four-doors.ts:26`), but not
+     the listing date, which the data has (`src/digest/types.ts:48`).
+   - The sentence also reads "is active listed at $1,065,000." with no comma.
+
+6. **The email footer's "Update this address" goes to the unsubscribe page.** *From the
+   code.* Both footer links are replaced with the same URL (`src/unsubscribe/links.ts:36-37`).
+   That page does have an address form at the top, so the link isn't dead. It just isn't
+   a separate destination.
+
+7. **Weakly held copy.**
+   - Much of the review-queue and person-edit copy is held only as named constants, not
+     as the words themselves. A test checks the constant is used, not what it says.
+   - Several strings have no test at all, including:
+     - "Log out"
+     - the view-as banner
+     - the cancel screen's `<h1>`
+     - Billing's status words
+     - the password error lines on register
+   - Each screen file marks these. Treat them as fixed anyway, and route rewording
+     through a copy pass.
+
+## Design problems a redesign may fix
+
+8. **Standalone links can be under 44px on a phone, and the check passes them.**
+   *Measured at 390px in OR-039.*
+   - The tap-size test treats a link as "inline in a sentence" whenever its nearest block
+     holds any other text (`e2e/checks.ts:34-40`).
+   - That exempts every link placed directly in a page column. Measured:
+     - "See the sample note", the home page's primary button: 39px.
+     - "Create an account" on /login: 23px.
+     - "Sign in" on /register: 23px.
+     - "Back" on /sample: 23px.
+     - "Keep my plan" on cancel: 23px.
+     - "Settings" on Billing: 19px.
+   - Make every standalone link 44px tall on phones.
+   - The check itself is a code change for a separate packet. This is the twelfth check
+     on the project found checking less than its name says (`01-constraints.md` §1.2).
+
+9. **A disabled add-on switch looks live.** *From the code.*
+   - Its only disabled styling is the cursor (`src/app/app/addons/addon-switch.tsx:19`).
+   - During a save, or for an admin in view-as, it looks like a working switch.
+   - It should take the disabled look from `02-system.md`. It must still not make an
+     *off* switch look unavailable (`01-constraints.md` §3.3).
+
+10. **The view-as banner may cover the top bar on a phone.** *From the code.*
+    - The banner is fixed at the top. With its 44px Exit button and padding it is at
+      least 68px tall on a phone.
+    - The page below is only pushed down 56px (`src/app/app/layout.tsx`, `pt-14`).
+    - It isn't captured, because the seed has no admin.
+
+11. **The review queue can say "done" too early.** *From the code.*
+    - "Review this match" on a person's page opens the queue part-way through.
+    - Deciding moves forward and never wraps back. After the last person, the done screen
+      shows, even though people before the starting point are still waiting
+      (`src/app/app/people/review/review-queue.tsx:45, 61-63, 108`).
+    - It is a behaviour bug, not a design one. Don't design around it.
+
+12. **Asking for a person not in the queue opens someone else.** *From the code.*
+    `/app/people/[id]/review` for a person who is already matched or left out opens the
+    first person in the queue instead (`review/page.tsx:41-43`).
+
+13. **Empty call list with no next action.** *From the code.*
+    - If all three names this month are marked "Not now", nothing renders under "Worth a
+      call this month", and the month is not counted as quiet
+      (`src/app/app/call-list-view.ts:50-75`).
+    - The quiet-month line, "Quiet month. That happens.", names no next action either.
+    - Both fall short of the four-states rule (`01-constraints.md` §3.4).
+
+14. **The send card can carry two actions.** *From the code.* In the scheduled state it
+    has "Preview it" and "Skip this month". The card's own definition says at most one
+    action (`src/app/app/people/ui.ts`, `sendCardClass`).
+
+15. **The review error screen has no link back.** *From the code.* It says to go back to
+    your people, but offers only "Try again".
+
+16. **Import stays enabled with an incomplete column mapping.** *From the code.* Rows
+    with an unmapped address come back as skipped. The server's "Tell us which column…"
+    message can't be reached from the form.
+
+17. **Focus does not move after an action.** *From the code.*
+    - On review, import and start, nothing moves focus after a choice, a save or a
+      result.
+    - A keyboard or screen-reader user stays where they were while the screen changes
+      below.
+
+18. **Markup quirks.** *From the code.*
+    - The import tabs have `role="tab"` without arrow keys or a tab panel.
+    - The no-parcel panel puts its input and its Save button inside one `<label>`.
+    - `import-form.tsx` keeps its own field style, not the shared `fieldClass`.
+    - On register, the password input has no accessible label, because "Password" is a
+      plain `<p>` (`src/app/register/register-form.tsx:59`), and the requirements list
+      isn't tied to it.
+
+19. **The Desktop / Phone toggle on the email preview does nothing on a phone.** *From
+    the code.*
+    - At 390px both widths shrink to the column (`src/app/digest/preview-panel.tsx`).
+    - On a phone it's close to a dead control (CLAUDE.md invariant 1).
+    - Hide it or make it say something there.
+
+20. **Same labels, opposite controls.** *From the code.* On Billing, "Cancel my plan" is
+    a link and "Keep my plan" is a filled button that undoes a pending cancel. On the
+    cancel screen it is the other way round. Each is right where it is. A redesign
+    should keep the two screens recognisably different.
+
+21. **"Text me a code" blames the number when texting is off.** *From the code.* With
+    texting turned off, it says "We could not send the code. Check the number and try
+    again."
+
+22. **The People selection survives a filter change.** *From the code.* Bulk actions
+    may act on people the current filter hides. Not checked in a browser.
+
+23. **/sample has no `<h1>`.** Its only heading is the preview panel's `<h2>`.
+
+24. **The unsubscribe page puts the emphasis on "Update my address".**
+    - A CSS rule makes the first form's button 18px bold
+      (`src/unsubscribe/html.ts:69`), and the first form is the address form.
+    - Nothing records whether stopping or updating should carry the weight.
+    - The page's colours are outside the colour scan, which covers `src/app` only.
+
+## Smaller things
+
+- `src/app/fonts/fonts.ts` says Fraunces is "used nowhere yet". Since OR-038 it is used on
+  the home `<h1>`. This is a stale comment.
+- The home page types "Oakdale" by hand (`src/app/home-story.tsx:24`). The email derives
+  the street name from the address. The shared-story test checks the figures, not that
+  word.
+- The `start` capture shows whichever MLS ID the last browser run searched for, not the
+  seed's, because a search saves the ID to the account.
+- The edit screen and the per-person review entry are not in the browser pass, so none of
+  the 390px checks run on them.
