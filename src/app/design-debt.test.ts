@@ -62,7 +62,8 @@ const PALETTE = 'slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|gree
 const FUNCTIONAL = 'rgba?|hsla?|hwb|lab|lch|oklab|oklch|color-mix|color'
 const RULES = [
   /#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3,4})(?![0-9a-zA-Z_-])/g,
-  new RegExp(`(?<![\\w.-])(?:${FUNCTIONAL})\\([^()]*(?:\\([^()]*\\)[^()]*)*\\)`, 'g'),
+  // Not \w: Tailwind writes spaces as _, so shadow-[0_8px_rgba(…)] has an underscore before rgba.
+  new RegExp(`(?<![A-Za-z0-9.-])(?:${FUNCTIONAL})\\([^()]*(?:\\([^()]*\\)[^()]*)*\\)`, 'g'),
   new RegExp(`(?<![\\w-])${UTILITY}-[a-z]+(?:-[a-z]+)*(?:-\\d{2,3})?\\/\\d{1,3}(?![\\w-])`, 'g'),
   new RegExp(`(?<![\\w-])${UTILITY}-(?:white|black|(?:${PALETTE})-\\d{2,3})(?![\\w/-])`, 'g'),
   // A CSS colour keyword as an arbitrary value (text-[red]) or a quoted value in a style prop
@@ -132,6 +133,8 @@ test('the scan matches a colour however it is written, and leaves tokens alone',
     'text-foreground/70', 'border-black/10', 'text-gray-500', 'bg-white', 'text-[red]', 'bg-[color:navy]',
   ]
   for (const colour of colours) expect(Object.keys(coloursInText(` ${colour} `)), colour).toEqual([colour])
+  // Inside a Tailwind arbitrary value, where it actually arrives: the export's ink shadow.
+  expect(Object.keys(coloursInText('shadow-[0_18px_44px_-40px_rgba(14,23,41,0.4)]'))).toEqual(['rgba(14,23,41,0.4)'])
   for (const style of ["color: 'red'", 'backgroundColor: "white"']) {
     expect(Object.keys(coloursInText(`style={{ width: 1, ${style} }}`)), style).toEqual([style])
   }
