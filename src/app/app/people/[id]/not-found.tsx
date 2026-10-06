@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { linkClass } from '@/app/app/people/ui'
 
 export default function PersonNotFound() {
   return (
@@ -7,7 +8,7 @@ export default function PersonNotFound() {
       <p className="mt-3 max-w-xl text-[15px]">They may have been removed from your list.</p>
       <p className="mt-6">
         <Link
-          className="tap text-[15px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className={`tap ${linkClass}`}
           href="/app/people"
         >
           Back to your people

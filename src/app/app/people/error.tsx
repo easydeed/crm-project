@@ -1,5 +1,7 @@
 'use client'
 
+import { linkClass } from '@/app/app/people/ui'
+
 export default function PeopleError({
   reset,
 }: {
@@ -13,7 +15,7 @@ export default function PeopleError({
         Try again. If it keeps happening, sign out and sign in.
       </p>
       <button
-        className="mt-6 text-[15px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        className={`${linkClass} mt-6`}
         type="button"
         onClick={reset}
       >

@@ -5,6 +5,7 @@ import { ViewAsBanner } from '@/app/app/view-as-banner'
 import { logoutAction } from '@/app/login/actions'
 import { readRequestSession } from '@/auth/current-session'
 import { getAccountById } from '@/db/accounts'
+import { linkClass } from '@/app/app/people/ui'
 
 export default async function AppLayout({
   children,
@@ -25,7 +26,7 @@ export default async function AppLayout({
       <TopBar />
       <form action={logoutAction} className="px-4 pt-2">
         <button
-          className="text-[15px] text-foreground underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+          className={linkClass}
           type="submit"
         >
           Log out

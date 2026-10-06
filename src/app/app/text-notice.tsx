@@ -1,7 +1,6 @@
 import Link from 'next/link'
+import { linkClass } from '@/app/app/people/ui'
 import type { TextNotice } from '@/text/text-notice'
-
-const linkClass = 'underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
 
 /** One plain line when texting the call list stopped on its own. */
 export function TextNoticeLine({ notice }: { notice: TextNotice }) {

@@ -8,13 +8,15 @@ import { expect, test } from 'vitest'
  * The list fails both ways: a copy not listed is new, and a listed copy that is gone must be
  * deleted from here. Each entry names who removes it.
  */
-const LISTED: Record<string, string> = {
-  'app/home-card.tsx': 'final sweep: a <Link> styled as a button on the dashboard',
-  'app/home-billing-card.tsx': 'final sweep: a <Link> styled as a button on the dashboard',
-  'home-story.tsx': 'final sweep: the marketing page',
-}
+const LISTED: Record<string, string> = {}
 
 const PRIMARY = 'rounded-md bg-foreground px-4 py-2 text-[15px] text-background'
+const LINK = 'underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+
+/** Copies of linkClass's string (OR-037), the same way. The banner is exempt from the visual system. */
+const LINK_LISTED: Record<string, string> = {
+  'app/view-as-banner.tsx': 'exempt: white on INK_COLOR, deliberately outside the visual system',
+}
 const appRoot = path.dirname(fileURLToPath(import.meta.url))
 
 function sourceFiles(dir = ''): string[] {
@@ -32,4 +34,11 @@ test('buttonClass is defined once; the only copies of its string are the listed 
   expect(carrying).toContain('app/people/ui.ts')
   const copies = carrying.filter((file) => file !== 'app/people/ui.ts').sort()
   expect(copies).toEqual(Object.keys(LISTED).sort())
+})
+
+test('linkClass is defined once; the only copies of its string are the listed ones', () => {
+  const carrying = sourceFiles().filter((file) => readFileSync(path.join(appRoot, file), 'utf8').includes(LINK))
+  expect(carrying).toContain('app/people/ui.ts')
+  const copies = carrying.filter((file) => file !== 'app/people/ui.ts').sort()
+  expect(copies).toEqual(Object.keys(LINK_LISTED).sort())
 })

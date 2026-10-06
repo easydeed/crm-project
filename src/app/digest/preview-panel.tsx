@@ -28,7 +28,7 @@ function ToggleGroup({
         return (
           <button
             key={option.value}
-            className={`${toggleClass} ${on ? 'bg-foreground text-background' : 'border border-foreground/20'}`}
+            className={`${toggleClass} ${on ? 'bg-foreground text-background' : 'border border-border'}`}
             type="button"
             aria-pressed={on}
             onClick={() => onChange(option.value)}
@@ -73,12 +73,12 @@ export function DigestPreviewFrame({ html, text }: { html: string; text: string 
           srcDoc={html}
           width={size}
           height={640}
-          className="max-w-full border border-foreground/20 bg-white motion-reduce:transition-none"
+          className="max-w-full border border-rule bg-white motion-reduce:transition-none"
           style={{ width: size }}
         />
       ) : (
         <pre
-          className="max-w-full overflow-x-auto whitespace-pre-wrap border border-foreground/20 bg-white p-4 text-[15px] text-foreground"
+          className="max-w-full overflow-x-auto whitespace-pre-wrap border border-rule bg-background p-4 text-[15px] text-foreground"
           style={{ width: size }}
         >
           {text}

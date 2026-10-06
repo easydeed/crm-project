@@ -28,6 +28,7 @@ old threshold. OR-030's five muted-text screens are the change it would have hid
 | OR-034 settings and billing | 7d45063 → 0cc5c9d | settings | settings only | The details, appearance and sending inputs on the shared fieldClass (--border, 1.53:1 to 3.61:1 light), and Muted helper lines in --muted-ink. One region, and the page keeps its size. The read-only email field still shows no border. billing and billing-cancel are byte-identical: their buttonClass and linkClass copies differed only in focus colour and disabled state, and neither is captured. |
 | OR-035 start and import | 0e6e759 → 06e79ed | import, start, start-few, start-found, start-malformed, start-nothing | The same six | No page changed size. import, start and start-nothing: one region, the drop zone (dashed --border, 1.96:1 to 3.61:1 light) and the file input outline (--border). start-few and start-found also take the closings list dividers (--rule). start-malformed also takes the where-to-find panel edge (--rule). The skeleton is not captured. The framing sentences did not move. |
 | OR-036 sign in and create account | 57244ab → 9179033 | login, register (of 20) | login and register only | The parent is OR-036's capture-only commit, so both screens have a real before. Each diff is confined to the inputs: the shared fieldClass outline (--border, 1.53:1 to 3.61:1 light). No page changed size. The other 18 screens are byte-identical. |
+| OR-037 final sweep | 477521e → e3b2fb6 | login, register, settings, people, people-bulk-bar, person-detail (of 20) | settings, login, register, person-detail; "any other screen Decision B moves" | login and register: the new <h1> moves the form down. The rest is fieldClass becoming a block, so labels sit above their inputs: settings +225px, people and people-bulk-bar +22px (Search), person-detail +22px (Group name). person-detail was predicted for the email preview, but the seeded person has no note this month, so no preview frame is captured. The preview fix (dark mode) is in no capture. dashboard is byte-identical. |
 
 ## Shared classes move screens early
 
@@ -41,6 +42,8 @@ change in a packet that does not own that screen. That is expected, and each pac
   fieldClass (settings/field.ts, OR-034) and did not move.
 - OR-033a: buttonClass's disabled state (disabledClass) moved every captured screen that shows a
   disabled button: import, the five /app/start screens and people-bulk-bar.
+- OR-037: fieldClass became a block, which moved settings, people, people-bulk-bar and person-detail.
+  It also reaches the uncaptured person edit form, the review queue's no-parcel panel and the group forms.
 
 OR-031's fieldClass change is an accessibility fix that arrived early, not styling that leaked.
 The input outline, against the page behind it:
@@ -78,60 +81,20 @@ decision closes it.
   assessor data is labelled everywhere, not one screen's copy. It is not colour debt, and no
   packet owns it.
 
-- **Inline copies of linkClass's string (raised in OR-033a).** There were 21 copies outside /admin.
-  OR-034 fixed six (settings and billing), OR-035 four (start and import) and OR-036 two (login and
-  register). The 9 that remain go to the final sweep.
-  linkClass is `text-[15px] underline underline-offset-4` plus the focus ring. None is colour debt:
-  every copy draws in the same colour.
-  - "Identical": the string is linkClass's, letter for letter.
-  - "+mt-6": linkClass plus a margin. It becomes `` `${linkClass} mt-6` ``, as OR-032 and OR-033 did.
-  - "no 15px": the copy lacks `text-[15px]`. It sits inside 15px text, so swapping it moves
-    nothing. Check that before the swap.
-  - The rest are deliberate variants. Keep them as variants, or build them on linkClass. Don't
-    flatten them.
+- **Closed in OR-037, the final sweep.** Each item is enforced now, not just listed:
+  - The 21 inline linkClass copies and the six buttonClass copies are gone. shared-classes.test.ts
+    checks the whole tree for both. The buttonClass list is empty. The linkClass list holds only
+    the exempt view-as banner.
+  - Both auth pages have an `<h1>` ("Sign in", "Create your account").
+  - Labels sit above their inputs everywhere: fieldClass is a block.
+  - The tokens-only scan covers all of src/app. Widening it found two things the directory list had
+    hidden:
+    - src/app/digest/preview-panel.tsx drew its plain-text email preview as #ededed on white in dark
+      mode (1.17:1), on four screens. Fixed.
+    - /admin carried table borders in eight files that the "permanent" entries never recorded. They
+      are listed now.
 
-  | Owner | File | Differs from linkClass |
-  |---|---|---|
-  | final sweep | app/error.tsx | +mt-6 |
-  | final sweep | app/home-card.tsx | identical |
-  | final sweep | app/layout.tsx ("Log out") | adds `text-foreground focus-visible:outline-foreground` |
-  | final sweep | app/text-notice.tsx (a local `linkClass`) | no 15px |
-  | final sweep | app/people/error.tsx | +mt-6 |
-  | final sweep | app/people/[id]/error.tsx | +mt-6 |
-  | final sweep | app/people/[id]/not-found.tsx | "tap" variant |
-  | final sweep | sample/page.tsx | identical |
-  | final sweep | home-story.tsx | identical |
-
-  Not copies, and left out of the table:
-  - import-form.tsx's selected tab underlines a tab; it is not a link.
-  - view-as-banner.tsx is exempt (white on INK_COLOR).
-  - /admin stays unstyled.
-
-- **Copies of buttonClass's string (raised in OR-034).** Three remain outside /admin, all on
-  `<Link>`s, which never take a disabled state. `src/app/shared-classes.test.ts` lists them and fails
-  both ways.
-  - app/home-card.tsx and app/home-billing-card.tsx: dashboard links styled as buttons. They add
-    `mt-6 inline-block` and lack the focus colour. Final sweep.
-  - home-story.tsx: the marketing page. It adds `inline-block`. Final sweep, with its linkClass copy.
-
-- **Neither auth page has an `<h1>` (raised in OR-036).** On /login and /register the wordmark
-  "onrecord" is a `<p>` and the form has no heading, so a screen reader's first heading jump lands
-  nowhere. That is an accessibility defect. The fix adds words ("Sign in", "Create your account"),
-  so it is copy and structure, not colour. Final sweep.
-
-### Inherited by the final sweep
-
-After OR-036, design-debt.test.ts holds only the permanent admin entries. What is left is one
-packet:
-
-- the 9 linkClass copies in the table above
-- the 3 buttonClass copies (home-card, home-billing-card, home-story; shared-classes.test.ts
-  lists them)
-- the missing `<h1>` on /login and /register
-- the settings forms' labels beside their inputs on desktop (from OR-034)
-
-Not the sweep's to fix, but still open: the unlabelled assessor facts. That is a product decision
-about labelling, recorded above.
+What remains open is the unlabelled assessor facts, a product decision recorded above.
 
 ## How to measure a packet
 
