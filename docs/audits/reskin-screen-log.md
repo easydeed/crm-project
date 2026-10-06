@@ -1,7 +1,7 @@
 # Re-skin: which desktop screens each packet changed
 
 The exact record, from OR-030a on. Each row compares fresh desktop captures (1440×900, every screen in
-`e2e/screens.ts`: 18 until OR-036 added /login and /register, signed out, for 20) of a packet's parent commit and its merge. Every file is rewritten
+`e2e/screens.ts`: 18 until OR-036 added /login and /register, signed out, for 20; 23 from OR-038, which added /, /sample and /sample's plain text in dark mode) of a packet's parent commit and its merge. Every file is rewritten
 (`--update-snapshots=all`), the database is reseeded before each capture, and the two sets are
 compared byte for byte. Two captures of one build are byte-identical, so a differing file is a real
 change.
@@ -29,6 +29,7 @@ old threshold. OR-030's five muted-text screens are the change it would have hid
 | OR-035 start and import | 0e6e759 → 06e79ed | import, start, start-few, start-found, start-malformed, start-nothing | The same six | No page changed size. import, start and start-nothing: one region, the drop zone (dashed --border, 1.96:1 to 3.61:1 light) and the file input outline (--border). start-few and start-found also take the closings list dividers (--rule). start-malformed also takes the where-to-find panel edge (--rule). The skeleton is not captured. The framing sentences did not move. |
 | OR-036 sign in and create account | 57244ab → 9179033 | login, register (of 20) | login and register only | The parent is OR-036's capture-only commit, so both screens have a real before. Each diff is confined to the inputs: the shared fieldClass outline (--border, 1.53:1 to 3.61:1 light). No page changed size. The other 18 screens are byte-identical. |
 | OR-037 final sweep | 477521e → e3b2fb6 | login, register, settings, people, people-bulk-bar, person-detail (of 20) | settings, login, register, person-detail; "any other screen Decision B moves" | login and register: the new <h1> moves the form down. The rest is fieldClass becoming a block, so labels sit above their inputs: settings +225px, people and people-bulk-bar +22px (Search), person-detail +22px (Group name). person-detail was predicted for the email preview, but the seeded person has no note this month, so no preview frame is captured. The preview fix (dark mode) is in no capture. dashboard is byte-identical. |
+| OR-038 marketing | 62b765e → cb9a03a | home (of 23) | home only; sample and sample-text-dark byte-identical | The parent is OR-038's capture-only commit, so all three new screens have a real before. One region, x 447–971, y 208–696: the <h1> in Fraunces 500 at 40px wraps to two taller lines, and the column is centred vertically, so the wordmark rises and the story, button and links move down. No words, colours or controls changed. sample-text-dark puts the OR-037 dark-mode fix in a capture, and its prepare step fails if the plain text sits on white (tried on a fresh build). **The re-skin is complete.** |
 
 ## Shared classes move screens early
 
@@ -94,7 +95,20 @@ decision closes it.
     - /admin carried table borders in eight files that the "permanent" entries never recorded. They
       are listed now.
 
-What remains open is the unlabelled assessor facts, a product decision recorded above.
+- **The marketing page does not answer the comprehension test (raised in OR-038).** PROJECT_STATE
+  validation 3 expects "it tells me who to call" after ten seconds on the page. The page talks
+  about the note and the tax difference and never mentions the call list. The Director's "who to
+  call" hero rewrite exists and has not shipped. This is a copy decision for Jerry, not a re-skin
+  one. OR-038 changed no words.
+
+- **No privacy policy or terms page (raised in OR-038). No owner; flagged for Jerry.** Register
+  collects names, emails and phone numbers, and neither page exists in src/app. In California this
+  is a CCPA question, not only a missing page. src/app links to neither page, so there is no dead
+  link today. The export's footer links to both, and that is why OR-038 took no footer. Nothing
+  may link to these pages, and no support or privacy address may be invented, until they exist.
+
+What remains open: the unlabelled assessor facts, the comprehension gap and the missing privacy
+and terms pages, all product decisions recorded above.
 
 ## How to measure a packet
 

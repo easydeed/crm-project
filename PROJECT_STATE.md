@@ -52,6 +52,8 @@ A test named for a property must check the property, not a list. Two tests on th
 
 Scan trees, not lists. A check scoped to named directories leaves everything outside it unguarded, and nothing announces the gap. The tokens-only scan covered three directories while src/app/digest rendered the email preview at 1.17:1 in dark mode on four screens. Prefer whole-tree coverage with explicit, listed exemptions over an enumerated scope.
 
+Match values, not spellings. The tokens-only scan recognised hex and named utilities but not rgba(), hsl() or any functional notation, so the same colour passed or failed depending on how it was written. A check should match the thing, in every form the thing can take.
+
 ## Rejected ideas — do not rebuild
 
 | Rejected | Reason |
