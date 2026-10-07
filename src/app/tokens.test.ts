@@ -66,6 +66,9 @@ const PAIRS: Array<[string, string, number]> = [
   ['on-bar', 'bar', TEXT],
   ['on-bar-current', 'bar-current', TEXT],
   ['bar-current', 'bar', NON_TEXT],
+  // OR-043: the view-as banner, and its edge against the bar it sits above.
+  ['on-alert', 'alert', TEXT],
+  ['alert', 'bar', NON_TEXT],
 ]
 
 test('every colour token has a light and a dark value', () => {

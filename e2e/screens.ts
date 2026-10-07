@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { expect, type Page } from '@playwright/test'
+import { expect, type BrowserContext, type Page } from '@playwright/test'
 
 const state = JSON.parse(readFileSync('e2e/.state.json', 'utf8')) as { personId: string; unsubscribeToken: string }
 
@@ -8,12 +8,18 @@ type Screen = {
   path: string
   loggedOut?: boolean
   colorScheme?: 'light' | 'dark'
+  /** Signed in as the quiet agent (OR-043) rather than the seeded one. */
+  as?: 'quiet'
   prepare?: (page: Page) => Promise<void>
 }
 
 /** Visit a screen as its viewer sees it: a logged-out screen gets no session cookie, a dark one dark mode. */
 export async function openScreen(page: Page, screen: Screen) {
-  if (screen.loggedOut) await page.context().clearCookies()
+  if (screen.loggedOut || screen.as) await page.context().clearCookies()
+  if (screen.as === 'quiet') {
+    const quiet = JSON.parse(readFileSync('test-results/auth-quiet.json', 'utf8')) as { cookies: Parameters<BrowserContext['addCookies']>[0] }
+    await page.context().addCookies(quiet.cookies)
+  }
   if (screen.colorScheme) await page.emulateMedia({ colorScheme: screen.colorScheme })
   return page.goto(screen.path)
 }
@@ -51,6 +57,10 @@ export const SCREENS: Screen[] = [
   // Dark mode was captured on one screen until OR-042; the bill bar's inversion went unseen for
   // three packets. The dashboard is where the bar tokens, the call tags and the send card meet.
   { name: 'dashboard-dark', path: '/app', colorScheme: 'dark' },
+  // "Been a while" is muted ink on --surface, 4.56:1, the tightest pair in the system. The seeded
+  // agent's list now shows the three live kinds, so the quiet agent keeps this one captured.
+  { name: 'dashboard-quiet', path: '/app', as: 'quiet' },
+  { name: 'dashboard-quiet-dark', path: '/app', as: 'quiet', colorScheme: 'dark' },
   {
     name: 'dashboard-call-open',
     path: '/app',

@@ -4,8 +4,12 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
 
-const linkClass =
-  'tap whitespace-nowrap rounded-md px-3 py-2 text-[15px] text-foreground hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'
+const shape =
+  'tap whitespace-nowrap rounded-md px-3 py-2 text-[16px] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-bar'
+
+/** On the bar (OR-043). The current page is the light pill on the dark bar, in both themes. Each look names one text colour. */
+const restClass = `${shape} font-medium text-on-bar`
+const currentClass = `${shape} bg-bar-current font-semibold text-on-bar-current`
 
 /**
  * A top-bar link that knows whether it is the current page. It reads the pathname and nothing
@@ -17,7 +21,7 @@ export function NavLink({ href, children }: { href: string; children: ReactNode 
   return (
     <Link
       aria-current={current ? 'page' : undefined}
-      className={current ? `${linkClass} bg-blue-soft font-semibold` : linkClass}
+      className={current ? currentClass : restClass}
       href={href}
     >
       {children}
