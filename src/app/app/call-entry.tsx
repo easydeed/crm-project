@@ -6,14 +6,13 @@ import { logCallAction, undoCallAction } from '@/app/app/call-actions'
 import type { CallEntry } from '@/app/app/call-list-view'
 import { CallPanel } from '@/app/app/call-panel'
 import { CALL_TAGS } from '@/app/app/call-tags'
-import { buttonClass, disabledClass, linkClass, mutedClass } from '@/app/app/people/ui'
+import { buttonClass, linkClass, mutedClass, secondaryButtonClass } from '@/app/app/people/ui'
+import { tagClass } from '@/app/app/people/status-tag'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
 
 export const UNDO_SECONDS = 5
 
 type Status = 'open' | 'called' | 'dismissed'
-
-const secondaryClass = `min-h-11 rounded-md border border-border px-4 py-2 text-[15px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground ${disabledClass}`
 
 export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly: boolean }) {
   const router = useRouter()
@@ -80,7 +79,7 @@ export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly:
             {entry.name}
           </p>
           <p className="mt-2">
-            <span className={`inline-block rounded-full px-3 py-0.5 text-[15px] ${tag.className}`} data-tag-color={tag.color}>
+            <span className={`${tagClass} ${tag.className}`} data-tag-color={tag.color}>
               {tag.label}
             </span>
           </p>
@@ -107,7 +106,7 @@ export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly:
           <button className={`${buttonClass} min-h-11`} disabled={pending} onClick={() => act('called')} type="button">
             Mark as called
           </button>
-          <button className={secondaryClass} disabled={pending} onClick={() => act('dismissed')} type="button">
+          <button className={secondaryButtonClass} disabled={pending} onClick={() => act('dismissed')} type="button">
             Not now
           </button>
         </div>

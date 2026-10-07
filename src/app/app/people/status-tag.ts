@@ -1,6 +1,8 @@
 import type { ContactMatchStatus } from '@/people/status'
 
-const tag = 'inline-block rounded-full px-3 py-0.5'
+/** A status or call tag's shape (OR-042): 15px semibold, 8px by 12px, a 6px radius. Colour is the pair beside it. */
+export const tagClass = 'inline-block rounded-sm px-3 py-2 text-[15px] font-semibold leading-none'
+const tag = tagClass
 
 /**
  * A contact's status as a tag. The label carries the meaning; the colour repeats it, using token

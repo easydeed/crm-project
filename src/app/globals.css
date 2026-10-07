@@ -11,12 +11,16 @@
  * control, so it clears 3:1 against both page and surface.
  * Cards take a --rule border, not a shadow. One exception, OR-032: review candidate cards take
  * --border, because on a phone they stack and the outline says which "This one" picks which house.
+ *
+ * The bar (OR-042): the navy surface and the pairs on it. It keeps its own dark values rather than
+ * flipping with --foreground, so a bar stays a dark surface on both pages. The current-page pill is
+ * the light thing on the bar in both themes.
  */
 :root {
   --background: #ffffff;
   --foreground: #0e1729;
   --surface: #f2f5fa;
-  --rule: #dce3ee;
+  --rule: #c9d2e0;
   --border: #7c879d;
   --muted-ink: #63708a;
   --blue: #2f5bff;
@@ -28,6 +32,10 @@
   --green: #0e9f6e;
   --green-text: #087552;
   --green-soft: #e7f6ef;
+  --bar: #0e1729;
+  --on-bar: #ffffff;
+  --bar-current: #ffffff;
+  --on-bar-current: #0e1729;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -35,7 +43,7 @@
     --background: #0a0a0a;
     --foreground: #ededed;
     --surface: #161b24;
-    --rule: #262d3a;
+    --rule: #2e3644;
     --border: #6b7487;
     --muted-ink: #9aa3b5;
     --blue: #7d9bff;
@@ -47,6 +55,10 @@
     --green: #0e9f6e;
     --green-text: #4fd6a1;
     --green-soft: #0f2e22;
+    --bar: #202b4f;
+    --on-bar: #ededed;
+    --bar-current: #ededed;
+    --on-bar-current: #0a0a0a;
   }
 }
 
@@ -66,6 +78,10 @@
   --color-green: var(--green);
   --color-green-text: var(--green-text);
   --color-green-soft: var(--green-soft);
+  --color-bar: var(--bar);
+  --color-on-bar: var(--on-bar);
+  --color-bar-current: var(--bar-current);
+  --color-on-bar-current: var(--on-bar-current);
 
   /* Inter everywhere. Fraunces is the marketing page's serif and nothing else's. */
   --font-sans: var(--font-inter), var(--font-inter-latin-ext), var(--font-inter-vietnamese), ui-sans-serif, system-ui, sans-serif;

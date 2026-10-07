@@ -200,7 +200,7 @@ The comment at `tokens.test.ts:45-48` names what depends on the tightest one. If
 
 ### 2.5 `--rule` is decorative; `--border` outlines something you act on
 
-- **Rule.** `--rule` (1.29:1) is for dividers and card edges that only organise the page.
+- **Rule.** `--rule` (1.52:1) is for dividers and card edges that only organise the page.
   `--border` (3.61:1) outlines a control, or anything whose edge tells you where to act.
 - **Why.** A swap from an old tint to `--rule` once made a file drop zone fainter than it
   had been. The principle is that **a token swap must not make something fainter than it

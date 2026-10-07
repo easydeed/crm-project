@@ -60,6 +60,12 @@ const PAIRS: Array<[string, string, number]> = [
   ['green', 'background', NON_TEXT],
   ['green', 'surface', NON_TEXT],
   ['blue', 'surface', NON_TEXT],
+  // OR-042: a text link on --surface (a called row, a panel strip). Never on --blue-soft (4.42:1).
+  ['blue', 'surface', TEXT],
+  // OR-042: the bar, its words and focus ring, and the current-page pill on it.
+  ['on-bar', 'bar', TEXT],
+  ['on-bar-current', 'bar-current', TEXT],
+  ['bar-current', 'bar', NON_TEXT],
 ]
 
 test('every colour token has a light and a dark value', () => {

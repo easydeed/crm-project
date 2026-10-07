@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
-import { buttonClass, destructiveButtonClass, disabledClass } from '@/app/app/people/ui'
+import { buttonClass, destructiveButtonClass, disabledClass, secondaryButtonClass } from '@/app/app/people/ui'
 
 /** OR-033a. A disabled control looks unavailable in checked pairs; nothing in the app uses opacity. */
 const appRoot = path.dirname(fileURLToPath(import.meta.url))
@@ -37,7 +37,10 @@ test('disabled is --surface, --muted-ink and a --border ring: pairs the contrast
   expect(pairs, `${ring} on ${fill}`).toContain(`['${ring}', '${fill}', NON_TEXT]`)
   expect(buttonClass.endsWith(` ${disabledClass}`)).toBe(true)
   expect(destructiveButtonClass.endsWith(` ${disabledClass}`)).toBe(true)
-  expect(read('app/call-entry.tsx')).toMatch(/const secondaryClass = `[^`]* \$\{disabledClass\}`/)
+  // OR-042: call-entry's local secondaryClass became the shared secondaryButtonClass.
+  expect(secondaryButtonClass.endsWith(` ${disabledClass}`)).toBe(true)
+  expect(read('app/call-entry.tsx')).toContain('className={secondaryButtonClass}')
+  expect(read('app/call-entry.tsx')).not.toMatch(/const \w*[sS]econdary\w*Class\s*=/)
 })
 
 test('primary buttons use buttonClass, not a copy of its string', () => {

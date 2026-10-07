@@ -41,7 +41,8 @@ export function tagOf(jsx: Jsx, element: Element) {
   return opening(element).tagName.getText(jsx.source)
 }
 
-function elements(jsx: Jsx): Element[] {
+/** Every JSX element in the file. */
+export function elements(jsx: Jsx): Element[] {
   const found: Element[] = []
   walk(jsx.source, (node) => {
     if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) found.push(node)
@@ -144,10 +145,12 @@ function strings(jsx: Jsx, expression: ts.Expression): string[] {
     return parts
   }
   if (ts.isIdentifier(expression)) {
+    // A constant declared in the file wins over a shared one of the same name, as it does in the
+    // module: nav-link.tsx has its own `linkClass`, which is not ui.ts's.
     const name = expression.getText(jsx.source)
-    if (typeof SHARED[name] === 'string') return [SHARED[name] as string]
     const local = localConstant(jsx, name)
     if (local) return strings(jsx, local)
+    if (typeof SHARED[name] === 'string') return [SHARED[name] as string]
   }
   return ['{?}']
 }

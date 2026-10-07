@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
+import { buttonClass, destructiveButtonClass, linkBaseClass, secondaryButtonClass } from '@/app/app/people/ui'
 
 /**
  * OR-034. Copies of buttonClass's string, across src/app outside /admin (unstyled by decision).
@@ -10,8 +11,12 @@ import { expect, test } from 'vitest'
  */
 const LISTED: Record<string, string> = {}
 
-const PRIMARY = 'rounded-md bg-foreground px-4 py-2 text-[15px] text-background'
-const LINK = 'underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+// OR-042: read from ui.ts, never typed here. A literal copy of the old buttonClass stopped finding
+// copies the moment buttonClass changed: it checked a frozen string, not the shared one.
+const visible = (value: string) => value.slice(0, value.includes(' disabled:') ? value.indexOf(' disabled:') : undefined)
+const PRIMARY = visible(buttonClass)
+const OUTLINED = visible(secondaryButtonClass).replace(' text-foreground', '')
+const LINK = linkBaseClass.replace('text-[15px] ', '')
 
 /** Copies of linkClass's string (OR-037), the same way. The banner is exempt from the visual system. */
 const LINK_LISTED: Record<string, string> = {
@@ -30,7 +35,12 @@ function sourceFiles(dir = ''): string[] {
 test('buttonClass is defined once; the only copies of its string are the listed ones', () => {
   const files = sourceFiles()
   expect(files.length).toBeGreaterThan(100)
-  const carrying = files.filter((file) => readFileSync(path.join(appRoot, file), 'utf8').includes(PRIMARY))
+  const carrying = files.filter((file) => {
+    const text = readFileSync(path.join(appRoot, file), 'utf8')
+    return text.includes(PRIMARY) || text.includes(OUTLINED)
+  })
+  expect(OUTLINED).toContain('border-border')
+  expect(destructiveButtonClass.startsWith(OUTLINED)).toBe(true)
   expect(carrying).toContain('app/people/ui.ts')
   const copies = carrying.filter((file) => file !== 'app/people/ui.ts').sort()
   expect(copies).toEqual(Object.keys(LISTED).sort())

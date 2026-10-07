@@ -48,6 +48,9 @@ export const SCREENS: Screen[] = [
   { name: 'login', path: '/login', loggedOut: true },
   { name: 'register', path: '/register', loggedOut: true },
   { name: 'dashboard', path: '/app' },
+  // Dark mode was captured on one screen until OR-042; the bill bar's inversion went unseen for
+  // three packets. The dashboard is where the bar tokens, the call tags and the send card meet.
+  { name: 'dashboard-dark', path: '/app', colorScheme: 'dark' },
   {
     name: 'dashboard-call-open',
     path: '/app',
@@ -71,6 +74,7 @@ export const SCREENS: Screen[] = [
   { name: 'billing', path: '/app/settings/billing' },
   { name: 'billing-cancel', path: '/app/settings/billing/cancel' },
   { name: 'addons', path: '/app/addons' },
+  { name: 'addons-dark', path: '/app/addons', colorScheme: 'dark' },
   {
     name: 'addons-lender-form',
     path: '/app/addons',
