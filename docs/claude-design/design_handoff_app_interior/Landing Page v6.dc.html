@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script src="./image-slot.js"></script>
+<style>
+body{margin:0;background:#0e1729;-webkit-font-smoothing:antialiased;}
+a{color:inherit;}
+a:hover{color:inherit;}
+button{font:inherit;cursor:pointer;}
+html{scroll-behavior:smooth;}
+</style>
+</helmet>
+
+<div style="font-family:'Archivo',sans-serif;color:#ffffff;background:#0e1729;overflow:hidden;">
+
+  <header data-screen-label="Header" style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:28px clamp(20px,4vw,48px) 0;">
+    <div style="font:800 22px 'Archivo';letter-spacing:-.02em;">onrecord</div>
+    <nav style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;">
+      <a href="#how" style="font:500 15px 'Archivo';color:#9aa3b5;text-decoration:none;padding:12px 12px;" style-hover="color:#ffffff;">How it works</a>
+      <a href="#features" style="font:500 15px 'Archivo';color:#9aa3b5;text-decoration:none;padding:12px 12px;" style-hover="color:#ffffff;">Features</a>
+      <a href="#sample" style="font:500 15px 'Archivo';color:#9aa3b5;text-decoration:none;padding:12px 12px;" style-hover="color:#ffffff;">Sample email</a>
+      <a href="#price" style="font:500 15px 'Archivo';color:#9aa3b5;text-decoration:none;padding:12px 12px;" style-hover="color:#ffffff;">Price</a>
+      <a href="#" style="font:500 15px 'Archivo';color:#9aa3b5;text-decoration:none;padding:12px 12px;" style-hover="color:#ffffff;">Sign in</a>
+      <a href="#" style="margin-left:8px;font:700 15px 'Archivo';color:#0e1729;background:#ffffff;text-decoration:none;padding:12px 18px;border-radius:999px;">Start for $19</a>
+    </nav>
+  </header>
+
+  <section data-screen-label="01 Hero" style="position:relative;max-width:1280px;margin:0 auto;padding:clamp(48px,8vw,96px) clamp(20px,4vw,48px) clamp(64px,9vw,112px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:56px;align-items:center;">
+    <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;color:rgba(255,255,255,.10);font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.14em;white-space:nowrap;">
+      <div style="position:absolute;left:-4%;top:14%;width:58%;transform:rotate(-7deg);border-top:1px solid currentColor;padding-top:6px;">N 47°30' E &nbsp;&nbsp; 128.40'</div>
+      <div style="position:absolute;left:54%;top:6%;transform:rotate(-7deg);">LOT 14 &nbsp;·&nbsp; TRACT NO. 2571</div>
+      <div style="position:absolute;right:-6%;top:64%;width:52%;transform:rotate(5deg);border-top:1px solid currentColor;padding-top:6px;text-align:right;">S 88°10' W &nbsp;&nbsp; 214.60'</div>
+      <div style="position:absolute;left:4%;bottom:9%;width:38%;transform:rotate(3deg);border-top:1px solid currentColor;padding-top:6px;">N 02°14' W &nbsp;&nbsp; 96.00'</div>
+      <div style="position:absolute;left:34%;top:46%;width:1px;height:38%;border-left:1px dashed currentColor;transform:rotate(12deg);"></div>
+    </div>
+    <div style="position:relative;display:flex;flex-direction:column;gap:28px;">
+      <div style="font:600 13px 'IBM Plex Mono',monospace;color:#9aa3b5;letter-spacing:.1em;">FOR CALIFORNIA AGENTS · $19 A MONTH</div>
+      <h1 style="margin:0;font:900 clamp(72px,11vw,152px)/0.86 'Archivo';letter-spacing:-.03em;">Three<br>calls.</h1>
+      <p style="margin:0;font:500 clamp(19px,2vw,24px)/1.35 'Archivo';color:#ededed;max-width:540px;text-wrap:pretty;">Every month, onrecord emails your past clients about their own house, using what the county recorded. Then it tells you which three of them to call, and why.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
+        <a href="#" style="font:800 18px 'Archivo';color:#0e1729;background:#ffffff;text-decoration:none;padding:20px 30px;border-radius:16px;" style-hover="transform:translateY(-2px);">Start for $19 a month</a>
+        <a href="#how" style="font:700 17px 'Archivo';color:#ffffff;text-decoration:underline;text-underline-offset:5px;padding:20px 14px;">How it works</a>
+      </div>
+    </div>
+
+    <div style="position:relative;height:620px;max-width:520px;width:100%;justify-self:center;">
+      <sc-for list="{{ heroCards }}" as="c" hint-placeholder-count="3">
+        <div onMouseEnter="{{ c.onEnter }}" style="position:absolute;left:{{ c.left }};top:{{ c.top }};width:78%;height:420px;border-radius:24px;padding:22px;display:flex;flex-direction:column;background:oklch(0.80 0.12 82);color:#0e1729;overflow:hidden;transform:rotate({{ c.rot }});z-index:{{ c.z }};transition:transform .35s cubic-bezier(.2,.8,.2,1),top .35s cubic-bezier(.2,.8,.2,1);box-shadow:0 30px 60px -20px rgba(0,0,0,.55);">
+          <image-slot id="hero-house-{{ c.num }}" shape="rounded" radius="14" placeholder="{{ c.photo }}" style="width:100%;height:124px;flex-shrink:0;margin-bottom:16px;"></image-slot>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <span style="font:900 48px/0.9 'Archivo';letter-spacing:-.025em;color:#0e1729;">{{ c.num }}</span>
+            <span style="font:800 11px 'Archivo';letter-spacing:.14em;text-transform:uppercase;padding:7px 11px;border-radius:999px;background:transparent;color:#0e1729;border:1.5px solid #0e1729;">{{ c.tag }}</span>
+          </div>
+          <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px;">
+            <div style="font:800 36px/0.98 'Archivo';letter-spacing:-.03em;">{{ c.name }}</div>
+            <div style="font:500 16px/1.35 'Archivo';">{{ c.sentence }}</div>
+          </div>
+          <div style="margin-top:16px;height:52px;border-radius:12px;background:#0e1729;color:#ffffff;font:700 16px 'Archivo';display:flex;align-items:center;justify-content:center;">Call {{ c.first }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section data-screen-label="02 What it is" style="background:#ffffff;color:#0e1729;">
+    <div style="max-width:1280px;margin:0 auto;padding:clamp(64px,9vw,112px) clamp(20px,4vw,48px);display:flex;flex-direction:column;gap:48px;">
+      <div style="display:flex;flex-direction:column;gap:18px;">
+        <div style="font:600 13px 'IBM Plex Mono',monospace;color:#63708a;letter-spacing:.1em;">WHAT IT IS</div>
+        <h2 style="margin:0;font:900 clamp(40px,6vw,80px)/0.95 'Archivo';letter-spacing:-.025em;max-width:1000px;text-wrap:balance;">One email a month. Three names to call. That's the whole thing.</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px;">
+        <div style="background:#f2f5fa;border-radius:24px;padding:clamp(24px,3vw,40px);display:flex;flex-direction:column;gap:16px;">
+          <div style="font:800 12px 'Archivo';letter-spacing:.14em;text-transform:uppercase;color:#63708a;">Your past clients get</div>
+          <div style="font:800 clamp(26px,2.6vw,34px)/1.05 'Archivo';letter-spacing:-.02em;">A short note about their own house, sent in your name.</div>
+          <div style="font:500 17px/1.5 'Archivo';color:#3d4659;">What sold on their street. What the county taxes them on. A house nearby that's for sale now. All from the public record, never a guess at what their home is worth.</div>
+        </div>
+        <div style="background:#0e1729;color:#ffffff;border-radius:24px;padding:clamp(24px,3vw,40px);display:flex;flex-direction:column;gap:16px;">
+          <div style="font:800 12px 'Archivo';letter-spacing:.14em;text-transform:uppercase;color:#9aa3b5;">You get</div>
+          <div style="font:800 clamp(26px,2.6vw,34px)/1.05 'Archivo';letter-spacing:-.02em;">Three names worth a call, with the reason and the number.</div>
+          <div style="font:500 17px/1.5 'Archivo';color:#c7cdd8;">Open it, tap Call, mark it done. Some months it's fewer than three. We don't pad the list.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how" data-screen-label="03 How it works" style="background:#f7f3ea;color:#0e1729;">
+    <div style="max-width:1280px;margin:0 auto;padding:clamp(64px,9vw,112px) clamp(20px,4vw,48px);display:flex;flex-direction:column;gap:48px;">
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px;">
+        <h2 style="margin:0;font:900 clamp(56px,9vw,128px)/0.86 'Archivo';letter-spacing:-.03em;">Four minutes.<br><span style="text-decoration:underline;text-decoration-color:oklch(0.80 0.12 82);text-decoration-thickness:10px;text-underline-offset:14px;">Then done.</span></h2>
+        <div style="font:700 20px/1.35 'Archivo';max-width:360px;">Set it up once, in about four minutes. Then it runs every month without you.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px;">
+        <div style="background:#0e1729;color:#ffffff;border-radius:24px;padding:30px;display:flex;flex-direction:column;gap:14px;min-height:280px;">
+          <span style="font:900 72px/0.85 'Archivo';letter-spacing:-.03em;color:oklch(0.80 0.12 82);">1</span>
+          <div style="margin-top:auto;border:1.5px dashed #63708a;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;justify-content:space-between;gap:12px;font:500 13px 'IBM Plex Mono',monospace;color:#ffffff;"><span>past-clients.csv</span><span style="color:#9aa3b5;">212 rows</span></div>
+            <div style="height:6px;border-radius:3px;background:#262d3a;overflow:hidden;"><div style="width:72%;height:100%;background:oklch(0.80 0.12 82);"></div></div>
+            <div style="font:500 13px 'IBM Plex Mono',monospace;color:#9aa3b5;">Reading names and addresses…</div>
+          </div>
+          <div style="margin-top:6px;font:800 28px/1.02 'Archivo';letter-spacing:-.02em;">Add your people</div>
+          <div style="font:500 17px/1.45 'Archivo';color:#c7cdd8;">Upload the list from your old CRM or a spreadsheet. Or type your MLS ID and pick from the homes you sold.</div>
+        </div>
+        <div style="background:#0e1729;color:#ffffff;border-radius:24px;padding:30px;display:flex;flex-direction:column;gap:14px;min-height:280px;">
+          <span style="font:900 72px/0.85 'Archivo';letter-spacing:-.03em;color:oklch(0.80 0.12 82);">2</span>
+          <div style="margin-top:auto;display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:#121c33;font:500 13px 'IBM Plex Mono',monospace;"><span>1142 Oakdale Ave</span><span style="color:oklch(0.80 0.12 82);">APN 8381-012-004 ✓</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:#121c33;font:500 13px 'IBM Plex Mono',monospace;"><span>88 Vista Del Sol</span><span style="color:oklch(0.80 0.12 82);">APN 0291-441-017 ✓</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1.5px solid oklch(0.80 0.12 82);font:500 13px 'IBM Plex Mono',monospace;"><span>Unit 4, Palm Ct</span><span style="color:#ffffff;">Which one? ›</span></div>
+          </div>
+          <div style="margin-top:6px;font:800 28px/1.02 'Archivo';letter-spacing:-.02em;">We find every house</div>
+          <div style="font:500 17px/1.45 'Archivo';color:#c7cdd8;">Each address gets matched to the county record. You glance at the few we weren't sure about.</div>
+        </div>
+        <div style="background:#0e1729;color:#ffffff;border-radius:24px;padding:30px;display:flex;flex-direction:column;gap:14px;min-height:280px;">
+          <span style="font:900 72px/0.85 'Archivo';letter-spacing:-.03em;color:oklch(0.80 0.12 82);">3</span>
+          <div style="margin-top:auto;display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 10px 10px 14px;border-radius:12px;background:#f7f3ea;color:#0e1729;"><span style="font:800 15px 'Archivo';">Marilyn Okafor</span><span style="font:800 12px 'Archivo';padding:7px 12px;border-radius:999px;background:oklch(0.80 0.12 82);">Call</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 10px 10px 14px;border-radius:12px;background:#f7f3ea;color:#0e1729;"><span style="font:800 15px 'Archivo';">Glenn Sato</span><span style="font:800 12px 'Archivo';padding:7px 12px;border-radius:999px;background:oklch(0.80 0.12 82);">Call</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 10px 10px 14px;border-radius:12px;background:#f7f3ea;color:#63708a;"><span style="font:800 15px 'Archivo';text-decoration:line-through;">Ray Villanueva</span><span style="font:600 12px 'IBM Plex Mono',monospace;padding:7px 4px;">Done</span></div>
+          </div>
+          <div style="margin-top:6px;font:800 28px/1.02 'Archivo';letter-spacing:-.02em;">It sends. You call.</div>
+          <div style="font:500 17px/1.45 'Archivo';color:#c7cdd8;">Your note goes out on the day you pick. Three names show up on your home screen.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="04 Why to call" style="background:#ffffff;color:#0e1729;">
+    <div style="max-width:1280px;margin:0 auto;padding:clamp(64px,9vw,112px) clamp(20px,4vw,48px);display:flex;flex-direction:column;gap:40px;">
+      <h2 style="margin:0;font:900 clamp(44px,6.5vw,88px)/0.92 'Archivo';letter-spacing:-.025em;max-width:900px;">Every name comes with a reason.</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px;">
+        <div style="background:#0e1729;color:#f7f3ea;border-radius:24px;padding:12px 12px 30px;display:flex;flex-direction:column;gap:14px;">
+          <image-slot id="why-sold" shape="rounded" radius="16" placeholder="Photo: SOLD rider on a quiet street" style="width:100%;height:200px;flex-shrink:0;"></image-slot>
+          <span style="margin-top:8px;padding:0 18px;font:800 12px 'Archivo';letter-spacing:.14em;text-transform:uppercase;color:oklch(0.80 0.12 82);">Big sale next door</span>
+          <div style="padding:0 18px;font:800 30px/1.02 'Archivo';letter-spacing:-.02em;">A house on their street just sold.</div>
+          <div style="padding:0 18px;font:500 17px/1.4 'Archivo';">They'll want to know. You get to tell them.</div>
+        </div>
+        <div style="background:#0e1729;color:#f7f3ea;border-radius:24px;padding:12px 12px 30px;display:flex;flex-direction:column;gap:14px;">
+          <image-slot id="why-record" shape="rounded" radius="16" placeholder="Photo: stamped county document" style="width:100%;height:200px;flex-shrink:0;"></image-slot>
+          <span style="margin-top:8px;padding:0 18px;font:800 12px 'Archivo';letter-spacing:.14em;text-transform:uppercase;color:oklch(0.80 0.12 82);">Paid off their loan</span>
+          <div style="padding:0 18px;font:800 30px/1.02 'Archivo';letter-spacing:-.02em;">The county recorded their loan as paid.</div>
+          <div style="padding:0 18px;font:500 17px/1.4 'Archivo';">Something changed with their money this month.</div>
+        </div>
+        <div style="background:#0e1729;color:#f7f3ea;border-radius:24px;padding:12px 12px 30px;display:flex;flex-direction:column;gap:14px;">
+          <div style="min-height:200px;border-radius:16px;background:#f7f3ea;color:#0e1729;padding:20px;display:flex;flex-direction:column;justify-content:center;gap:14px;">
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:10px;font:600 11px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#63708a;"><span>They're taxed on</span><span style="color:#0e1729;">$817,800</span></div>
+              <div style="height:20px;border-radius:5px;background:#0e1729;width:79%;"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;gap:10px;font:600 11px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#63708a;"><span>A buyer today pays on</span><span style="color:#0e1729;">$1,040,000</span></div>
+              <div style="height:20px;border-radius:5px;background:oklch(0.80 0.12 82);width:100%;"></div>
+            </div>
+            <div style="font:800 15px/1.25 'Archivo';letter-spacing:-.01em;">About $2,600 a year they keep. Gone if they sell, unless they carry it.</div>
+          </div>
+          <span style="margin-top:8px;padding:0 18px;font:800 12px 'Archivo';letter-spacing:.14em;text-transform:uppercase;color:oklch(0.80 0.12 82);">Taxes worth a talk</span>
+          <div style="padding:0 18px;font:800 30px/1.02 'Archivo';letter-spacing:-.02em;">Taxed far below what the street sells for.</div>
+          <div style="padding:0 18px;font:500 17px/1.4 'Archivo';">A conversation most agents never start.</div>
+        </div>
+        <div style="background:#0e1729;color:#f7f3ea;border-radius:24px;padding:12px 12px 30px;display:flex;flex-direction:column;gap:14px;">
+          <div style="min-height:200px;border-radius:16px;background:#f7f3ea;color:#0e1729;padding:20px;display:flex;flex-direction:column;justify-content:center;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;background:#ffffff;font:500 13px 'IBM Plex Mono',monospace;"><span>September</span><span style="color:#63708a;">opened</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;background:#ffffff;border:1.5px solid oklch(0.80 0.12 82);font:500 13px 'IBM Plex Mono',monospace;"><span>August</span><span style="font-weight:600;">clicked “property taxes”</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;background:#ffffff;font:500 13px 'IBM Plex Mono',monospace;"><span>July</span><span style="color:#63708a;">opened</span></div>
+          </div>
+          <span style="margin-top:8px;padding:0 18px;font:800 12px 'Archivo';letter-spacing:.14em;text-transform:uppercase;color:oklch(0.80 0.12 82);">Reading it closely</span>
+          <div style="padding:0 18px;font:800 30px/1.02 'Archivo';letter-spacing:-.02em;">Opened your last three. Clicked the tax part twice.</div>
+          <div style="padding:0 18px;font:500 17px/1.4 'Archivo';">Nothing changed on the record. Something changed in their head.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sample" data-screen-label="05 The email" style="background:#f7f3ea;color:#1a1a1a;">
+    <div style="max-width:1280px;margin:0 auto;padding:clamp(64px,9vw,112px) clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:56px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:22px;">
+        <h2 style="margin:0;font:900 clamp(44px,6.5vw,88px)/0.92 'Archivo';letter-spacing:-.025em;color:#0e1729;">The note they actually open.</h2>
+        <p style="margin:0;font:500 20px/1.45 'Archivo';color:#3d2a1f;max-width:480px;">It's about their house, not your listings. Your name and number sit at the bottom.</p>
+        <a href="#" style="align-self:flex-start;font:800 17px 'Archivo';color:#f7f3ea;background:#0e1729;text-decoration:none;padding:18px 26px;border-radius:14px;">Read the full sample</a>
+        <div style="margin-top:18px;font:600 12px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#63708a;">WHAT IT'S BUILT FROM</div>
+        <div style="position:relative;max-width:440px;background:#ffffff;border:1px solid #c9bfae;border-radius:6px;padding:18px 20px 20px;display:flex;flex-direction:column;gap:14px;color:#1a1a1a;box-shadow:0 20px 40px -30px rgba(61,42,31,.5);transform:rotate(-1.5deg);">
+          <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font:600 10px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#63708a;"><span>Office of the County Recorder</span><span>Los Angeles County · Official Records</span></div>
+          <div style="font:600 16px/1.3 'IBM Plex Mono',monospace;">1142 Oakdale Ave<br><span style="color:#63708a;">APN 8391-024-017</span></div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;font:500 13px/1.35 'IBM Plex Mono',monospace;border-top:1px solid #e3dccd;padding-top:14px;">
+            <div style="display:flex;flex-direction:column;gap:3px;"><span style="font:600 11px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#63708a;font-size:10px;">Instrument</span><span>Grant Deed</span></div>
+            <div style="display:flex;flex-direction:column;gap:3px;"><span style="font:600 11px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#63708a;font-size:10px;">Recorded</span><span>Mar 14, 2019</span></div>
+            <div style="display:flex;flex-direction:column;gap:3px;"><span style="font:600 11px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#63708a;font-size:10px;">Document no.</span><span>2019-0248117</span></div>
+            <div style="display:flex;flex-direction:column;gap:3px;"><span style="font:600 11px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#63708a;font-size:10px;">Consideration</span><span style="font-weight:600;">$712,000</span></div>
+          </div>
+          <div style="position:absolute;right:18px;top:48px;transform:rotate(-9deg);border:2px solid #b4432a;color:#b4432a;border-radius:4px;padding:5px 9px;font:700 10px 'IBM Plex Mono',monospace;letter-spacing:.16em;opacity:.85;">RECORDED</div>
+        </div>
+      </div>
+      <div style="background:#ffffff;border:1px solid #c9bfae;border-radius:6px;box-shadow:0 30px 60px -30px rgba(61,42,31,.4);max-width:540px;width:100%;justify-self:center;">
+        <div style="padding:22px 28px;border-bottom:1px solid #c9bfae;display:flex;justify-content:space-between;align-items:center;gap:12px;">
+          <span style="font:600 12px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#3d2a1f;">On the record · October</span>
+          <span style="font:600 12px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#3d2a1f;">Dana Whitfield</span>
+        </div>
+        <div style="padding:24px 28px 28px;font:17px/1.5 Georgia,'Times New Roman',serif;display:flex;flex-direction:column;gap:14px;">
+          <div style="font-size:22px;">1142 Oakdale Ave, La Verne 91750</div>
+          <div>Hi Marilyn,</div>
+          <div>You bought in 2019 for $712,000. Homes on Oakdale have recently sold for about $1,040,000. A buyer paying that would be taxed on it.</div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:150px;border-top:2px solid #3d2a1f;padding-top:10px;">
+              <div style="font:600 12px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#3d2a1f;">County taxes it on</div>
+              <div style="font-size:26px;">$817,800</div>
+            </div>
+            <div style="flex:1;min-width:150px;border-top:2px solid #3d2a1f;padding-top:10px;">
+              <div style="font:600 12px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#3d2a1f;">That difference</div>
+              <div style="font-size:26px;">about $2,600 a year</div>
+            </div>
+          </div>
+          <div>California lets some homeowners carry this to their next home.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" data-screen-label="06 Features" style="max-width:1280px;margin:0 auto;padding:clamp(64px,9vw,112px) clamp(20px,4vw,48px);display:flex;flex-direction:column;gap:40px;">
+    <div style="display:flex;flex-direction:column;gap:18px;">
+      <div style="font:600 13px 'IBM Plex Mono',monospace;color:#9aa3b5;letter-spacing:.1em;">INCLUDED IN THE $19</div>
+      <h2 style="margin:0;font:900 clamp(44px,6.5vw,88px)/0.92 'Archivo';letter-spacing:-.025em;max-width:900px;">The little things, handled.</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:1px;background:#262d3a;border:1px solid #262d3a;border-radius:24px;overflow:hidden;">
+      <sc-for list="{{ features }}" as="f" hint-placeholder-count="8">
+        <div style="background:#0e1729;padding:28px;display:flex;flex-direction:column;gap:10px;min-height:150px;">
+          <div style="font:800 22px/1.1 'Archivo';letter-spacing:-.01em;">{{ f.title }}</div>
+          <div style="font:500 16px/1.45 'Archivo';color:#9aa3b5;">{{ f.body }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section data-screen-label="07 Add-ons" style="background:#ffffff;color:#0e1729;">
+    <div style="max-width:1280px;margin:0 auto;padding:clamp(64px,9vw,112px) clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:48px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div style="font:600 13px 'IBM Plex Mono',monospace;color:#63708a;letter-spacing:.1em;">ADD-ONS</div>
+        <h2 style="margin:0;font:900 clamp(44px,6.5vw,88px)/0.92 'Archivo';letter-spacing:-.025em;">Flip a switch. That's it.</h2>
+        <p style="margin:0;font:500 19px/1.45 'Archivo';color:#3d4659;max-width:440px;">All start off. Turn one on when you want it, off the month you don't.</p>
+        <div style="margin-top:12px;display:flex;align-items:baseline;gap:14px;border-top:2px solid #0e1729;padding-top:18px;max-width:440px;">
+          <span style="font:800 13px 'Archivo';letter-spacing:.14em;text-transform:uppercase;">Your month</span>
+          <span style="margin-left:auto;font:900 64px/0.9 'Archivo';letter-spacing:-.025em;">{{ total }}</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <sc-for list="{{ addons }}" as="a" hint-placeholder-count="3">
+          <div onClick="{{ a.onToggle }}" style="display:flex;align-items:center;gap:20px;padding:24px;border-radius:20px;border:1.5px solid {{ a.border }};background:{{ a.bg }};cursor:{{ a.cursor }};transition:background .2s,border-color .2s;">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+                <span style="font:800 22px 'Archivo';letter-spacing:-.01em;">{{ a.title }}</span>
+                <span style="font:600 13px 'IBM Plex Mono',monospace;padding:4px 10px;border-radius:999px;background:#0e1729;color:#ffffff;">{{ a.price }}</span>
+                <sc-if value="{{ a.soon }}" hint-placeholder-val="{{ false }}">
+                  <span style="font:800 11px 'Archivo';letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;border-radius:999px;border:1.5px solid #63708a;color:#63708a;">Coming</span>
+                </sc-if>
+              </div>
+              <div style="font:500 16px/1.45 'Archivo';color:#3d4659;">{{ a.blurb }}</div>
+            </div>
+            <span style="flex-shrink:0;width:60px;height:34px;border-radius:999px;background:{{ a.track }};position:relative;transition:background .2s;">
+              <span style="position:absolute;top:4px;left:{{ a.knob }};width:26px;height:26px;border-radius:50%;background:#ffffff;box-shadow:0 2px 6px rgba(14,23,41,.3);transition:left .2s;"></span>
+            </span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="08 What it isn't" style="max-width:1280px;margin:0 auto;padding:clamp(64px,9vw,112px) clamp(20px,4vw,48px);display:flex;flex-direction:column;gap:28px;">
+    <div style="font:600 13px 'IBM Plex Mono',monospace;color:oklch(0.80 0.12 82);letter-spacing:.1em;">WHAT IT ISN'T</div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px 28px;">
+      <sc-for list="{{ crossed }}" as="w" hint-placeholder-count="5">
+        <span style="position:relative;font:800 clamp(36px,5vw,64px)/1.1 'Archivo';letter-spacing:-.02em;color:#6b7487;">{{ w }}<span style="position:absolute;left:-4px;right:-4px;top:52%;height:5px;border-radius:3px;background:oklch(0.80 0.12 82);"></span></span>
+      </sc-for>
+    </div>
+    <p style="margin:0;font:500 20px/1.45 'Archivo';color:#ededed;max-width:560px;">Not a CRM. Not lead gen. Not a newsletter builder. Nothing to keep up with.</p>
+  </section>
+
+  <section id="price" data-screen-label="09 Price" style="position:relative;background:#121c33;color:#ffffff;border-top:1px solid #262d3a;border-bottom:1px solid #262d3a;">
+    <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;color:rgba(255,255,255,.09);font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.14em;white-space:nowrap;">
+      <div style="position:absolute;left:-4%;top:14%;width:58%;transform:rotate(-7deg);border-top:1px solid currentColor;padding-top:6px;">N 47°30' E &nbsp;&nbsp; 128.40'</div>
+      <div style="position:absolute;left:54%;top:6%;transform:rotate(-7deg);">LOT 14 &nbsp;·&nbsp; TRACT NO. 2571</div>
+      <div style="position:absolute;right:-6%;top:64%;width:52%;transform:rotate(5deg);border-top:1px solid currentColor;padding-top:6px;text-align:right;">S 88°10' W &nbsp;&nbsp; 214.60'</div>
+      <div style="position:absolute;left:4%;bottom:9%;width:38%;transform:rotate(3deg);border-top:1px solid currentColor;padding-top:6px;">N 02°14' W &nbsp;&nbsp; 96.00'</div>
+      <div style="position:absolute;left:34%;top:46%;width:1px;height:38%;border-left:1px dashed currentColor;transform:rotate(12deg);"></div>
+    </div>
+    <div style="position:relative;max-width:1280px;margin:0 auto;padding:clamp(64px,9vw,112px) clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:48px;align-items:end;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font:900 clamp(120px,20vw,260px)/0.8 'Archivo';letter-spacing:-.035em;color:oklch(0.80 0.12 82);">$19</div>
+        <div style="font:700 22px 'Archivo';">a month. Up to 250 homeowners. Cancel any month.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div style="font:500 20px/1.45 'Archivo';max-width:480px;">Los Angeles, Orange, Ventura, San Diego, Riverside and San Bernardino counties. Not in yours yet? We'll tell you at signup.</div>
+        <a href="#" style="align-self:flex-start;font:800 18px 'Archivo';color:#0e1729;background:oklch(0.80 0.12 82);text-decoration:none;padding:20px 30px;border-radius:16px;">Start for $19 a month</a>
+      </div>
+    </div>
+  </section>
+
+  <footer data-screen-label="Footer" style="max-width:1280px;margin:0 auto;padding:40px clamp(20px,4vw,48px);display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:center;">
+    <div style="font:800 18px 'Archivo';letter-spacing:-.02em;">onrecord</div>
+    <div style="font:500 14px 'Archivo';color:#9aa3b5;">California only. Digital only. One thing, done well.</div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const CARDS = [
+  { num: '01', tag: 'Big sale next door', name: 'Marilyn Okafor', first: 'Marilyn', sentence: '1187 Oakdale Ave just listed. Four doors down.', photo: 'Photo: Marilyn\'s house, La Verne', fill: '#ff4a2b', ink: '#0e1729' },
+  { num: '02', tag: 'Paid off their loan', name: 'Glenn Sato', first: 'Glenn', sentence: 'The county recorded his loan as paid off.', photo: 'Photo: Glenn\'s house, Tustin', fill: '#0e9f6e', ink: '#0e1729' },
+  { num: '03', tag: 'Taxes worth a talk', name: 'Ray Villanueva', first: 'Ray', sentence: 'Taxed on $817,800. His street sells near $1,040,000.', photo: 'Photo: Ray\'s house, Riverside', fill: '#2f5bff', ink: '#ffffff' },
+];
+const POS = [
+  { left: '0%', top: '0px', rot: '-6deg' },
+  { left: '11%', top: '90px', rot: '2deg' },
+  { left: '22%', top: '190px', rot: '-2deg' },
+];
+const FEATURES = [
+  { title: 'Preview before it sends', body: 'See exactly what any homeowner will get.' },
+  { title: 'Skip a month', body: 'One button. Resume just as fast.' },
+  { title: 'Your day, your time', body: 'Pick the send day, time and timezone.' },
+  { title: 'Your name on it', body: 'Name, brokerage, DRE and phone on every note.' },
+  { title: 'Groups', body: 'Sort people into groups right inside your list.' },
+  { title: 'Export anytime', body: 'Download your whole list as a spreadsheet.' },
+  { title: 'Unsubscribes handled', body: 'One click for them. Nothing for you to manage.' },
+  { title: 'Undo a call', body: 'Marked the wrong one? Undo is right there.' },
+];
+const ADDONS = [
+  { key: 'text', title: 'Text me the call list', price: '+$2/mo', cents: 200, blurb: 'Your three names each month, texted to your own phone. You never have to log in.' },
+  { key: 'lender', title: 'Add my lender', price: 'Free', cents: 0, blurb: 'Your lender partner\'s name and NMLS, beside yours at the bottom of each note.' },
+  { key: 'sms', title: 'Text my clients', price: '+$9/mo', cents: 900, soon: true, blurb: 'Homeowners can text you back. 250 texts included, 2¢ after. It costs more because carriers charge us more.' },
+];
+
+class Component extends DCLogic {
+  state = { front: 2, on: {} };
+  renderVals() {
+    const { front, on } = this.state;
+    const cents = 1900 + ADDONS.filter(a => on[a.key]).reduce((s, a) => s + a.cents, 0);
+    return {
+      heroCards: CARDS.map((c, i) => ({
+        ...c, ...POS[i],
+        rot: i === front ? '0deg' : POS[i].rot,
+        top: i === front ? (parseInt(POS[i].top) - 16) + 'px' : POS[i].top,
+        z: i === front ? 10 : i + 1,
+        onEnter: () => this.setState({ front: i }),
+      })),
+      features: FEATURES,
+      addons: ADDONS.map(a => {
+        const isOn = !!on[a.key];
+        return {
+          ...a, soon: !!a.soon,
+          bg: isOn ? '#f7f3ea' : '#ffffff',
+          border: isOn ? '#0e1729' : '#dce3ee',
+          track: a.soon ? '#dce3ee' : isOn ? '#0e1729' : '#7c879d',
+          knob: isOn ? '30px' : '4px',
+          cursor: a.soon ? 'default' : 'pointer',
+          onToggle: () => { if (!a.soon) this.setState(s => ({ on: { ...s.on, [a.key]: !s.on[a.key] } })); },
+        };
+      }),
+      total: '$' + (cents / 100),
+      crossed: ['Lead gen', 'Dialers', 'Pipelines', 'Data entry', 'Daily logins'],
+    };
+  }
+}
+</script>
+</body>
+</html>

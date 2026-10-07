@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+body{margin:0;background:#e9ebef;-webkit-font-smoothing:antialiased;}
+a{color:inherit;}
+a:hover{color:inherit;}
+</style>
+</helmet>
+
+<section data-screen-label="Turn 2 — accents only" style="padding:64px 64px 24px;display:flex;flex-direction:column;gap:28px;font-family:'Archivo',sans-serif;color:#0e1729;">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:900px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;letter-spacing:.04em;">TURN 2 · NAVY, CREAM, WHITE DO THE WORK · COLOUR ONLY ON SMALL MARKS</div>
+    <div style="font:800 34px/1.1 'Archivo';font-stretch:112%;letter-spacing:-.02em;">Cards go cream. Colour shrinks to the number, the tag and one thin bar.</div>
+    <div style="font:400 17px/1.5 'Archivo';color:#3d4659;max-width:780px;">The bands lose their colour too: How it works turns cream, Price turns navy, and the accent only marks one word.</div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:40px;">
+    <sc-for list="{{ options2 }}" as="o" hint-placeholder-count="4">
+      <div id="{{ o.id }}" style="display:flex;flex-direction:column;gap:12px;width:680px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <a href="#{{ o.id }}" style="font:700 13px 'IBM Plex Mono',monospace;background:#0e1729;color:#fff;padding:4px 10px;border-radius:999px;text-decoration:none;">{{ o.id }}</a>
+          <span style="font:700 16px 'Archivo';">{{ o.name }}</span>
+        </div>
+        <div style="font:400 15px/1.45 'Archivo';color:#3d4659;min-height:44px;">{{ o.note }}</div>
+        <div style="background:#0e1729;border-radius:6px;padding:28px;display:flex;flex-direction:column;gap:20px;">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">
+            <sc-for list="{{ o.cards }}" as="c" hint-placeholder-count="3">
+              <div style="height:240px;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;background:{{ c.bg }};color:{{ c.ink }};border:{{ c.border }};">
+                <div style="height:6px;background:{{ c.bar }};flex-shrink:0;"></div>
+                <div style="flex:1;padding:16px;display:flex;flex-direction:column;">
+                  <div style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;">
+                    <span style="font:900 30px/0.9 'Archivo';font-stretch:125%;letter-spacing:-.04em;color:{{ c.numColor }};">{{ c.num }}</span>
+                    <span style="font:800 9px 'Archivo';letter-spacing:.1em;text-transform:uppercase;padding:5px 8px;border-radius:999px;background:{{ c.tagBg }};color:{{ c.tagInk }};border:1.5px solid {{ c.tagBorder }};white-space:nowrap;">{{ c.tag }}</span>
+                  </div>
+                  <div style="margin-top:auto;font:800 22px/0.98 'Archivo';font-stretch:108%;letter-spacing:-.03em;">{{ c.name }}</div>
+                  <div style="margin-top:8px;font:500 12px/1.35 'Archivo';">{{ c.sentence }}</div>
+                  <div style="margin-top:12px;height:34px;border-radius:9px;background:{{ c.btnBg }};color:{{ c.btnInk }};font:700 12px 'Archivo';display:flex;align-items:center;justify-content:center;">Call</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+            <div style="border-radius:14px;padding:18px;background:#f7f3ea;color:#0e1729;display:flex;flex-direction:column;gap:6px;">
+              <span style="font:600 10px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#3d2a1f;">HOW IT WORKS BAND</span>
+              <span style="font:900 24px/0.95 'Archivo';font-stretch:125%;letter-spacing:-.04em;">Dumb easy. <span style="color:{{ o.wordColor }};text-decoration:underline;text-decoration-color:{{ o.lineColor }};text-decoration-thickness:4px;text-underline-offset:5px;">Literally.</span></span>
+            </div>
+            <div style="border-radius:14px;padding:18px;background:#0e1729;border:1px solid #262d3a;color:#ffffff;display:flex;flex-direction:column;gap:6px;">
+              <span style="font:600 10px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#9aa3b5;">PRICE BAND</span>
+              <span style="font:900 30px/0.9 'Archivo';font-stretch:125%;letter-spacing:-.04em;color:{{ o.priceColor }};">$19</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <sc-for list="{{ o.swatches }}" as="s" hint-placeholder-count="3">
+            <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+              <div style="height:28px;border-radius:6px;background:{{ s.c }};border:1px solid rgba(14,23,41,.12);"></div>
+              <span style="font:500 11px 'IBM Plex Mono',monospace;color:#63708a;">{{ s.c }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section data-screen-label="Turn 1 — signal palettes" style="padding:64px;display:flex;flex-direction:column;gap:28px;font-family:'Archivo',sans-serif;color:#0e1729;">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:900px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;letter-spacing:.04em;">SIGNAL COLOURS · NAVY, CREAM, WHITE AND TYPE UNCHANGED</div>
+    <div style="font:800 34px/1.1 'Archivo';font-stretch:112%;letter-spacing:-.02em;">Same three signals, four ways to colour them.</div>
+    <div style="font:400 17px/1.5 'Archivo';color:#3d4659;max-width:780px;">Each option shows the hero stack, the three reasons, and the two coloured bands (How it works, Price). All text passes 4.5:1.</div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:40px;">
+    <sc-for list="{{ options }}" as="o" hint-placeholder-count="4">
+      <div id="{{ o.id }}" style="display:flex;flex-direction:column;gap:12px;width:680px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <a href="#{{ o.id }}" style="font:700 13px 'IBM Plex Mono',monospace;background:#0e1729;color:#fff;padding:4px 10px;border-radius:999px;text-decoration:none;">{{ o.id }}</a>
+          <span style="font:700 16px 'Archivo';">{{ o.name }}</span>
+        </div>
+        <div style="font:400 15px/1.45 'Archivo';color:#3d4659;min-height:44px;">{{ o.note }}</div>
+        <div style="background:#0e1729;border-radius:6px;padding:28px;display:flex;flex-direction:column;gap:20px;">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">
+            <sc-for list="{{ o.cards }}" as="c" hint-placeholder-count="3">
+              <div style="height:230px;border-radius:16px;padding:16px;display:flex;flex-direction:column;background:{{ c.bg }};color:{{ c.ink }};border:{{ c.border }};">
+                <div style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;">
+                  <span style="font:900 30px/0.9 'Archivo';font-stretch:125%;letter-spacing:-.04em;color:{{ c.numColor }};">{{ c.num }}</span>
+                  <span style="font:800 9px 'Archivo';letter-spacing:.1em;text-transform:uppercase;padding:5px 8px;border-radius:999px;background:{{ c.tagBg }};color:{{ c.tagInk }};border:1.5px solid {{ c.tagBorder }};white-space:nowrap;max-width:100%;">{{ c.tag }}</span>
+                </div>
+                <div style="margin-top:auto;font:800 22px/0.98 'Archivo';font-stretch:108%;letter-spacing:-.03em;">{{ c.name }}</div>
+                <div style="margin-top:8px;font:500 12px/1.35 'Archivo';">{{ c.sentence }}</div>
+                <div style="margin-top:12px;height:34px;border-radius:9px;background:#0e1729;color:#fff;font:700 12px 'Archivo';display:flex;align-items:center;justify-content:center;border:1px solid #262d3a;">Call</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+            <div style="border-radius:14px;padding:18px;background:{{ o.howBg }};color:{{ o.howInk }};display:flex;flex-direction:column;gap:4px;">
+              <span style="font:600 10px 'IBM Plex Mono',monospace;letter-spacing:.1em;">HOW IT WORKS BAND</span>
+              <span style="font:900 26px/0.9 'Archivo';font-stretch:125%;letter-spacing:-.04em;">Dumb easy.</span>
+            </div>
+            <div style="border-radius:14px;padding:18px;background:{{ o.priceBg }};color:{{ o.priceInk }};display:flex;flex-direction:column;gap:4px;">
+              <span style="font:600 10px 'IBM Plex Mono',monospace;letter-spacing:.1em;">PRICE BAND</span>
+              <span style="font:900 26px/0.9 'Archivo';font-stretch:125%;letter-spacing:-.04em;">$19</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <sc-for list="{{ o.swatches }}" as="s" hint-placeholder-count="3">
+            <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+              <div style="height:28px;border-radius:6px;background:{{ s.c }};border:1px solid rgba(14,23,41,.12);"></div>
+              <span style="font:500 11px 'IBM Plex Mono',monospace;color:#63708a;">{{ s.c }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const PEOPLE = [
+  { num: '01', tag: 'Big sale next door', name: 'Marilyn Okafor', sentence: '1187 Oakdale Ave just listed. Four doors down.' },
+  { num: '02', tag: 'Paid off their loan', name: 'Glenn Sato', sentence: 'The county recorded his loan as paid off.' },
+  { num: '03', tag: 'Taxes worth a talk', name: 'Ray Villanueva', sentence: 'Taxed on $817,800. Street sells near $1,040,000.' },
+];
+const INK = '#0e1729';
+function filled(fills, inks) {
+  return PEOPLE.map((p, i) => ({ ...p, bg: fills[i], ink: inks[i], numColor: inks[i], border: '0', tagBg: 'transparent', tagInk: inks[i], tagBorder: inks[i] }));
+}
+const OPTIONS = [
+  {
+    id: '1a', name: 'Original: coral, green, blue',
+    note: 'Reference. Loud, and reads like a dashboard next to the cream and navy.',
+    cards: filled(['#ff4a2b', '#0e9f6e', '#2f5bff'], [INK, INK, '#ffffff']),
+    howBg: '#ff4a2b', howInk: INK, priceBg: '#2f5bff', priceInk: '#ffffff',
+    swatches: [{ c: '#ff4a2b' }, { c: '#0e9f6e' }, { c: '#2f5bff' }],
+  },
+  {
+    id: '1b', name: 'Brass, sage, sky (my pick)',
+    note: 'One family: same lightness and strength, three hues. Gold leads, which reads "luxury listing" to a flashy agent. Navy text on all three.',
+    cards: filled(['oklch(0.82 0.13 82)', 'oklch(0.82 0.10 160)', 'oklch(0.82 0.08 245)'], [INK, INK, INK]),
+    howBg: 'oklch(0.82 0.13 82)', howInk: INK, priceBg: '#f7f3ea', priceInk: INK,
+    swatches: [{ c: 'oklch(0.82 0.13 82)' }, { c: 'oklch(0.82 0.10 160)' }, { c: 'oklch(0.82 0.08 245)' }],
+  },
+  {
+    id: '1c', name: 'Cream cards, ink stamps',
+    note: 'Every card is the email\'s cream paper. The signal lives in a solid stamp tag (oxblood, forest, navy-blue), like a county seal. Most refined, least flashy.',
+    cards: PEOPLE.map((p, i) => {
+      const s = ['oklch(0.45 0.14 30)', 'oklch(0.45 0.09 155)', 'oklch(0.45 0.13 260)'][i];
+      return { ...p, bg: '#f7f3ea', ink: '#1a1a1a', numColor: s, border: '0', tagBg: s, tagInk: '#ffffff', tagBorder: s };
+    }),
+    howBg: '#f7f3ea', howInk: INK, priceBg: 'oklch(0.45 0.14 30)', priceInk: '#ffffff',
+    swatches: [{ c: 'oklch(0.45 0.14 30)' }, { c: 'oklch(0.45 0.09 155)' }, { c: 'oklch(0.45 0.13 260)' }],
+  },
+  {
+    id: '1d', name: 'One gold, two quiet',
+    note: 'Only the top call gets colour, in hot gold. The others are white and outlined navy. Loudest focus: your eye goes to #1 first.',
+    cards: PEOPLE.map((p, i) => i === 0
+      ? { ...p, bg: 'oklch(0.84 0.15 85)', ink: INK, numColor: INK, border: '0', tagBg: INK, tagInk: '#ffffff', tagBorder: INK }
+      : i === 1
+        ? { ...p, bg: '#ffffff', ink: INK, numColor: '#63708a', border: '0', tagBg: 'transparent', tagInk: INK, tagBorder: INK }
+        : { ...p, bg: '#0e1729', ink: '#ffffff', numColor: '#9aa3b5', border: '1.5px solid #3a4356', tagBg: 'transparent', tagInk: '#ffffff', tagBorder: '#ffffff' }),
+    howBg: 'oklch(0.84 0.15 85)', howInk: INK, priceBg: '#ffffff', priceInk: INK,
+    swatches: [{ c: 'oklch(0.84 0.15 85)' }, { c: '#ffffff' }, { c: '#0e1729' }],
+  },
+];
+
+const CREAM = '#f7f3ea';
+function accentCards(accents, opts = {}) {
+  return PEOPLE.map((p, i) => {
+    const a = accents[i % accents.length];
+    return {
+      ...p, bg: opts.bg || CREAM, ink: opts.ink || INK, border: opts.border || '0',
+      bar: a.bar, numColor: a.num, tagBg: a.tagBg, tagInk: a.tagInk, tagBorder: a.tagBg,
+      btnBg: opts.btnBg || INK, btnInk: opts.btnInk || '#ffffff',
+    };
+  });
+}
+const GOLD = 'oklch(0.80 0.12 82)';
+const OPTIONS2 = [
+  {
+    id: '2a', name: 'Brass only (my pick)',
+    note: 'One accent, warm brass, the colour of a door plaque. The tag text tells you the reason, and the brass just says "this matters." Easiest to live with.',
+    cards: accentCards([{ bar: GOLD, num: INK, tagBg: GOLD, tagInk: INK }]),
+    wordColor: INK, lineColor: GOLD, priceColor: GOLD,
+    swatches: [{ c: GOLD }, { c: CREAM }, { c: INK }],
+  },
+  {
+    id: '2b', name: 'Three earth tones',
+    note: 'Keeps a colour per reason, but muted to sit on cream: terracotta, olive and slate. Like ink on paper, not a screen.',
+    cards: accentCards([
+      { bar: 'oklch(0.55 0.13 40)', num: 'oklch(0.55 0.13 40)', tagBg: 'oklch(0.55 0.13 40)', tagInk: '#ffffff' },
+      { bar: 'oklch(0.52 0.09 125)', num: 'oklch(0.52 0.09 125)', tagBg: 'oklch(0.52 0.09 125)', tagInk: '#ffffff' },
+      { bar: 'oklch(0.50 0.08 250)', num: 'oklch(0.50 0.08 250)', tagBg: 'oklch(0.50 0.08 250)', tagInk: '#ffffff' },
+    ]),
+    wordColor: 'oklch(0.55 0.13 40)', lineColor: 'oklch(0.55 0.13 40)', priceColor: CREAM,
+    swatches: [{ c: 'oklch(0.55 0.13 40)' }, { c: 'oklch(0.52 0.09 125)' }, { c: 'oklch(0.50 0.08 250)' }],
+  },
+  {
+    id: '2c', name: 'Red pen',
+    note: 'A single record-office red, the colour of a stamp or a circled number. Sharper than brass and still only on the marks.',
+    cards: accentCards([{ bar: 'oklch(0.55 0.18 27)', num: 'oklch(0.55 0.18 27)', tagBg: 'oklch(0.55 0.18 27)', tagInk: '#ffffff' }]),
+    wordColor: 'oklch(0.55 0.18 27)', lineColor: 'oklch(0.55 0.18 27)', priceColor: '#ffffff',
+    swatches: [{ c: 'oklch(0.55 0.18 27)' }, { c: CREAM }, { c: INK }],
+  },
+  {
+    id: '2d', name: 'Navy cards, brass marks',
+    note: 'The cards stay navy with a fine cream outline and the brass marks on top. Darkest and most "luxury brokerage." The cream button is the loudest thing on the card.',
+    cards: accentCards([{ bar: GOLD, num: GOLD, tagBg: GOLD, tagInk: INK }], { bg: '#121c33', ink: CREAM, border: '1px solid #3a4356', btnBg: CREAM, btnInk: INK }),
+    wordColor: INK, lineColor: GOLD, priceColor: GOLD,
+    swatches: [{ c: GOLD }, { c: '#121c33' }, { c: CREAM }],
+  },
+];
+
+class Component extends DCLogic {
+  renderVals() { return { options: OPTIONS, options2: OPTIONS2 }; }
+}
+</script>
+</body>
+</html>
