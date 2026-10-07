@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { buttonClass, linkClass } from '@/app/app/people/ui'
 import type { CanonicalFacts } from '@/digest/canonical-facts'
 
-const ctaClass = `${buttonClass} inline-block`
+const ctaClass = `${buttonClass} inline-block tap`
 
 export function HomeStory({ facts }: { facts: CanonicalFacts }) {
   return (
@@ -31,10 +31,10 @@ export function HomeStory({ facts }: { facts: CanonicalFacts }) {
         <Link className={ctaClass} href="/sample">
           See the sample note
         </Link>
-        <Link className={linkClass} href="/register">
+        <Link className={`tap ${linkClass}`} href="/register">
           Create an account
         </Link>
-        <Link className={linkClass} href="/login">
+        <Link className={`tap ${linkClass}`} href="/login">
           Sign in
         </Link>
       </div>

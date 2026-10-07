@@ -145,7 +145,7 @@ colour repeats it.
 - `src/people/url.test.ts:9, 14, 22, 30`: filter URLs. `src/people/export.test.ts:4, 8`: file name, every column.
 - `src/people/people.integration.test.ts:142, 171, 242, 283, 315`: no 250 cap; groups never delete people; soft delete; view-as refused; account isolation.
 - `src/db/soft-delete.integration.test.ts:105, 181`: deleted people leave list and counts; re-import restores with unsubscribe intact.
-- `e2e/screens.ts:58-66` + `e2e/screens.spec.ts:6-18`: both captures must load without "couldn't load" text, and pass `e2e/checks.ts`: no horizontal scroll at 390, 44px tap targets on the phone (links inside a line of text exempt, checkboxes measured by their label), no text under 15px, no clipping.
+- `e2e/screens.ts:58-66` + `e2e/screens.spec.ts:6-18`: both captures must load without "couldn't load" text, and pass `e2e/checks.ts`: no horizontal scroll at 390, 44px tap targets on the phone (links inside a sentence exempt, checkboxes measured by their label), no text under 15px, no clipping. Each row's name and "Edit" links are 19px, an owned exception in `e2e/tap-allowlist.ts` until OR-045 redesigns the row; "Add people", "Review them" and the filter chips carry `.tap` since OR-041.
 
 ## What the v0 export did, and why we did not take it
 `reference/v0-export/components/app/people-list.tsx` (517 lines, over our 300-line limit):

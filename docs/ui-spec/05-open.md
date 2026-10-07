@@ -67,20 +67,11 @@ Each item says how it is known:
 
 ## Design problems a redesign may fix
 
-8. **Standalone links can be under 44px on a phone, and the check passes them.**
-   *Measured at 390px in OR-039.*
-   - The tap-size test treats a link as "inline in a sentence" whenever its nearest block
-     holds any other text (`e2e/checks.ts:34-40`).
-   - That exempts every link placed directly in a page column. Measured:
-     - "See the sample note", the home page's primary button: 39px.
-     - "Create an account" on /login: 23px.
-     - "Sign in" on /register: 23px.
-     - "Back" on /sample: 23px.
-     - "Keep my plan" on cancel: 23px.
-     - "Settings" on Billing: 19px.
-   - Make every standalone link 44px tall on phones.
-   - The check itself is a code change for a separate packet. This is the twelfth check
-     on the project found checking less than its name says (`01-constraints.md` §1.2).
+8. **Closed in OR-041: standalone links under 44px.** The check now exempts only a link
+   inside a sentence. Run over every screen, it found 13 kinds of link, not the six measured
+   in OR-039. All are 44px on a phone now, except each People row's name and "Edit" links:
+   an owned exception in `e2e/tap-allowlist.ts`, for OR-045. "Edit" is 27px wide, so it
+   needs width as well as height.
 
 9. **A disabled add-on switch looks live.** *From the code.*
    - Its only disabled styling is the cursor (`src/app/app/addons/addon-switch.tsx:19`).

@@ -111,12 +111,10 @@ first in its DO NOT block.
 - `e2e/auth.setup.ts:4-12` — signs in through this page by label; every signed-in capture depends on it.
 - `e2e/screens.spec.ts:7-18` (capture "login", 390 and 1440): status under 400; no text matching
   `/couldn.t load|could not load/i`; then the layout rules in `e2e/checks.ts`: no horizontal scroll
-  (`:20-21`), no text under 15px (`:60`), nothing clipped (`:62-69`), and on the phone every
-  tappable control at least 44px (`:42-50`).
-  - Note on the 44px rule: `isInlineLink` (`e2e/checks.ts:34-40`) exempts a link whose nearest block
-    parent holds other text. `Create an account` sits in the same column as the heading and form, so
-    the check treats it as inline and does not measure it. It carries no `.tap` class, so on a phone it
-    is about text height. Not measured; read from the code.
+  (`:23-24`), no text under 15px (`:66`), nothing clipped (`:68-75`), and on the phone every
+  tappable control at least 44px (`:40-56`).
+  - Note on the 44px rule: `Create an account` stands alone, so it is held to 44px on a phone. It
+    carries `.tap` since OR-041 (`e2e/checks.ts:35-37` decides what counts as a link in a sentence).
 - `e2e/desktop-unchanged.spec.ts` — on demand only: the 1440 capture must match its baseline pixel for pixel.
 
 ## What the v0 export did, and why we did not take it

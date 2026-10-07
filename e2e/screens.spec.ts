@@ -3,6 +3,10 @@ import { writeFileSync } from 'node:fs'
 import { expectCleanLayout, layoutProblems } from './checks'
 import { openScreen, SCREENS } from './screens'
 
+// The browser pass serves `next start`: the last production build, not the source on disk. Run
+// `pnpm build` before any probe or capture, or it measures old code. OR-038 trialled a dark-mode
+// regression against a stale build and saw it pass; rebuilt, the same check went red.
+
 for (const screen of SCREENS) {
   test(screen.name, async ({ page }, info) => {
     const response = await openScreen(page, screen)
@@ -13,7 +17,7 @@ for (const screen of SCREENS) {
     await page.screenshot({ path: `e2e/screenshots/${info.project.name}/${screen.name}.png`, fullPage: true })
     const tapTargets = info.project.name === 'mobile'
     // Findings beside the screenshot, for the report and the CI artifact.
-    writeFileSync(`e2e/screenshots/${info.project.name}/${screen.name}.json`, JSON.stringify(await layoutProblems(page, { tapTargets }), null, 2))
-    await expectCleanLayout(page, { tapTargets })
+    writeFileSync(`e2e/screenshots/${info.project.name}/${screen.name}.json`, JSON.stringify(await layoutProblems(page, { tapTargets, screen: screen.name }), null, 2))
+    await expectCleanLayout(page, { tapTargets, screen: screen.name })
   })
 }

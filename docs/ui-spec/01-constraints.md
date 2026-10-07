@@ -54,8 +54,8 @@ CI runs the phone pass on every pull request.
   that hides its overflow, and no text runs past the right edge.
 - **Why.** A page that scrolls sideways on a phone feels broken. An agent between
   appointments will not find a hidden column.
-- **Enforced by.** `e2e/checks.ts:20-21` (no-horizontal-scroll), `:62` and `:68`
-  (no-clipping), and `:77-78`, which requires the page width to equal the viewport.
+- **Enforced by.** `e2e/checks.ts:23-24` (no-horizontal-scroll), `:68` and `:74`
+  (no-clipping), and `:83-84`, which requires the page width to equal the viewport.
 - **What breaks it.**
   - A fixed-width table.
   - A long email address or document number with no wrapping.
@@ -70,24 +70,21 @@ CI runs the phone pass on every pull request.
 - **The one exemption.** A link inside a line of text, a sentence with a link in it, is
   exempt (WCAG 2.5.8). A link that stands alone on its line is not exempt, and on a phone
   it takes the `.tap` class (`02-system.md`).
-- **The exemption is wider in the test than in the rule. Do not rely on a green run
-  here.** The test decides "inline" from whether the link's nearest block ancestor holds
-  any other text (`e2e/checks.ts:34-40`). A link placed directly in a page column always
-  passes, because the column holds the rest of the page. Measured at 390px while writing
-  this spec (OR-039), these standalone links all pass the check while under 44px:
-  - "See the sample note", the home page's primary button: 39px tall.
-  - "Create an account" on /login: 23px.
-  - "Sign in" on /register: 23px.
-  - "Back" on /sample: 23px.
-  - "Keep my plan" on the cancel screen: 23px.
-  - "Settings" on Billing: 19px.
-
-  The rule is the design rule. Design every standalone link at 44px, whatever the test
-  says. See `05-open.md`.
+- **How the check decides.** A link counts as inside a sentence only when its own parent
+  element holds words of its own (`e2e/checks.ts:35-37`). Until OR-041 the check asked
+  whether the link's nearest block held *any* other text, so every link placed directly in
+  a page column passed, standalone or not. OR-041 narrowed it and made the 13 kinds of link
+  it then found 44px with `.tap`. That was the twelfth check on this project found checking
+  less than its name said.
+- **Owned exceptions.** A standalone link still under 44px must have an entry in
+  `e2e/tap-allowlist.ts`, which names the packet that fixes it. Today there is one: each
+  People row's name and "Edit" links, owned by OR-045, which redesigns that row. The list
+  fails both ways: an unlisted small link is red, and an entry that matches nothing is red
+  until it is deleted.
 - **Why.** Fingers, not cursors. This is the rule the export broke most: its shared button
   and input were 32px.
-- **Enforced by.** `e2e/checks.ts:49` (tap-44). It runs on the phone pass only. Desktop is
-  not measured for tap size.
+- **Enforced by.** `e2e/checks.ts:52` (tap-44) and `:54-56` (the allowlist's other
+  direction). It runs on the phone pass only. Desktop is not measured for tap size.
 - **What breaks it.**
   - A 32px "compact" button.
   - An icon-only button smaller than 44×44.
@@ -106,7 +103,7 @@ CI runs the phone pass on every pull request.
 - **Why.** Legibility for the actual user. The export had about 440 uses of sizes under
   15px.
 - **Enforced by.**
-  - `e2e/checks.ts:60` (text-15), on every captured screen at both widths.
+  - `e2e/checks.ts:66` (text-15), on every captured screen at both widths.
   - `src/app/app/people/review/review-ui.test.ts:68` additionally requires the review
     screens' source to use 15 or 22px.
 - **What breaks it.**
@@ -126,7 +123,7 @@ Read this before trusting a green run.
   other capture is light. Dark contrast is held by the token pairs (§2), not by a
   browser.
 - **Focus rings are not measured in the browser.** See §6.
-- **Standalone links can pass the tap-size check while too small.** See §1.2.
+- **The People row links are under 44px by an owned exception** (§1.2), until OR-045.
 
 ---
 

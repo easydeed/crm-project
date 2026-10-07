@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { expect, test } from 'vitest'
 import { fieldClass } from '@/app/app/people/ui'
+import { borderColours, classVariants, only, parseJsx, withAttribute } from '@/test/jsx'
 
 /** OR-037, the final sweep. */
 const src = (relative: string) => readFileSync(new URL(relative, import.meta.url), 'utf8')
@@ -19,5 +20,19 @@ test('each auth page has one <h1> that names it', () => {
 test('the email preview: plain text sits on the page background, and the toggles are outlined like controls', () => {
   const panel = src('./digest/preview-panel.tsx')
   expect(panel).toMatch(/<pre\s+className="[^"]*\bbg-background\b[^"]*"/)
-  expect(panel).toContain("'bg-foreground text-background' : 'border border-border'")
+  // OR-041: of the toggle's two looks, the pressed one is the filled pair and the other is
+  // outlined in --border like a control. Spacing, radius and border width are free.
+  const jsx = parseJsx('app/digest/preview-panel.tsx')
+  const toggle = only(withAttribute(jsx, 'aria-pressed'), 'preview toggle')
+  const variants = classVariants(jsx, toggle)
+  const pressed = variants.filter((tokens) => tokens.includes('bg-foreground'))
+  const unpressed = variants.filter((tokens) => !tokens.includes('bg-foreground'))
+  expect(pressed.length).toBeGreaterThan(0)
+  for (const tokens of pressed) expect(tokens).toContain('text-background')
+  expect(unpressed.length).toBeGreaterThan(0)
+  for (const tokens of unpressed) {
+    expect(borderColours(tokens)).toEqual(['border-border'])
+    expect(tokens.some((token) => /^border(-\d)?$/.test(token))).toBe(true)
+    expect(tokens.filter((token) => /^bg-/.test(token))).toEqual([])
+  }
 })

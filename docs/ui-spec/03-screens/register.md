@@ -132,9 +132,9 @@ that shows "By creating an account you agree to our Terms" has to wait for real 
 - `src/billing/billing.integration.test.ts:85` — checkout creates a subscription and the webhook activates the account (the step after this form).
 - `e2e/screens.spec.ts:7-18` (capture "register", 390 and 1440): status under 400; no
   `/couldn.t load|could not load/i` text; the layout rules in `e2e/checks.ts`: no horizontal scroll
-  (`:20-21`), no text under 15px (`:60`), no clipping (`:62-69`), 44px tap targets on the phone
-  (`:42-50`). The `Sign in` link sits in a column with other text, so `isInlineLink`
-  (`e2e/checks.ts:34-40`) exempts it from the 44px measure; it has no `.tap` class.
+  (`:23-24`), no text under 15px (`:66`), no clipping (`:68-75`), 44px tap targets on the phone
+  (`:40-56`). The `Sign in` link stands alone, so it is held to 44px; it carries
+  `.tap` since OR-041 (`e2e/checks.ts:35-37`).
 - `e2e/desktop-unchanged.spec.ts` — on demand only: pixel-exact at 1440 against a baseline.
 
 ## What the v0 export did, and why we did not take it

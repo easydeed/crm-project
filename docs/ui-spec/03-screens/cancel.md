@@ -105,7 +105,7 @@ A pause option, a downgrade, a "tell us why" box, or a second button of any kind
 - `src/app/app/settings/settings-reskin.test.ts:16` — "Cancel my plan" is `buttonClass`, not `destructiveButtonClass`; "Keep my plan" is a `linkClass` link to Billing.
 - `settings-reskin.test.ts:30` — the page uses `linkClass`, not a copy of its string.
 - `src/billing/billing.integration.test.ts:129` — cancel at period end keeps sending until then; resume restores it; the end stops mail and keeps everything.
-- `e2e/screens.spec.ts:6` with `e2e/checks.ts` — no horizontal scroll at 390, 44px tap targets on phone, no text under 15px, no clipping; the capture reports none (`e2e/screenshots/*/billing-cancel.json` is `[]`). "Keep my plan" is not `.tap` and passes only as an inline link, because its block also holds the button's text (`checks.ts:34-39`); on a phone it is a text-height target.
+- `e2e/screens.spec.ts:6` with `e2e/checks.ts` — no horizontal scroll at 390, 44px tap targets on phone, no text under 15px, no clipping; the capture reports none (`e2e/screenshots/*/billing-cancel.json` is `[]`). "Keep my plan" stands alone, so it is held to 44px; it carries `.tap` since OR-041 (`checks.ts:35-37`).
 
 ## What the v0 export did, and why we did not take it
 

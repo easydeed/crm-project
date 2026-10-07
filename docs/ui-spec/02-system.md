@@ -133,7 +133,7 @@ on its own line takes the `.tap` class, which makes it a 44px flex box. A link i
 sentence does not take `.tap`, and is exempt. Desktop keeps its own sizes.
 
 A redesign can change how controls look. It must keep this floor on phones, and the
-browser pass (`e2e/checks.ts:49`) measures it.
+browser pass (`e2e/checks.ts:52`) measures it.
 
 ## Shared styles
 

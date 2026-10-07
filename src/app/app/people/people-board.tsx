@@ -65,11 +65,11 @@ export function PeopleBoard({
         {rows.length === 1 ? '1 person' : `${rows.length} people`}
       </p>
       <p className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
-        <Link className={linkClass} href="/app/people/import">
+        <Link className={`tap ${linkClass}`} href="/app/people/import">
           Add people
         </Link>
         {queueCount > 0 ? (
-          <Link className={linkClass} href="/app/people/review">
+          <Link className={`tap ${linkClass}`} href="/app/people/review">
             Review them
           </Link>
         ) : null}

@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { expect, test } from 'vitest'
+import { ancestors, borderColours, byExpression, classTokens, only, parseJsx, tagOf } from '@/test/jsx'
 
 function src(relative: string) {
   return readFileSync(new URL(relative, import.meta.url), 'utf8')
@@ -92,9 +93,15 @@ test('"Name matches" is a tag in the neutral pair, which the contrast test check
 })
 
 test('candidate cards are outlined in --border, the documented exception to --rule', () => {
-  const cards = src('./candidate-cards.tsx')
-  expect(cards).toContain('className="rounded-md border border-border p-4 text-[15px]"')
-  expect(cards).not.toContain('border-rule')
+  // The card is the <li> around "This one". Its outline colour is --border at any width, radius
+  // or padding (OR-041: the property, not the class string).
+  const jsx = parseJsx('app/app/people/review/candidate-cards.tsx')
+  const choose = only(byExpression(jsx, 'REVIEW_THIS_ONE'), '"This one" button')
+  const card = ancestors(choose).find((element) => tagOf(jsx, element) === 'li')!
+  const tokens = classTokens(jsx, card)
+  expect(borderColours(tokens)).toEqual(['border-border'])
+  expect(tokens.some((token) => /^border(-\d)?$/.test(token))).toBe(true)
+  expect(src('./candidate-cards.tsx')).not.toContain('border-rule')
   expect(src('../../../globals.css')).toMatch(/One exception, OR-032: review candidate cards take\s*\*\s*--border/)
 })
 

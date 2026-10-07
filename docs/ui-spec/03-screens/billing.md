@@ -96,7 +96,7 @@ takes `.tap`, so it is 44px tall on phones (`page.tsx:87`, `src/app/globals.css:
 - `src/billing/billing.integration.test.ts:129` — cancel keeps sending until the period ends, resume restores it, the end stops mail but keeps everything.
 - `billing.integration.test.ts:166` — a failed payment moves the account to past due.
 - `billing.integration.test.ts:178` — the billing view reads card and invoices from Stripe.
-- `e2e/screens.spec.ts:6` with `e2e/checks.ts` — no horizontal scroll at 390, 44px tap targets on phone (a link inside a line of text is exempt), no text under 15px, no clipping. The capture reports none (`e2e/screenshots/*/billing.json` is `[]`). Note the "Settings" back link passes as an inline link because its block also holds the `<h1>`, so it is not held to 44px (`checks.ts:34-39`).
+- `e2e/screens.spec.ts:6` with `e2e/checks.ts` — no horizontal scroll at 390, 44px tap targets on phone (a link inside a line of text is exempt), no text under 15px, no clipping. The capture reports none (`e2e/screenshots/*/billing.json` is `[]`). The "Settings" back link stands alone, so it is held to 44px; it carries `.tap` since OR-041 (`checks.ts:35-37`).
 
 ## What the v0 export did, and why we did not take it
 

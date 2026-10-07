@@ -34,7 +34,7 @@ export function HomeBillingCard({ issue }: { issue: BillingIssue }) {
     <section className={sendCardClass}>
       <h1 className="text-[22px] font-semibold">{copy.title}</h1>
       <p className="mt-3 max-w-xl text-[15px]">{copy.body}</p>
-      <Link className={ctaClass} href="/app/settings/billing">
+      <Link className={`${ctaClass} tap`} href="/app/settings/billing">
         {copy.action}
       </Link>
     </section>

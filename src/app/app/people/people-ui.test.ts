@@ -1,5 +1,11 @@
 import { readFileSync } from 'node:fs'
+import { createElement } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import { expect, test } from 'vitest'
+import { PeopleList } from '@/app/app/people/people-list'
+import type { ContactListRow } from '@/db/contacts'
+import { contactStatusLabel } from '@/people/status'
+import { ancestors, byExpression, byTag, classTokens, classVariants, descendants, only, ownText, parseJsx } from '@/test/jsx'
 
 function src(relative: string) {
   return readFileSync(new URL(relative, import.meta.url), 'utf8')
@@ -15,10 +21,30 @@ test('list columns are name, address, and status only', () => {
   expect(list).not.toContain('row.phone')
   expect(list).not.toMatch(/engagement|last-opened|lastOpened|opened recently|send data/i)
   expect(list).not.toContain('row.candidates')
-  expect(list).toContain('grid-cols-[auto_minmax(0,1fr)_auto]')
-  expect(list).toContain('text-right')
-  expect(list).toContain('flex-col')
   expect(list).toContain(`/app/people/${'${row.id}'}/edit`)
+})
+
+test('each row reads as exactly its name, address, Edit and status: nothing else reaches the list', () => {
+  // OR-041: rendered, so any grid or layout passes and any extra column or field fails.
+  const row = (id: string, status: 'matched' | 'needs_review' | 'no_parcel', unsubscribed: boolean): ContactListRow => ({
+    id, name: `Person ${id}`, email: `${id}@example.com`, phone: '909-555-0100', addressRaw: `${id} Main St`,
+    closeDate: '2020-01-02', notes: 'a note', status, reviewState: 'pending' as const, parcelId: null,
+    parcelAddress: null, parcelApn: 'APN-1', unsubscribed, homeownerAddressAt: null, groupIds: [], groupNames: ['A group'],
+    candidates: [{ parcelId: 'p1', confidence: 0.9, reason: 'Close by address', rank: 1 }],
+  })
+  const rows = [row('a1', 'matched', false), row('b2', 'needs_review', false), row('c3', 'no_parcel', true)]
+  const html = renderToStaticMarkup(createElement(PeopleList, { rows, selected: [], onToggle: () => {}, onToggleAll: () => {} }))
+  const items = [...html.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/g)].map((m) => m[1]!)
+  expect(items).toHaveLength(3)
+  items.forEach((item, i) => {
+    const r = rows[i]!
+    const words = item.replace(/<[^>]*>/g, ' ').replace(/&#x27;/g, "'").replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim()
+    const status = contactStatusLabel(r.status)
+    expect(words).toBe([r.name, r.addressRaw, 'Edit', status, ...(r.unsubscribed ? ['Unsubscribed'] : [])].join(' '))
+    expect(item.match(/type="checkbox"/g)).toHaveLength(1)
+    expect(item).toContain(`href="/app/people/${r.id}"`)
+    expect(item).toContain(`href="/app/people/${r.id}/edit"`)
+  })
 })
 
 test('a homeowner address change is named on the contact', () => {
@@ -56,7 +82,11 @@ test('bulk bar is only rendered when a selection exists', () => {
   expect(bar).toContain('Remove from group')
   expect(bar).toContain('Export')
   expect(bar).toContain('Delete')
-  expect(bar).toContain('sticky bottom-0')
+  // OR-041: the bar stays in reach while scrolling, by sticky or fixed, at the bottom.
+  const barJsx = parseJsx('app/app/people/people-bulk-bar.tsx')
+  const reach = byTag(barJsx, 'div').map((element) => classTokens(barJsx, element))
+    .find((tokens) => tokens.includes('bottom-0'))
+  expect(reach?.some((token) => token === 'sticky' || token === 'fixed')).toBe(true)
   expect(bar).toContain('Delete ${names[0]}?')
 })
 
@@ -154,7 +184,18 @@ test('Delete is the outlined coral button on both screens, and the question it a
 
 test('the current filter is marked like the top bar: dark text on blue-soft, with aria-current', () => {
   const filters = src('./people-filters.tsx')
-  expect(filters).toContain("const currentClass = 'rounded-md bg-blue-soft px-2 font-semibold text-foreground'")
+  // OR-041: the current mark is a blue-soft fill with ink words, marked by weight too. Any
+  // padding or radius passes; blue words on that fill never do (4.42:1).
+  const jsx = parseJsx('app/app/people/people-filters.tsx')
+  const current = /const currentClass = '([^']*)'/.exec(filters)?.[1]?.split(' ') ?? []
+  expect(current).toContain('bg-blue-soft')
+  expect(current).toContain('font-semibold')
+  expect(current.filter((token) => /^text-(?!\[)/.test(token)).every((token) => token === 'text-foreground')).toBe(true)
+  for (const link of byTag(jsx, 'Link')) {
+    for (const variant of classVariants(jsx, link)) {
+      if (variant.includes('bg-blue-soft')) expect(variant.filter((token) => /^text-(?!\[)/.test(token)), variant.join(' ')).not.toContain('text-blue')
+    }
+  }
   expect(filters).not.toMatch(/text-blue\b/)
   expect(filters.match(/aria-current=/g)?.length).toBe(5)
 })
@@ -163,11 +204,13 @@ test('the status column says only the schema status and Unsubscribed, never an e
   const list = src('./people-list.tsx')
   // The export's engagement tags. Only the statuses the schema defines may appear here.
   expect(list).not.toMatch(/\bOpening\b|Never opened|\bQuiet\b|May have moved/)
-  const start = list.indexOf('<p className="text-right">')
-  const cell = list.slice(start, list.indexOf('</p>', start))
-  // The words a reader sees: JSX text between tags, less the {expressions} and the JS around them.
-  const words = [...cell.matchAll(/>([^<>]*)</g)]
-    .flatMap((m) => m[1]!.replace(/\{[^{}]*\}/g, ' ').split(/\s+/))
-    .filter((word) => /^[A-Za-z][A-Za-z'-]*$/.test(word) && word !== 'null')
+  // OR-041: the cell is whatever element holds the status label, found by that expression rather
+  // than by its class string. The words a reader sees in it, beside the label, are only these.
+  const jsx = parseJsx('app/app/people/people-list.tsx')
+  const label = only(byExpression(jsx, 'contactStatusLabel(row.status)'), 'status label')
+  const cell = ancestors(label)[0]!
+  const words = [cell, ...descendants(cell)]
+    .flatMap((element) => ownText(jsx, element).split(/\s+/))
+    .filter((word) => /^[A-Za-z][A-Za-z'-]*$/.test(word))
   expect(words).toEqual(['Unsubscribed'])
 })

@@ -34,7 +34,7 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
   return (
     <main className="flex flex-col gap-8 px-4 py-10">
       <div>
-        <Link className={linkClass} href="/app/settings">
+        <Link className={`tap ${linkClass}`} href="/app/settings">
           Settings
         </Link>
         <h1 className="mt-2 text-[22px] font-semibold">Billing</h1>

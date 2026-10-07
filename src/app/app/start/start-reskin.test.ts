@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import ts from 'typescript'
 import { expect, test } from 'vitest'
 import { linkClass } from '@/app/app/people/ui'
+import { borderColours, byAttribute, classTokens, classVariants, descendants, only, parseJsx, tagOf, withAttribute } from '@/test/jsx'
 
 /**
  * OR-035. The MLS framing sentences are what stop an agent mailing a stranger as if they were a
@@ -52,8 +53,21 @@ test.each(FRAMING)('%s renders %s at full contrast: no muted ink, no colour, no 
 })
 
 test('the skeleton rows fill with --rule and the drop zone edge is --border (a swap may not make either fainter)', () => {
-  expect(src('./start-flow.tsx')).toContain('<li key={row} className="h-12 rounded-md bg-rule" />')
-  expect(src('../people/import/import-form.tsx')).toContain('border border-dashed border-border p-6')
+  // OR-041: the fill and the edge, found by what the element is, not by its whole class string.
+  const flow = parseJsx('app/app/start/start-flow.tsx')
+  const skeleton = only(byAttribute(flow, 'aria-busy', '"true"'), 'searching skeleton')
+  const rows = descendants(skeleton).filter((element) => tagOf(flow, element) === 'li')
+  expect(rows.length).toBeGreaterThan(0)
+  for (const row of rows) {
+    const fills = classTokens(flow, row).filter((token) => /^(?:[a-z]+:)*(?:bg|opacity)-/.test(token))
+    expect(fills).toEqual(['bg-rule'])
+  }
+  const form = parseJsx('app/app/people/import/import-form.tsx')
+  const drop = only(withAttribute(form, 'onDrop'), 'drop zone')
+  for (const variant of classVariants(form, drop)) {
+    expect(variant).toContain('border-dashed')
+    expect(borderColours(variant)).toEqual(['border-border'])
+  }
 })
 
 test('start and import links use linkClass, not a copy of its string', () => {

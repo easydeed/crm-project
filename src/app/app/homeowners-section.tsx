@@ -11,7 +11,7 @@ export function HomeownersSection() {
         Everyone you&apos;ve closed with, the house they&apos;re matched to, and whether they get
         the monthly note.
       </p>
-      <Link className={`mt-3 inline-block ${linkClass}`} href="/app/people">
+      <Link className={`mt-3 inline-block tap ${linkClass}`} href="/app/people">
         Open people
       </Link>
     </section>

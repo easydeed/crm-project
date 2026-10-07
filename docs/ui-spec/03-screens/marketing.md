@@ -67,7 +67,7 @@ the code (`preview-panel.tsx:74-77, 82`); not in a capture, since every capture 
 This brushes against invariant 1 ("no dead controls"); no test covers it.
 
 The email inside the iframe has its own design (Georgia, its own ink, 12px labels). It is exempt
-from the app's 15px and token rules because it is an email (`e2e/checks.ts:10`;
+from the app's 15px and token rules because it is an email (`e2e/checks.ts:12`;
 `design-scope.test.ts:39`). Its MLS block carries its attribution line inside the email
 (`src/digest/blocks/four-doors.ts:34-44`), in both HTML and plain text, so invariant 9 holds on
 the sample page.
@@ -151,12 +151,11 @@ copy decision. There is no footer, and no privacy or terms link, because those p
 - `src/app/shared-classes.test.ts:30, 39` — `buttonClass` and `linkClass` are not copied.
 - `src/app/design-debt.test.ts:113` — all of `src/app` is tokens only (catches the export's rgba shadows since OR-038).
 - `e2e/screens.spec.ts:7-18` (home, sample, sample-text-dark, at 390 and 1440): status under 400;
-  no `/couldn.t load|could not load/i` text; then `e2e/checks.ts`: no horizontal scroll (`:20-21`),
-  no text under 15px outside the iframe (`:60`), no clipping (`:62-69`), 44px tap targets on the phone
-  (`:42-50`).
-  - 44px note: `isInlineLink` (`e2e/checks.ts:34-40`) exempts any link whose nearest block parent has
-    other text. On `/` the CTA and both links share a row inside `<main>`; on `/sample` `Back` is a
-    child of `<main>`. All are treated as inline and not measured. Their phone height is not verified.
+  no `/couldn.t load|could not load/i` text; then `e2e/checks.ts`: no horizontal scroll (`:23-24`),
+  no text under 15px outside the iframe (`:66`), no clipping (`:68-75`), 44px tap targets on the phone
+  (`:40-56`).
+  - 44px note: on `/` the CTA and both links, and `Back` on `/sample`, stand alone, so each is held to
+    44px on a phone. All carry `.tap` since OR-041 (`e2e/checks.ts:35-37`).
 - `e2e/desktop-unchanged.spec.ts` — on demand, pixel-exact at 1440.
 
 ## What the v0 export did, and why we did not take it
