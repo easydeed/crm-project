@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#e4e8ef;font-family:'Inter',sans-serif;color:#0e1729;-webkit-font-smoothing:antialiased;}
+a{color:#2f5bff;}a:hover{color:#1f44cc;}
+*{box-sizing:border-box;}
+</style>
+</helmet>
+
+<section style="padding:56px 48px 0;display:flex;flex-direction:column;gap:40px;">
+  <div style="max-width:720px;display:flex;flex-direction:column;gap:8px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#63708a;">ROUND 5 · THE REST OF THE APP · IMPORT, START, EDIT, SIGN IN, REGISTER, UNSUBSCRIBE</div>
+    <h1 style="margin:0;font:600 28px/1.2 'Inter';letter-spacing:-.01em;">Every remaining screen on the same system.</h1>
+    <p style="margin:0;font:400 17px/1.55 'Inter';">Import and Start share one panel vocabulary with People. Sign in and Register drop display type for a single centered column. Unsubscribe stays Georgia, no wordmark, no persuasion — it's the homeowner's page, not ours. No copy was added that isn't already in the codebase.</p>
+  </div>
+
+  <!-- IMPORT 1440 -->
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app/people/import · 1440 · empty, upload tab</div>
+    <div data-screen-label="Import desktop" style="width:1440px;flex-shrink:0;background:#ffffff;border-radius:16px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';">
+      <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 32px;background:#0e1729;color:#ffffff;">
+        <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+        <nav style="display:flex;flex-wrap:nowrap;gap:4px;">
+          <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;background:#ffffff;color:#0e1729;">People</a>
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Settings</a>
+        </nav>
+      </header>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0 32px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+      <div style="padding:20px 32px 64px;display:flex;flex-direction:column;gap:20px;max-width:760px;">
+        <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;align-self:flex-start;">← Back to your people</a>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <h1 style="margin:0;font:600 24px/1.3 'Inter';letter-spacing:-.01em;">Add your people</h1>
+          <p style="margin:0;font:400 17px/1.5 'Inter';max-width:600px;">Upload a file or paste a list. We match each address to the county record.</p>
+        </div>
+
+        <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+          <div role="tablist" aria-label="How to add people" style="display:flex;background:#f2f5fa;border-bottom:1px solid #c9d2e0;padding:8px 16px 0;gap:4px;">
+            <button role="tab" aria-selected="true" style="white-space:nowrap;font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:1px solid #c9d2e0;border-bottom-color:#ffffff;border-radius:8px 8px 0 0;padding:0 18px;min-height:48px;cursor:pointer;margin-bottom:-1px;">Upload a file</button>
+            <button role="tab" aria-selected="false" style="white-space:nowrap;font:500 17px 'Inter';background:transparent;color:#0e1729;border:1px solid transparent;border-radius:8px 8px 0 0;padding:0 18px;min-height:48px;cursor:pointer;">Paste a list</button>
+          </div>
+          <div style="padding:24px;display:flex;flex-direction:column;gap:20px;">
+            <div style="border:2px dashed #7c879d;border-radius:10px;padding:32px 24px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;">
+              <p style="margin:0;font:400 17px/1.5 'Inter';">Drop a .csv here, or choose one.</p>
+              <label style="font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:1.5px solid #7c879d;border-radius:8px;padding:0 22px;min-height:48px;display:inline-flex;align-items:center;cursor:pointer;">Choose a file<input type="file" accept=".csv,text/csv" style="position:absolute;width:1px;height:1px;opacity:0;"></label>
+            </div>
+            <p style="margin:0;font:400 17px/1.5 'Inter';">Drop a file or paste a list to start.</p>
+            <button disabled style="font:600 17px 'Inter';background:#f2f5fa;color:#63708a;border:0;box-shadow:inset 0 0 0 1px #7c879d;border-radius:8px;padding:0 28px;min-height:48px;cursor:not-allowed;align-self:flex-start;">Import</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- START 1440 · FOUND -->
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app/start · 1440 · found · framing sentences at full contrast</div>
+    <div data-screen-label="Start desktop" style="width:1440px;flex-shrink:0;background:#ffffff;border-radius:16px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';">
+      <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 32px;background:#0e1729;color:#ffffff;">
+        <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+        <nav style="display:flex;flex-wrap:nowrap;gap:4px;">
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">People</a>
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Settings</a>
+        </nav>
+      </header>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0 32px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+      <div style="padding:28px 32px 64px;display:flex;flex-direction:column;gap:24px;max-width:760px;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <h1 style="margin:0;font:600 24px/1.3 'Inter';letter-spacing:-.01em;">Add your people</h1>
+          <p style="margin:0;font:400 17px/1.5 'Inter';">Add the homes you've sold, upload your own list of past clients, or both. For a home you sold, the monthly note goes to whoever lives there now, who may not be your client.</p>
+        </div>
+
+        <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+          <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;display:flex;align-items:baseline;gap:14px;font:600 19px/1.3 'Inter';"><span style="font:700 22px/1 'Inter';color:#2f5bff;">1</span>Find my closings</h2>
+          <div style="padding:20px 24px 24px;display:flex;flex-direction:column;gap:20px;">
+            <form style="margin:0;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;">
+              <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';flex:0 1 320px;">Your MLS agent ID<input type="text" value="C01998432" autocomplete="off" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+              <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;">Find my closings</button>
+            </form>
+            <p style="margin:0;font:400 15px/1.5 'Inter';color:#63708a;">It's on your MLS profile page. Not sure? Use the next option.</p>
+
+            <div style="border-top:1px solid #c9d2e0;padding-top:20px;display:flex;flex-direction:column;gap:12px;">
+              <h3 style="margin:0;font:600 22px/1.3 'Inter';letter-spacing:-.01em;">Dana Whitfield</h3>
+              <p style="margin:0;font:400 17px/1.5 'Inter';">We found 5 homes you've sold. Untick any you'd rather leave out.</p>
+              <p style="margin:0;font:400 17px/1.5 'Inter';">The note goes to whoever lives there now. For a home you listed, that's usually the buyer, not the seller you represented. Your past clients come from your own list, which you can upload below.</p>
+              <ul style="list-style:none;margin:4px 0 0;padding:0;border:1px solid #c9d2e0;border-radius:10px;overflow:hidden;">
+                <li style="padding:14px 20px;border-bottom:1px solid #c9d2e0;"><label style="display:grid;grid-template-columns:22px minmax(0,1fr);gap:14px;align-items:start;min-height:44px;cursor:pointer;"><input type="checkbox" defaultChecked="{{ true }}" style="width:22px;height:22px;margin:3px 0 0;accent-color:#0e1729;"><span style="display:flex;flex-direction:column;gap:2px;"><span style="font:600 17px/1.4 'Inter';">1187 Oakdale Ave, La Verne</span><span style="font:400 17px/1.5 'Inter';">Closed February 7, 2025 · $1,015,000</span><span style="font:400 15px/1.5 'Inter';">Listing courtesy of Coastline Realty / Dana Whitfield.</span></span></label></li>
+                <li style="padding:14px 20px;border-bottom:1px solid #c9d2e0;"><label style="display:grid;grid-template-columns:22px minmax(0,1fr);gap:14px;align-items:start;min-height:44px;cursor:pointer;"><input type="checkbox" defaultChecked="{{ true }}" style="width:22px;height:22px;margin:3px 0 0;accent-color:#0e1729;"><span style="display:flex;flex-direction:column;gap:2px;"><span style="font:600 17px/1.4 'Inter';">2290 Bonita Ave, La Verne</span><span style="font:400 17px/1.5 'Inter';">Closed November 19, 2024 · $948,000</span><span style="font:400 15px/1.5 'Inter';">Listing courtesy of Coastline Realty / Dana Whitfield.</span></span></label></li>
+                <li style="padding:14px 20px;border-bottom:1px solid #c9d2e0;background:#f2f5fa;"><label style="display:grid;grid-template-columns:22px minmax(0,1fr);gap:14px;align-items:start;min-height:44px;cursor:pointer;"><input type="checkbox" style="width:22px;height:22px;margin:3px 0 0;accent-color:#0e1729;"><span style="display:flex;flex-direction:column;gap:2px;"><span style="font:600 17px/1.4 'Inter';">604 Foothill Blvd, Claremont</span><span style="font:400 17px/1.5 'Inter';">Closed August 2, 2024 · Price not reported</span><span style="font:400 15px/1.5 'Inter';">Listing courtesy of Hill Realty / Sam Ortiz.</span></span></label></li>
+                <li style="padding:14px 20px;border-bottom:1px solid #c9d2e0;"><label style="display:grid;grid-template-columns:22px minmax(0,1fr);gap:14px;align-items:start;min-height:44px;cursor:pointer;"><input type="checkbox" defaultChecked="{{ true }}" style="width:22px;height:22px;margin:3px 0 0;accent-color:#0e1729;"><span style="display:flex;flex-direction:column;gap:2px;"><span style="font:600 17px/1.4 'Inter';">1530 Baseline Rd, La Verne</span><span style="font:400 17px/1.5 'Inter';">Closed May 30, 2024 · $876,500</span><span style="font:400 15px/1.5 'Inter';">Listing courtesy of Coastline Realty / Dana Whitfield.</span></span></label></li>
+                <li style="padding:14px 20px;"><label style="display:grid;grid-template-columns:22px minmax(0,1fr);gap:14px;align-items:start;min-height:44px;cursor:pointer;"><input type="checkbox" defaultChecked="{{ true }}" style="width:22px;height:22px;margin:3px 0 0;accent-color:#0e1729;"><span style="display:flex;flex-direction:column;gap:2px;"><span style="font:600 17px/1.4 'Inter';">88 Vista Del Sol, Tustin</span><span style="font:400 17px/1.5 'Inter';">Closed March 11, 2024 · $1,120,000</span><span style="font:400 15px/1.5 'Inter';">Listing courtesy of Coastline Realty / Dana Whitfield.</span></span></label></li>
+              </ul>
+              <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+                <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 24px;min-height:48px;cursor:pointer;">Use these 4</button>
+                <span aria-live="polite" style="font:400 17px/1.5 'Inter';">4 of 5 ticked</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="upload" style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+          <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;display:flex;align-items:baseline;gap:14px;font:600 19px/1.3 'Inter';"><span style="font:700 22px/1 'Inter';color:#2f5bff;">2</span>Upload a list</h2>
+          <div role="tablist" aria-label="How to add people" style="display:flex;background:#f2f5fa;border-bottom:1px solid #c9d2e0;padding:8px 16px 0;gap:4px;">
+            <button role="tab" aria-selected="true" style="white-space:nowrap;font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:1px solid #c9d2e0;border-bottom-color:#ffffff;border-radius:8px 8px 0 0;padding:0 18px;min-height:48px;cursor:pointer;margin-bottom:-1px;">Upload a file</button>
+            <button role="tab" aria-selected="false" style="white-space:nowrap;font:500 17px 'Inter';background:transparent;color:#0e1729;border:1px solid transparent;border-radius:8px 8px 0 0;padding:0 18px;min-height:48px;cursor:pointer;">Paste a list</button>
+          </div>
+          <div style="padding:24px;display:flex;flex-direction:column;gap:20px;">
+            <div style="border:2px dashed #7c879d;border-radius:10px;padding:32px 24px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;">
+              <p style="margin:0;font:400 17px/1.5 'Inter';">Drop a .csv here, or choose one.</p>
+              <label style="font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:1.5px solid #7c879d;border-radius:8px;padding:0 22px;min-height:48px;display:inline-flex;align-items:center;cursor:pointer;">Choose a file<input type="file" accept=".csv,text/csv" style="position:absolute;width:1px;height:1px;opacity:0;"></label>
+            </div>
+            <p style="margin:0;font:400 17px/1.5 'Inter';">Drop a file or paste a list to start.</p>
+            <button disabled style="font:600 17px 'Inter';background:#f2f5fa;color:#63708a;border:0;box-shadow:inset 0 0 0 1px #7c879d;border-radius:8px;padding:0 28px;min-height:48px;cursor:not-allowed;align-self:flex-start;">Import</button>
+          </div>
+        </section>
+
+        <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;align-self:flex-start;">Skip for now</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHONE ROW: IMPORT (paste + mapping), EDIT, LOGIN, REGISTER, UNSUBSCRIBE -->
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start;">
+
+    <!-- IMPORT 390 · needs mapping -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app/people/import · 390 · paste tab, needs mapping</div>
+      <div data-screen-label="Import" style="width:390px;background:#ffffff;border-radius:24px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';">
+        <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:#0e1729;color:#ffffff;">
+          <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+          <nav style="display:flex;flex-wrap:nowrap;gap:2px;">
+            <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;background:#ffffff;color:#0e1729;">People</a>
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Settings</a>
+          </nav>
+        </header>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 16px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+        <main style="padding:12px 16px 40px;display:flex;flex-direction:column;gap:20px;">
+          <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;align-self:flex-start;">← Back to your people</a>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <h1 style="margin:0;font:600 22px/1.3 'Inter';letter-spacing:-.01em;">Add your people</h1>
+            <p style="margin:0;font:400 17px/1.5 'Inter';">Upload a file or paste a list. We match each address to the county record.</p>
+          </div>
+
+          <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+            <div role="tablist" aria-label="How to add people" style="display:flex;background:#f2f5fa;border-bottom:1px solid #c9d2e0;padding:8px 12px 0;gap:4px;">
+              <button role="tab" aria-selected="false" style="white-space:nowrap;font:500 17px 'Inter';background:transparent;color:#0e1729;border:1px solid transparent;border-radius:8px 8px 0 0;padding:0 14px;min-height:48px;cursor:pointer;flex:1;">Upload a file</button>
+              <button role="tab" aria-selected="true" style="white-space:nowrap;font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:1px solid #c9d2e0;border-bottom-color:#ffffff;border-radius:8px 8px 0 0;padding:0 14px;min-height:48px;cursor:pointer;margin-bottom:-1px;flex:1;">Paste a list</button>
+            </div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:18px;">
+              <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">One person per line, comma or tab.<textarea style="font:400 16px/1.5 'IBM Plex Mono',monospace;padding:12px 14px;min-height:140px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;resize:vertical;">Client,Contact,Where
+Aisha Rahman,aisha.rahman@gmail.com,1142 Oakdale Ave La Verne
+Darryl Stone,dstone@yahoo.com,2290 Bonita Ave La Verne</textarea></label>
+              <p style="margin:0;font:400 17px/1.5 'Inter';">2 people ready to import.</p>
+              <div style="border:1px solid #c9d2e0;border-radius:10px;overflow:hidden;">
+                <div style="padding:12px 16px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 16px/1.3 'Inter';">Tell us what each column is.</div>
+                <div style="display:grid;grid-template-columns:96px minmax(0,1fr);font:400 17px/1.5 'Inter';">
+                  <div style="padding:12px 16px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;display:flex;align-items:center;">Client</div><div style="padding:8px 12px 8px 0;border-bottom:1px solid #c9d2e0;"><select aria-label="This is the Client" style="font:400 17px 'Inter';padding:0 12px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"><option>This is the name</option></select></div>
+                  <div style="padding:12px 16px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;display:flex;align-items:center;">Contact</div><div style="padding:8px 12px 8px 0;border-bottom:1px solid #c9d2e0;"><select aria-label="This is the Contact" style="font:400 17px 'Inter';padding:0 12px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"><option>This is the email</option></select></div>
+                  <div style="padding:12px 16px;background:#f2f5fa;font-weight:500;color:#63708a;display:flex;align-items:center;">Where</div><div style="padding:8px 12px 8px 0;"><select aria-label="This is the Where" style="font:400 17px 'Inter';padding:0 12px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"><option>This is the —</option></select></div>
+                </div>
+              </div>
+              <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 28px;min-height:48px;cursor:pointer;width:100%;">Import</button>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- EDIT PERSON 390 -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app/people/[id]/edit · 390 · saved, re-checked</div>
+      <div data-screen-label="Edit person" style="width:390px;background:#ffffff;border-radius:24px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';">
+        <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:#0e1729;color:#ffffff;">
+          <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+          <nav style="display:flex;flex-wrap:nowrap;gap:2px;">
+            <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;background:#ffffff;color:#0e1729;">People</a>
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Settings</a>
+          </nav>
+        </header>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 16px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+        <main style="padding:12px 16px 40px;display:flex;flex-direction:column;gap:20px;">
+          <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;align-self:flex-start;">← Back to Aisha Rahman</a>
+          <h1 style="margin:0;font:600 22px/1.3 'Inter';letter-spacing:-.01em;">Edit Aisha Rahman</h1>
+
+          <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+            <h2 style="margin:0;padding:14px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Their details</h2>
+            <form style="margin:0;padding:20px;display:flex;flex-direction:column;gap:18px;">
+              <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Name<input type="text" value="Aisha Rahman" required style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Email<input type="email" value="aisha.rahman@gmail.com" required style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Phone<input type="tel" value="(909) 555-0147" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Address<input type="text" value="1142 Oakdale Ave, La Verne" required style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"><span style="font:400 15px/1.4 'Inter';color:#63708a;">Change it and we re-check the house.</span></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Close date<input type="date" value="2019-03-14" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Notes<textarea style="font:400 17px/1.5 'Inter';padding:12px 14px;min-height:112px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;resize:vertical;"></textarea></label>
+              <p aria-live="polite" style="margin:0;font:400 17px/1.5 'Inter';display:flex;align-items:center;gap:10px;"><span style="font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#e7f6ef;color:#087552;">Saved</span>We re-checked the address.</p>
+              <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 28px;min-height:48px;cursor:pointer;width:100%;">Save</button>
+            </form>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- LOGIN 390 -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/login · 390 · mismatch</div>
+      <div data-screen-label="Sign in" style="width:390px;min-height:760px;background:#ffffff;border-radius:24px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';display:flex;flex-direction:column;">
+          <header style="display:flex;align-items:center;justify-content:center;padding:8px 16px;background:#0e1729;color:#ffffff;"><span style="font:700 18px 'Inter';min-height:44px;display:flex;align-items:center;">onrecord</span></header>
+          <main style="flex:1;display:flex;align-items:center;justify-content:center;padding:40px 16px;">
+            <div style="width:100%;max-width:384px;display:flex;flex-direction:column;gap:24px;">
+              <h1 style="margin:0;font:600 24px/1.3 'Inter';letter-spacing:-.01em;text-align:center;">Sign in</h1>
+              <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+                <form style="margin:0;padding:24px 20px;display:flex;flex-direction:column;gap:18px;">
+                  <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Email<input type="email" autocomplete="email" required value="dana@coastlinerealty.com" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                  <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Password<input type="password" autocomplete="current-password" required value="••••••••••" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                  <p role="alert" style="margin:0;font:400 17px/1.5 'Inter';">That email and password don't match.</p>
+                  <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 28px;min-height:48px;cursor:pointer;width:100%;">Sign in</button>
+                </form>
+              </section>
+              <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;align-self:center;">Create an account</a>
+            </div>
+          </main>
+      </div>
+    </div>
+
+    <!-- REGISTER 390 -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/register · 390</div>
+      <div data-screen-label="Create your account" style="width:390px;background:#ffffff;border-radius:24px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';display:flex;flex-direction:column;">
+          <header style="display:flex;align-items:center;justify-content:center;padding:8px 16px;background:#0e1729;color:#ffffff;"><span style="font:700 18px 'Inter';min-height:44px;display:flex;align-items:center;">onrecord</span></header>
+          <main style="display:flex;justify-content:center;padding:40px 16px;">
+            <div style="width:100%;max-width:384px;display:flex;flex-direction:column;gap:24px;">
+              <h1 style="margin:0;font:600 24px/1.3 'Inter';letter-spacing:-.01em;text-align:center;">Create your account</h1>
+              <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+                <form style="margin:0;padding:24px 20px;display:flex;flex-direction:column;gap:18px;">
+                  <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Name<input type="text" autocomplete="name" required style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                  <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Email<input type="email" autocomplete="email" required style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                  <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Password<span id="pw-rules" style="font:400 15px/1.4 'Inter';color:#63708a;">At least 10 characters</span><input type="password" autocomplete="new-password" required aria-describedby="pw-rules" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                  <div style="border-top:1px solid #c9d2e0;"></div>
+                  <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Brokerage <span style="font:400 15px 'Inter';color:#63708a;">Optional</span><input type="text" autocomplete="organization" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                  <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">DRE number <span style="font:400 15px 'Inter';color:#63708a;">Optional</span><input type="text" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                  <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Phone <span style="font:400 15px 'Inter';color:#63708a;">Optional</span><input type="tel" autocomplete="tel" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                  <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 28px;min-height:48px;cursor:pointer;width:100%;">Create account</button>
+                  <p style="margin:0;font:400 17px/1.5 'Inter';">Next you add a card in Stripe: $19 a month, up to 250 homeowners. Cancel any time from Settings.</p>
+                </form>
+              </section>
+              <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;align-self:center;">Sign in</a>
+            </div>
+          </main>
+      </div>
+    </div>
+
+    <!-- UNSUBSCRIBE 390 · homeowner page · Georgia, no chrome -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/u/[token] · 390 · subscribed · homeowner page</div>
+      <div data-screen-label="Unsubscribe" style="width:390px;min-height:760px;background:#ffffff;border-radius:24px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 Georgia,serif;">
+        <main style="padding:40px 16px;display:flex;justify-content:center;">
+          <div style="width:100%;max-width:512px;display:flex;flex-direction:column;gap:24px;">
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                            <h1 style="margin:0;font:600 24px/1.3 Georgia,serif;">1142 Oakdale Ave, La Verne, 91750</h1>
+            </div>
+
+            <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+              <h2 style="margin:0;padding:14px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 Georgia,serif;">Moved?</h2>
+              <form method="post" style="margin:0;padding:20px;display:flex;flex-direction:column;gap:14px;">
+                <p style="margin:0;font:400 17px/1.5 Georgia,serif;">Tell us where and we'll switch to your new home.</p>
+                <label style="display:flex;flex-direction:column;gap:6px;font:600 16px Georgia,serif;">Address<input type="text" name="address" value="1142 Oakdale Ave, La Verne, 91750" style="font:400 17px Georgia,serif;padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                <button style="font:700 18px Georgia,serif;background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 24px;min-height:48px;cursor:pointer;width:100%;">Update my address</button>
+              </form>
+            </section>
+
+            <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+              <h2 style="margin:0;padding:14px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 Georgia,serif;">Done with these?</h2>
+              <form method="post" style="margin:0;padding:20px;display:flex;flex-direction:column;gap:14px;">
+                <button style="font:600 17px Georgia,serif;background:#ffffff;color:#0e1729;border:1.5px solid #7c879d;border-radius:8px;padding:0 24px;min-height:48px;cursor:pointer;width:100%;">Stop these emails</button>
+              </form>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- UNSUBSCRIBE 1440 · stopped -->
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/u/[token] · 1440 · stopped, reversible</div>
+    <div data-screen-label="Unsubscribe desktop" style="width:1440px;min-height:640px;flex-shrink:0;background:#ffffff;border-radius:16px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 Georgia,serif;">
+      <main style="padding:64px 32px;display:flex;justify-content:center;">
+        <div style="width:100%;max-width:512px;display:flex;flex-direction:column;gap:24px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+                        <h1 style="margin:0;font:600 24px/1.3 Georgia,serif;">1142 Oakdale Ave, La Verne, 91750</h1>
+          </div>
+          <p role="status" style="margin:0;font:400 17px/1.5 Georgia,serif;display:flex;align-items:center;gap:12px;"><span style="font:600 15px/1 Georgia,serif;padding:8px 12px;border-radius:6px;background:#f2f5fa;color:#0e1729;border:1px solid #c9d2e0;">Stopped</span>These emails have stopped.</p>
+
+          <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+            <h2 style="margin:0;padding:14px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 Georgia,serif;">Moved?</h2>
+            <form method="post" style="margin:0;padding:20px;display:flex;flex-direction:column;gap:14px;">
+              <p style="margin:0;font:400 17px/1.5 Georgia,serif;">Tell us where and we'll switch to your new home.</p>
+              <label style="display:flex;flex-direction:column;gap:6px;font:600 16px Georgia,serif;">Address<input type="text" name="address" value="1142 Oakdale Ave, La Verne, 91750" style="font:400 17px Georgia,serif;padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+              <button style="font:700 18px Georgia,serif;background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 24px;min-height:48px;cursor:pointer;align-self:flex-start;">Update my address</button>
+            </form>
+          </section>
+
+          <form method="post" style="margin:0;"><button style="font:400 17px Georgia,serif;color:#2f5bff;text-decoration:underline;text-underline-offset:4px;background:none;border:0;padding:0;min-height:44px;cursor:pointer;">Actually, keep them coming</button></form>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<section style="padding:56px 48px 0;display:flex;flex-direction:column;gap:40px;">
+  <div style="max-width:720px;display:flex;flex-direction:column;gap:8px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#63708a;">ROUND 4 · A SPLASH, SPENT CAREFULLY · SETTINGS, ADD-ONS, BILLING, CANCEL</div>
+    <h1 style="margin:0;font:600 28px/1.2 'Inter';letter-spacing:-.01em;">Blue means "you can tap this." Brass means "what you pay."</h1>
+    <p style="margin:0;font:400 17px/1.55 'Inter';">`--blue` (#2f5bff, already in the token list, 5.2:1 on white) goes on links and the call-list numerals. Nothing else; the current filter keeps its blue-soft fill with dark words, as the spec requires. Brass appears once, on the navy bill bar total, where it clears 8:1 as a proposed `--brass` token paired with `--foreground` only.</p>
+  </div>
+
+  <!-- SETTINGS 1440 -->
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app/settings · 1440</div>
+    <div data-screen-label="Settings desktop" style="width:1440px;flex-shrink:0;background:#ffffff;border-radius:16px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';">
+      <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 32px;background:#0e1729;color:#ffffff;">
+        <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+        <nav style="display:flex;flex-wrap:nowrap;gap:4px;">
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">People</a>
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+          <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;background:#ffffff;color:#0e1729;">Settings</a>
+        </nav>
+      </header>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0 32px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+      <div style="padding:28px 32px 64px;display:flex;flex-direction:column;gap:24px;max-width:1200px;">
+        <h1 style="margin:0;font:600 24px/1.3 'Inter';letter-spacing:-.01em;">Settings</h1>
+
+        <div style="display:grid;grid-template-columns:minmax(0,760px) minmax(0,1fr);gap:24px;align-items:start;">
+          <div style="display:flex;flex-direction:column;gap:24px;">
+            <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+              <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Your details</h2>
+              <form style="padding:20px 24px 24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 24px;">
+                <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Full name<input type="text" value="Dana Whitfield" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                <div style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Email<div style="font:400 17px/1.5 'Inter';padding:11px 0;">dana@coastlinerealty.com</div><div style="font:400 15px/1.4 'Inter';color:#63708a;">Contact us to change your email.</div></div>
+                <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Brokerage<input type="text" value="Coastline Realty" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">DRE number<input type="text" value="01998432" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Phone<input type="tel" value="(909) 555-0147" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">MLS agent ID<input type="text" value="C01998432" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"><span style="font:400 15px/1.4 'Inter';color:#63708a;">It's on your MLS profile page.</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;align-self:flex-start;">Find my closings again</a></label>
+                <div style="grid-column:1 / -1;"><button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 28px;min-height:48px;cursor:pointer;">Save</button></div>
+              </form>
+            </section>
+
+            <section id="phone" style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+              <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Phone for texts</h2>
+              <div style="padding:20px 24px 24px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;">
+                <p style="margin:0;font:400 17px/1.5 'Inter';max-width:480px;">We text a six-digit code to (909) 555-0147 to make sure it is yours.</p>
+                <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;">Text me a code</button>
+              </div>
+            </section>
+
+            <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+              <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">How the email looks</h2>
+              <form style="padding:20px 24px 24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 24px;">
+                <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Sender name<input type="text" value="Dana Whitfield" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Reply-to email<input type="email" value="dana@coastlinerealty.com" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"></label>
+                <fieldset style="grid-column:1 / -1;border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;">
+                  <legend style="font:600 16px 'Inter';padding:0;margin-bottom:8px;">Accent color</legend>
+                  <div style="display:flex;gap:12px;">
+                    <label style="display:flex;flex-direction:column;align-items:center;gap:6px;font:400 15px 'Inter';cursor:pointer;"><span style="width:44px;height:44px;border-radius:8px;background:#2f5bff;outline:2px solid #0e1729;outline-offset:3px;"></span>blue</label>
+                    <label style="display:flex;flex-direction:column;align-items:center;gap:6px;font:400 15px 'Inter';cursor:pointer;"><span style="width:44px;height:44px;border-radius:8px;background:#0e9f6e;"></span>green</label>
+                    <label style="display:flex;flex-direction:column;align-items:center;gap:6px;font:400 15px 'Inter';cursor:pointer;"><span style="width:44px;height:44px;border-radius:8px;background:#b42d17;"></span>rust</label>
+                    <label style="display:flex;flex-direction:column;align-items:center;gap:6px;font:400 15px 'Inter';cursor:pointer;"><span style="width:44px;height:44px;border-radius:8px;background:#0e1729;"></span>ink</label>
+                    <label style="display:flex;flex-direction:column;align-items:center;gap:6px;font:400 15px 'Inter';cursor:pointer;"><span style="width:44px;height:44px;border-radius:8px;background:#5b3fb8;"></span>violet</label>
+                  </div>
+                </fieldset>
+                <div style="grid-column:1 / -1;"><button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 28px;min-height:48px;cursor:pointer;">Save</button></div>
+              </form>
+            </section>
+
+            <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+              <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Sending</h2>
+              <form style="padding:20px 24px 24px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 24px;">
+                <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Send day<select style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"><option>1st</option><option>15th</option></select></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Time of day<select style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"><option>08:00</option></select></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Timezone<select style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;"><option>Pacific</option></select></label>
+                <label style="grid-column:1 / -1;display:flex;align-items:center;gap:12px;min-height:44px;font:400 17px 'Inter';"><input type="checkbox" style="width:22px;height:22px;margin:0;accent-color:#0e1729;">Pause my monthly note</label>
+                <div style="grid-column:1 / -1;"><button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 28px;min-height:48px;cursor:pointer;">Save</button></div>
+              </form>
+            </section>
+
+            <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+              <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Billing</h2>
+              <div style="padding:14px 24px 18px;"><a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Plan, card, invoices, and canceling</a></div>
+            </section>
+          </div>
+
+          <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;position:sticky;top:24px;">
+            <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Preview</h2>
+            <div style="padding:16px 24px 24px;display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <div role="group" aria-label="Preview size" style="display:flex;border:1.5px solid #7c879d;border-radius:8px;overflow:hidden;">
+                  <button aria-pressed="true" style="font:600 15px 'Inter';background:#0e1729;color:#ffffff;border:0;padding:0 14px;min-height:44px;cursor:pointer;">Desktop</button>
+                  <button aria-pressed="false" style="font:500 15px 'Inter';background:#ffffff;color:#0e1729;border:0;padding:0 14px;min-height:44px;cursor:pointer;">Phone</button>
+                </div>
+                <div role="group" aria-label="Preview format" style="display:flex;border:1.5px solid #7c879d;border-radius:8px;overflow:hidden;">
+                  <button aria-pressed="true" style="font:600 15px 'Inter';background:#0e1729;color:#ffffff;border:0;padding:0 14px;min-height:44px;cursor:pointer;">Email</button>
+                  <button aria-pressed="false" style="font:500 15px 'Inter';background:#ffffff;color:#0e1729;border:0;padding:0 14px;min-height:44px;cursor:pointer;">Plain text</button>
+                </div>
+              </div>
+              <div title="Email preview" style="background:#ffffff;border:1px solid #c9d2e0;border-radius:8px;padding:28px 30px;font:400 16px/1.55 Georgia,serif;color:#0e1729;display:flex;flex-direction:column;gap:14px;">
+                <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#2f5bff;">About 1142 Oakdale Ave</div>
+                <div>Hi Aisha,</div>
+                <div>A house on your street just listed. 1187 Oakdale Ave is asking $1,065,000 — four doors down from you.</div>
+                <div>You bought in 2019 for $712,000. Homes on Oakdale have recently sold for about $1,040,000.</div>
+                <div style="font-size:12px;color:#63708a;">Listing courtesy of Hill Realty / Sam Ortiz.</div>
+                <div>— Dana Whitfield, Coastline Realty</div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD-ONS 1440 -->
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app/addons · 1440</div>
+    <div data-screen-label="Add-ons desktop" style="width:1440px;flex-shrink:0;background:#ffffff;border-radius:16px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';">
+      <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 32px;background:#0e1729;color:#ffffff;">
+        <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+        <nav style="display:flex;flex-wrap:nowrap;gap:4px;">
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">People</a>
+          <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;background:#ffffff;color:#0e1729;">Add-ons</a>
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Settings</a>
+        </nav>
+      </header>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0 32px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+      <div style="padding:28px 32px 64px;display:flex;flex-direction:column;gap:24px;max-width:760px;">
+        <h1 style="margin:0;font:600 24px/1.3 'Inter';letter-spacing:-.01em;">Add-ons</h1>
+
+        <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+          <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Extras</h2>
+          <ul style="list-style:none;margin:0;padding:0;">
+            <li style="padding:22px 24px;display:flex;justify-content:space-between;gap:24px;align-items:flex-start;border-bottom:1px solid #c9d2e0;">
+              <div style="display:flex;flex-direction:column;gap:6px;max-width:520px;">
+                <div style="font:600 19px/1.3 'Inter';">Text me the call list</div>
+                <div style="font:400 17px/1.5 'Inter';">This month's three names, texted to your phone on send day.</div>
+                <div style="font:600 17px/1.5 'Inter';">$2 a month</div>
+              </div>
+              <button role="switch" aria-checked="false" aria-label="Text me the call list" style="display:flex;align-items:center;gap:12px;background:none;border:0;padding:0;min-height:44px;cursor:pointer;font:600 17px 'Inter';color:#0e1729;flex-shrink:0;">
+                <span style="width:56px;height:32px;border-radius:999px;border:2px solid #7c879d;background:#ffffff;position:relative;display:block;"><span style="position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#7c879d;"></span></span>Off
+              </button>
+            </li>
+            <li style="padding:22px 24px;display:flex;justify-content:space-between;gap:24px;align-items:flex-start;">
+              <div style="display:flex;flex-direction:column;gap:6px;max-width:520px;">
+                <div style="font:600 19px/1.3 'Inter';">Add my lender</div>
+                <div style="font:400 17px/1.5 'Inter';">Your lender partner's name and NMLS printed beside yours at the bottom of each note.</div>
+                <div style="font:600 17px/1.5 'Inter';">Free</div>
+                <div style="font:400 15px/1.5 'Inter';color:#63708a;">Takes effect on the next note.</div>
+              </div>
+              <button role="switch" aria-checked="true" aria-label="Add my lender" style="display:flex;align-items:center;gap:12px;background:none;border:0;padding:0;min-height:44px;cursor:pointer;font:600 17px 'Inter';color:#0e1729;flex-shrink:0;">
+                <span style="width:56px;height:32px;border-radius:999px;border:2px solid #0e1729;background:#0e1729;position:relative;display:block;"><span style="position:absolute;right:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#ffffff;"></span></span>On
+              </button>
+            </li>
+          </ul>
+        </section>
+
+        <div style="background:#0e1729;color:#ffffff;border-radius:12px;padding:22px 24px;display:flex;flex-direction:column;gap:10px;font:400 17px/1.5 'Inter';">
+          <div style="display:flex;justify-content:space-between;gap:16px;"><span>Base plan</span><span>$19</span></div>
+          <div style="display:flex;justify-content:space-between;gap:16px;"><span>Add my lender</span><span>$0</span></div>
+          <div style="border-top:1px solid #6b7487;margin:6px 0;"></div>
+          <div style="display:flex;justify-content:space-between;gap:16px;font:600 22px/1.3 'Inter';color:#d4a84b;"><span>Total a month</span><span>$19</span></div>
+          <div style="font:400 15px/1.5 'Inter';color:#c7cdd8;">Changes take effect on your next bill.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BILLING + CANCEL 1440 -->
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start;">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app/settings/billing · 1440</div>
+      <div data-screen-label="Billing desktop" style="width:1440px;flex-shrink:0;background:#ffffff;border-radius:16px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';">
+        <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 32px;background:#0e1729;color:#ffffff;">
+          <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+          <nav style="display:flex;flex-wrap:nowrap;gap:4px;">
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">People</a>
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+            <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;background:#ffffff;color:#0e1729;">Settings</a>
+          </nav>
+        </header>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 32px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+        <div style="padding:20px 32px 64px;display:flex;flex-direction:column;gap:20px;max-width:760px;">
+          <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;align-self:flex-start;">← Settings</a>
+          <h1 style="margin:0;font:600 24px/1.3 'Inter';letter-spacing:-.01em;">Billing</h1>
+
+          <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+            <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Your plan</h2>
+            <div style="display:grid;grid-template-columns:160px minmax(0,1fr);font:400 17px/1.5 'Inter';">
+              <div style="padding:12px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Plan</div><div style="padding:12px 24px;border-bottom:1px solid #c9d2e0;">$19 a month, up to 250 homeowners</div>
+              <div style="padding:12px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Status</div><div style="padding:12px 24px;border-bottom:1px solid #c9d2e0;"><span style="font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#e7f6ef;color:#087552;">Active</span></div>
+              <div style="padding:12px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Next charge</div><div style="padding:12px 24px;border-bottom:1px solid #c9d2e0;">November 1, 2026</div>
+              <div style="padding:12px 24px;background:#f2f5fa;font-weight:500;color:#63708a;">Card</div><div style="padding:12px 24px;">Ending in 4242</div>
+            </div>
+            <div style="padding:12px 24px 16px;border-top:1px solid #c9d2e0;"><a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Cancel my plan</a></div>
+          </section>
+
+          <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+            <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Invoices</h2>
+            <ul style="list-style:none;margin:0;padding:0;">
+              <li style="display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center;padding:14px 24px;border-bottom:1px solid #c9d2e0;"><span style="min-width:180px;">October 1, 2026</span><span style="min-width:60px;font-weight:600;">$19</span><span style="color:#087552;font-weight:600;">Paid</span><a href="#" style="margin-left:auto;font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;">View invoice</a></li>
+              <li style="display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center;padding:14px 24px;"><span style="min-width:180px;">September 1, 2026</span><span style="min-width:60px;font-weight:600;">$19</span><span style="color:#087552;font-weight:600;">Paid</span><a href="#" style="margin-left:auto;font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;">View invoice</a></li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app/settings/billing/cancel · 1440</div>
+      <div data-screen-label="Cancel desktop" style="width:1440px;flex-shrink:0;background:#ffffff;border-radius:16px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';">
+        <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 32px;background:#0e1729;color:#ffffff;">
+          <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+          <nav style="display:flex;flex-wrap:nowrap;gap:4px;">
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">People</a>
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+            <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;background:#ffffff;color:#0e1729;">Settings</a>
+          </nav>
+        </header>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 32px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+        <div style="padding:28px 32px 96px;display:flex;flex-direction:column;gap:20px;max-width:760px;">
+          <h1 style="margin:0;font:600 24px/1.3 'Inter';letter-spacing:-.01em;">Cancel your plan</h1>
+          <section style="border:1px solid #c9d2e0;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:20px;">
+            <p style="margin:0;font:400 17px/1.55 'Inter';max-width:600px;">Your homeowners stop getting the monthly note after November 1, 2026. Your people and their matches stay here. Come back any time.</p>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;">
+              <form style="margin:0;"><button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 24px;min-height:48px;cursor:pointer;">Cancel my plan</button></form>
+              <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Keep my plan</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:56px 48px 0;display:flex;flex-direction:column;gap:40px;">
+  <div style="max-width:720px;display:flex;flex-direction:column;gap:8px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#63708a;">ROUND 3 · DESKTOP SET · SAME ROUTE</div>
+    <h1 style="margin:0;font:600 28px/1.2 'Inter';letter-spacing:-.01em;">People, one person, review queue at 1440.</h1>
+  </div>
+
+  <!-- PEOPLE 1440 -->
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app/people · 1440 · bulk bar</div>
+    <div data-screen-label="People desktop" style="width:1440px;flex-shrink:0;background:#ffffff;border-radius:16px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';position:relative;">
+      <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 32px;background:#0e1729;color:#ffffff;">
+        <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+        <nav style="display:flex;flex-wrap:nowrap;gap:4px;">
+          <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;background:#ffffff;color:#0e1729;">People</a>
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Settings</a>
+        </nav>
+      </header>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0 32px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+      <div style="padding:28px 32px 140px;display:flex;flex-direction:column;gap:20px;max-width:760px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;">
+          <div style="display:flex;flex-direction:column;"><h1 style="margin:0;font:600 24px/1.3 'Inter';letter-spacing:-.01em;">People</h1><p style="margin:0;font:400 17px/1.5 'Inter';color:#63708a;">51 people</p></div>
+          <div style="display:flex;align-items:center;gap:20px;">
+            <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Review them</a>
+            <a href="#" style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;text-decoration:none;border-radius:8px;padding:0 18px;min-height:48px;display:inline-flex;align-items:center;">Add people</a>
+          </div>
+        </div>
+
+        <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+          <div style="padding:16px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-end;">
+            <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';flex:1 1 280px;">Search
+              <input type="search" placeholder="Name, email, or address" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;max-width:384px;">
+            </label>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="font:600 16px 'Inter';">Status</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:inline-flex;align-items:center;border-radius:8px;background:#e7edff;border:1px solid #c9d2e0;">All (51)</a>
+                <a href="#" style="font:400 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:inline-flex;align-items:center;border-radius:8px;background:#ffffff;border:1px solid #c9d2e0;">On the map (44)</a>
+                <a href="#" style="font:400 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:inline-flex;align-items:center;border-radius:8px;background:#ffffff;border:1px solid #c9d2e0;">Needs a look (6)</a>
+                <a href="#" style="font:400 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:inline-flex;align-items:center;border-radius:8px;background:#ffffff;border:1px solid #c9d2e0;">Couldn't find (1)</a>
+              </div>
+            </div>
+          </div>
+          <label style="display:flex;align-items:center;gap:12px;min-height:48px;padding:0 24px;border-bottom:1px solid #c9d2e0;font:500 16px 'Inter';"><input type="checkbox" style="width:22px;height:22px;margin:0;accent-color:#0e1729;">Select all</label>
+          <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;">
+            <li style="display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:20px;align-items:center;padding:14px 24px;border-bottom:1px solid #c9d2e0;">
+              <input type="checkbox" aria-label="Select Aisha Rahman" style="width:22px;height:22px;margin:0;accent-color:#0e1729;">
+              <div style="display:flex;flex-direction:column;"><a href="#" style="font:600 17px/1.4 'Inter';color:#0e1729;text-decoration:none;">Aisha Rahman</a><div style="font:400 15px/1.45 'Inter';color:#63708a;">1142 Oakdale Ave, La Verne</div></div>
+              <a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;">Edit</a>
+              <span style="font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#e7f6ef;color:#087552;white-space:nowrap;min-width:124px;text-align:center;">On the map</span>
+            </li>
+            <li style="display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:20px;align-items:center;padding:14px 24px;border-bottom:1px solid #c9d2e0;background:#f2f5fa;">
+              <input type="checkbox" defaultChecked="{{ true }}" aria-label="Select Anita Flores" style="width:22px;height:22px;margin:0;accent-color:#0e1729;">
+              <div style="display:flex;flex-direction:column;"><a href="#" style="font:600 17px/1.4 'Inter';color:#0e1729;text-decoration:none;">Anita Flores</a><div style="font:400 15px/1.45 'Inter';color:#63708a;">411 Ashford Ave, La Verne</div></div>
+              <a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;">Edit</a>
+              <span style="font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#ffefeb;color:#b42d17;white-space:nowrap;min-width:124px;text-align:center;">Needs a look</span>
+            </li>
+            <li style="display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:20px;align-items:center;padding:14px 24px;border-bottom:1px solid #c9d2e0;">
+              <input type="checkbox" aria-label="Select Darryl Stone" style="width:22px;height:22px;margin:0;accent-color:#0e1729;">
+              <div style="display:flex;flex-direction:column;"><a href="#" style="font:600 17px/1.4 'Inter';color:#0e1729;text-decoration:none;">Darryl Stone</a><div style="font:400 15px/1.45 'Inter';color:#63708a;">2290 Bonita Ave, La Verne</div></div>
+              <a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;">Edit</a>
+              <span style="font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#e7f6ef;color:#087552;white-space:nowrap;min-width:124px;text-align:center;">On the map</span>
+            </li>
+            <li style="display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:20px;align-items:center;padding:14px 24px;border-bottom:1px solid #c9d2e0;">
+              <input type="checkbox" aria-label="Select Helen Cho" style="width:22px;height:22px;margin:0;accent-color:#0e1729;">
+              <div style="display:flex;flex-direction:column;"><a href="#" style="font:600 17px/1.4 'Inter';color:#0e1729;text-decoration:none;">Helen Cho</a><div style="font:400 15px/1.45 'Inter';color:#63708a;">PO Box 312, La Verne</div></div>
+              <a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;">Edit</a>
+              <span style="font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#f2f5fa;color:#63708a;border:1px solid #c9d2e0;white-space:nowrap;min-width:124px;text-align:center;">Couldn't find</span>
+            </li>
+            <li style="display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:20px;align-items:center;padding:14px 24px;border-bottom:1px solid #c9d2e0;">
+              <input type="checkbox" aria-label="Select Mei Lin" style="width:22px;height:22px;margin:0;accent-color:#0e1729;">
+              <div style="display:flex;flex-direction:column;"><a href="#" style="font:600 17px/1.4 'Inter';color:#0e1729;text-decoration:none;">Mei Lin</a><div style="font:400 15px/1.45 'Inter';color:#63708a;">1530 Baseline Rd, La Verne</div></div>
+              <a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;">Edit</a>
+              <span style="font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#ffefeb;color:#b42d17;white-space:nowrap;min-width:124px;text-align:center;">Needs a look</span>
+            </li>
+            <li style="display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:20px;align-items:center;padding:14px 24px;">
+              <input type="checkbox" aria-label="Select Samir Qureshi" style="width:22px;height:22px;margin:0;accent-color:#0e1729;">
+              <div style="display:flex;flex-direction:column;"><a href="#" style="font:600 17px/1.4 'Inter';color:#0e1729;text-decoration:none;">Samir Qureshi</a><div style="font:400 15px/1.45 'Inter';color:#63708a;">15 Oakdale, La Verne</div></div>
+              <a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;">Edit</a>
+              <span style="font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#ffefeb;color:#b42d17;white-space:nowrap;min-width:124px;text-align:center;">Needs a look</span>
+            </li>
+          </ul>
+        </section>
+        <button style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;background:none;border:0;padding:0;min-height:44px;color:#2f5bff;cursor:pointer;align-self:flex-start;">Export this list</button>
+
+        <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+          <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Groups</h2>
+          <div style="padding:18px 24px 20px;display:flex;flex-direction:column;gap:10px;">
+            <p style="margin:0;font:400 17px/1.5 'Inter';">Groups are optional. Make one if you want to sort people.</p>
+            <button style="font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:1.5px solid #7c879d;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;align-self:flex-start;">New group</button>
+          </div>
+        </section>
+      </div>
+
+      <div style="position:absolute;left:0;right:0;bottom:0;background:#0e1729;color:#ffffff;padding:16px 32px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;">
+        <div style="font:600 17px 'Inter';min-width:180px;">1 person selected</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <select disabled style="font:400 17px 'Inter';min-height:48px;padding:0 14px;border-radius:8px;background:#f2f5fa;color:#63708a;border:0;box-shadow:inset 0 0 0 1px #7c879d;cursor:not-allowed;"><option>Make a group first</option></select>
+          <button disabled style="font:600 17px 'Inter';background:#f2f5fa;color:#63708a;border:0;box-shadow:inset 0 0 0 1px #7c879d;border-radius:8px;padding:0 18px;min-height:48px;cursor:not-allowed;">Add to group</button>
+        </div>
+        <div style="display:flex;gap:10px;margin-left:auto;">
+          <button style="font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:0;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;">Export</button>
+          <button style="font:600 17px 'Inter';background:#ffffff;color:#b42d17;border:1.5px solid #7c879d;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERSON 1440 -->
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app/people/[id] · 1440</div>
+    <div data-screen-label="Person desktop" style="width:1440px;flex-shrink:0;background:#ffffff;border-radius:16px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';">
+      <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 32px;background:#0e1729;color:#ffffff;">
+        <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+        <nav style="display:flex;flex-wrap:nowrap;gap:4px;">
+          <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;background:#ffffff;color:#0e1729;">People</a>
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Settings</a>
+        </nav>
+      </header>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0 32px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+      <div style="padding:20px 32px 64px;display:flex;flex-direction:column;gap:20px;max-width:760px;">
+        <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;align-self:flex-start;">← Back to your people</a>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <h1 style="margin:0;font:600 24px/1.3 'Inter';letter-spacing:-.01em;">Aisha Rahman</h1>
+            <span style="font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#e7f6ef;color:#087552;">On the map</span>
+          </div>
+          <div style="display:flex;gap:12px;">
+            <a href="#" style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;text-decoration:none;border-radius:8px;padding:0 22px;min-height:48px;display:inline-flex;align-items:center;">Edit</a>
+            <button style="font:600 17px 'Inter';background:#ffffff;color:#b42d17;border:1.5px solid #7c879d;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;">Delete</button>
+          </div>
+        </div>
+
+        <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:140px minmax(0,1fr);font:400 17px/1.5 'Inter';">
+            <div style="padding:12px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Email</div><div style="padding:12px 20px;border-bottom:1px solid #c9d2e0;">aisha.rahman@gmail.com</div>
+            <div style="padding:12px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Phone</div><div style="padding:12px 20px;border-bottom:1px solid #c9d2e0;">(909) 555-0147</div>
+            <div style="padding:12px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Address</div><div style="padding:12px 20px;border-bottom:1px solid #c9d2e0;">1142 Oakdale Ave, La Verne</div>
+            <div style="padding:12px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Close date</div><div style="padding:12px 20px;border-bottom:1px solid #c9d2e0;">2019-03-14</div>
+            <div style="padding:12px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Notes</div><div style="padding:12px 20px;border-bottom:1px solid #c9d2e0;">None on file</div>
+            <div style="padding:12px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Match</div><div style="padding:12px 20px;border-bottom:1px solid #c9d2e0;">On the map</div>
+            <div style="padding:12px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Calls</div><div style="padding:12px 20px;border-bottom:1px solid #c9d2e0;">None marked yet. Mark a call from your home page.</div>
+            <div style="padding:12px 20px;background:#f2f5fa;font-weight:500;color:#63708a;">Groups</div><div style="padding:12px 20px;">None yet</div>
+          </div>
+        </section>
+
+        <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+          <div style="padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 17px/1.3 'Inter';">On the record</div>
+          <div style="padding:16px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+            <div style="font:400 17px/1.5 'Inter';">1142 Oakdale Ave · APN 8381-012-004</div>
+            <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Wrong house?</a>
+          </div>
+        </section>
+
+        <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+          <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Add to group</h2>
+          <div style="padding:16px 24px 20px;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;">
+            <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';flex:1 1 240px;">Group name
+              <input type="text" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;max-width:384px;">
+            </label>
+            <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;">New group</button>
+          </div>
+        </section>
+
+        <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+          <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Preview their email</h2>
+          <div style="padding:16px 24px 24px;display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              <div role="group" aria-label="Preview size" style="display:flex;border:1.5px solid #7c879d;border-radius:8px;overflow:hidden;">
+                <button aria-pressed="true" style="font:600 15px 'Inter';background:#0e1729;color:#ffffff;border:0;padding:0 14px;min-height:44px;cursor:pointer;">Desktop</button>
+                <button aria-pressed="false" style="font:500 15px 'Inter';background:#ffffff;color:#0e1729;border:0;padding:0 14px;min-height:44px;cursor:pointer;">Phone</button>
+              </div>
+              <div role="group" aria-label="Preview format" style="display:flex;border:1.5px solid #7c879d;border-radius:8px;overflow:hidden;">
+                <button aria-pressed="true" style="font:600 15px 'Inter';background:#0e1729;color:#ffffff;border:0;padding:0 14px;min-height:44px;cursor:pointer;">Email</button>
+                <button aria-pressed="false" style="font:500 15px 'Inter';background:#ffffff;color:#0e1729;border:0;padding:0 14px;min-height:44px;cursor:pointer;">Plain text</button>
+              </div>
+            </div>
+            <div title="Email preview" style="background:#ffffff;border:1px solid #c9d2e0;border-radius:8px;padding:32px 36px;max-width:600px;font:400 16px/1.55 Georgia,serif;color:#0e1729;display:flex;flex-direction:column;gap:14px;">
+              <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#63708a;">About 1142 Oakdale Ave</div>
+              <div>Hi Aisha,</div>
+              <div>A house on your street just listed. 1187 Oakdale Ave is asking $1,065,000 — four doors down from you.</div>
+              <div>You bought in 2019 for $712,000. Homes on Oakdale have recently sold for about $1,040,000.</div>
+              <div style="font-size:12px;color:#63708a;">Listing courtesy of Hill Realty / Sam Ortiz.</div>
+              <div>— Dana Whitfield, Coastline Realty</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEW 1440 -->
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app/people/review · 1440</div>
+    <div data-screen-label="Review desktop" style="width:1440px;flex-shrink:0;background:#ffffff;border-radius:16px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';">
+      <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 32px;background:#0e1729;color:#ffffff;">
+        <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+        <nav style="display:flex;flex-wrap:nowrap;gap:4px;">
+          <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;background:#ffffff;color:#0e1729;">People</a>
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Settings</a>
+        </nav>
+      </header>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0 32px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+      <div style="padding:28px 32px 64px;display:flex;flex-direction:column;gap:20px;max-width:1040px;">
+        <h1 style="margin:0;font:600 24px/1.3 'Inter';letter-spacing:-.01em;">Needs a look · 1 of 7</h1>
+
+        <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;max-width:760px;">
+          <div style="display:grid;grid-template-columns:140px minmax(0,1fr);font:400 17px/1.5 'Inter';">
+            <div style="padding:14px 20px;background:#f2f5fa;font-weight:500;color:#63708a;">You gave us:</div>
+            <div style="padding:14px 20px;display:flex;flex-direction:column;"><span style="font:600 19px/1.3 'Inter';">Anita Flores</span><span>411 Ashford Ave, La Verne</span></div>
+          </div>
+        </section>
+
+        <ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;">
+          <li style="border:2px solid #7c879d;border-radius:12px;overflow:hidden;background:#ffffff;display:flex;flex-direction:column;">
+            <div style="padding:14px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">410 Ashford Ave<br>La Verne, 91750</div>
+            <div style="padding:16px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1;">
+              <div style="font:400 17px/1.5 'Inter';">Recorded owner: Flores, Anita M</div>
+              <span style="align-self:flex-start;font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#e7edff;color:#0e1729;">Name matches</span>
+              <div style="font:400 15px/1.5 'Inter';color:#63708a;">3 beds · 2 baths · 1,600 sq ft</div>
+              <div style="font:400 17px/1.5 'Inter';">Street number not found on this street</div>
+              <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;margin-top:auto;align-self:flex-start;">This one</button>
+            </div>
+          </li>
+          <li style="border:2px solid #7c879d;border-radius:12px;overflow:hidden;background:#ffffff;display:flex;flex-direction:column;">
+            <div style="padding:14px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">412 Ashford Ave<br>La Verne, 91750</div>
+            <div style="padding:16px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1;">
+              <div style="font:400 17px/1.5 'Inter';">Recorded owner: Nguyen, Trung</div>
+              <div style="font:400 15px/1.5 'Inter';color:#63708a;">4 beds · 2 baths · 1,920 sq ft</div>
+              <div style="font:400 17px/1.5 'Inter';">Street number not found on this street</div>
+              <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;margin-top:auto;align-self:flex-start;">This one</button>
+            </div>
+          </li>
+        </ul>
+        <button style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;background:none;border:0;padding:0;min-height:44px;color:#2f5bff;cursor:pointer;align-self:flex-start;">None of these</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:56px 48px;display:flex;flex-direction:column;gap:40px;">
+  <div style="max-width:720px;display:flex;flex-direction:column;gap:12px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#63708a;">ONRECORD · APP SCREENS · ROUND 2 · STRUCTURE</div>
+    <h1 style="margin:0;font:600 28px/1.2 'Inter';letter-spacing:-.01em;">Boxes with names on them.</h1>
+    <p style="margin:0;font:400 17px/1.55 'Inter';">White page, spec tokens unchanged except the card edge (`--rule`) darkened one step so panels read as panels. Every section is a bordered box with a titled header strip. The call list is numbered. Fields sit in a two-column table. A solid navy bar sits on top of every screen so you always know where you are.</p>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start;">
+
+    <!-- DASHBOARD 390 -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app · 390 · call open</div>
+      <div data-screen-label="Dashboard" style="width:390px;background:#ffffff;border-radius:24px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';">
+        <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:#0e1729;color:#ffffff;">
+          <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+          <nav style="display:flex;flex-wrap:nowrap;gap:2px;">
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">People</a>
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Settings</a>
+          </nav>
+        </header>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 16px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+        <main style="padding:20px 16px 40px;display:flex;flex-direction:column;gap:20px;">
+          <div style="border:1px solid #c9d2e0;border-radius:12px;padding:22px 20px;display:flex;flex-direction:column;gap:14px;">
+            <h1 style="margin:0;font:600 22px/1.3 'Inter';letter-spacing:-.01em;">Your next email goes out November 1 to 44 homeowners.</h1>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;">
+              <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;">Preview it</button>
+              <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Skip this month</a>
+            </div>
+          </div>
+
+          <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+            <h2 style="margin:0;padding:14px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Worth a call this month</h2>
+            <ul style="list-style:none;margin:0;padding:0;">
+              <li style="padding:20px;display:grid;grid-template-columns:36px minmax(0,1fr);gap:8px 14px;">
+                <div style="font:700 26px/1 'Inter';color:#2f5bff;padding-top:2px;">1</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="font:600 19px/1.3 'Inter';">Marilyn Okafor</div>
+                  <span style="align-self:flex-start;font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#ffefeb;color:#b42d17;">Big sale next door</span>
+                  <div style="font:400 17px/1.5 'Inter';">1187 Oakdale Ave just listed. Four doors down.</div>
+                  <div style="font:400 15px/1.5 'Inter';color:#63708a;">1142 Oakdale Ave, La Verne · Closed March 14, 2019</div>
+                </div>
+                <div style="grid-column:1 / -1;display:flex;flex-direction:column;gap:12px;">
+                  <button aria-expanded="true" style="font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:1.5px solid #7c879d;border-radius:8px;padding:0 22px;min-height:48px;width:100%;cursor:pointer;">Close</button>
+                  <div style="border:1px solid #c9d2e0;border-radius:10px;overflow:hidden;">
+                    <div style="display:grid;grid-template-columns:88px minmax(0,1fr);font:400 17px/1.5 'Inter';">
+                      <div style="padding:12px 14px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Phone</div><div style="padding:0 14px;border-bottom:1px solid #c9d2e0;display:flex;align-items:center;min-height:48px;"><a href="tel:+19095551200" style="color:#2f5bff;">909-555-1200</a></div>
+                      <div style="padding:12px 14px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Email</div><div style="padding:0 14px;border-bottom:1px solid #c9d2e0;display:flex;align-items:center;min-height:48px;overflow-wrap:anywhere;"><a href="mailto:m.okafor@gmail.com" style="color:#2f5bff;">m.okafor@gmail.com</a></div>
+                      <div style="padding:12px 14px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">House</div><div style="padding:12px 14px;border-bottom:1px solid #c9d2e0;">1142 Oakdale Ave, La Verne 91750</div>
+                      <div style="padding:12px 14px;background:#f2f5fa;font-weight:500;color:#63708a;">On the record</div><div style="padding:12px 14px;">1187 Oakdale Ave listed at $1,065,000, active since October 2.</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;gap:12px;">
+                    <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;flex:1 1 160px;">Mark as called</button>
+                    <button style="font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:1.5px solid #7c879d;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;flex:1 1 120px;">Not now</button>
+                  </div>
+                </div>
+              </li>
+              <li style="padding:20px;border-top:1px solid #c9d2e0;display:grid;grid-template-columns:36px minmax(0,1fr);gap:8px 14px;">
+                <div style="font:700 26px/1 'Inter';color:#2f5bff;padding-top:2px;">2</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="font:600 19px/1.3 'Inter';">Glenn Sato</div>
+                  <span style="align-self:flex-start;font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#e7f6ef;color:#087552;">Paid off their loan</span>
+                  <div style="font:400 17px/1.5 'Inter';">The county recorded his loan as paid off.</div>
+                  <div style="font:400 15px/1.5 'Inter';color:#63708a;">88 Vista Del Sol, Tustin · Closed June 2, 2015</div>
+                </div>
+                <button aria-expanded="false" style="grid-column:1 / -1;font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:1.5px solid #7c879d;border-radius:8px;padding:0 22px;min-height:48px;width:100%;cursor:pointer;">Call</button>
+              </li>
+              <li style="padding:20px;border-top:1px solid #c9d2e0;display:grid;grid-template-columns:36px minmax(0,1fr);gap:8px 14px;">
+                <div style="font:700 26px/1 'Inter';color:#2f5bff;padding-top:2px;">3</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="font:600 19px/1.3 'Inter';">Ray Villanueva</div>
+                  <span style="align-self:flex-start;font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#e7edff;color:#0e1729;">Taxes worth a talk</span>
+                  <div style="font:400 17px/1.5 'Inter';">Taxed on $817,800. His street sells near $1,040,000.</div>
+                  <div style="font:400 15px/1.5 'Inter';color:#63708a;">2041 Magnolia Ct, Riverside · Closed August 19, 2011</div>
+                </div>
+                <button aria-expanded="false" style="grid-column:1 / -1;font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:1.5px solid #7c879d;border-radius:8px;padding:0 22px;min-height:48px;width:100%;cursor:pointer;">Call</button>
+              </li>
+            </ul>
+          </section>
+
+          <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+            <h2 style="margin:0;padding:14px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Your homeowners</h2>
+            <div style="padding:18px 20px 20px;display:flex;flex-direction:column;gap:6px;">
+              <p style="margin:0;font:400 17px/1.5 'Inter';">51 people on your list. 44 are matched to a house.</p>
+              <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;align-self:flex-start;">Open people</a>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- PEOPLE 390 -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app/people · 390 · bulk bar</div>
+      <div data-screen-label="People" style="width:390px;background:#ffffff;border-radius:24px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';position:relative;">
+        <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:#0e1729;color:#ffffff;">
+          <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+          <nav style="display:flex;flex-wrap:nowrap;gap:2px;">
+            <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;background:#ffffff;color:#0e1729;">People</a>
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Settings</a>
+          </nav>
+        </header>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 16px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+        <main style="padding:20px 16px 210px;display:flex;flex-direction:column;gap:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;">
+            <div style="display:flex;flex-direction:column;"><h1 style="margin:0;font:600 22px/1.3 'Inter';letter-spacing:-.01em;">People</h1><p style="margin:0;font:400 17px/1.5 'Inter';color:#63708a;">51 people</p></div>
+            <a href="#" style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;text-decoration:none;border-radius:8px;padding:0 18px;min-height:48px;display:inline-flex;align-items:center;">Add people</a>
+          </div>
+          <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;align-self:flex-start;margin-top:-12px;">Review them</a>
+
+          <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+            <div style="padding:16px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;display:flex;flex-direction:column;gap:14px;">
+              <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Search
+                <input type="search" placeholder="Name, email, or address" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;">
+              </label>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="font:600 16px 'Inter';">Status</div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                  <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:inline-flex;align-items:center;border-radius:8px;background:#e7edff;border:1px solid #c9d2e0;">All (51)</a>
+                  <a href="#" style="font:400 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:inline-flex;align-items:center;border-radius:8px;background:#ffffff;border:1px solid #c9d2e0;">On the map (44)</a>
+                  <a href="#" style="font:400 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:inline-flex;align-items:center;border-radius:8px;background:#ffffff;border:1px solid #c9d2e0;">Needs a look (6)</a>
+                  <a href="#" style="font:400 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:inline-flex;align-items:center;border-radius:8px;background:#ffffff;border:1px solid #c9d2e0;">Couldn't find (1)</a>
+                </div>
+              </div>
+            </div>
+            <label style="display:flex;align-items:center;gap:12px;min-height:48px;padding:0 20px;border-bottom:1px solid #c9d2e0;font:500 16px 'Inter';"><input type="checkbox" style="width:22px;height:22px;margin:0;accent-color:#0e1729;">Select all</label>
+            <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;">
+              <li style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:start;padding:16px 20px;border-bottom:1px solid #c9d2e0;">
+                <label style="display:flex;align-items:center;min-height:44px;margin:-10px -6px;padding:10px 6px;"><input type="checkbox" aria-label="Select Aisha Rahman" style="width:22px;height:22px;margin:0;accent-color:#0e1729;"></label>
+                <div style="display:flex;flex-direction:column;gap:2px;"><a href="#" style="font:600 17px/1.4 'Inter';color:#0e1729;text-decoration:none;">Aisha Rahman</a><div style="font:400 15px/1.45 'Inter';color:#63708a;overflow-wrap:anywhere;">1142 Oakdale Ave, La Verne</div><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;align-self:flex-start;">Edit</a></div>
+                <span style="font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#e7f6ef;color:#087552;white-space:nowrap;">On the map</span>
+              </li>
+              <li style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:start;padding:16px 20px;border-bottom:1px solid #c9d2e0;background:#f2f5fa;">
+                <label style="display:flex;align-items:center;min-height:44px;margin:-10px -6px;padding:10px 6px;"><input type="checkbox" defaultChecked="{{ true }}" aria-label="Select Anita Flores" style="width:22px;height:22px;margin:0;accent-color:#0e1729;"></label>
+                <div style="display:flex;flex-direction:column;gap:2px;"><a href="#" style="font:600 17px/1.4 'Inter';color:#0e1729;text-decoration:none;">Anita Flores</a><div style="font:400 15px/1.45 'Inter';color:#63708a;overflow-wrap:anywhere;">411 Ashford Ave, La Verne</div><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;align-self:flex-start;">Edit</a></div>
+                <span style="font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#ffefeb;color:#b42d17;white-space:nowrap;">Needs a look</span>
+              </li>
+              <li style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:start;padding:16px 20px;border-bottom:1px solid #c9d2e0;">
+                <label style="display:flex;align-items:center;min-height:44px;margin:-10px -6px;padding:10px 6px;"><input type="checkbox" aria-label="Select Darryl Stone" style="width:22px;height:22px;margin:0;accent-color:#0e1729;"></label>
+                <div style="display:flex;flex-direction:column;gap:2px;"><a href="#" style="font:600 17px/1.4 'Inter';color:#0e1729;text-decoration:none;">Darryl Stone</a><div style="font:400 15px/1.45 'Inter';color:#63708a;overflow-wrap:anywhere;">2290 Bonita Ave, La Verne</div><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;align-self:flex-start;">Edit</a></div>
+                <span style="font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#e7f6ef;color:#087552;white-space:nowrap;">On the map</span>
+              </li>
+              <li style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:start;padding:16px 20px;border-bottom:1px solid #c9d2e0;">
+                <label style="display:flex;align-items:center;min-height:44px;margin:-10px -6px;padding:10px 6px;"><input type="checkbox" aria-label="Select Helen Cho" style="width:22px;height:22px;margin:0;accent-color:#0e1729;"></label>
+                <div style="display:flex;flex-direction:column;gap:2px;"><a href="#" style="font:600 17px/1.4 'Inter';color:#0e1729;text-decoration:none;">Helen Cho</a><div style="font:400 15px/1.45 'Inter';color:#63708a;overflow-wrap:anywhere;">PO Box 312, La Verne</div><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;align-self:flex-start;">Edit</a></div>
+                <span style="font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#f2f5fa;color:#63708a;border:1px solid #c9d2e0;white-space:nowrap;">Couldn't find</span>
+              </li>
+              <li style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:start;padding:16px 20px;">
+                <label style="display:flex;align-items:center;min-height:44px;margin:-10px -6px;padding:10px 6px;"><input type="checkbox" aria-label="Select Mei Lin" style="width:22px;height:22px;margin:0;accent-color:#0e1729;"></label>
+                <div style="display:flex;flex-direction:column;gap:2px;"><a href="#" style="font:600 17px/1.4 'Inter';color:#0e1729;text-decoration:none;">Mei Lin</a><div style="font:400 15px/1.45 'Inter';color:#63708a;overflow-wrap:anywhere;">1530 Baseline Rd, La Verne</div><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;align-self:flex-start;">Edit</a></div>
+                <span style="font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#ffefeb;color:#b42d17;white-space:nowrap;">Needs a look</span>
+              </li>
+            </ul>
+          </section>
+          <button style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;background:none;border:0;padding:0;min-height:44px;color:#2f5bff;cursor:pointer;align-self:flex-start;">Export this list</button>
+        </main>
+
+        <div style="position:absolute;left:0;right:0;bottom:0;background:#0e1729;color:#ffffff;padding:16px 16px 20px;display:flex;flex-direction:column;gap:12px;">
+          <div style="font:600 17px 'Inter';">1 person selected</div>
+          <select disabled style="font:400 17px 'Inter';min-height:48px;padding:0 14px;border-radius:8px;background:#f2f5fa;color:#63708a;border:0;box-shadow:inset 0 0 0 1px #7c879d;cursor:not-allowed;"><option>Make a group first</option></select>
+          <div style="display:flex;gap:10px;">
+            <button style="font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:0;border-radius:8px;padding:0 20px;min-height:48px;cursor:pointer;flex:1;">Export</button>
+            <button style="font:600 17px 'Inter';background:#ffffff;color:#b42d17;border:1.5px solid #7c879d;border-radius:8px;padding:0 20px;min-height:48px;cursor:pointer;flex:1;">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERSON DETAIL 390 -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app/people/[id] · 390</div>
+      <div data-screen-label="Person" style="width:390px;background:#ffffff;border-radius:24px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';">
+        <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:#0e1729;color:#ffffff;">
+          <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+          <nav style="display:flex;flex-wrap:nowrap;gap:2px;">
+            <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;background:#ffffff;color:#0e1729;">People</a>
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Settings</a>
+          </nav>
+        </header>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 16px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+        <main style="padding:12px 16px 40px;display:flex;flex-direction:column;gap:20px;">
+          <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;align-self:flex-start;">← Back to your people</a>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <h1 style="margin:0;font:600 24px/1.3 'Inter';letter-spacing:-.01em;">Aisha Rahman</h1>
+            <span style="align-self:flex-start;font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#e7f6ef;color:#087552;">On the map</span>
+          </div>
+
+          <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+            <div style="display:grid;grid-template-columns:104px minmax(0,1fr);font:400 17px/1.5 'Inter';">
+              <div style="padding:12px 16px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Email</div><div style="padding:12px 16px;border-bottom:1px solid #c9d2e0;overflow-wrap:anywhere;">aisha.rahman@gmail.com</div>
+              <div style="padding:12px 16px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Phone</div><div style="padding:12px 16px;border-bottom:1px solid #c9d2e0;">(909) 555-0147</div>
+              <div style="padding:12px 16px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Address</div><div style="padding:12px 16px;border-bottom:1px solid #c9d2e0;">1142 Oakdale Ave, La Verne</div>
+              <div style="padding:12px 16px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Close date</div><div style="padding:12px 16px;border-bottom:1px solid #c9d2e0;">2019-03-14</div>
+              <div style="padding:12px 16px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Notes</div><div style="padding:12px 16px;border-bottom:1px solid #c9d2e0;">None on file</div>
+              <div style="padding:12px 16px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Match</div><div style="padding:12px 16px;border-bottom:1px solid #c9d2e0;">On the map</div>
+              <div style="padding:12px 16px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font-weight:500;color:#63708a;">Calls</div><div style="padding:12px 16px;border-bottom:1px solid #c9d2e0;">None marked yet. Mark a call from your home page.</div>
+              <div style="padding:12px 16px;background:#f2f5fa;font-weight:500;color:#63708a;">Groups</div><div style="padding:12px 16px;">None yet</div>
+            </div>
+          </section>
+
+          <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+            <div style="padding:14px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 17px/1.3 'Inter';">On the record</div>
+            <div style="padding:16px 20px;display:flex;flex-direction:column;gap:4px;">
+              <div style="font:400 17px/1.5 'Inter';">1142 Oakdale Ave · APN 8381-012-004</div>
+              <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;align-self:flex-start;">Wrong house?</a>
+            </div>
+          </section>
+
+          <div style="display:flex;flex-wrap:wrap;gap:12px;">
+            <a href="#" style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;text-decoration:none;border-radius:8px;padding:0 22px;min-height:48px;display:inline-flex;align-items:center;flex:1 1 120px;justify-content:center;">Edit</a>
+            <button style="font:600 17px 'Inter';background:#ffffff;color:#b42d17;border:1.5px solid #7c879d;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;flex:1 1 120px;">Delete</button>
+          </div>
+
+          <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+            <h2 style="margin:0;padding:14px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Add to group</h2>
+            <div style="padding:16px 20px 20px;display:flex;flex-direction:column;gap:12px;">
+              <label style="display:flex;flex-direction:column;gap:6px;font:600 16px 'Inter';">Group name
+                <input type="text" style="font:400 17px 'Inter';padding:0 14px;min-height:48px;border:1.5px solid #7c879d;border-radius:8px;background:#ffffff;color:#0e1729;width:100%;">
+              </label>
+              <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;align-self:flex-start;">New group</button>
+            </div>
+          </section>
+
+          <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+            <h2 style="margin:0;padding:14px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Preview their email</h2>
+            <div style="padding:16px 20px 20px;display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <div role="group" aria-label="Preview size" style="display:flex;border:1.5px solid #7c879d;border-radius:8px;overflow:hidden;">
+                  <button aria-pressed="false" style="font:500 15px 'Inter';background:#ffffff;color:#0e1729;border:0;padding:0 14px;min-height:44px;cursor:pointer;">Desktop</button>
+                  <button aria-pressed="true" style="font:600 15px 'Inter';background:#0e1729;color:#ffffff;border:0;padding:0 14px;min-height:44px;cursor:pointer;">Phone</button>
+                </div>
+                <div role="group" aria-label="Preview format" style="display:flex;border:1.5px solid #7c879d;border-radius:8px;overflow:hidden;">
+                  <button aria-pressed="true" style="font:600 15px 'Inter';background:#0e1729;color:#ffffff;border:0;padding:0 14px;min-height:44px;cursor:pointer;">Email</button>
+                  <button aria-pressed="false" style="font:500 15px 'Inter';background:#ffffff;color:#0e1729;border:0;padding:0 14px;min-height:44px;cursor:pointer;">Plain text</button>
+                </div>
+              </div>
+              <div title="Email preview" style="background:#ffffff;border:1px solid #c9d2e0;border-radius:8px;padding:24px 20px;font:400 16px/1.5 Georgia,serif;color:#0e1729;display:flex;flex-direction:column;gap:14px;">
+                <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#63708a;">About 1142 Oakdale Ave</div>
+                <div>Hi Aisha,</div>
+                <div>A house on your street just listed. 1187 Oakdale Ave is asking $1,065,000 — four doors down from you.</div>
+                <div>You bought in 2019 for $712,000. Homes on Oakdale have recently sold for about $1,040,000.</div>
+                <div style="font-size:12px;color:#63708a;">Listing courtesy of Hill Realty / Sam Ortiz.</div>
+                <div>— Dana Whitfield, Coastline Realty</div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- REVIEW QUEUE 390 -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app/people/review · 390</div>
+      <div data-screen-label="Review queue" style="width:390px;background:#ffffff;border-radius:24px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';">
+        <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:#0e1729;color:#ffffff;">
+          <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+          <nav style="display:flex;flex-wrap:nowrap;gap:2px;">
+            <a href="#" aria-current="page" style="font:600 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;background:#ffffff;color:#0e1729;">People</a>
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+            <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 10px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Settings</a>
+          </nav>
+        </header>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 16px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+        <main style="padding:20px 16px 40px;display:flex;flex-direction:column;gap:20px;">
+          <h1 style="margin:0;font:600 22px/1.3 'Inter';letter-spacing:-.01em;">Needs a look · 1 of 7</h1>
+
+          <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+            <div style="padding:12px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 16px/1.3 'Inter';color:#63708a;">You gave us:</div>
+            <div style="padding:16px 20px;display:flex;flex-direction:column;gap:2px;">
+              <div style="font:600 19px/1.3 'Inter';">Anita Flores</div>
+              <div style="font:400 17px/1.5 'Inter';">411 Ashford Ave, La Verne</div>
+            </div>
+          </section>
+
+          <ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:14px;">
+            <li style="border:2px solid #7c879d;border-radius:12px;overflow:hidden;background:#ffffff;">
+              <div style="padding:14px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">410 Ashford Ave<br>La Verne, 91750</div>
+              <div style="padding:16px 20px 20px;display:flex;flex-direction:column;gap:10px;">
+                <div style="font:400 17px/1.5 'Inter';">Recorded owner: Flores, Anita M</div>
+                <span style="align-self:flex-start;font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#e7edff;color:#0e1729;">Name matches</span>
+                <div style="font:400 15px/1.5 'Inter';color:#63708a;">3 beds · 2 baths · 1,600 sq ft</div>
+                <div style="font:400 17px/1.5 'Inter';">Street number not found on this street</div>
+                <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 22px;min-height:48px;width:100%;cursor:pointer;margin-top:6px;">This one</button>
+              </div>
+            </li>
+            <li style="border:2px solid #7c879d;border-radius:12px;overflow:hidden;background:#ffffff;">
+              <div style="padding:14px 20px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">412 Ashford Ave<br>La Verne, 91750</div>
+              <div style="padding:16px 20px 20px;display:flex;flex-direction:column;gap:10px;">
+                <div style="font:400 17px/1.5 'Inter';">Recorded owner: Nguyen, Trung</div>
+                <div style="font:400 15px/1.5 'Inter';color:#63708a;">4 beds · 2 baths · 1,920 sq ft</div>
+                <div style="font:400 17px/1.5 'Inter';">Street number not found on this street</div>
+                <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 22px;min-height:48px;width:100%;cursor:pointer;margin-top:6px;">This one</button>
+              </div>
+            </li>
+          </ul>
+          <button style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;background:none;border:0;padding:0;min-height:44px;color:#2f5bff;cursor:pointer;align-self:flex-start;">None of these</button>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD 1440 -->
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="font:500 13px 'IBM Plex Mono',monospace;color:#63708a;">/app · 1440 · same layout, wider</div>
+    <div data-screen-label="Dashboard desktop" style="width:1440px;flex-shrink:0;background:#ffffff;border-radius:16px;border:1px solid #c9d2e0;overflow:hidden;color:#0e1729;font:400 17px/1.5 'Inter';">
+      <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 32px;background:#0e1729;color:#ffffff;">
+        <a href="#" style="font:700 18px 'Inter';text-decoration:none;min-height:44px;display:flex;align-items:center;color:#ffffff;">onrecord</a>
+        <nav style="display:flex;flex-wrap:nowrap;gap:4px;">
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">People</a>
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Add-ons</a>
+          <a href="#" style="font:500 16px 'Inter';text-decoration:none;padding:0 14px;min-height:44px;display:flex;align-items:center;border-radius:8px;color:#ffffff;">Settings</a>
+        </nav>
+      </header>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0 32px;border-bottom:1px solid #c9d2e0;"><span style="font:500 15px 'Inter';color:#63708a;">Dana Whitfield · Coastline Realty</span><a href="#" style="font:400 15px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Log out</a></div>
+
+      <div style="padding:28px 32px 64px;display:flex;flex-direction:column;gap:24px;max-width:760px;">
+        <div style="border:1px solid #c9d2e0;border-radius:12px;padding:26px 28px;display:flex;flex-direction:column;gap:14px;">
+          <h1 style="margin:0;font:600 24px/1.3 'Inter';letter-spacing:-.01em;">Your next email goes out November 1 to 44 homeowners.</h1>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;">
+            <button style="font:600 17px 'Inter';background:#0e1729;color:#ffffff;border:0;border-radius:8px;padding:0 22px;min-height:48px;cursor:pointer;">Preview it</button>
+            <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;">Skip this month</a>
+          </div>
+        </div>
+
+        <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+          <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Worth a call this month</h2>
+          <ul style="list-style:none;margin:0;padding:0;">
+            <li style="padding:22px 24px;display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:20px;align-items:start;">
+              <div style="font:700 26px/1 'Inter';color:#2f5bff;padding-top:2px;">1</div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="font:600 19px/1.3 'Inter';">Marilyn Okafor</div>
+                <span style="align-self:flex-start;font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#ffefeb;color:#b42d17;">Big sale next door</span>
+                <div style="font:400 17px/1.5 'Inter';">1187 Oakdale Ave just listed. Four doors down.</div>
+                <div style="font:400 15px/1.5 'Inter';color:#63708a;">1142 Oakdale Ave, La Verne · Closed March 14, 2019</div>
+              </div>
+              <button aria-expanded="false" style="font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:1.5px solid #7c879d;border-radius:8px;padding:0 26px;min-height:48px;cursor:pointer;">Call</button>
+            </li>
+            <li style="padding:22px 24px;border-top:1px solid #c9d2e0;display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:20px;align-items:start;">
+              <div style="font:700 26px/1 'Inter';color:#2f5bff;padding-top:2px;">2</div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="font:600 19px/1.3 'Inter';">Glenn Sato</div>
+                <span style="align-self:flex-start;font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#e7f6ef;color:#087552;">Paid off their loan</span>
+                <div style="font:400 17px/1.5 'Inter';">The county recorded his loan as paid off.</div>
+                <div style="font:400 15px/1.5 'Inter';color:#63708a;">88 Vista Del Sol, Tustin · Closed June 2, 2015</div>
+              </div>
+              <button aria-expanded="false" style="font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:1.5px solid #7c879d;border-radius:8px;padding:0 26px;min-height:48px;cursor:pointer;">Call</button>
+            </li>
+            <li style="padding:22px 24px;border-top:1px solid #c9d2e0;display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:20px;align-items:start;">
+              <div style="font:700 26px/1 'Inter';color:#2f5bff;padding-top:2px;">3</div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="font:600 19px/1.3 'Inter';">Ray Villanueva</div>
+                <span style="align-self:flex-start;font:600 15px/1 'Inter';padding:8px 12px;border-radius:6px;background:#e7edff;color:#0e1729;">Taxes worth a talk</span>
+                <div style="font:400 17px/1.5 'Inter';">Taxed on $817,800. His street sells near $1,040,000.</div>
+                <div style="font:400 15px/1.5 'Inter';color:#63708a;">2041 Magnolia Ct, Riverside · Closed August 19, 2011</div>
+              </div>
+              <button aria-expanded="false" style="font:600 17px 'Inter';background:#ffffff;color:#0e1729;border:1.5px solid #7c879d;border-radius:8px;padding:0 26px;min-height:48px;cursor:pointer;">Call</button>
+            </li>
+          </ul>
+        </section>
+
+        <section style="border:1px solid #c9d2e0;border-radius:12px;overflow:hidden;">
+          <h2 style="margin:0;padding:14px 24px;background:#f2f5fa;border-bottom:1px solid #c9d2e0;font:600 19px/1.3 'Inter';">Your homeowners</h2>
+          <div style="padding:18px 24px 20px;display:flex;flex-direction:column;gap:6px;">
+            <p style="margin:0;font:400 17px/1.5 'Inter';">51 people on your list. 44 are matched to a house.</p>
+            <a href="#" style="font:400 17px 'Inter';color:#2f5bff;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;align-self:flex-start;">Open people</a>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>
+</x-dc>
+</body>
+</html>

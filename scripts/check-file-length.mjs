@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { execSync } from 'node:child_process'
 
 const MAX = 300
-const IGNORE = [/\.test\./, /\.spec\./, /fixtures\//, /\.generated\./, /migrations\//, /^reference\//]
+const IGNORE = [/\.test\./, /\.spec\./, /fixtures\//, /\.generated\./, /migrations\//, /^reference\//, /^docs\/claude-design\//]
 
 const files = execSync('git ls-files "*.ts" "*.tsx" "*.js" "*.mjs"', { encoding: 'utf8' })
   .split('\n')
