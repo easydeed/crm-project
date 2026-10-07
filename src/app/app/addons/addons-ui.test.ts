@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { expect, test } from 'vitest'
+import { borderColours, byAttribute, byExpression, classNames, classTokens, descendants, only, parseJsx, tagOf } from '@/test/jsx'
 import { fixtureRegistry } from '@/addons/fixtures'
 import { AddonRow } from '@/app/app/addons/addon-row'
 import { AddonsPanel } from '@/app/app/addons/addons-panel'
@@ -68,8 +69,20 @@ test('the page has four states', () => {
 })
 
 test('the bill bar is the inverted pair at full strength, which the contrast test checks', () => {
-  const bar = src('./bill-bar.tsx')
-  expect(bar).toContain('className="mt-10 rounded-md bg-foreground px-5 py-5 text-background"')
+  // OR-041: the bar and everything inside it. The bar fills --foreground with --background words,
+  // and nothing in it is muted, recoloured, filled or faded: every line is at full strength.
+  const jsx = parseJsx('app/app/addons/bill-bar.tsx')
+  const bar = only(byAttribute(jsx, 'aria-label', '"Your monthly bill"'), 'bill bar')
+  const own = classTokens(jsx, bar)
+  expect(own).toContain('bg-foreground')
+  expect(own).toContain('text-background')
+  for (const element of descendants(bar)) {
+    for (const token of classTokens(jsx, element)) {
+      expect(token, `${tagOf(jsx, element)}: ${token}`).not.toMatch(/muted|opacity|^(?:[a-z]+:)*bg-/)
+      if (/^(?:[a-z]+:)*text-(?!\[)/.test(token)) expect(token, tagOf(jsx, element)).toBe('text-background')
+    }
+    expect(borderColours(classTokens(jsx, element)).filter((colour) => colour !== 'border-background')).toEqual([])
+  }
   expect(src('../../tokens.test.ts')).toContain("['background', 'foreground', TEXT]")
 })
 
@@ -80,9 +93,15 @@ test('the config form uses the shared fieldClass and keeps no input class of its
 })
 
 test('secondary lines on the page use mutedClass', () => {
-  expect(src('./addon-row.tsx')).toContain('className={`mt-1 ${mutedClass}`}>{row.rowNote}')
-  expect(src('./addons-panel.tsx')).toContain('className={`mt-2 max-w-xl ${mutedClass}`}>{note}')
-  expect(src('./addon-config-form.tsx')).toContain('className={mutedClass}>{KEEPS_SETTINGS}')
+  // OR-041: the element that renders each line carries mutedClass, whatever its spacing.
+  for (const [file, expression] of [
+    ['app/app/addons/addon-row.tsx', 'row.rowNote'],
+    ['app/app/addons/addons-panel.tsx', 'note'],
+    ['app/app/addons/addon-config-form.tsx', 'KEEPS_SETTINGS'],
+  ] as const) {
+    const jsx = parseJsx(file)
+    expect(classNames(jsx, only(byExpression(jsx, expression), `{${expression}}`)), file).toContain('mutedClass')
+  }
 })
 
 test('the error screen uses linkClass rather than a copy of its string', async () => {

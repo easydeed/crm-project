@@ -10,7 +10,7 @@ export default function SamplePage() {
       <p className="text-[15px] font-semibold tracking-tight">onrecord</p>
       <DigestPreviewPanel title="A sample note for Marilyn" result={result} />
       <Link
-        className={linkClass}
+        className={`tap ${linkClass}`}
         href="/"
       >
         Back

@@ -129,8 +129,8 @@ contacts (`load.ts:43`), so a homeowner can always leave.
 - `unsubscribe.integration.test.ts:195` — a failed re-match stays subscribed; a match confirms the new house.
 - `unsubscribe.integration.test.ts:235` — a bounce cannot be undone from the public page.
 - `e2e/screens.spec.ts:7-18` (capture "unsubscribe", 390 and 1440): status under 400; no
-  `/couldn.t load|could not load/i` text; then `e2e/checks.ts`: no horizontal scroll (`:20-21`), no
-  text under 15px (`:60`), no clipping (`:62-69`), and 44px tap targets on the phone (`:42-50`). The
+  `/couldn.t load|could not load/i` text; then `e2e/checks.ts`: no horizontal scroll (`:23-24`), no
+  text under 15px (`:66`), no clipping (`:68-75`), and 44px tap targets on the phone (`:40-56`). The
   OR-017c pass found this page 4px too wide at 390 (the input was content-box at width 100%); the
   `box-sizing: border-box` at `html.ts:66` is the fix (OR-026).
 - `e2e/desktop-unchanged.spec.ts` — on demand, pixel-exact at 1440. The re-skin log records that this

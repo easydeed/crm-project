@@ -1,7 +1,7 @@
 # The monthly email (the "digest", or "note")
 
 **Code:** `src/digest/**`. **Captures:** none. The browser pass does not measure the email; it lives in
-an iframe that `e2e/checks.ts:10` exempts ("the rendered email lives in an iframe and is not measured").
+an iframe that `e2e/checks.ts:12` exempts ("the rendered email lives in an iframe and is not measured").
 The sample page (capture: sample, sample-text-dark) shows the full example inside the app's preview panel.
 
 **Out of scope for an app redesign.** The email has its own design. App tokens (the CSS variables in

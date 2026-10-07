@@ -120,7 +120,7 @@ standalone links use `.tap` (`page.tsx:47`, `details-form.tsx:85`).
 - `src/app/disabled-state.test.ts:43` — `save-button.tsx` uses `buttonClass`.
 - `src/app/app/top-bar.test.ts:4` — the top bar links to `/app/settings`.
 - `src/text/text.integration.test.ts:99, 120` — code verification rules; phone change clears verification and turns the add-on off.
-- `e2e/screens.spec.ts:6` with `e2e/checks.ts` — no horizontal scroll at 390, 44px tap targets on phone (inline links exempt), no text under 15px, no clipping. The capture reports none (`e2e/screenshots/*/settings.json` is `[]`). The email inside the preview iframe is not measured (`checks.ts:10`).
+- `e2e/screens.spec.ts:6` with `e2e/checks.ts` — no horizontal scroll at 390, 44px tap targets on phone (inline links exempt), no text under 15px, no clipping. The capture reports none (`e2e/screenshots/*/settings.json` is `[]`). The email inside the preview iframe is not measured (`checks.ts:12`).
 
 ## What the v0 export did, and why we did not take it
 

@@ -10,7 +10,7 @@ export default function RegisterPage() {
         <h1 className="text-[22px] font-semibold">Create your account</h1>
         <RegisterForm />
         <Link
-          className={linkClass}
+          className={`tap ${linkClass}`}
           href="/login"
         >
           Sign in

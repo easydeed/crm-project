@@ -16,7 +16,7 @@ export default async function LoginPage({
         <h1 className="text-[22px] font-semibold">Sign in</h1>
         <LoginForm returnTo={safeReturnTo(params.returnTo)} />
         <Link
-          className={linkClass}
+          className={`tap ${linkClass}`}
           href="/register"
         >
           Create an account

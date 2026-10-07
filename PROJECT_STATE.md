@@ -54,6 +54,8 @@ Scan trees, not lists. A check scoped to named directories leaves everything out
 
 Match values, not spellings. The tokens-only scan recognised hex and named utilities but not rgba(), hsl() or any functional notation, so the same colour passed or failed depending on how it was written. A check should match the thing, in every form the thing can take.
 
+Probe with the real thing. A test fixture written from the same assumption as the rule it checks will agree with the rule and tell you nothing. The rgba scan's probes were space-padded while Tailwind writes spaces as underscores, so the rule passed its own tests and missed every real occurrence.
+
 ## Rejected ideas — do not rebuild
 
 | Rejected | Reason |
