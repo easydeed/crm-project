@@ -41,7 +41,7 @@ export function daysBefore(now: Date, days: number): string {
   return day.toISOString().slice(0, 10)
 }
 
-/** A recorded event on an Oakdale house, by house number. */
+/** A recorded event on a seeded street, by house number. */
 export type LiveEvent = { house: number; kind: 'grant_deed' | 'reconveyance'; docNumber: string; recordedAt: string; amount: number | null }
 
 /**
@@ -62,5 +62,25 @@ export function liveOakdaleEvents(now: Date): LiveEvent[] {
     { house: 1836, kind: 'grant_deed', docNumber: 'E2E-LIVE-1836', recordedAt: daysBefore(now, 10), amount: 510_000 },
     { house: 1900, kind: 'grant_deed', docNumber: 'E2E-LIVE-1900', recordedAt: daysBefore(now, 120), amount: 530_000 },
     { house: 1852, kind: 'reconveyance', docNumber: 'E2E-LIVE-1852', recordedAt: daysBefore(now, 5), amount: null },
+  ]
+}
+
+/**
+ * The person settings and person-detail preview (OR-043a): the first matched person by name. Her
+ * note was skipped at every date the seed has ever been run ("Nothing new on their street this
+ * month"), so the in-app preview never showed an email.
+ */
+export const PREVIEW_PERSON = 'Aisha Rahman'
+export const PREVIEW_STREET = { template: '112 Bonita Ave', street: 'Bonita Ave', houses: [117, 131] }
+
+/**
+ * Two sales on her street, inside the 12-month street-sales window and outside the 45-day sale
+ * window, so no call tag changes. Their median ($650,000) stays under 115% of every tenured
+ * neighbour's assessed value, so no one on Bonita gains "Taxes worth a talk" either.
+ */
+export function liveBonitaSales(now: Date): LiveEvent[] {
+  return [
+    { house: 117, kind: 'grant_deed', docNumber: 'E2E-LIVE-B117', recordedAt: daysBefore(now, 60), amount: 640_000 },
+    { house: 131, kind: 'grant_deed', docNumber: 'E2E-LIVE-B131', recordedAt: daysBefore(now, 150), amount: 660_000 },
   ]
 }

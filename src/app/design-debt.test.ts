@@ -26,6 +26,11 @@ const DEBT: Record<string, Debt> = {
     why: "the email's own canvas: the iframe shows the email as an inbox does, white in both themes",
     colours: { 'bg-white': 1 },
   },
+  'app/settings/appearance-form.tsx': {
+    owner: 'permanent',
+    why: "each accent swatch shows the email's accent colour itself, which no app token holds",
+    colours: { 'backgroundColor: color.value': 1 },
+  },
   // Listed in OR-037, when the scan first walked all of /admin: the four entries below never covered it.
   'admin/accounts/table.tsx': { owner: 'permanent', why: 'admin, unstyled by decision', colours: { 'border-foreground/20': 1, 'border-foreground/10': 1 } },
   'admin/costs/cost-table.tsx': { owner: 'permanent', why: 'admin, unstyled by decision', colours: { 'border-black/20': 1, 'border-black/10': 2 } },
@@ -64,10 +69,12 @@ const RULES = [
   new RegExp(`(?<![A-Za-z0-9.-])(?:${FUNCTIONAL})\\([^()]*(?:\\([^()]*\\)[^()]*)*\\)`, 'g'),
   new RegExp(`(?<![\\w-])${UTILITY}-[a-z]+(?:-[a-z]+)*(?:-\\d{2,3})?\\/\\d{1,3}(?![\\w-])`, 'g'),
   new RegExp(`(?<![\\w-])${UTILITY}-(?:white|black|(?:${PALETTE})-\\d{2,3})(?![\\w/-])`, 'g'),
-  // A CSS colour keyword as an arbitrary value (text-[red]) or a quoted value in a style prop
-  // (style={{ color: 'red' }}). Only inside style: call-tags.ts's `color: 'coral'` names a token.
+  // A CSS colour keyword as an arbitrary value (text-[red]).
   new RegExp(`(?<![\\w-])${UTILITY}-\\[(?:color:)?[a-zA-Z]+\\]`, 'g'),
-  /(?<=style=\{\{[^}]*)\b\w*(?:[cC]olor|fill|stroke|background)\s*:\s*['"`][a-zA-Z]+['"`]/g,
+  // Any colour set in a style prop, whatever its value (OR-043a): a quoted keyword, and also a
+  // name like style={{ backgroundColor: INK_COLOR }}, which no literal rule can see. Only inside
+  // style: call-tags.ts's `color: 'coral'` names a token.
+  /(?<=style=\{\{[^}]*)\b\w*(?:[cC]olor|fill|stroke|background)\s*:\s*[^,}]+?(?=\s*[,}])/g,
 ]
 
 const appRoot = path.dirname(fileURLToPath(import.meta.url))
