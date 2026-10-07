@@ -22,7 +22,8 @@ export const E2E_PASSWORD = 'e2e-local-scratch-only'
 async function main() {
   const { hashPassword } = await import('../src/auth/password')
   const { getRuntimeDb, resetRuntimeDb } = await import('../src/db/runtime')
-  const { accounts, contacts, subscriptions } = await import('../src/db/schema')
+  const { accounts, contacts, parcelEvents, parcels, subscriptions } = await import('../src/db/schema')
+  const { callListEntries } = await import('../src/db/schema-call-lists')
   const { AGENT_ID } = await import('../src/db/fixtures/la-verne')
   const { buildCallLists } = await import('../src/jobs/build-call-lists')
   const { signUnsubscribeToken } = await import('../src/unsubscribe/token')
@@ -54,9 +55,36 @@ async function main() {
     await db.insert(contacts).values({ ...copy, id: quietContactId(index), accountId: QUIET_AGENT_ID }).onConflictDoNothing()
   }
 
+  // Events dated from this run (OR-043), so the seeded agent's three Oakdale people carry three
+  // different call tags every month. Two parcels are added beside the seed's Oakdale houses.
+  const { liveOakdaleEvents, LIVE_HOUSES, CALL_TAG_KINDS } = await import('../src/db/fixtures/e2e-live')
+  const [maya] = await db.select().from(parcels).where(eq(parcels.address, '1840 Oakdale Ave'))
+  if (!maya) throw new Error('The seed has no 1840 Oakdale Ave')
+  for (const house of LIVE_HOUSES) {
+    const { id: _id, ...shape } = maya
+    await db.insert(parcels).values({ ...shape, apn: `E2E-${house}`, address: `${house} Oakdale Ave` }).onConflictDoNothing()
+  }
+  const oakdale = await db.select({ id: parcels.id, address: parcels.address }).from(parcels).where(ilike(parcels.address, '% Oakdale Ave'))
+  const parcelOf = (house: number) => oakdale.find((row) => row.address === `${house} Oakdale Ave`)?.id
+  for (const event of liveOakdaleEvents(now)) {
+    const parcelId = parcelOf(event.house)
+    if (!parcelId) throw new Error(`No parcel at ${event.house} Oakdale Ave`)
+    await db
+      .insert(parcelEvents)
+      .values({ parcelId, county: maya.county, kind: event.kind, docNumber: event.docNumber, recordedAt: event.recordedAt, amount: event.amount })
+      .onConflictDoNothing()
+  }
+
   for (const accountId of [AGENT_ID, QUIET_AGENT_ID]) {
     await buildCallLists({ accountId, asOf: now.toISOString() }, { jobId: 'e2e', attempt: 1, now })
   }
+
+  // Fail here, not quietly in a screenshot: the captures exist to show these tags.
+  const kinds = new Set(
+    (await db.select({ kind: callListEntries.kind }).from(callListEntries).where(eq(callListEntries.accountId, AGENT_ID))).map((row) => row.kind),
+  )
+  const missing = CALL_TAG_KINDS.filter((kind) => !kinds.has(kind))
+  if (missing.length) throw new Error(`The seeded agent's call list is missing ${missing.join(', ')}: the live events no longer reach it`)
 
   const [person] = await db
     .select({ id: contacts.id })

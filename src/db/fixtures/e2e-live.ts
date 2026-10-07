@@ -40,3 +40,27 @@ export function daysBefore(now: Date, days: number): string {
   day.setUTCDate(day.getUTCDate() - days)
   return day.toISOString().slice(0, 10)
 }
+
+/** A recorded event on an Oakdale house, by house number. */
+export type LiveEvent = { house: number; kind: 'grant_deed' | 'reconveyance'; docNumber: string; recordedAt: string; amount: number | null }
+
+/**
+ * Three events that give the seeded agent's three Oakdale people three different call tags this
+ * month, whatever month it is. The seed's Oakdale houses are 1840 (Maya), 1852 (Luis), 1866 (Elena).
+ *
+ * - 1836 sells 10 days ago, two doors from 1840 and eight from 1852: "Big sale next door" for Maya.
+ * - 1852 records a reconveyance 5 days ago: "Paid off their loan" for Luis.
+ * - 1900 sold 120 days ago: outside the 45-day sale window, inside the 12-month street median.
+ *   With 1836 it puts Oakdale's median at $520,000, against Elena's assessed $427,000: "Taxes worth
+ *   a talk". The median is kept low so Luis's tax score stays under his loan score.
+ */
+export const LIVE_HOUSES = [1836, 1900]
+export const CALL_TAG_KINDS = ['sold_nearby', 'loan_paid_off', 'tax_upside'] as const
+
+export function liveOakdaleEvents(now: Date): LiveEvent[] {
+  return [
+    { house: 1836, kind: 'grant_deed', docNumber: 'E2E-LIVE-1836', recordedAt: daysBefore(now, 10), amount: 510_000 },
+    { house: 1900, kind: 'grant_deed', docNumber: 'E2E-LIVE-1900', recordedAt: daysBefore(now, 120), amount: 530_000 },
+    { house: 1852, kind: 'reconveyance', docNumber: 'E2E-LIVE-1852', recordedAt: daysBefore(now, 5), amount: null },
+  ]
+}
