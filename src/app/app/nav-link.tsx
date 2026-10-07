@@ -9,7 +9,7 @@ const shape =
 
 /** On the bar (OR-043). The current page is the light pill on the dark bar, in both themes. Each look names one text colour. */
 const restClass = `${shape} font-medium text-on-bar`
-const currentClass = `${shape} bg-bar-current font-semibold text-on-bar-current`
+const currentClass = `${shape} bg-blue-soft font-semibold text-foreground`
 
 /**
  * A top-bar link that knows whether it is the current page. It reads the pathname and nothing
