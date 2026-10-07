@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { expect, test } from 'vitest'
+import { attribute, byTag, classVariants, only, parseJsx } from '@/test/jsx'
 
 test('top bar is three visible links, not a hamburger', () => {
   const src = readFileSync(new URL('./top-bar.tsx', import.meta.url), 'utf8')
@@ -21,10 +22,22 @@ test('the bar stays a server component; each link reads only the pathname', () =
   expect(link).not.toMatch(/fetch\(|getRuntimeDb|readRequestSession|account/)
 })
 
-test('the current page is marked, with dark text on blue-soft rather than blue on blue-soft', () => {
-  const link = readFileSync(new URL('./nav-link.tsx', import.meta.url), 'utf8')
-  expect(link).toContain("aria-current={current ? 'page' : undefined}")
-  expect(link).toContain('bg-blue-soft')
-  expect(link).toContain('text-foreground')
-  expect(link).not.toMatch(/text-blue\b/)
+test('the current page is the light pill on the dark bar: the bar pair, with aria-current (OR-043)', () => {
+  // Rewritten in OR-043. The mark was blue-soft until the bar went navy, where it would have nearly
+  // vanished in dark (#1a2240 on #202b4f). Each look names exactly one text colour.
+  const jsx = parseJsx('app/app/nav-link.tsx')
+  const link = only(byTag(jsx, 'Link'), 'nav link')
+  expect(attribute(jsx, link, 'aria-current')?.initializer?.getText(jsx.source)).toBe("{current ? 'page' : undefined}")
+  const variants = classVariants(jsx, link)
+  const current = variants.filter((tokens) => tokens.includes('bg-bar-current'))
+  const rest = variants.filter((tokens) => !tokens.includes('bg-bar-current'))
+  expect(current.length).toBe(1)
+  expect(rest.length).toBe(1)
+  const colours = (tokens: string[]) => tokens.filter((token) => /^text-(?!\[)/.test(token))
+  expect(colours(current[0]!)).toEqual(['text-on-bar-current'])
+  expect(colours(rest[0]!)).toEqual(['text-on-bar'])
+  for (const tokens of variants) {
+    expect(tokens.join(' ')).not.toMatch(/blue/)
+    expect(tokens).toContain('focus-visible:outline-on-bar')
+  }
 })

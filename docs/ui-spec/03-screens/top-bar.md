@@ -1,8 +1,9 @@
-# App chrome: top bar, Log out, view-as banner — every `/app/*` route
-**Capture:** appears in every signed-in capture: dashboard, dashboard-call-open, people,
-people-bulk-bar, person-detail, review-queue, import, settings, billing, billing-cancel, addons,
-addons-lender-form, start, start-found, start-few, start-nothing, start-malformed. The view-as
-banner is in no capture.
+# App chrome: top bar, identity line, view-as banner — every `/app/*` route
+**Capture:** appears in every signed-in capture: dashboard, dashboard-dark, dashboard-quiet,
+dashboard-quiet-dark, dashboard-call-open, people, people-bulk-bar, person-detail, review-queue,
+import, settings, billing, billing-cancel, addons, addons-dark, addons-lender-form, start,
+start-found, start-few, start-nothing, start-malformed. The view-as banner is in no capture (the
+seed has no admin).
 
 Source: `src/app/app/layout.tsx` (wraps every `/app` route), `top-bar.tsx`, `nav-link.tsx`,
 `view-as-banner.tsx`. Not on the marketing pages, `/login`, `/register`, `/sample`, or the
@@ -18,34 +19,37 @@ session flag and redirects to `/app`). While that flag is set, every `/app` scre
 data, and every write is refused (`auth/write-guard.ts:5-8`).
 
 ## Layout
-Top to bottom (`layout.tsx:24-36`), identical at 1440 and 390 apart from tap-target heights:
+Top to bottom (`layout.tsx`), since OR-043:
 
-1. **View-as banner** (only when an admin is viewing as an agent): fixed to the top of the window
-   (`fixed inset-x-0 top-0 z-20`), full width, `px-4 py-3`, 15px white text on `INK_COLOR`
-   `#0E1729` (`config/settings.ts:1`). Left: `Viewing as {name} — read only`. Right: `Exit`, an
-   underlined button. The page under it is pushed down by `pt-14` (56px) on the wrapper
-   (`layout.tsx:24`) so the banner does not cover the bar.
-2. **Top bar** (`top-bar.tsx:6`): a `<header>`, `flex items-center justify-between`, `px-4 py-2`,
-   page background, a faint `--rule` line underneath. Left: the wordmark `onrecord` (15px
-   semibold), a link to `/app`. Right: `<nav aria-label="App">` with three links, `People`,
-   `Add-ons`, `Settings`, in one row that never wraps (`flex-nowrap`, `gap-1`). Each link is 15px,
-   `px-3 py-2`, rounded, `--surface` on hover. The current section is marked: `--blue-soft` fill,
-   semibold, `aria-current="page"` (`nav-link.tsx:16-21`). "Current" means the path equals the link
-   or sits under it, so `/app/people/review` marks People and `/app/settings/billing` marks Settings.
-   The dashboard itself marks nothing: the wordmark is not a NavLink.
-3. **Log out** (`layout.tsx:27-34`): a form below the bar, `px-4 pt-2`, holding one button styled as
-   a text link (`linkClass`: 15px, underlined). It sits on its own line, left-aligned, above the page
-   content. It is not inside the bar.
+1. **View-as banner** (only when an admin is viewing as an agent): sticky at the top of the page
+   and in its flow (`sticky top-0 z-20`), so it takes its own height at every width and can't
+   cover the bar. Coral `--alert` with navy `--on-alert` words, semibold, 5.34:1. Its edge against
+   the bar is 5.34:1 in light and 4.12:1 in dark, so it never merges with it. Left:
+   `Viewing as {name} — read only`. Right: `Exit`, an underlined button (`linkBaseClass`, 44px).
+   Until OR-043 it was fixed, on `INK_COLOR` `#0E1729`: the same as the navy bar, and 68px tall on a
+   phone against a 56px page offset.
+2. **Top bar** (`top-bar.tsx`): a `<header>` on the bar pair, `--bar` (#0e1729 light, #202b4f
+   dark) with `--on-bar` words. It stays navy in both themes rather than flipping with
+   `--foreground`.
+   - Left: the wordmark `onrecord`, 18px bold, a link to `/app`.
+   - Right: `<nav aria-label="App">` with three links, `People`, `Add-ons` and `Settings`, in one
+     row that never wraps (`flex-nowrap`). Each link is 16px, underlined on hover.
+   - The current section is the light pill on the dark bar: `--bar-current` with
+     `--on-bar-current` words, semibold, `aria-current="page"`. "Current" means the path equals the
+     link or sits under it. The dashboard and `/app/start` mark nothing.
+3. **Identity line** (`layout.tsx`): under the bar, a `--rule` line beneath it.
+   - Left: the account's name and brokerage, joined by " · ", in `mutedClass`. In view-as it is the
+     viewed account, whose data is on screen.
+   - Right: `Log out`, a `<button>` in a `<form action={logoutAction}>`, styled as a link
+     (`linkClass`), 44px. Never a link: logging out is a form action, and a link to it would be a
+     dead control.
 4. The page.
 
-**1440** (capture: dashboard, desktop): the wordmark at the far left and the three links at the far
-right, across the full window width. Content columns below are left-aligned, not centered.
+**390**: the same single row of the bar. `.tap` on the wordmark and nav links, and `min-h-11` on Log
+out and Exit, make each at least 44px tall.
 
-**390** (capture: dashboard, mobile): the same single row; the three links fit beside the wordmark
-with no wrap and no menu. Phone rules (`globals.css:101-120`): `.tap` on the wordmark and the nav
-links makes each at least 44px tall; every `<button>` (Log out, Exit) gets `min-height: 44px`.
-
-There is no hamburger, drawer, sticky header or backdrop blur. The bar scrolls away with the page.
+There is no hamburger, drawer, hover fill or translucency. The bar scrolls away with the page; the
+banner stays.
 
 ## Controls
 | Label (quoted) | What it does | Disabled look / when disabled | Where focus goes after |
@@ -57,18 +61,19 @@ There is no hamburger, drawer, sticky header or backdrop blur. The bar scrolls a
 | `Log out` (`layout.tsx:32`) | Server action `logoutAction` (`login/actions.ts:39-43`): deletes the session cookie, redirects to `/login` | Never disabled | Navigates to `/login` |
 | `Exit` (`view-as-banner.tsx:16`) | Server action `exitViewAsAction` (`admin/actions.ts:28-38`): clears the view-as flag, keeps the admin signed in, redirects to `/admin/accounts` | Never disabled | Navigates to the admin account list |
 
-Focus rings: the wordmark and nav links draw a 2px `--foreground` outline offset 2px on keyboard
-focus; Log out uses linkClass's 2px outline in the text colour; Exit draws a 2px white outline on
-the ink banner (`view-as-banner.tsx:13`).
+Focus rings: on the bar, the wordmark and nav links draw a 2px `--on-bar` outline offset 2px. A
+`--foreground` ring would be navy on navy, invisible; `--on-bar` on `--bar` is 17.90:1 light and
+11.80:1 dark. Log out uses linkClass's outline in its text colour. Exit's outline is its
+`--on-alert` text colour on the coral banner.
 
 ## States
-- **Signed in, normal** (captured on every `/app` screen): bar + Log out.
-- **Current section**: People / Add-ons / Settings tinted `--blue-soft` (captured: people,
-  addons, settings, billing and their variants). On `/app` and `/app/start` no link is tinted.
+- **Signed in, normal** (captured on every `/app` screen): the navy bar and the identity line.
+- **Current section**: People, Add-ons or Settings as the light pill (captured: people, addons,
+  addons-dark, settings, billing and their variants). On `/app` and `/app/start` no link is marked.
 - **Signed out**: the layout redirects to `/login?returnTo=/app` (`layout.tsx:16-18`). The return
   path is always `/app`, whichever `/app` page was requested. Not captured.
-- **View-as**: banner on top, page offset 56px. The banner's name comes from the viewed account
-  (`layout.tsx:20-21`). Nav and Log out are unchanged. Each screen hides or refuses its own writes;
+- **View-as**: the coral banner on top, in the page's flow; the identity line names the viewed
+  account. The banner's name comes from the viewed account (`layout.tsx`). Nav and Log out are unchanged. Each screen hides or refuses its own writes;
   the shared refusal sentence is `Viewing as another agent is read only.` (`auth/write-guard.ts:3`).
   `/admin` cannot be opened while viewing as (`admin/layout.tsx:14-16` redirects to `/app`), so
   Exit is the only way back. Log out also ends it, by ending the session. Not producible from the
@@ -82,32 +87,33 @@ the ink banner (`view-as-banner.tsx:13`).
   session read or the viewed-account lookup) falls through to the root `src/app/error.tsx`, with no
   bar. Described from the code.
 
-**Risk found in the code, not verified in a capture:** on a phone, Exit is at least 44px tall, so
-the banner is at least 44 + 24 (py-3) = 68px, but the page is offset by only 56px (`pt-14`). The
-banner would then cover about 12px of the top bar. A long agent name that wraps makes it taller.
-No capture shows view-as, so this is unmeasured.
+**Closed in OR-043:** the banner was fixed at 68px on a phone against a 56px page offset, covering
+part of the bar. It is sticky and in the flow now, so it takes its own height at any width.
 
 ## Fixed copy
 - The three hrefs `/app/people`, `/app/addons`, `/app/settings`, `flex-nowrap`, and no
   `hamburger|menu-icon|aria-expanded` **Fixed** — `src/app/app/top-bar.test.ts:4`
-- `aria-current={current ? 'page' : undefined}`, `bg-blue-soft`, `text-foreground`, and never
-  `text-blue` on the current link **Fixed** — `top-bar.test.ts:24`
+- `aria-current={current ? 'page' : undefined}`; the current link on `bg-bar-current` with
+  `text-on-bar-current`, the rest `text-on-bar`; one text colour per look; never blue; the focus
+  outline `--on-bar` **Fixed** — `top-bar.test.ts:24` (rewritten in OR-043)
 - `Viewing as {name} — read only` — no test holds it. Product rule: it is the only on-screen sign
   that support is reading an agent's account and cannot change it.
 - `Viewing as another agent is read only.` — the constant is held by `auth/write-guard.test.ts:4`.
-- `Log out`, `Exit`, `onrecord` — no test holds the wording.
+- `Log out`, `Exit`, `onrecord` — no test holds the wording. `chrome.test.ts` holds that Log out is
+  a submit button in a form running `logoutAction`.
 
 ## Tests that assert on this screen
 - `src/app/app/top-bar.test.ts:4` — three visible links, `flex-nowrap`, no hamburger or menu toggle.
 - `top-bar.test.ts:13` — the bar is a server component; only `nav-link.tsx` is a client component,
   and it reads only the pathname (no session, account or fetch), so no account data reaches the
   browser through the bar.
-- `top-bar.test.ts:24` — current page marked with `aria-current`, dark text on `--blue-soft`.
-- `src/app/design-debt.test.ts:49-55` — the banner is exempt from the tokens-only rule "by
-  decision": "deliberately loud and outside the app's visual system: it exists to be impossible to
-  miss while an admin views as an agent." Do not bring it into the token palette.
-- `src/app/shared-classes.test.ts:16-18` — the banner's link styling is the one allowed copy of
-  linkClass's string, for the same reason.
+- `top-bar.test.ts:24` — the current page is the light pill on the bar pair, with `aria-current`.
+- `src/app/app/chrome.test.ts` (OR-043):
+  - the bar is `--bar` with `--on-bar` words, and nothing on it uses another colour or focus ring
+  - the banner is the alert pair, sticky not fixed, with no `style` colour and no `INK_COLOR`
+  - Log out is a submit button in a form running `logoutAction`
+- `src/app/tokens.test.ts` — the bar pair and the alert pair, light and dark. The banner was exempt
+  from the colour scan until OR-043; it is scanned now, like everything else in `src/app`.
 - `src/app/admin/actions.integration.test.ts:65` — Exit clears view-as, lands on `/admin/accounts`,
   and restores admin writes.
 - `src/auth/write-guard.test.ts:4, 15` — view-as sessions cannot write; normal sessions can.

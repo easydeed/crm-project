@@ -15,6 +15,9 @@
  * The bar (OR-042): the navy surface and the pairs on it. It keeps its own dark values rather than
  * flipping with --foreground, so a bar stays a dark surface on both pages. The current-page pill is
  * the light thing on the bar in both themes.
+ *
+ * The alert (OR-043): the view-as banner, coral with navy words in both themes, so it can never
+ * merge with the bar it sits above (5.34:1 against the light bar, 4.12:1 against the dark).
  */
 :root {
   --background: #ffffff;
@@ -36,6 +39,8 @@
   --on-bar: #ffffff;
   --bar-current: #ffffff;
   --on-bar-current: #0e1729;
+  --alert: #ff4a2b;
+  --on-alert: #0e1729;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -59,6 +64,8 @@
     --on-bar: #ededed;
     --bar-current: #ededed;
     --on-bar-current: #0a0a0a;
+    --alert: #ff4a2b;
+    --on-alert: #0e1729;
   }
 }
 
@@ -82,6 +89,8 @@
   --color-on-bar: var(--on-bar);
   --color-bar-current: var(--bar-current);
   --color-on-bar-current: var(--on-bar-current);
+  --color-alert: var(--alert);
+  --color-on-alert: var(--on-alert);
 
   /* Inter everywhere. Fraunces is the marketing page's serif and nothing else's. */
   --font-sans: var(--font-inter), var(--font-inter-latin-ext), var(--font-inter-vietnamese), ui-sans-serif, system-ui, sans-serif;

@@ -35,10 +35,12 @@ there is no in-app theme switch.
 | `--green` | `#0e9f6e` | `#0e9f6e` | A green fill or mark. 3:1 only. |
 | `--green-text` | `#087552` | `#4fd6a1` | Green words: "matched" ("On the map"), "Paid off their loan". |
 | `--green-soft` | `#e7f6ef` | `#0f2e22` | The tint behind green words. |
-| `--bar` | `#0e1729` | `#202b4f` | The navy surface (OR-042): today the bill bar, from OR-043 the top bar. It keeps its own dark value instead of flipping with `--foreground`, so a bar stays a dark surface in both themes. |
+| `--bar` | `#0e1729` | `#202b4f` | The navy surface (OR-042): the bill bar and, since OR-043, the top bar. It keeps its own dark value instead of flipping with `--foreground`, so a bar stays a dark surface in both themes. |
 | `--on-bar` | `#ffffff` | `#ededed` | Words, links and the focus ring on the bar. |
-| `--bar-current` | `#ffffff` | `#ededed` | The current-page pill on the bar: the light thing on a dark bar in both themes. No screen renders it until OR-043. |
+| `--bar-current` | `#ffffff` | `#ededed` | The current-page pill on the bar: the light thing on a dark bar in both themes. Rendered by the top bar since OR-043. |
 | `--on-bar-current` | `#0e1729` | `#0a0a0a` | Words on the pill. |
+| `--alert` | `#ff4a2b` | `#ff4a2b` | The view-as banner (OR-043): coral, the same in both themes, so it never merges with the bar. |
+| `--on-alert` | `#0e1729` | `#0e1729` | Words on the banner, 5.34:1. |
 
 ## Every checked pair, with its real ratio
 
@@ -74,6 +76,8 @@ change breaks.
 | `--on-bar` on `--bar` | 4.5:1 | 17.90:1 | 11.80:1 | 7.30 |
 | `--on-bar-current` on `--bar-current` | 4.5:1 | 17.90:1 | 16.91:1 | 12.41 |
 | `--bar-current` against `--bar` (the pill's edge) | 3:1 | 17.90:1 | 11.80:1 | 8.80 |
+| `--on-alert` on `--alert` | 4.5:1 | 5.34:1 | 5.34:1 | 0.84 |
+| `--alert` against `--bar` (the banner's edge) | 3:1 | 5.34:1 | 4.12:1 | 1.12 |
 
 ### Combinations that are not pairs, and why
 

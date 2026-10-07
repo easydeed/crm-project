@@ -1,18 +1,17 @@
 import { exitViewAsAction } from '@/app/admin/actions'
-import { INK_COLOR } from '@/config/settings'
+import { linkBaseClass } from '@/app/app/people/ui'
 
+/**
+ * The view-as banner (OR-043): coral with navy words, on the alert pair, so it can never merge with
+ * the navy bar below it. Sticky, in the flow of the page: it takes its own height at every width,
+ * where a fixed banner needed the page padded to a height that was wrong on a phone.
+ */
 export function ViewAsBanner({ name }: { name: string }) {
   return (
-    <div
-      className="fixed inset-x-0 top-0 z-20 flex items-center justify-between gap-3 px-4 py-3 text-[15px] text-white"
-      style={{ backgroundColor: INK_COLOR }}
-    >
+    <div className="sticky top-0 z-20 flex items-center justify-between gap-3 bg-alert px-4 py-2 text-[15px] font-semibold text-on-alert">
       <p>Viewing as {name} — read only</p>
       <form action={exitViewAsAction}>
-        <button
-          className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          type="submit"
-        >
+        <button className={`${linkBaseClass} min-h-11 text-on-alert`} type="submit">
           Exit
         </button>
       </form>

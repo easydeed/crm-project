@@ -18,10 +18,8 @@ const PRIMARY = visible(buttonClass)
 const OUTLINED = visible(secondaryButtonClass).replace(' text-foreground', '')
 const LINK = linkBaseClass.replace('text-[15px] ', '')
 
-/** Copies of linkClass's string (OR-037), the same way. The banner is exempt from the visual system. */
-const LINK_LISTED: Record<string, string> = {
-  'app/view-as-banner.tsx': 'exempt: white on INK_COLOR, deliberately outside the visual system',
-}
+/** Copies of linkClass's string (OR-037), the same way. Empty since OR-043 brought the banner in. */
+const LINK_LISTED: Record<string, string> = {}
 const appRoot = path.dirname(fileURLToPath(import.meta.url))
 
 function sourceFiles(dir = ''): string[] {

@@ -79,11 +79,8 @@ Each item says how it is known:
    - It should take the disabled look from `02-system.md`. It must still not make an
      *off* switch look unavailable (`01-constraints.md` §3.3).
 
-10. **The view-as banner may cover the top bar on a phone.** *From the code.*
-    - The banner is fixed at the top. With its 44px Exit button and padding it is at
-      least 68px tall on a phone.
-    - The page below is only pushed down 56px (`src/app/app/layout.tsx`, `pt-14`).
-    - It isn't captured, because the seed has no admin.
+10. **Closed in OR-043: the view-as banner covered the bar on a phone.** It was fixed at 68px against a
+    56px page offset. It is sticky and in the page's flow now, on the coral alert pair.
 
 11. **The review queue can say "done" too early.** *From the code.*
     - "Review this match" on a person's page opens the queue part-way through.

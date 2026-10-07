@@ -46,12 +46,10 @@ const DEBT: Record<string, Debt> = {
 }
 
 /**
- * Not debt. view-as-banner.tsx is deliberately loud and outside the app's visual system: it
- * exists to be impossible to miss while an admin views as an agent. Its background is INK_COLOR,
- * a named value in src/config, and its white text sits on that. Do not add it to DEBT.
+ * Not debt. The view-as banner was exempt here until OR-043, when it moved onto the alert pair:
+ * nothing in the system had been loud enough for it, so it had sat outside every check.
  */
 const EXEMPT: Record<string, string> = {
-  'app/view-as-banner.tsx': 'view-as banner, deliberately outside the visual system',
   'globals.css': 'where the tokens are defined: every colour here is a token',
 }
 
