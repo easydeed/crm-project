@@ -115,9 +115,25 @@ and terms pages, all product decisions recorded above.
 
 ## How to measure a packet
 
+0. Before trusting any comparison, check that a capture reproduces (OR-043a):
+   - Capture one commit three times, each from a fresh seed and setup.
+   - Run the third only after the first two have matched.
+   - All three sets must be byte-identical.
+   - A screen that differs between runs is unstable, and a comparison can't tell its change from
+     noise. The usual cause is a tie broken by a random id: rows made at run time get random
+     ids, while the seed's are fixed.
 1. Reseed and set up the local scratch database (`pnpm db:seed`, `pnpm e2e:setup`). The browser run
    changes data on screen (searches, call-list state), so a comparison without a fresh seed reports
    screens that did not change.
 2. `pnpm e2e:baseline` on the parent commit's build.
 3. Reseed and set up again, then `pnpm e2e:compare` on the changed build.
 4. List every failed screen in the report.
+
+**Take the baseline and the comparison on the same day.** Some screens print text measured from
+today, so two captures on different days differ with no code change:
+- "You've owned it N years and M months" changes on the 1st.
+- The call list is built for the current month.
+- The previews print the live sales' recorded dates, which move every day.
+
+A comparison run either side of midnight, and above all midnight on the 1st, reports changes the
+code didn't make.

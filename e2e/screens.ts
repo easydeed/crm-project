@@ -32,6 +32,27 @@ async function findClosings(page: Page, agentId: string) {
   await page.getByRole('button', { name: 'Find my closings' }).click()
 }
 
+/**
+ * The in-app email preview carrying a note (OR-043a). It had only ever shown a skipped note, and a
+ * full-page capture leaves an iframe below the fold unpainted, so either fault looked like a blank
+ * frame. Each step fails unless the note has its street sales.
+ *
+ * settings captures the email, scrolled into view so it paints. The frame shows the note's top.
+ */
+async function showNote(page: Page) {
+  await expect(page.frameLocator('iframe[title="Email preview"]').locator('body')).toContainText('What sold on your street')
+  await page.locator('iframe[title="Email preview"]').scrollIntoViewIfNeeded()
+}
+
+/** person-detail captures the plain text, which shows the whole note, street sales included. */
+async function showNoteText(page: Page) {
+  await page.getByRole('button', { name: 'Plain text' }).click()
+  // Plain text has no block labels, so the street sales are found by their document numbers.
+  const text = page.locator('pre')
+  await expect(text).toContainText('document E2E-LIVE-B117')
+  await expect(text).toContainText('document E2E-LIVE-B131')
+}
+
 /** Every agent-facing screen, signed out and in, the marketing pages, and the homeowner's unsubscribe page. /admin is desktop only by design. */
 export const SCREENS: Screen[] = [
   // What a prospect sees (OR-038).
@@ -77,10 +98,10 @@ export const SCREENS: Screen[] = [
       await expect(page.getByRole('button', { name: /delete/i }).first()).toBeVisible()
     },
   },
-  { name: 'person-detail', path: `/app/people/${state.personId}` },
+  { name: 'person-detail', path: `/app/people/${state.personId}`, prepare: showNoteText },
   { name: 'review-queue', path: '/app/people/review' },
   { name: 'import', path: '/app/people/import' },
-  { name: 'settings', path: '/app/settings' },
+  { name: 'settings', path: '/app/settings', prepare: showNote },
   { name: 'billing', path: '/app/settings/billing' },
   { name: 'billing-cancel', path: '/app/settings/billing/cancel' },
   { name: 'addons', path: '/app/addons' },

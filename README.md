@@ -42,6 +42,17 @@ pnpm db:seed      # load La Verne fixtures (local database only; it truncates ev
 
 `pnpm verify` must pass before any task is reported complete.
 
+**A fresh seed looks quiet, and that is not a bug.** The seed's dates are fixed, and every window
+the product reads is measured from today, so on `pnpm dev` with a fresh seed:
+- the call list shows only "Been a while" rows
+- the email preview in Settings and on a person's page says "Nothing new on their street this
+  month"
+
+The browser pass adds events dated from the run (`pnpm e2e:setup`, from
+`src/db/fixtures/e2e-live.ts`), and only those make the call tags and the preview's note appear.
+Run `pnpm e2e:setup` after `pnpm db:seed` to see them locally. Moving dates stay out of the seed
+by rule (OR-043a).
+
 ## Two things that will not be compromised
 
 **Plain language.** The buyer is a working agent, median age 57, who already pays for software they don't open. If a sentence makes someone pause for half a second, rewrite it. Jargon inside a picture of a document is evidence; jargon in a sentence is a lost reader.
