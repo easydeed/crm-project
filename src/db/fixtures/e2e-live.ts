@@ -80,7 +80,7 @@ export const PREVIEW_STREET = { template: '112 Bonita Ave', street: 'Bonita Ave'
  */
 export function liveBonitaSales(now: Date): LiveEvent[] {
   return [
-    { house: 117, kind: 'grant_deed', docNumber: 'E2E-LIVE-B117', recordedAt: daysBefore(now, 400), amount: 640_000 },
-    { house: 131, kind: 'grant_deed', docNumber: 'E2E-LIVE-B131', recordedAt: daysBefore(now, 420), amount: 660_000 },
+    { house: 117, kind: 'grant_deed', docNumber: 'E2E-LIVE-B117', recordedAt: daysBefore(now, 60), amount: 640_000 },
+    { house: 131, kind: 'grant_deed', docNumber: 'E2E-LIVE-B131', recordedAt: daysBefore(now, 150), amount: 660_000 },
   ]
 }
