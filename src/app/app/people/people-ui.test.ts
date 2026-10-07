@@ -3,6 +3,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { expect, test } from 'vitest'
 import { PeopleList } from '@/app/app/people/people-list'
+import { destructiveButtonClass } from '@/app/app/people/ui'
 import type { ContactListRow } from '@/db/contacts'
 import { contactStatusLabel } from '@/people/status'
 import { ancestors, byExpression, byTag, classTokens, classVariants, descendants, only, ownText, parseJsx } from '@/test/jsx'
@@ -173,8 +174,12 @@ test('each status is a tag in a token pair the contrast test checks; the label s
 })
 
 test('Delete is the outlined coral button on both screens, and the question it asks is unchanged', () => {
-  const ui = src('./ui.ts')
-  expect(ui).toMatch(/destructiveButtonClass =\s*'[^']*border-border[^']*text-coral-text/)
+  // OR-042: the property, read from the class itself: outlined in --border, coral words, never filled.
+  const tokens = destructiveButtonClass.split(' ')
+  expect(tokens).toContain('border-border')
+  expect(tokens).toContain('text-coral-text')
+  expect(tokens.filter((token) => /^bg-/.test(token))).toEqual(['bg-background'])
+  expect(tokens.filter((token) => /^text-(?!\[)/.test(token))).toEqual(['text-coral-text'])
   for (const file of ['./[id]/person-detail.tsx', './people-bulk-bar.tsx']) {
     const text = src(file)
     expect(text).toMatch(/<button className=\{destructiveButtonClass\}[^>]*>\s*Delete/)

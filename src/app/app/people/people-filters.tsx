@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { linkClass } from '@/app/app/people/ui'
+import { linkBaseClass } from '@/app/app/people/ui'
 
 // The current filter, marked like the top bar: dark text on --blue-soft, never blue on blue-soft.
 const currentClass = 'rounded-md bg-blue-soft px-2 font-semibold text-foreground'
@@ -42,7 +42,7 @@ export function PeopleFilters({
             return (
               <Link
                 key={item.id}
-                className={`tap ${linkClass} ${active ? currentClass : ''}`}
+                className={`tap ${linkBaseClass} text-foreground ${active ? currentClass : ''}`}
                 href={href}
                 aria-current={active ? 'page' : undefined}
               >
@@ -57,7 +57,7 @@ export function PeopleFilters({
           <p className="font-medium">Group</p>
           <p className="mt-2 flex flex-wrap gap-x-3 gap-y-2">
             <Link
-              className={`tap ${linkClass} ${!groupId ? currentClass : ''}`}
+              className={`tap ${linkBaseClass} text-foreground ${!groupId ? currentClass : ''}`}
               href={peopleListHref({ status, noEmail })}
               aria-current={!groupId ? 'page' : undefined}
             >
@@ -69,7 +69,7 @@ export function PeopleFilters({
               return (
                 <Link
                   key={group.id}
-                  className={`tap ${linkClass} ${active ? currentClass : ''}`}
+                  className={`tap ${linkBaseClass} text-foreground ${active ? currentClass : ''}`}
                   href={peopleListHref({ status, groupId: group.id, noEmail })}
                   aria-current={active ? 'page' : undefined}
                 >
@@ -85,14 +85,14 @@ export function PeopleFilters({
           <p className="font-medium">Email</p>
           <p className="mt-2 flex flex-wrap gap-x-3 gap-y-2">
             <Link
-              className={`tap ${linkClass} ${!noEmail ? currentClass : ''}`}
+              className={`tap ${linkBaseClass} text-foreground ${!noEmail ? currentClass : ''}`}
               href={peopleListHref({ status, groupId })}
               aria-current={!noEmail ? 'page' : undefined}
             >
               Everyone ({rows.length})
             </Link>
             <Link
-              className={`tap ${linkClass} ${noEmail ? currentClass : ''}`}
+              className={`tap ${linkBaseClass} text-foreground ${noEmail ? currentClass : ''}`}
               href={peopleListHref({ status, groupId, noEmail: true })}
               aria-current={noEmail ? 'page' : undefined}
             >

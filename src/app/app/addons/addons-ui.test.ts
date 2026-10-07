@@ -68,22 +68,23 @@ test('the page has four states', () => {
   expect(src('./page.tsx')).toContain('AddonsPanel')
 })
 
-test('the bill bar is the inverted pair at full strength, which the contrast test checks', () => {
-  // OR-041: the bar and everything inside it. The bar fills --foreground with --background words,
-  // and nothing in it is muted, recoloured, filled or faded: every line is at full strength.
+test('the bill bar is the bar pair at full strength, which the contrast test checks', () => {
+  // OR-041: the bar and everything inside it. OR-042: on the bar pair, which keeps its own dark
+  // values, so the bar stays navy in both themes instead of flipping with --foreground. Nothing in
+  // it is muted, recoloured, filled or faded: every line is at full strength.
   const jsx = parseJsx('app/app/addons/bill-bar.tsx')
   const bar = only(byAttribute(jsx, 'aria-label', '"Your monthly bill"'), 'bill bar')
   const own = classTokens(jsx, bar)
-  expect(own).toContain('bg-foreground')
-  expect(own).toContain('text-background')
+  expect(own).toContain('bg-bar')
+  expect(own).toContain('text-on-bar')
   for (const element of descendants(bar)) {
     for (const token of classTokens(jsx, element)) {
       expect(token, `${tagOf(jsx, element)}: ${token}`).not.toMatch(/muted|opacity|^(?:[a-z]+:)*bg-/)
-      if (/^(?:[a-z]+:)*text-(?!\[)/.test(token)) expect(token, tagOf(jsx, element)).toBe('text-background')
+      if (/^(?:[a-z]+:)*text-(?!\[)/.test(token)) expect(token, tagOf(jsx, element)).toBe('text-on-bar')
     }
-    expect(borderColours(classTokens(jsx, element)).filter((colour) => colour !== 'border-background')).toEqual([])
+    expect(borderColours(classTokens(jsx, element)).filter((colour) => colour !== 'border-on-bar')).toEqual([])
   }
-  expect(src('../../tokens.test.ts')).toContain("['background', 'foreground', TEXT]")
+  expect(src('../../tokens.test.ts')).toContain("['on-bar', 'bar', TEXT]")
 })
 
 test('the config form uses the shared fieldClass and keeps no input class of its own', () => {

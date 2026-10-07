@@ -31,7 +31,7 @@ Top to bottom (`src/app/app/addons/page.tsx:31-36`, `addons-panel.tsx:13-40`):
 4. Each row (`addon-row.tsx:69-96`), separated by a faint `--rule` line under each row:
    title (17px semibold), then the saved-config summary if any (e.g. "Marcus Lee · NMLS 123456",
    `lender.ts:38-41`), blurb, price line, an optional muted row note, and the switch.
-5. The **bill bar** (`bill-bar.tsx:9-23`): a dark inverted box (`bg-foreground`, light text)
+5. The **bill bar** (`bill-bar.tsx:9-23`): a navy box on the bar pair (`bg-bar`, `--on-bar` words), navy in both themes since OR-042. Before, it was `bg-foreground` and turned light in dark mode.
    listing "Base plan", then each add-on that is on, a divider, "Total a month" and the total,
    and the note "Changes take effect on your next bill."
 
@@ -132,7 +132,7 @@ add-on title only; state is not in the name.
 - `addons-ui.test.ts:42` — both band headings, carrier note under texting, bill lists only what is on (total $28 with the fixtures).
 - `addons-ui.test.ts:55` — both switch actions go through `assertWritable`, so view-as cannot toggle.
 - `addons-ui.test.ts:64` — four states exist (loading, error, panel).
-- `addons-ui.test.ts:70` — the bill bar is exactly `bg-foreground … text-background`, a pair the contrast test checks.
+- `addons-ui.test.ts:71` — the bill bar fills `--bar` with `--on-bar` words, and nothing inside it is muted, recoloured, filled or faded (OR-041 property, OR-042 bar pair). Captured in dark as `addons-dark`.
 - `addons-ui.test.ts:76` — config inputs use the shared `fieldClass`, no local input class.
 - `addons-ui.test.ts:82` — row note, band note and keeps-settings line use `mutedClass`.
 - `addons-ui.test.ts:88` — the error screen uses `linkClass`, not a copy of it.

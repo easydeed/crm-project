@@ -23,10 +23,10 @@ there is no in-app theme switch.
 | `--background` | `#ffffff` | `#0a0a0a` | The page. |
 | `--foreground` | `#0e1729` | `#ededed` | Words. Also the primary button's fill. |
 | `--surface` | `#f2f5fa` | `#161b24` | A quiet fill. Used for panels, hovered rows, the disabled fill and neutral tags. Barely different from the page (1.09:1), so it never marks a boundary on its own. |
-| `--rule` | `#dce3ee` | `#262d3a` | A decorative divider or card edge. Faint on purpose (1.29:1). Never the edge of something you act on. |
+| `--rule` | `#c9d2e0` | `#2e3644` | A decorative divider or card edge. Faint on purpose (1.52:1 light, 1.63:1 dark; darkened one step in OR-042). Never the edge of something you act on. |
 | `--border` | `#7c879d` | `#6b7487` | The outline of a control: inputs, outlined buttons, toggles, the drop zone, review cards. At least 3:1 on page and surface. |
 | `--muted-ink` | `#63708a` | `#9aa3b5` | Secondary words. On the floor against `--surface`. |
-| `--blue` | `#2f5bff` | `#7d9bff` | Not used anywhere in `src/app` today. Kept, with its pairs checked, for a future system decision. |
+| `--blue` | `#2f5bff` | `#7d9bff` | Text links (OR-042), on the page or on `--surface` only. Never nav links, filter chips, button-styled links, or words on `--blue-soft`. |
 | `--on-blue` | `#ffffff` | `#0a0a0a` | Words on a `--blue` fill. |
 | `--blue-soft` | `#e7edff` | `#1a2240` | "Current" or "selected": the current top-bar link, the current People filter, the "Taxes worth a talk" and "Name matches" tags. Words on it are `--foreground`, never `--blue`. |
 | `--coral` | `#ff4a2b` | `#ff4a2b` | A coral fill or mark. 3:1 only, so never words. |
@@ -35,6 +35,10 @@ there is no in-app theme switch.
 | `--green` | `#0e9f6e` | `#0e9f6e` | A green fill or mark. 3:1 only. |
 | `--green-text` | `#087552` | `#4fd6a1` | Green words: "matched" ("On the map"), "Paid off their loan". |
 | `--green-soft` | `#e7f6ef` | `#0f2e22` | The tint behind green words. |
+| `--bar` | `#0e1729` | `#202b4f` | The navy surface (OR-042): today the bill bar, from OR-043 the top bar. It keeps its own dark value instead of flipping with `--foreground`, so a bar stays a dark surface in both themes. |
+| `--on-bar` | `#ffffff` | `#ededed` | Words, links and the focus ring on the bar. |
+| `--bar-current` | `#ffffff` | `#ededed` | The current-page pill on the bar: the light thing on a dark bar in both themes. No screen renders it until OR-043. |
+| `--on-bar-current` | `#0e1729` | `#0a0a0a` | Words on the pill. |
 
 ## Every checked pair, with its real ratio
 
@@ -66,6 +70,10 @@ change breaks.
 | `--green` on `--background` | 3:1 | 3.39:1 | 5.85:1 | **0.39** |
 | `--green` on `--surface` | 3:1 | 3.10:1 | 5.10:1 | **0.10** |
 | `--blue` on `--surface` | 3:1 | 4.73:1 | 6.58:1 | 1.73 |
+| `--blue` on `--surface`, as words (OR-042) | 4.5:1 | 4.73:1 | 6.58:1 | **0.23** |
+| `--on-bar` on `--bar` | 4.5:1 | 17.90:1 | 11.80:1 | 7.30 |
+| `--on-bar-current` on `--bar-current` | 4.5:1 | 17.90:1 | 16.91:1 | 12.41 |
+| `--bar-current` against `--bar` (the pill's edge) | 3:1 | 17.90:1 | 11.80:1 | 8.80 |
 
 ### Combinations that are not pairs, and why
 
@@ -73,8 +81,9 @@ These ratios were computed the same way. None of them may carry information.
 
 | Combination | Light | Dark | Status |
 |---|---|---|---|
-| `--rule` on `--background` | 1.29:1 | 1.43:1 | Decorative only. |
-| `--rule` on `--surface` | 1.18:1 | 1.25:1 | Decorative only. |
+| `--rule` on `--background` | 1.52:1 | 1.63:1 | Decorative only. |
+| `--rule` on `--surface` | 1.39:1 | 1.42:1 | Decorative only. |
+| `--bar` against the page | 17.90:1 | 1.43:1 | The bar's edge in dark separates as much as `--rule` did before OR-042. Decorative. |
 | `--surface` on `--background` | 1.09:1 | 1.15:1 | A fill, never a boundary. |
 | `--blue` on `--blue-soft` | 4.42:1 | 5.94:1 | **Fails** in light. Never blue words on a selected fill. |
 | `--muted-ink` on `--blue-soft` | 4.26:1 | 6.15:1 | **Fails** in light. Never muted words on a selected fill. |
@@ -144,18 +153,20 @@ once is made everywhere, and nothing drifts. Copies of these strings are refused
 
 | Name | What it is for | What it looks like today |
 |---|---|---|
-| `buttonClass` | The one primary button: the action the screen exists for. One per screen where possible. | `--foreground` fill, `--background` words, 15px, `rounded-md`, 16px by 8px padding, a 2px focus outline offset 2px. Includes `disabledClass`. |
+| `buttonClass` | The one primary button: the action the screen exists for. One per screen where possible. | `--foreground` fill, `--background` words, 17px semibold, 48px tall (`min-h-12`), `rounded-md`, 24px side padding, a 2px focus outline offset 2px. Includes `disabledClass`. In dark it is a light button with dark words (16.91:1); it flips with `--foreground`, as controls may. Bars do not. |
+| `secondaryButtonClass` | A second action beside the primary one, such as "Not now" (OR-042). | Page background, a 1.5px `--border` outline, `--foreground` words, 17px semibold, 48px. Includes `disabledClass`. |
 | `disabledClass` | The look of any button that will not respond. Part of `buttonClass` and `destructiveButtonClass`. | `--surface` fill, `--muted-ink` words, a 1px inset `--border` ring, not-allowed cursor. Never opacity. Only for real disabled controls, never for an "off" choice. |
-| `destructiveButtonClass` | Delete, and only Delete. | Coral words (`--coral-text`) on the page background, with a `--border` outline, so it never looks like the primary button. Includes `disabledClass`. Always followed by a confirmation. |
-| `linkClass` | A text link: navigation, "Back", secondary actions. | 15px, underlined (offset 4px), with the focus outline. Inherits the surrounding text colour. |
-| `fieldClass` | Every text input and select. | 15px, `--border` outline, page background, `rounded-md`, block display (so its label sits above it), full width up to `max-w-sm`, with the focus outline. |
+| `destructiveButtonClass` | Delete, and only Delete. | The secondary button's shape with coral words (`--coral-text`), so it never looks like the primary button and is never filled. Includes `disabledClass`. Always followed by a confirmation. |
+| `linkClass` | A text link: "Back", "Open people", secondary actions. | `--blue` (OR-042), 15px (it moves to 17px with the body text, in the screen packets), underlined (offset 4px), with the focus outline. |
+| `linkBaseClass` | A link that must stay ink: nav links and filter chips. | `linkClass`'s shape with no colour. The element names its own colour. Never override `linkClass`'s blue instead: two text colours on one element are settled by stylesheet order, not by class order. |
+| `fieldClass` | Every text input and select. | 17px, 48px tall, a 1.5px `--border` outline, page background, `rounded-md`, block display (so its label sits above it), full width up to `max-w-sm`, with the focus outline. |
 | `mutedClass` | Secondary lines: helper text and notes. | 15px, `--muted-ink`. Never for the MLS framing sentences or anything a test requires at full contrast. |
-| `sendCardClass` | The dashboard's single send card: one message, at most one action. No figures, counts or tiles. | `--rule` border, `rounded-lg`, page background, with horizontal margins. |
+| `sendCardClass` | The dashboard's single send card: one message, at most one action. No figures, counts or tiles. | `--rule` border, `rounded-xl`, page background, with horizontal margins. |
 
 **Not in `ui.ts`, but shared the same way:**
 
-- Status tags (`src/app/app/people/status-tag.ts`): a `rounded-full` pill, one per contact
-  status, each a checked pair.
+- Status and call tags share `tagClass` (`src/app/app/people/status-tag.ts`, OR-042): 15px
+  semibold, 8px by 12px, a 6px radius. One per contact status, each a checked pair.
   - matched: `--green-text` on `--green-soft`.
   - needs review: `--coral-text` on `--coral-soft`.
   - no parcel and unsubscribed: `--muted-ink` on `--surface`.
