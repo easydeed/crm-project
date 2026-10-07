@@ -33,6 +33,7 @@ old threshold. OR-030's five muted-text screens are the change it would have hid
 | OR-041 property checks | c7f104a → 3fb2489 | 0 (of 23) | 0 | Not a re-skin. `.tap` applies under 640px only, so 1440 is byte-identical. At 390, 11 kinds of standalone link went from 19 to 39px to 44px tall on 10 screens: home, sample, sample-text-dark, login, register, dashboard, dashboard-call-open, people, billing, billing-cancel. People row links stay 19px, an owned exception for OR-045. |
 | OR-042 system tokens | 636a70b → 7604d58 | 24 (of 25): every screen but unsubscribe | nearly all 23, plus the two new dark captures | The parent is OR-042's capture-only commit, which added dashboard-dark and addons-dark, so both have a real before. Primary buttons and fields grow to 48px and 17px, text links turn blue, tags take the chip shape, and the darker --rule shows on every divider. addons-dark: the bill bar goes from #ededed (it inverted) to navy #202b4f. unsubscribe has its own CSS and is byte-identical. |
 | OR-043 chrome | 4a9d7dc → 360660d → 91ba355 | Tags: dashboard, dashboard-dark, dashboard-call-open. Chrome: 21 (of 27), every /app screen | Tags: the dashboard screens. Chrome: every /app screen; login, register, home, sample, sample-text-dark and unsubscribe byte-identical | Measured in two steps from the capture-only first commit, which added dashboard-quiet and dashboard-quiet-dark. Tags (c2): the three dashboard screens grow 45px, from "Been a while" rows to "Big sale next door", "Paid off their loan" and "Taxes worth a talk"; the quiet captures are byte-identical. Chrome (c3): the navy bar with the light current-page pill, and the name · brokerage line with Log out under it; each page is 13px taller than with the old Log out line. The six signed-out screens are byte-identical. The view-as banner is in no capture (the seed has no admin). |
+| OR-043a fixture dates | 77ab0ff → b9729e9 | settings, person-detail (of 27) | settings and person-detail only | Not a re-skin. Both screens previewed a skipped note ("Nothing new on their street this month") in every capture until now. With live Bonita Ave sales they preview Aisha Rahman's note. settings: the email frame, scrolled into view so it paints (+413px). person-detail: the whole note as plain text, street sales and document numbers included (+859px). Step 0 of the procedure was run for the first time: three fresh-seed captures of b9729e9, the third run after the first two matched, were byte-identical, 27 of 27, all three sets hashing d8b2ec5161a8829a. |
 
 ## Shared classes move screens early
 
@@ -115,9 +116,25 @@ and terms pages, all product decisions recorded above.
 
 ## How to measure a packet
 
+0. Before trusting any comparison, check that a capture reproduces (OR-043a):
+   - Capture one commit three times, each from a fresh seed and setup.
+   - Run the third only after the first two have matched.
+   - All three sets must be byte-identical.
+   - A screen that differs between runs is unstable, and a comparison can't tell its change from
+     noise. The usual cause is a tie broken by a random id: rows made at run time get random
+     ids, while the seed's are fixed.
 1. Reseed and set up the local scratch database (`pnpm db:seed`, `pnpm e2e:setup`). The browser run
    changes data on screen (searches, call-list state), so a comparison without a fresh seed reports
    screens that did not change.
 2. `pnpm e2e:baseline` on the parent commit's build.
 3. Reseed and set up again, then `pnpm e2e:compare` on the changed build.
 4. List every failed screen in the report.
+
+**Take the baseline and the comparison on the same day.** Some screens print text measured from
+today, so two captures on different days differ with no code change:
+- "You've owned it N years and M months" changes on the 1st.
+- The call list is built for the current month.
+- The previews print the live sales' recorded dates, which move every day.
+
+A comparison run either side of midnight, and above all midnight on the 1st, reports changes the
+code didn't make.

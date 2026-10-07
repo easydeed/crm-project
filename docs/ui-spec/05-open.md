@@ -151,6 +151,18 @@ Each item says how it is known:
     - Nothing records whether stopping or updating should carry the weight.
     - The page's colours are outside the colour scan, which covers `src/app` only.
 
+25. **The plain-text note has no block labels.** *Seen in the OR-043a capture.*
+    - The HTML note labels its blocks: "Property taxes", "What sold on your street".
+    - The plain text drops the labels, so a reader gets the tax lines and then two street-sales
+      lines with no heading.
+    - Nothing records whether the labels belong in plain text.
+
+26. **`parcels.last_refreshed_at` is written and never read.** *From the code, OR-043a.*
+    - The seed writes it (2026-08-01).
+    - Nothing outside the schema and fixtures reads it.
+    - That may be a write-only field (CLAUDE.md invariant 2), or a reader my search missed.
+    - It will matter when real parcel data lands and a stale parcel needs to look stale.
+
 ## Smaller things
 
 - `src/app/fonts/fonts.ts` says Fraunces is "used nowhere yet". Since OR-038 it is used on

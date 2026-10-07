@@ -56,23 +56,32 @@ async function main() {
   }
 
   // Events dated from this run (OR-043), so the seeded agent's three Oakdale people carry three
-  // different call tags every month. Two parcels are added beside the seed's Oakdale houses.
-  const { liveOakdaleEvents, LIVE_HOUSES, CALL_TAG_KINDS } = await import('../src/db/fixtures/e2e-live')
-  const [maya] = await db.select().from(parcels).where(eq(parcels.address, '1840 Oakdale Ave'))
-  if (!maya) throw new Error('The seed has no 1840 Oakdale Ave')
-  for (const house of LIVE_HOUSES) {
-    const { id: _id, ...shape } = maya
-    await db.insert(parcels).values({ ...shape, apn: `E2E-${house}`, address: `${house} Oakdale Ave` }).onConflictDoNothing()
-  }
-  const oakdale = await db.select({ id: parcels.id, address: parcels.address }).from(parcels).where(ilike(parcels.address, '% Oakdale Ave'))
-  const parcelOf = (house: number) => oakdale.find((row) => row.address === `${house} Oakdale Ave`)?.id
-  for (const event of liveOakdaleEvents(now)) {
-    const parcelId = parcelOf(event.house)
-    if (!parcelId) throw new Error(`No parcel at ${event.house} Oakdale Ave`)
-    await db
-      .insert(parcelEvents)
-      .values({ parcelId, county: maya.county, kind: event.kind, docNumber: event.docNumber, recordedAt: event.recordedAt, amount: event.amount })
-      .onConflictDoNothing()
+  // different call tags every month, and the previewed person has a note (OR-043a). New parcels
+  // copy the shape of a seeded house on the same street.
+  const { liveOakdaleEvents, liveBonitaSales, LIVE_HOUSES, PREVIEW_STREET, PREVIEW_PERSON, CALL_TAG_KINDS } = await import('../src/db/fixtures/e2e-live')
+  const streets = [
+    { template: '1840 Oakdale Ave', street: 'Oakdale Ave', houses: LIVE_HOUSES, events: liveOakdaleEvents(now) },
+    { ...PREVIEW_STREET, events: liveBonitaSales(now) },
+  ]
+  for (const { template, street, houses, events } of streets) {
+    const [shape] = await db.select().from(parcels).where(eq(parcels.address, template))
+    if (!shape) throw new Error(`The seed has no ${template}`)
+    const { id: _id, ...copy } = shape
+    for (const house of houses) {
+      await db.insert(parcels).values({ ...copy, apn: `E2E-${house}`, address: `${house} ${street}` }).onConflictDoNothing()
+    }
+    const onStreet = await db
+      .select({ id: parcels.id, address: parcels.address })
+      .from(parcels)
+      .where(and(eq(parcels.zip, copy.zip), ilike(parcels.address, `% ${street}`)))
+    for (const event of events) {
+      const parcelId = onStreet.find((row) => row.address === `${event.house} ${street}`)?.id
+      if (!parcelId) throw new Error(`No parcel at ${event.house} ${street}`)
+      await db
+        .insert(parcelEvents)
+        .values({ parcelId, county: copy.county, kind: event.kind, docNumber: event.docNumber, recordedAt: event.recordedAt, amount: event.amount })
+        .onConflictDoNothing()
+    }
   }
 
   for (const accountId of [AGENT_ID, QUIET_AGENT_ID]) {
@@ -94,6 +103,17 @@ async function main() {
     .orderBy(asc(contacts.name), asc(contacts.email))
     .limit(1)
   if (!person) throw new Error('The seed has no matched person')
+
+  // Fail here too (OR-043a): settings and person-detail preview this person, and a skipped note
+  // renders cleanly, so a preview with no email looked like a working one for every capture.
+  const [named] = await db.select({ id: contacts.id }).from(contacts).where(and(eq(contacts.accountId, AGENT_ID), eq(contacts.name, PREVIEW_PERSON)))
+  if (named?.id !== person.id) throw new Error(`The previews no longer show ${PREVIEW_PERSON}: move the live street sales to whoever they show`)
+  const { buildDigestInput } = await import('../src/digest/build-input')
+  const { renderDigest } = await import('../src/digest/render')
+  const input = await buildDigestInput(db, AGENT_ID, person.id, now)
+  const note = input ? renderDigest(input) : null
+  if (!note?.send) throw new Error(`${PREVIEW_PERSON}'s note is skipped: the live street sales no longer reach it`)
+  if (!note.blocks.includes('street_sales')) throw new Error(`${PREVIEW_PERSON}'s note has no street sales`)
   const state = {
     email: E2E_EMAIL,
     password: E2E_PASSWORD,
