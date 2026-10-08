@@ -25,6 +25,7 @@ export function AppearancePreview({
 
   return (
     <DigestPreviewPanel
+      framed
       title="Preview"
       sampleLabel={sample ? SAMPLE_LABEL : undefined}
       result={preview}

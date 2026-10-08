@@ -10,7 +10,7 @@ import { DetailsForm } from '@/app/app/settings/details-form'
 import { SendingForm } from '@/app/app/settings/sending-form'
 import { PhoneVerification } from '@/app/app/settings/phone-verification'
 import { loadSettingsPreview } from '@/digest/load-settings-preview'
-import { linkClass } from '@/app/app/people/ui'
+import { linkClass, panelBodyClass, panelClass, panelHeaderClass } from '@/app/app/people/ui'
 
 export default async function SettingsPage() {
   const session = await readRequestSession()
@@ -35,20 +35,25 @@ export default async function SettingsPage() {
   const readOnly = Boolean(session.viewingAsAccountId)
   const systemPaused = await systemPauseState(accountId)
   return (
-    <main className="flex flex-col gap-10 px-4 py-10">
-      <h1 className="text-[22px] font-semibold">Settings</h1>
+    <main className="px-4 pb-10 pt-5 sm:px-8 sm:pb-16 sm:pt-7">
+      {/* The Settings column (OR-046): 760px. The preview sits under its form, not in a column of its own. */}
+      <div className="flex max-w-[760px] flex-col gap-5 sm:gap-6">
+      <h1 className="text-[22px] font-semibold sm:text-[24px]">Settings</h1>
       <DetailsForm account={account} readOnly={readOnly} />
       <PhoneVerification key={account.phone ?? 'none'} phone={account.phone} readOnly={readOnly} verified={Boolean(account.phoneVerifiedAt)} />
       <AppearanceForm account={account} readOnly={readOnly} preview={preview} />
       <SendingForm account={account} readOnly={readOnly} systemPaused={systemPaused} />
-      <section>
-        <h2 className="text-[17px] font-semibold">Billing</h2>
-        <p className="mt-2 text-[15px]">
+      <section aria-labelledby="billing-heading" className={panelClass}>
+        <h2 className={panelHeaderClass} id="billing-heading">
+          Billing
+        </h2>
+        <p className={`text-[15px] ${panelBodyClass}`}>
           <Link className={`tap ${linkClass}`} href="/app/settings/billing">
             Plan, card, invoices, and canceling
           </Link>
         </p>
       </section>
+      </div>
     </main>
   )
 }

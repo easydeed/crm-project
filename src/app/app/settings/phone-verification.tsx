@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { confirmCodeAction, requestCodeAction } from '@/app/app/settings/phone-actions'
 import { formatUsPhone } from '@/config/phone'
-import { buttonClass } from '@/app/app/people/ui'
+import { buttonClass, panelBodyClass, panelClass, panelHeaderClass } from '@/app/app/people/ui'
 
 const inputClass =
   'mt-1 w-40 rounded-md border border-border bg-background px-3 py-2 text-[15px] tracking-widest text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'
@@ -65,14 +65,18 @@ export function PhoneVerification({ phone, verified, readOnly }: { phone: string
   }
 
   return (
-    <section id="phone">
-      <h2 className="text-[17px] font-semibold">Phone for texts</h2>
-      {body}
-      {message ? (
-        <p className="mt-2 text-[15px]" role="status">
-          {message}
-        </p>
-      ) : null}
+    <section aria-labelledby="phone-heading" className={`scroll-mt-6 ${panelClass}`} id="phone">
+      <h2 className={panelHeaderClass} id="phone-heading">
+        Phone for texts
+      </h2>
+      <div className={panelBodyClass}>
+        {body}
+        {message ? (
+          <p className="mt-2 text-[15px]" role="status">
+            {message}
+          </p>
+        ) : null}
+      </div>
     </section>
   )
 }

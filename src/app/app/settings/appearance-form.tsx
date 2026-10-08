@@ -1,5 +1,6 @@
 'use client'
 
+import { panelBodyClass, panelClass, panelHeaderClass } from '@/app/app/people/ui'
 import { useActionState, useState } from 'react'
 import { ACCENT_COLORS } from '@/config/settings'
 import type { AccountRecord } from '@/db/accounts'
@@ -27,9 +28,14 @@ export function AppearanceForm({
   const [accent, setAccent] = useState(account.accentColor)
 
   return (
-    <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
-      <form action={action} className="flex max-w-xl flex-col gap-4">
-        <h2 className="text-[18px] font-semibold">How the email looks</h2>
+    // The preview is its own panel under the form (OR-046), fed by this form's live state. Beside
+    // the form, as drawn, it would be ~304px wide and its Desktop/Phone toggle would change nothing.
+    <>
+      <section aria-labelledby="look-heading" className={panelClass}>
+      <h2 className={panelHeaderClass} id="look-heading">
+        How the email looks
+      </h2>
+      <form action={action} className={`grid gap-4 sm:grid-cols-2 ${panelBodyClass}`}>
         <label className="text-[15px]">
           Sender name
           <input
@@ -50,11 +56,11 @@ export function AppearanceForm({
           />
           <FieldError message={state.replyTo} />
         </label>
-        <fieldset>
+        <fieldset className="sm:col-span-2">
           <legend className="text-[15px]">Accent color</legend>
           <div className="mt-2 flex flex-wrap gap-3">
             {ACCENT_COLORS.map((color) => (
-              <label key={color.value} className="block text-[15px] max-sm:-m-1 max-sm:p-1">
+              <label key={color.value} className="block text-[15px]">
                 <input
                   className="peer sr-only"
                   type="radio"
@@ -65,7 +71,7 @@ export function AppearanceForm({
                   aria-label={color.name}
                 />
                 <span
-                  className="block h-9 w-9 rounded-md peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-checked:outline peer-checked:outline-2 peer-checked:outline-offset-2 peer-checked:outline-foreground"
+                  className="block size-11 rounded-md peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-checked:outline peer-checked:outline-2 peer-checked:outline-offset-2 peer-checked:outline-foreground"
                   style={{ backgroundColor: color.value }}
                   title={color.name}
                 />
@@ -74,10 +80,13 @@ export function AppearanceForm({
           </div>
           <FieldError message={state.accentColor} />
         </fieldset>
-        {readOnly ? <Muted>Viewing as another agent is read only.</Muted> : null}
-        <FieldError message={state.error} />
-        <SaveButton pending={pending} savedAt={state.savedAt} readOnly={readOnly} />
+        <div className="flex flex-col gap-4 sm:col-span-2">
+          {readOnly ? <Muted>Viewing as another agent is read only.</Muted> : null}
+          <FieldError message={state.error} />
+          <SaveButton pending={pending} savedAt={state.savedAt} readOnly={readOnly} />
+        </div>
       </form>
+      </section>
       <AppearancePreview
         result={preview.result}
         sample={preview.sample}
@@ -90,6 +99,6 @@ export function AppearanceForm({
           accent: accentFrom(accent),
         }}
       />
-    </div>
+    </>
   )
 }
