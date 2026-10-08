@@ -87,7 +87,6 @@ export function AppearanceForm({
         </div>
       </form>
       </section>
-      <div className="max-w-[352px]">
       <AppearancePreview
         result={preview.result}
         sample={preview.sample}
@@ -100,7 +99,6 @@ export function AppearanceForm({
           accent: accentFrom(accent),
         }}
       />
-      </div>
     </>
   )
 }
