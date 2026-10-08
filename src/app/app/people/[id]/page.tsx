@@ -50,8 +50,10 @@ export default async function PersonPage({
         calledOn={calledOn}
         readOnly={Boolean(session.viewingAsAccountId)}
       />
-      <div className="px-4 pb-10">
-        <DigestPreviewPanel title="Preview their email" result={preview} />
+      <div className="px-4 pb-10 sm:px-8 sm:pb-16">
+        <div className="max-w-[760px]">
+          <DigestPreviewPanel framed title="Preview their email" result={preview} />
+        </div>
       </div>
     </>
   )

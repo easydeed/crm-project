@@ -2,6 +2,7 @@
 
 import { useId, useState } from 'react'
 import type { DigestResult } from '@/digest/types'
+import { panelBodyClass, panelClass, panelHeaderClass } from '@/app/app/people/ui'
 
 const toggleClass =
   'rounded-md px-3 py-2 text-[15px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'
@@ -92,20 +93,36 @@ export function DigestPreviewPanel({
   title,
   result,
   sampleLabel,
+  framed = false,
 }: {
   title: string
   result: DigestResult
   sampleLabel?: string
+  /** In a panel with a header strip (OR-045). Screens that haven't taken panels yet leave it off. */
+  framed?: boolean
 }) {
-  return (
-    <section className="flex flex-col gap-3">
-      <h2 className="text-[18px] font-semibold">{title}</h2>
+  const body = (
+    <>
       {sampleLabel ? <p className="text-[15px]">{sampleLabel}</p> : null}
       {result.send ? (
         <DigestPreviewFrame html={result.html} text={result.text} />
       ) : (
         <p className="text-[15px]">{result.reason}</p>
       )}
+    </>
+  )
+  if (framed) {
+    return (
+      <section className={panelClass}>
+        <h2 className={panelHeaderClass}>{title}</h2>
+        <div className={`flex flex-col gap-3 ${panelBodyClass}`}>{body}</div>
+      </section>
+    )
+  }
+  return (
+    <section className="flex flex-col gap-3">
+      <h2 className="text-[18px] font-semibold">{title}</h2>
+      {body}
     </section>
   )
 }

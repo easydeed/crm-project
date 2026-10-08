@@ -21,19 +21,22 @@ export default async function PeoplePage({
   const groups = await listGroupsForAccount(accountId)
 
   return (
-    <main className="px-4 py-10">
-      <h1 className="text-[22px] font-semibold">People</h1>
-      <Suspense fallback={<p className="mt-3 text-[15px]">Loading your people…</p>}>
-        <PeopleBoard
-          rows={rows}
-          groups={groups}
-          readOnly={Boolean(session.viewingAsAccountId)}
-          statusFromUrl={parseStatusParam(params.status)}
-          groupFromUrl={params.group}
-          leftOutFromUrl={parseLeftOutParam(params.leftOut)}
-          noEmailFromUrl={parseNoEmailParam(params.noEmail)}
-        />
-      </Suspense>
+    <main className="px-4 pb-10 pt-5 sm:px-8 sm:pb-16 sm:pt-7">
+      {/* The People column (OR-045): 760px, as drawn, local to this screen. */}
+      <div className="max-w-[760px]">
+        <h1 className="text-[22px] font-semibold sm:text-[24px]">People</h1>
+        <Suspense fallback={<p className="mt-3 text-[15px]">Loading your people…</p>}>
+          <PeopleBoard
+            rows={rows}
+            groups={groups}
+            readOnly={Boolean(session.viewingAsAccountId)}
+            statusFromUrl={parseStatusParam(params.status)}
+            groupFromUrl={params.group}
+            leftOutFromUrl={parseLeftOutParam(params.leftOut)}
+            noEmailFromUrl={parseNoEmailParam(params.noEmail)}
+          />
+        </Suspense>
+      </div>
     </main>
   )
 }

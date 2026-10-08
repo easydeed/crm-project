@@ -14,7 +14,8 @@
  *
  * The bar (OR-042): the navy surface and the pairs on it. It keeps its own dark values rather than
  * flipping with --foreground, so a bar stays a dark surface on both pages. The current-page pill is
- * the light thing on the bar in both themes.
+ * the light thing on the bar in both themes, and so are the bar's own controls (OR-045): the bulk
+ * bar's buttons and selects take the pill pair, and its Delete takes --on-bar-danger words.
  *
  * The alert (OR-043): the view-as banner, coral with navy words in both themes, so it can never
  * merge with the bar it sits above (5.34:1 against the light bar, 4.12:1 against the dark).
@@ -39,6 +40,7 @@
   --on-bar: #ffffff;
   --bar-current: #ffffff;
   --on-bar-current: #0e1729;
+  --on-bar-danger: #b42d17;
   --alert: #ff4a2b;
   --on-alert: #0e1729;
 }
@@ -64,6 +66,7 @@
     --on-bar: #ededed;
     --bar-current: #ededed;
     --on-bar-current: #0a0a0a;
+    --on-bar-danger: #b42d17;
     --alert: #ff4a2b;
     --on-alert: #0e1729;
   }
@@ -89,6 +92,7 @@
   --color-on-bar: var(--on-bar);
   --color-bar-current: var(--bar-current);
   --color-on-bar-current: var(--on-bar-current);
+  --color-on-bar-danger: var(--on-bar-danger);
   --color-alert: var(--alert);
   --color-on-alert: var(--on-alert);
 

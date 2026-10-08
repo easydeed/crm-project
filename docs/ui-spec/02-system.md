@@ -39,6 +39,7 @@ there is no in-app theme switch.
 | `--on-bar` | `#ffffff` | `#ededed` | Words, links and the focus ring on the bar. |
 | `--bar-current` | `#ffffff` | `#ededed` | The current-page pill on the bar: the light thing on a dark bar in both themes. Rendered by the top bar since OR-043. |
 | `--on-bar-current` | `#0e1729` | `#0a0a0a` | Words on the pill. |
+| `--on-bar-danger` | `#b42d17` | `#b42d17` | Delete's words on the pill (OR-045). The same in both themes: `--coral-text` lightens for a dark page (`#ff8a75`), which is 1.96:1 on the light pill, so the bar needs its own danger colour. |
 | `--alert` | `#ff4a2b` | `#ff4a2b` | The view-as banner (OR-043): coral, the same in both themes, so it never merges with the bar. |
 | `--on-alert` | `#0e1729` | `#0e1729` | Words on the banner, 5.34:1. |
 
@@ -76,6 +77,7 @@ change breaks.
 | `--on-bar` on `--bar` | 4.5:1 | 17.90:1 | 11.80:1 | 7.30 |
 | `--on-bar-current` on `--bar-current` | 4.5:1 | 17.90:1 | 16.91:1 | 12.41 |
 | `--bar-current` against `--bar` (the pill's edge) | 3:1 | 17.90:1 | 11.80:1 | 8.80 |
+| `--on-bar-danger` on `--bar-current` (bulk Delete, OR-045) | 4.5:1 | 6.31:1 | 5.39:1 | 0.89 |
 | `--on-alert` on `--alert` | 4.5:1 | 5.34:1 | 5.34:1 | 0.84 |
 | `--alert` against `--bar` (the banner's edge) | 3:1 | 5.34:1 | 4.12:1 | 1.12 |
 
@@ -171,6 +173,10 @@ once is made everywhere, and nothing drifts. Copies of these strings are refused
 | `panelClass` | A panel (OR-044), the design's "every grouping is a panel": the call list and homeowners on the dashboard first, then the other screens in their own packets. | 1px `--rule` border, `rounded-xl`, page background, `overflow-hidden`. Placed inside a screen's components, never as a wrapper in `page.tsx`. |
 | `panelHeaderClass` | A panel's title strip. Goes on the panel's heading itself. | `--surface` fill, a 1px `--rule` below, 19px semibold, 14px by 20px (24px from `sm`). |
 | `panelBodyClass` | A panel's body padding. | 20px (24px across from `sm`). |
+| `panelStripClass` | A panel's strip with no title type (OR-045): People's Search and filters sit in it. `panelHeaderClass` is this plus the title type. | `--surface` fill, a 1px `--rule` below, 14px by 20px (24px from `sm`). |
+| `barButtonClass` | A button on the navy bar (OR-045): the bulk bar's actions. | The light pill pair, the same object as the current-page pill: `--bar-current` fill, `--on-bar-current` words, 48px, 17px semibold. Focus rings in `--on-bar`. Includes `disabledClass`. |
+| `barDestructiveButtonClass` | Delete on the bar. | The pill fill with `--on-bar-danger` words. Never a coral fill. |
+| `barFieldClass` | A select or input on the bar. | The pill pair, 48px, focus ring in `--on-bar`. Includes `disabledClass`. |
 | `sendCardClass` | The dashboard's send card: the plain panel, with no strip. One message, at most one primary action. No figures, counts or tiles. | `--rule` border, `rounded-xl`, page background, 22px by 20px (26px by 28px from `sm`). In the scheduled state, "Preview it" is the button and "Skip this month" a form button styled as a link (OR-044). |
 | `sendCardHeadingClass` | The send card's one sentence. | 22px semibold, 24px from `sm`. |
 

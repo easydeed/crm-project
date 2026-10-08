@@ -8,7 +8,7 @@ import {
   type BulkContactState,
   type GroupFormState,
 } from '@/app/app/people/actions'
-import { buttonClass, destructiveButtonClass, fieldClass } from '@/app/app/people/ui'
+import { barButtonClass, barDestructiveButtonClass, barFieldClass } from '@/app/app/people/ui'
 import type { GroupListRow } from '@/db/groups'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
 
@@ -47,8 +47,8 @@ export function PeopleBulkBar({
   const pending = addPending || removePending || deletePending
 
   return (
-    <div className="sticky bottom-0 z-10 mt-6 border-t border-rule bg-background py-3">
-      <p className="text-[15px]">
+    <div className="sticky bottom-0 z-10 mt-6 rounded-t-xl bg-bar px-5 py-4 text-on-bar sm:px-6">
+      <p className="text-[17px] font-semibold">
         {selected.length === 1 ? '1 person selected' : `${selected.length} people selected`}
       </p>
       {readOnly ? <p className="mt-2 text-[15px]">{VIEW_AS_READ_ONLY}</p> : null}
@@ -64,7 +64,7 @@ export function PeopleBulkBar({
           ))}
           <label className="text-[15px]">
             Add to group
-            <select className={fieldClass} name="groupId" required disabled={readOnly || !groups.length}>
+            <select className={barFieldClass} name="groupId" required disabled={readOnly || !groups.length}>
               <option value="">{groups.length ? 'Pick a group' : 'Make a group first'}</option>
               {groups.map((group) => (
                 <option key={group.id} value={group.id}>
@@ -73,7 +73,7 @@ export function PeopleBulkBar({
               ))}
             </select>
           </label>
-          <button className={buttonClass} type="submit" disabled={readOnly || pending || !groups.length}>
+          <button className={barButtonClass} type="submit" disabled={readOnly || pending || !groups.length}>
             Add to group
           </button>
         </form>
@@ -83,7 +83,7 @@ export function PeopleBulkBar({
           ))}
           <label className="text-[15px]">
             Remove from group
-            <select className={fieldClass} name="groupId" required disabled={readOnly || !groups.length}>
+            <select className={barFieldClass} name="groupId" required disabled={readOnly || !groups.length}>
               <option value="">{groups.length ? 'Pick a group' : 'Make a group first'}</option>
               {groups.map((group) => (
                 <option key={group.id} value={group.id}>
@@ -92,11 +92,11 @@ export function PeopleBulkBar({
               ))}
             </select>
           </label>
-          <button className={buttonClass} type="submit" disabled={readOnly || pending || !groups.length}>
+          <button className={barButtonClass} type="submit" disabled={readOnly || pending || !groups.length}>
             Remove from group
           </button>
         </form>
-        <button className={buttonClass} type="button" onClick={onExport}>
+        <button className={barButtonClass} type="button" onClick={onExport}>
           Export
         </button>
         <form
@@ -112,7 +112,7 @@ export function PeopleBulkBar({
           {selected.map((id) => (
             <input key={`del-${id}`} type="hidden" name="contactId" value={id} />
           ))}
-          <button className={destructiveButtonClass} type="submit" disabled={readOnly || pending}>
+          <button className={barDestructiveButtonClass} type="submit" disabled={readOnly || pending}>
             Delete
           </button>
         </form>

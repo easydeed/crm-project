@@ -11,18 +11,20 @@ also how a "Couldn't find" person gets onto the map (the person page's "Fix the 
 `[id]/person-detail.tsx:121`).
 
 ## Layout
-One column, `px-4 py-10` (`[id]/edit/page.tsx:20`), identical at 1440 and 390 apart from field heights.
-1. `<h1>` `Edit {name}` at 22px (`[id]/edit/page.tsx:21`).
-2. A form, `max-w-xl`, 16px between items (`[id]/edit/person-form.tsx:42`). Each field is a 15px label
-   with the input below it (`fieldClass` is a block, `max-w-sm`), and its error line directly under the input:
-   Name, Email, Phone, Address, Close date, Notes (a textarea at least 112px tall, `min-h-28`, :103).
-3. View-as notice, then a form-level error line, then the saved message (`:108-114`).
-4. "Save" button (`:115-117`).
-5. "Back to {name}" link (`:118-120`).
+Since OR-045: a 760px column, with 16px page margins (32px from `sm`).
+1. `<h1>` `Edit {name}`, 22px (24px from `sm`).
+2. **One plain panel** (`panelClass`, no strip) holding the form.
+   - The design titles it "Their details". The screen adds no words, so the panel has no strip.
+   - The form is `max-w-xl`, 16px between items (`[id]/edit/person-form.tsx`).
+   - Each field is a 15px label with the input below it (`fieldClass`), and its error line directly
+     under the input: Name, Email, Phone, Address, Close date, Notes (a textarea at least 112px tall).
+3. View-as notice, then a form-level error line, then the saved message. "Saved. We re-checked the
+   address." stays one Fixed string; the design's chip-and-sentence split was refused.
+4. "Save" button.
+5. "Back to {name}" link, 44px on phones since OR-045.
 
-At 390 (below 640px), `src/app/globals.css:106-121` makes every input, the textarea and the button at
-least 44px tall. There is no other responsive change. There is no Delete and no Cancel on this screen;
-"Back to {name}" is the way out.
+At 390 (below 640px), every input, the textarea and the button are at least 44px tall. There is no
+Delete and no Cancel on this screen; "Back to {name}" is the way out.
 
 ## Controls
 | Label (quoted) | What it does | Disabled look / when | Focus after |

@@ -3,7 +3,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { expect, test } from 'vitest'
 import { PeopleList } from '@/app/app/people/people-list'
-import { destructiveButtonClass } from '@/app/app/people/ui'
+import { barDestructiveButtonClass, destructiveButtonClass } from '@/app/app/people/ui'
 import type { ContactListRow } from '@/db/contacts'
 import { contactStatusLabel } from '@/people/status'
 import { ancestors, byExpression, byTag, classTokens, classVariants, descendants, only, ownText, parseJsx } from '@/test/jsx'
@@ -180,9 +180,14 @@ test('Delete is the outlined coral button on both screens, and the question it a
   expect(tokens).toContain('text-coral-text')
   expect(tokens.filter((token) => /^bg-/.test(token))).toEqual(['bg-background'])
   expect(tokens.filter((token) => /^text-(?!\[)/.test(token))).toEqual(['text-coral-text'])
-  for (const file of ['./[id]/person-detail.tsx', './people-bulk-bar.tsx']) {
-    const text = src(file)
-    expect(text).toMatch(/<button className=\{destructiveButtonClass\}[^>]*>\s*Delete/)
+  // OR-045: on the navy bulk bar, Delete is the bar's own destructive control: the light pill with
+  // coral words (--on-bar-danger), still never filled coral. Each screen names its own class.
+  const onBar = barDestructiveButtonClass.split(' ')
+  expect(onBar).toContain('text-on-bar-danger')
+  expect(onBar.filter((token) => /^bg-/.test(token))).toEqual(['bg-bar-current'])
+  for (const [file, name] of [['./[id]/person-detail.tsx', 'destructiveButtonClass'], ['./people-bulk-bar.tsx', 'barDestructiveButtonClass']]) {
+    const text = src(file!)
+    expect(text).toMatch(new RegExp(`<button className=\\{${name}\\}[^>]*>\\s*Delete`))
     expect(text).toContain('window.confirm(')
   }
 })

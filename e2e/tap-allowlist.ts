@@ -16,20 +16,8 @@ export type TapDebt = {
   why: string
 }
 
-export const TAP_DEBT: TapDebt[] = [
-  {
-    screens: ['people', 'people-bulk-bar'],
-    href: '^/app/people/[0-9a-f-]{36}$',
-    owner: 'OR-045',
-    why: 'each row’s name link, 19px. 44px names on all 51 rows add about 2,500px of scroll at 390, on a row OR-045 redesigns',
-  },
-  {
-    screens: ['people', 'people-bulk-bar'],
-    href: '^/app/people/[0-9a-f-]{36}/edit$',
-    owner: 'OR-045',
-    why: 'each row’s Edit link, 19px; same row, same owner',
-  },
-]
+// Empty since OR-045, which brought the People row's name and Edit links to 44px.
+export const TAP_DEBT: TapDebt[] = []
 
 for (const entry of TAP_DEBT) {
   if (!/^OR-\d{3}[a-z]?$/.test(entry.owner) || !entry.why.trim() || !entry.screens.length) {

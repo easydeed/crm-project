@@ -7,7 +7,7 @@ import {
   renameGroupAction,
   type GroupFormState,
 } from '@/app/app/people/actions'
-import { buttonClass, fieldClass, linkClass, mutedClass } from '@/app/app/people/ui'
+import { buttonClass, fieldClass, linkClass, mutedClass, panelBodyClass, panelClass, panelHeaderClass, secondaryButtonClass } from '@/app/app/people/ui'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
 import type { GroupListRow } from '@/db/groups'
 
@@ -43,20 +43,23 @@ export function GroupManager({
   const pending = createPending || renamePending || deletePending
 
   return (
-    <section className="mt-10 max-w-xl" aria-labelledby="groups-heading">
-      <h2 id="groups-heading" className="text-[18px] font-semibold">
+    <section className={`mt-6 ${panelClass}`} aria-labelledby="groups-heading">
+      <h2 id="groups-heading" className={panelHeaderClass}>
         Groups
       </h2>
+      <div className={panelBodyClass}>
       {groups.length === 0 ? (
-        <p className={`mt-3 ${mutedClass}`}>
-          Groups are optional. Make one if you want to sort people.{' '}
-          <button className={linkClass} type="button" onClick={() => setCreating(true)}>
-            New group
-          </button>
-        </p>
+        <>
+          <p className={mutedClass}>Groups are optional. Make one if you want to sort people.</p>
+          <p className="mt-3">
+            <button className={secondaryButtonClass} type="button" onClick={() => setCreating(true)}>
+              New group
+            </button>
+          </p>
+        </>
       ) : (
-        <p className="mt-3">
-          <button className={linkClass} type="button" onClick={() => setCreating(true)}>
+        <p>
+          <button className={secondaryButtonClass} type="button" onClick={() => setCreating(true)}>
             New group
           </button>
         </p>
@@ -78,9 +81,9 @@ export function GroupManager({
           </button>
         </form>
       ) : null}
-      <ul className="mt-4 flex flex-col gap-4">
+      <ul className="mt-4 divide-y divide-rule">
         {groups.map((group) => (
-          <li key={group.id} className="text-[15px]">
+          <li key={group.id} className="py-4 text-[15px] first:pt-0">
             <p className="font-medium">
               {group.name} ({group.count})
             </p>
@@ -114,13 +117,14 @@ export function GroupManager({
               }}
             >
               <input type="hidden" name="groupId" value={group.id} />
-              <button className={linkClass} type="submit" disabled={readOnly || pending}>
+              <button className={`${linkClass} min-h-11`} type="submit" disabled={readOnly || pending}>
                 Delete group
               </button>
             </form>
           </li>
         ))}
       </ul>
+      </div>
     </section>
   )
 }

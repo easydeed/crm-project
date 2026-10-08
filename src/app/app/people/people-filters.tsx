@@ -1,8 +1,14 @@
 import Link from 'next/link'
-import { linkBaseClass } from '@/app/app/people/ui'
 
-// The current filter, marked like the top bar: dark text on --blue-soft, never blue on blue-soft.
-const currentClass = 'rounded-md bg-blue-soft px-2 font-semibold text-foreground'
+/** A filter chip's shape (OR-045): 44px, ink words. Its fill comes from one of the two below, never both. */
+const chipClass =
+  'tap inline-flex min-h-11 items-center rounded-lg border px-3.5 text-[15px] text-foreground underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+
+/** A filter not in use: a --rule outline on the page. */
+const restClass = 'border-rule bg-background'
+
+// The current filter: ink words on --blue-soft, never blue on blue-soft (4.42:1).
+const currentClass = 'border-blue-soft bg-blue-soft font-semibold'
 import type { GroupListRow } from '@/db/groups'
 import { countByStatus } from '@/people/filter'
 import { STATUS_FILTERS, type ContactMatchStatus } from '@/people/status'
@@ -27,10 +33,10 @@ export function PeopleFilters({
   const statusCounts = countByStatus(forStatus)
 
   return (
-    <div className="mt-6 flex flex-col gap-4 text-[15px]">
+    <div className="mt-4 flex flex-col gap-3 text-[15px]">
       <div>
         <p className="font-medium">Status</p>
-        <p className="mt-2 flex flex-wrap gap-x-3 gap-y-2">
+        <p className="mt-2 flex flex-wrap gap-2">
           {STATUS_FILTERS.map((item) => {
             const id = item.id === 'all' ? undefined : item.id
             const count = item.id === 'all' ? statusCounts.all : statusCounts[item.id]
@@ -42,7 +48,7 @@ export function PeopleFilters({
             return (
               <Link
                 key={item.id}
-                className={`tap ${linkBaseClass} text-foreground ${active ? currentClass : ''}`}
+                className={`${chipClass} ${active ? currentClass : restClass}`}
                 href={href}
                 aria-current={active ? 'page' : undefined}
               >
@@ -55,9 +61,9 @@ export function PeopleFilters({
       {groups.length > 0 ? (
         <div>
           <p className="font-medium">Group</p>
-          <p className="mt-2 flex flex-wrap gap-x-3 gap-y-2">
+          <p className="mt-2 flex flex-wrap gap-2">
             <Link
-              className={`tap ${linkBaseClass} text-foreground ${!groupId ? currentClass : ''}`}
+              className={`${chipClass} ${!groupId ? currentClass : restClass}`}
               href={peopleListHref({ status, noEmail })}
               aria-current={!groupId ? 'page' : undefined}
             >
@@ -69,7 +75,7 @@ export function PeopleFilters({
               return (
                 <Link
                   key={group.id}
-                  className={`tap ${linkBaseClass} text-foreground ${active ? currentClass : ''}`}
+                  className={`${chipClass} ${active ? currentClass : restClass}`}
                   href={peopleListHref({ status, groupId: group.id, noEmail })}
                   aria-current={active ? 'page' : undefined}
                 >
@@ -83,16 +89,16 @@ export function PeopleFilters({
       {missingEmail > 0 || noEmail ? (
         <div>
           <p className="font-medium">Email</p>
-          <p className="mt-2 flex flex-wrap gap-x-3 gap-y-2">
+          <p className="mt-2 flex flex-wrap gap-2">
             <Link
-              className={`tap ${linkBaseClass} text-foreground ${!noEmail ? currentClass : ''}`}
+              className={`${chipClass} ${!noEmail ? currentClass : restClass}`}
               href={peopleListHref({ status, groupId })}
               aria-current={!noEmail ? 'page' : undefined}
             >
               Everyone ({rows.length})
             </Link>
             <Link
-              className={`tap ${linkBaseClass} text-foreground ${noEmail ? currentClass : ''}`}
+              className={`${chipClass} ${noEmail ? currentClass : restClass}`}
               href={peopleListHref({ status, groupId, noEmail: true })}
               aria-current={noEmail ? 'page' : undefined}
             >

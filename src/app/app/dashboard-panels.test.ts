@@ -31,9 +31,13 @@ test('the send card is the plain panel: on the page, with no strip', () => {
 })
 
 test('the call panel is a table: labels muted on --surface, values on the page, links at 44px', () => {
+  // The cells live in the shared table (OR-045), which the call panel renders every row through.
+  const table = parseJsx('app/app/details-table.tsx')
+  expect(classTokens(table, only(byTag(table, 'dt'), 'label cell'))).toEqual(expect.arrayContaining(['bg-surface', 'text-muted-ink']))
+  expect(classTokens(table, only(byTag(table, 'dd'), 'value cell'))).toContain('bg-background')
   const jsx = parseJsx('app/app/call-panel.tsx')
-  expect(classTokens(jsx, only(byTag(jsx, 'dt'), 'label cell'))).toEqual(expect.arrayContaining(['bg-surface', 'text-muted-ink']))
-  expect(classTokens(jsx, only(byTag(jsx, 'dd'), 'value cell'))).toContain('bg-background')
+  expect(byTag(jsx, 'dt')).toHaveLength(0)
+  expect(byTag(jsx, 'DetailsRow')).toHaveLength(1)
   const links = byTag(jsx, 'a')
   expect(links).toHaveLength(2)
   for (const link of links) expect(classTokens(jsx, link)).toContain('tap')

@@ -39,7 +39,7 @@ export function PersonForm({
   }, [state.savedAt, router])
 
   return (
-    <form action={action} className="mt-6 flex max-w-xl flex-col gap-4">
+    <form action={action} className="flex max-w-xl flex-col gap-4">
       <input type="hidden" name="contactId" value={person.id} />
       <label className="text-[15px]">
         Name
@@ -115,7 +115,7 @@ export function PersonForm({
       <button className={buttonClass} type="submit" disabled={pending || readOnly}>
         {pending ? 'Saving…' : 'Save'}
       </button>
-      <Link className={linkClass} href={`/app/people/${person.id}`}>
+      <Link className={`tap ${linkClass}`} href={`/app/people/${person.id}`}>
         Back to {person.name}
       </Link>
     </form>

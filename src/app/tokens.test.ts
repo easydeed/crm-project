@@ -44,7 +44,9 @@ const PAIRS: Array<[string, string, number]> = [
   ['muted-ink', 'background', TEXT],
   // 4.56:1 light, 0.06 above the floor. Depends on it: the grey call tag (call-tags.ts) and
   // mutedClass (people/ui.ts) wherever it sits on --surface, including called call-list rows.
-  // Also disabledClass (people/ui.ts): every disabled button's words.
+  // Also disabledClass (people/ui.ts): every disabled button's words. And the label column of
+  // DetailsTable (details-table.tsx): the call panel's labels (OR-044) and the person page's
+  // details (OR-045).
   // Darken --surface and this fails first; re-derive --muted-ink with it.
   ['muted-ink', 'surface', TEXT],
   ['blue', 'background', TEXT],
@@ -66,6 +68,10 @@ const PAIRS: Array<[string, string, number]> = [
   ['on-bar', 'bar', TEXT],
   ['on-bar-current', 'bar-current', TEXT],
   ['bar-current', 'bar', NON_TEXT],
+  // OR-045: a destructive control on the bar (bulk Delete) keeps the pill fill with coral words.
+  // --coral-text can't serve: its dark value (#ff8a75) is 1.96:1 on the light pill, because it
+  // lightens for a dark page. The bar's danger colour is #b42d17 in both themes.
+  ['on-bar-danger', 'bar-current', TEXT],
   // OR-043: the view-as banner, and its edge against the bar it sits above.
   ['on-alert', 'alert', TEXT],
   ['alert', 'bar', NON_TEXT],
