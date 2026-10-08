@@ -14,7 +14,10 @@ export const UNDO_SECONDS = 5
 
 type Status = 'open' | 'called' | 'dismissed'
 
-export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly: boolean }) {
+/** A row's padding inside the call-list panel. */
+const rowClass = 'px-5 py-5 sm:px-6 sm:py-5.5'
+
+export function CallEntryItem({ entry, rank, readOnly }: { entry: CallEntry; rank: number; readOnly: boolean }) {
   const router = useRouter()
   const [expanded, setExpanded] = useState(false)
   const [status, setStatus] = useState<Status>(entry.called ? 'called' : 'open')
@@ -62,7 +65,7 @@ export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly:
 
   if (status === 'dismissed') {
     return (
-      <li className="flex flex-wrap items-center gap-4 border-t border-rule py-5" aria-live="polite">
+      <li className={`${rowClass} flex flex-wrap items-center gap-4`} aria-live="polite">
         <p className={mutedClass}>{entry.name} is off the list until next month.</p>
         {undoButton}
         {error ? <p className="text-[15px]" role="alert">{error}</p> : null}
@@ -72,10 +75,14 @@ export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly:
 
   const called = status === 'called'
   return (
-    <li className={`border-t border-rule py-5 ${called ? 'bg-surface px-3' : ''}`}>
-      <div className="flex flex-wrap items-start justify-between gap-4 max-sm:flex-col max-sm:items-stretch">
-        <div className="min-w-0 flex-1">
-          <p className={`text-[17px] font-semibold ${called ? 'text-muted-ink' : ''}`}>
+    <li className={`${rowClass} ${called ? 'bg-surface' : ''}`}>
+      <div className="grid grid-cols-[36px_1fr] items-start gap-x-2 gap-y-4 sm:grid-cols-[40px_1fr_auto] sm:gap-x-5">
+        {/* The rank in ink, never blue: blue is for links (OR-042). The <ol> counts for screen readers. */}
+        <span aria-hidden="true" className="text-[26px] font-bold leading-none">
+          {rank}
+        </span>
+        <div className="min-w-0">
+          <p className={`text-[19px] font-semibold ${called ? 'text-muted-ink' : ''}`}>
             {entry.name}
           </p>
           <p className="mt-2">
@@ -83,7 +90,7 @@ export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly:
               {tag.label}
             </span>
           </p>
-          <p className={`mt-2 ${called ? mutedClass : 'text-[15px]'}`}>{entry.sentence}</p>
+          <p className={`mt-2 ${called ? 'text-[17px] text-muted-ink' : 'text-[17px]'}`}>{entry.sentence}</p>
           <p className={`mt-1 ${mutedClass}`}>
             {entry.address}
             {entry.closeDate ? ` · Closed ${entry.closeDate}` : null}
@@ -93,7 +100,7 @@ export function CallEntryItem({ entry, readOnly }: { entry: CallEntry; readOnly:
         <button
           aria-controls={panelId}
           aria-expanded={expanded}
-          className={`${buttonClass} min-h-11 max-sm:w-full`}
+          className={`${secondaryButtonClass} col-span-2 sm:col-span-1`}
           onClick={() => setExpanded((open) => !open)}
           type="button"
         >

@@ -31,10 +31,13 @@ export default async function AppHomePage() {
   const textNotice = await loadTextNotice(accountId)
   const readOnly = Boolean(session.viewingAsAccountId)
   return (
-    <main>
-      <HomeSendCard readOnly={readOnly} view={view} />
-      <CallListSection list={list} readOnly={readOnly} textNotice={textNotice} />
-      <HomeownersSection />
+    <main className="px-4 pb-10 pt-5 sm:px-8 sm:pb-16 sm:pt-7">
+      {/* The dashboard's column (OR-044): 760px, this screen only. */}
+      <div className="flex max-w-[760px] flex-col gap-5 sm:gap-6">
+        <HomeSendCard readOnly={readOnly} view={view} />
+        <CallListSection list={list} readOnly={readOnly} textNotice={textNotice} />
+        <HomeownersSection />
+      </div>
     </main>
   )
 }

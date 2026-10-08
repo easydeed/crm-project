@@ -6,7 +6,7 @@ import type { TextNotice } from '@/text/text-notice'
 export function TextNoticeLine({ notice }: { notice: TextNotice }) {
   if (!notice) return null
   return (
-    <p className="mt-2 max-w-xl text-[15px]" role="status">
+    <p className="max-w-xl text-[15px]" role="status">
       {notice === 'stopped' ? (
         <>
           You replied STOP, so we stopped texting you. Turn it back on{' '}

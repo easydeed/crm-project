@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { buttonClass, sendCardClass } from '@/app/app/people/ui'
+import { buttonClass, sendCardClass, sendCardHeadingClass } from '@/app/app/people/ui'
 import type { BillingIssue } from '@/billing/status'
 
 const ctaClass = `${buttonClass} mt-6 inline-block`
@@ -32,7 +32,7 @@ export function HomeBillingCard({ issue }: { issue: BillingIssue }) {
   const copy = COPY[issue]
   return (
     <section className={sendCardClass}>
-      <h1 className="text-[22px] font-semibold">{copy.title}</h1>
+      <h1 className={sendCardHeadingClass}>{copy.title}</h1>
       <p className="mt-3 max-w-xl text-[15px]">{copy.body}</p>
       <Link className={`${ctaClass} tap`} href="/app/settings/billing">
         {copy.action}

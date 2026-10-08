@@ -6,7 +6,7 @@ import {
 } from '@/app/app/send-actions'
 import type { HomeSend } from '@/app/app/home-send'
 import { HomeBillingCard } from '@/app/app/home-billing-card'
-import { buttonClass, linkClass, sendCardClass } from '@/app/app/people/ui'
+import { buttonClass, linkClass, sendCardClass, sendCardHeadingClass } from '@/app/app/people/ui'
 import { pausedAccountMailto } from '@/config/support'
 
 const ctaClass = `${buttonClass} mt-6 inline-block`
@@ -33,7 +33,7 @@ export function HomeSendCard({
   if (view.kind === 'system-paused') {
     return (
       <section className={sendCardClass}>
-        <h1 className="text-[22px] font-semibold">We paused your monthly note.</h1>
+        <h1 className={sendCardHeadingClass}>We paused your monthly note.</h1>
         <p className="mt-3 max-w-xl text-[15px]">
           A few people marked it as spam, so we stopped to protect everyone&apos;s
           delivery.{' '}
@@ -48,7 +48,7 @@ export function HomeSendCard({
   if (view.kind === 'paused') {
     return (
       <section className={sendCardClass}>
-        <h1 className="text-[22px] font-semibold">Your monthly note is paused.</h1>
+        <h1 className={sendCardHeadingClass}>Your monthly note is paused.</h1>
         <p className="mt-3 max-w-xl text-[15px]">Nothing sends until you turn it back on.</p>
         {readOnly ? null : <Action action={unpauseAction} label="Unpause" />}
       </section>
@@ -58,7 +58,7 @@ export function HomeSendCard({
   if (view.kind === 'settings') {
     return (
       <section className={sendCardClass}>
-        <h1 className="text-[22px] font-semibold">Set when the note goes out.</h1>
+        <h1 className={sendCardHeadingClass}>Set when the note goes out.</h1>
         <p className="mt-3 max-w-xl text-[15px]">
           Pick a send day, a time, and a timezone.
         </p>
@@ -72,7 +72,7 @@ export function HomeSendCard({
   if (view.kind === 'import') {
     return (
       <section className={sendCardClass}>
-        <h1 className="text-[22px] font-semibold">Let&apos;s get your people in.</h1>
+        <h1 className={sendCardHeadingClass}>Let&apos;s get your people in.</h1>
         <p className="mt-3 max-w-xl text-[15px]">
           Add the folks you&apos;ve closed with and we&apos;ll match each address to the
           county record. Takes about four minutes.
@@ -87,7 +87,7 @@ export function HomeSendCard({
   if (view.kind === 'review') {
     return (
       <section className={sendCardClass}>
-        <h1 className="text-[22px] font-semibold">Some addresses still need a house.</h1>
+        <h1 className={sendCardHeadingClass}>Some addresses still need a house.</h1>
         <p className="mt-3 max-w-xl text-[15px]">
           The monthly note only goes to people matched to a county record.
         </p>
@@ -101,7 +101,7 @@ export function HomeSendCard({
   if (view.kind === 'none-subscribed') {
     return (
       <section className={sendCardClass}>
-        <h1 className="text-[22px] font-semibold">No one is set to get the monthly note.</h1>
+        <h1 className={sendCardHeadingClass}>No one is set to get the monthly note.</h1>
         <p className="mt-3 max-w-xl text-[15px]">
           People need a matched house and an active monthly note.
         </p>
@@ -115,7 +115,7 @@ export function HomeSendCard({
   if (view.kind === 'skipped') {
     return (
       <section className={sendCardClass}>
-        <h1 className="text-[22px] font-semibold">Skipped.</h1>
+        <h1 className={sendCardHeadingClass}>Skipped.</h1>
         <p className="mt-3 max-w-xl text-[15px]">
           The {view.when} note will not go out.
         </p>
@@ -128,14 +128,22 @@ export function HomeSendCard({
 
   return (
     <section className={sendCardClass}>
-      <h1 className="text-[22px] font-semibold">{view.sentence}</h1>
-      <div className="mt-6 flex flex-wrap items-center gap-6">
+      <h1 className={sendCardHeadingClass}>{view.sentence}</h1>
+      {/* OR-044: the safe action is the button. Skip stays a form button, styled as a link: an <a>
+          can't post, so a link here would be a dead control. */}
+      <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
         {view.previewContactId ? (
-          <Link className={linkClass} href={`/app/people/${view.previewContactId}`}>
+          <Link className={`${buttonClass} tap inline-flex items-center`} href={`/app/people/${view.previewContactId}`}>
             Preview it
           </Link>
         ) : null}
-        {readOnly ? null : <Action action={skipMonthAction} label="Skip this month" />}
+        {readOnly ? null : (
+          <form action={skipMonthAction}>
+            <button className={`${linkClass} min-h-11`} type="submit">
+              Skip this month
+            </button>
+          </form>
+        )}
       </div>
     </section>
   )
