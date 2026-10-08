@@ -42,6 +42,16 @@ async function findClosings(page: Page, agentId: string) {
 async function showNote(page: Page) {
   const frame = page.locator('iframe[title="Email preview"]')
   await expect(page.frameLocator('iframe[title="Email preview"]').locator('body')).toContainText('What sold on your street')
+  // The Desktop/Phone toggle has to change something (OR-046): where the column allows 600px, the
+  // frame is 600 with Desktop and 380 with Phone. A preview squeezed into a narrow column would make
+  // the two identical, a dead control.
+  if ((page.viewportSize()?.width ?? 0) >= 1024) {
+    const width = async () => (await frame.boundingBox())?.width ?? 0
+    await page.getByRole('button', { name: 'Phone', exact: true }).click()
+    await expect.poll(width).toBe(380)
+    await page.getByRole('button', { name: 'Desktop', exact: true }).click()
+    await expect.poll(width).toBe(600)
+  }
   await frame.scrollIntoViewIfNeeded()
   // Wait for the frame's paint to settle (OR-045). A capture once caught the note laid out about
   // 60px wide, before the frame took its final width: the same commit, two runs, two pictures.
