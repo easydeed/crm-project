@@ -16,7 +16,7 @@ export function AddonSwitch({
     <button
       aria-checked={checked}
       aria-label={label}
-      className="flex items-center gap-3 rounded-md px-1 py-1 text-[15px] max-sm:-my-1 max-sm:py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:cursor-not-allowed"
+      className="flex items-center gap-3 rounded-md px-1 py-1 text-[17px] font-semibold max-sm:-my-1 max-sm:py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:cursor-not-allowed"
       disabled={disabled}
       onClick={onToggle}
       role="switch"
@@ -24,10 +24,10 @@ export function AddonSwitch({
     >
       <span
         aria-hidden="true"
-        className={`relative inline-block h-7 w-12 rounded-full border-2 border-foreground ${checked ? 'bg-foreground' : 'bg-background'}`}
+        className={`relative inline-block h-8 w-14 rounded-full border-2 border-foreground ${checked ? 'bg-foreground' : 'bg-background'}`}
       >
         <span
-          className={`absolute top-0.5 h-5 w-5 rounded-full motion-safe:transition-[left] ${checked ? 'left-[22px] bg-background' : 'left-0.5 bg-foreground'}`}
+          className={`absolute top-0.5 h-6 w-6 rounded-full motion-safe:transition-[left] ${checked ? 'left-[26px] bg-background' : 'left-0.5 bg-foreground'}`}
         />
       </span>
       <span>{checked ? 'On' : 'Off'}</span>

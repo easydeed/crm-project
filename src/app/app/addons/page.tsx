@@ -29,9 +29,12 @@ export default async function AddonsPage() {
   }))
 
   return (
-    <main className="px-4 py-10">
-      <h1 className="text-[22px] font-semibold">Add-ons</h1>
-      <AddonsPanel baseCents={PLAN.priceCents} readOnly={Boolean(session.viewingAsAccountId)} rows={rows} />
+    <main className="px-4 pb-10 pt-5 sm:px-8 sm:pb-16 sm:pt-7">
+      {/* The Add-ons column (OR-046): 760px, local. */}
+      <div className="max-w-[760px]">
+        <h1 className="text-[22px] font-semibold sm:text-[24px]">Add-ons</h1>
+        <AddonsPanel baseCents={PLAN.priceCents} readOnly={Boolean(session.viewingAsAccountId)} rows={rows} />
+      </div>
     </main>
   )
 }
