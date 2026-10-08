@@ -12,7 +12,7 @@ const nameClass =
   'tap text-[17px] font-semibold text-foreground underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
 
 /** Edit: a blue link 44px tall at 390 and never under 44px wide (it was 27px). */
-const editClass = `tap ${linkClass} col-start-2 inline-flex min-w-11 items-center justify-center justify-self-start sm:col-start-auto sm:justify-self-auto`
+const editClass = `${linkClass} col-start-2 inline-flex min-w-11 items-center justify-center justify-self-start sm:col-start-auto sm:justify-self-auto`
 
 export function PeopleList({
   rows,
