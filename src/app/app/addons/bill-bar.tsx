@@ -15,7 +15,7 @@ export function BillBar({ baseCents, rows, enabled }: { baseCents: number; rows:
           </li>
         ))}
       </ul>
-      <p className="mt-4 flex items-baseline justify-between gap-6 border-t border-on-bar pt-4 text-[22px] font-semibold text-[#d4a84b]">
+      <p className="mt-4 flex items-baseline justify-between gap-6 border-t border-on-bar pt-4 text-[22px] font-semibold">
         <span>Total a month</span>
         <span data-testid="bill-total">{formatDollars(bill.totalCents)}</span>
       </p>
