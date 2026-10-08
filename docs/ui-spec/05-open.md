@@ -100,9 +100,9 @@ Each item says how it is known:
     - The quiet-month line, "Quiet month. That happens.", names no next action either.
     - Both fall short of the four-states rule (`01-constraints.md` §3.4).
 
-14. **The send card can carry two actions.** *From the code.* In the scheduled state it
-    has "Preview it" and "Skip this month". The card's own definition says at most one
-    action (`src/app/app/people/ui.ts`, `sendCardClass`).
+14. ~~**The send card can carry two actions.**~~ *Closed in OR-044.* The scheduled state
+    keeps both, with one primary: "Preview it" is the button and "Skip this month" a form
+    button styled as a link. `sendCardClass` now says "at most one primary action".
 
 15. **The review error screen has no link back.** *From the code.* It says to go back to
     your people, but offers only "Try again".

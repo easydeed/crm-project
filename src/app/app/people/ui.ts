@@ -37,5 +37,24 @@ export const mutedClass = 'text-[15px] text-muted-ink'
 /** Destructive action: coral words on an outline, so it never looks like the primary button. */
 export const destructiveButtonClass = outlinedClass + ' text-coral-text ' + disabledClass
 
-/** The send card on /app: one message, at most one action. No figures, counts or tiles. */
-export const sendCardClass = 'mx-4 mt-6 max-w-2xl rounded-xl border border-rule bg-background px-5 py-6'
+/**
+ * A panel (OR-044), the design's "every grouping is a panel": a 1px --rule border, 12px radius, on
+ * the page. Its title is the header strip below. OR-042 held this class back until a screen used it.
+ */
+export const panelClass = 'overflow-hidden rounded-xl border border-rule bg-background'
+
+/** A panel's title strip: --surface, a --rule below, 19px semibold. Put it on the panel's heading. */
+export const panelHeaderClass = 'border-b border-rule bg-surface px-5 py-3.5 text-[19px] font-semibold sm:px-6'
+
+/** A panel's body padding. */
+export const panelBodyClass = 'px-5 py-5 sm:px-6'
+
+/**
+ * The send card on /app: the plain panel, with no strip. One message, at most one primary action
+ * (OR-044: "Preview it" is the button, "Skip this month" a form button styled as a link). No
+ * figures, counts or tiles.
+ */
+export const sendCardClass = 'rounded-xl border border-rule bg-background px-5 py-5.5 sm:px-7 sm:py-6.5'
+
+/** The send card's one sentence: 22px, 24px from sm (OR-044). */
+export const sendCardHeadingClass = 'text-[22px] font-semibold sm:text-[24px]'
