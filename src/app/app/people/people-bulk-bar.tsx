@@ -77,6 +77,25 @@ export function PeopleBulkBar({
             Add to group
           </button>
         </form>
+        <form action={removeAction} className="flex flex-col gap-2 sm:flex-row sm:items-end">
+          {selected.map((id) => (
+            <input key={`rm-${id}`} type="hidden" name="contactId" value={id} />
+          ))}
+          <label className="text-[15px]">
+            Remove from group
+            <select className={barFieldClass} name="groupId" required disabled={readOnly || !groups.length}>
+              <option value="">{groups.length ? 'Pick a group' : 'Make a group first'}</option>
+              {groups.map((group) => (
+                <option key={group.id} value={group.id}>
+                  {group.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button className={barButtonClass} type="submit" disabled={readOnly || pending || !groups.length}>
+            Remove from group
+          </button>
+        </form>
         <button className={barButtonClass} type="button" onClick={onExport}>
           Export
         </button>
