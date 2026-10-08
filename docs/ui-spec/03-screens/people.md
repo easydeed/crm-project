@@ -1,5 +1,5 @@
 # People — `/app/people`
-**Capture:** people, people-bulk-bar (390 and 1440)
+**Capture:** people, people-bulk-bar (390 and 1440). Since OR-045 the row links pass the 44px rule; the two TAP_DEBT entries this screen carried are gone.
 
 Paths below are relative to `src/app/app/people/` unless they start with `src/`, `e2e/` or `reference/`.
 "Seed" means the local demo data (`scripts/seed.ts` + `src/db/fixtures/la-verne*.ts`): one agent with
@@ -15,34 +15,48 @@ rejects a separate Groups nav item ("Two destinations for the same objects is ho
 grew two address books").
 
 ## Layout
-One column, `px-4 py-10` (`page.tsx:24`), the same at 1440 and 390 apart from the points marked.
-1. `<h1>` "People" at 22px (`page.tsx:25`).
-2. Count line: "1 person" / "N people", counting the whole list, not the filtered view (`people-board.tsx:64-66`).
-3. Link row: "Add people" and, only when someone is in the review queue, "Review them" (`people-board.tsx:67-76`).
-4. Search field, full width up to `max-w-sm` (`people-board.tsx:83-92`).
-5. Filters (`people-filters.tsx`): a **Status** row, a **Group** row (only when groups exist, :55),
-   an **Email** row (only when someone has no email or the no-email filter is on, :83). Each is a
-   wrapping row of text links with a count in brackets. The current one is dark text on a
-   `--blue-soft` pill, semibold, with `aria-current="page"` (:4-5).
-6. "Select all" checkbox, then the list (`people-list.tsx`). Each row is a 3-column grid
-   (`grid-cols-[auto_minmax(0,1fr)_auto]`, :37): checkbox | name (link to the person), address on its
-   own line (wraps, never truncated: `break-words`, :52), an "Edit" link | status tag right-aligned,
-   with an "Unsubscribed" tag under it when that applies (:57-64). Rows are separated by a 16px gap, no rules.
-7. "Export this list" text button (`people-board.tsx:122-132`).
-8. The bulk bar, only while something is selected (see below). It is `sticky bottom-0` on
-   `--background` with a `--rule` top border (`people-bulk-bar.tsx:50`), so it rides the bottom of the
-   viewport while the agent scrolls the list.
-9. **Groups** section, `<h2>` at 18px, `max-w-xl` (`group-manager.tsx:46-48`).
+Since OR-045: a 760px column (`max-w-[760px]`, local to the screen), with 16px page margins (32px from
+`sm`).
 
-**At 390 (below Tailwind's `sm`, 640px):**
-- Each row's checkbox label grows to a 44px tap area through negative margin plus padding
-  (`max-sm:-mx-3.5 max-sm:-my-3.5 max-sm:p-3.5`, `people-list.tsx:39`). "Select all" gets
-  `max-sm:min-h-11` (:23).
-- The bulk bar's controls stack in one column. From `sm` up they sit in a wrapping row, bottom-aligned
-  (`people-bulk-bar.tsx:60, 61, 80`). The group forms stack the same way (`group-manager.tsx:71, 87`).
-- `src/app/globals.css:106-121` gives every button, select and text input `min-height: 44px` on phones.
-  Text links are not enlarged; they pass the tap check only because each sits in a line with other
-  text.
+1. **Title row.**
+   - `<h1>` "People", 22px (24px from `sm`).
+   - Under it, the count in 17px muted ink: "1 person" / "N people". It counts the whole list, not
+     the filtered view.
+   - On the right: "Review them" (a link, only when someone is in the review queue), then **Add
+     people**. Add people is the primary button since OR-045, as drawn; it was a link.
+2. **One panel** (`panelClass`) holding the list.
+   - **Its `--surface` strip** (`panelStripClass`) holds:
+     - Search, a 48px field up to `max-w-sm`
+     - the filters (`people-filters.tsx`): the **Status** row, a **Group** row (only when groups
+       exist) and an **Email** row (only when someone has no email, or the no-email filter is on)
+   - **The filters** are 44px chips with a count in brackets.
+     - A chip not in use has a `--rule` outline on the page.
+     - The current one is ink words on `--blue-soft`, semibold, with `aria-current="page"`.
+     - Each chip takes exactly one fill. The design draws Status only; OR-045 kept all three rows,
+       because they are working filters.
+   - **"Select all"**, a 48px row with a rule below.
+   - **The rows**, divided by `--rule`. A selected row takes `--surface`.
+     - **390:** checkbox | name, with the address under it and "Edit" under that | status. The
+       checkbox label is 44x44: a 22px box with 11px of padding reaching past it.
+     - **From `sm`:** four columns: checkbox | name and address | Edit | status. Status sits in a
+       124px centred column.
+     - **The name** is ink, 17px semibold, underlined on hover, 44px tall at 390.
+     - **The address** is muted and wraps; it is never truncated.
+     - **"Edit"** is a blue link, 44x44 at 390. It measured 27px wide before OR-045 gave it a 44px
+       minimum width and pinned it to its own width (stretched, it had been 163px).
+     - **Status** is a tag, with "Unsubscribed" under it when that applies.
+3. **"Export this list"** under the panel: a text button, 44px tall.
+4. **The bulk bar**, only while something is selected.
+   - It is the navy bar (`--bar`, words in `--on-bar`), `sticky bottom-0`, so it rides the bottom of
+     the viewport while the agent scrolls.
+   - Its controls are the bar's own: the light pill pair (`barButtonClass`, `barFieldClass`).
+   - Its Delete is the pill with `--on-bar-danger` words (`barDestructiveButtonClass`), never a coral
+     fill.
+   - "Add to group" and "Remove from group" each keep their select and their button at every width.
+     The design dropped the button at 390, which would have left a select with nothing to submit it.
+5. **Groups**, a panel with a header strip.
+   - The optional line, then "New group" (the secondary button).
+   - Every group keeps its count, Rename and "Delete group".
 
 ## Controls
 | Label (quoted) | What it does | Disabled look / when | Focus after |

@@ -1,5 +1,5 @@
 # Person — `/app/people/[id]`
-**Capture:** person-detail (390 and 1440)
+**Capture:** person-detail (390 and 1440), with the note in plain text (OR-043a)
 
 Paths are relative to `src/app/app/people/` unless they start with `src/`, `e2e/` or `reference/`.
 The captured person is the first "On the map" person by name (`scripts/e2e-setup.ts:39-47`), which in
@@ -12,31 +12,44 @@ to, when the agent last marked a call, which groups they're in, and what this mo
 looks like. From here the agent fixes a wrong match, edits details, adds them to a group, or deletes them.
 
 ## Layout
-One column, `px-4 py-10` (`[id]/person-detail.tsx:36`). Identical structure at 1440 and 390.
-1. "Back to your people" link (`:37-41`), on its own 44px line on phones (`.tap`, `src/app/globals.css:116-120`).
-2. `<h1>` the person's name, 22px (`:42`).
-3. A definition list, `max-w-xl`, 15px, 12px between items (`:43-98`). Each label (`<dt>`) is medium weight
-   above its value (`<dd>`):
-   - **Email**: the address, or `None yet. We can't send without one.` (`:46`)
-   - **Phone**: formatted `(909) 555-0147` style when it is 10 digits, else as stored, or `None on file` (`:16-20, 50`)
-   - **Address**: what the agent typed. If the homeowner changed it from their email's link, a second line
-     `Updated by the homeowner on {Month D, YYYY}.` (`:55-67`)
-   - **Close date**: as stored (`YYYY-MM-DD`) or `None on file` (`:72`)
-   - **Notes**: or `None on file` (`:76`)
-   - **Match**: the status word, "On the map" / "Needs a look" / "Couldn't find" (`:80`), plain text here, not a tag
-   - **Calls**: one line per marked call, `You called them on {Month D, YYYY}.` in the account's time zone,
-     or `None marked yet. Mark a call from your home page.` (`:84-92`, dates from `[id]/page.tsx:37-39`)
-   - **Groups**: comma-separated names, or `None yet` (`:96`)
-4. A match block that depends on status (`:99-125`):
-   - On the map: `On the record: {parcel address} · APN {apn}` and a "Wrong house?" link.
-   - Needs a look: "Review this match" link.
-   - Couldn't find: "Fix the address" link (goes to the edit form).
-5. Action row, wrapping, 16px gap (`:126-143`): "Edit" (styled as the primary button, but it is a link)
-   and "Delete" (outlined, coral words).
-6. View-as notice and any delete error under the row (`:144-149`).
-7. **Add to group** section, `<h2>` 18px, `max-w-xl` (`[id]/add-to-group.tsx:35-85`). The form is a
-   stacked column on phones and a bottom-aligned row from `sm` (640px) up (`:62`).
-8. **Preview their email** section, `<h2>` 18px (`[id]/page.tsx:53-55`, `src/app/digest/preview-panel.tsx:91-111`).
+Since OR-045: a 760px column, with 16px page margins (32px from `sm`), built on a grid
+(`[id]/person-detail.tsx`). At 390 the blocks run top to bottom in the order below. From `sm`, Edit
+and Delete move up beside the name, as drawn. The grid's `order` classes do this with one copy of each
+control.
+
+1. **"Back to your people"**, 44px on phones (`.tap`).
+2. **The name** as `<h1>` (22px, 24px from `sm`), with the status tag beside it.
+3. **Their details**: the shared label-and-value table (`DetailsTable`, `src/app/app/details-table.tsx`),
+   17px.
+   - Labels sit in a `--surface` column in muted ink: 104px at 390, 140px from `sm`. That is 4.56:1,
+     the tightest pair the contrast test allows.
+   - Values sit on the page.
+   - It is still a `<dl>`. Rows, every one kept:
+     - **Email**: the address, or `None yet. We can't send without one.`
+     - **Phone**: formatted when it is 10 digits (`formatUsPhone`), else as stored, or `None on file`
+     - **Address**: what the agent typed. If the homeowner changed it from their email's link, a
+       second line `Updated by the homeowner on {Month D, YYYY}.`
+     - **Close date**: as stored, or `None on file`
+     - **Notes**: or `None on file`
+     - **Match**: the status word
+     - **Calls**: one line per marked call, `You called them on {Month D, YYYY}.`, or `None marked yet.
+       Mark a call from your home page.`
+     - **Groups**: comma-separated names, or `None yet`
+4. **The match block**, which depends on status.
+   - **On the map:** a panel whose `--surface` strip is the `<h2>` "On the record". Its body is
+     `{parcel address} · APN {apn}` and "Wrong house?" at 44px.
+     - The words are unchanged; "On the record" moved from the start of the sentence into the strip.
+     - The design's MLS listing under this label was refused: the record is recorded data only.
+   - **Needs a look:** "Review this match", 44px.
+   - **Couldn't find:** "Fix the address", 44px. It goes to the edit form.
+5. **Edit** (the primary button, a link) and **Delete** (outlined, coral words), with the view-as
+   notice and any delete error under them.
+6. **Add to group**: a panel with a header strip.
+   - It keeps both states: a new group's name when there are none, or the group select.
+   - It keeps **Manage groups**, the only route from here to group management. The design dropped it;
+     OR-045 refused that.
+7. **Preview their email**: a panel with a header strip (`DigestPreviewPanel framed`) around the
+   unchanged preview below. It stays a sandboxed iframe; the design's inline `<div>` was refused.
 
 **The email preview panel** (`src/app/digest/preview-panel.tsx`). This is the real renderer that
 produces the monthly email, run for this person today (`[id]/page.tsx:40-43`). Two outcomes:
@@ -85,7 +98,7 @@ became false when OR-006a made delete soft. Focus: the code calls no `focus()`; 
 ## States
 | State | What renders | Source |
 |---|---|---|
-| Populated, On the map | All fields, `On the record: …`, "Wrong house?", and the preview. Email and phone present; Notes `None on file`; Groups `None yet`; Calls most likely `None marked yet. …` (the browser pass marks no calls) | capture: person-detail. Per `docs/audits/reskin-screen-log.md:31`, the seeded person has no email this month, so the capture shows the text `Nothing new on their street this month.` and **no preview frame or toggles are captured** |
+| Populated, On the map | All fields, the On the record panel, "Wrong house?", and the preview | capture: person-detail. Since OR-043a the seeded person, Aisha Rahman, has a note: e2e setup adds live sales on her street. The capture shows the note as plain text, through the `showNoteText` prepare step, which fails unless both street-sales lines are there. Before OR-043a the preview only ever showed `Nothing new on their street this month.` |
 | Needs a look / Couldn't find | Match block becomes "Review this match" / "Fix the address"; preview reads `This person is not matched to a house yet.` | Producible from the seed by opening Samir Qureshi / Helen Cho; not captured |
 | Email preview frame | Toggles + iframe | Not captured; whether any seeded person has news this month depends on the date. Described from the code |
 | Missing email | `None yet. We can't send without one.` | Not producible from the seed |
