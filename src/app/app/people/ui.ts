@@ -61,3 +61,22 @@ export const sendCardClass = 'rounded-xl border border-rule bg-background px-5 p
 
 /** The send card's one sentence: 22px, 24px from sm (OR-044). */
 export const sendCardHeadingClass = 'text-[22px] font-semibold sm:text-[24px]'
+
+/**
+ * The bar's own controls (OR-045): the light pill pair, the same object as the current-page pill.
+ * A page-background control vanishes on the dark bar (1.43:1); the pill is 17.9:1 light and 11.8:1
+ * dark against it. Focus rings are --on-bar, which a ring in --foreground would not be on navy.
+ */
+const barControlShape =
+  'min-h-12 rounded-md bg-bar-current px-6 py-2 text-[17px] font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-bar'
+
+/** A button on the bar. */
+export const barButtonClass = barControlShape + ' text-on-bar-current ' + disabledClass
+
+/** Delete on the bar: the pill with coral words (--on-bar-danger, 6.31:1 light, 5.39:1 dark). Never a coral fill. */
+export const barDestructiveButtonClass = barControlShape + ' text-on-bar-danger ' + disabledClass
+
+/** A select or input on the bar. */
+export const barFieldClass =
+  'mt-1 block w-full max-w-sm min-h-12 rounded-md bg-bar-current px-3.5 py-2 text-[17px] text-on-bar-current focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-bar ' +
+  disabledClass
