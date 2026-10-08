@@ -1,7 +1,7 @@
 import type { BillingInvoice } from '@/billing/gateway'
 import { formatDollars } from '@/config/costs'
 import { formatBillingDate } from '@/app/app/settings/billing/billing-copy'
-import { linkClass } from '@/app/app/people/ui'
+import { linkClass, panelBodyClass } from '@/app/app/people/ui'
 
 const INVOICE_STATUS: Record<string, string> = {
   paid: 'Paid',
@@ -13,17 +13,18 @@ const INVOICE_STATUS: Record<string, string> = {
 
 export function InvoiceList({ invoices, timezone }: { invoices: BillingInvoice[]; timezone: string | null }) {
   if (invoices.length === 0) {
-    return <p className="mt-3 text-[15px]">No invoices yet. Your first one appears here after the first charge.</p>
+    return <p className={`text-[15px] ${panelBodyClass}`}>No invoices yet. Your first one appears here after the first charge.</p>
   }
   return (
-    <ul className="mt-3 flex flex-col gap-2 text-[15px]">
+    <ul className="divide-y divide-rule text-[15px]">
       {invoices.map((invoice) => (
-        <li key={invoice.id} className="flex flex-wrap gap-x-4">
-          <span>{formatBillingDate(invoice.created, timezone)}</span>
-          <span>{formatDollars(invoice.amountCents)}</span>
+        <li key={invoice.id} className="flex flex-wrap items-center gap-x-6 gap-y-1 px-5 py-3 sm:px-6">
+          <span className="min-w-[180px]">{formatBillingDate(invoice.created, timezone)}</span>
+          <span className="font-semibold">{formatDollars(invoice.amountCents)}</span>
           <span>{INVOICE_STATUS[invoice.status] ?? invoice.status}</span>
           {invoice.url ? (
-            <a className={linkClass} href={invoice.url}>
+            // Pushed right, it stands alone (OR-046): 44px on a phone.
+            <a className={`tap ml-auto ${linkClass}`} href={invoice.url}>
               {invoice.status === 'open' ? 'Pay this invoice' : 'View invoice'}
             </a>
           ) : null}

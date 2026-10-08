@@ -5,9 +5,20 @@ import type { ReactNode } from 'react'
  * (4.56:1, the tightest pair the contrast test allows), values on the page. The call panel and the
  * person page's details both use it. `labels` sets the label column's width.
  */
-export function DetailsTable({ id, className = '', children }: { id?: string; className?: string; children: ReactNode }) {
+export function DetailsTable({
+  id,
+  className = '',
+  flush = false,
+  children,
+}: {
+  id?: string
+  className?: string
+  /** Rows run to a panel's edges (OR-046, billing): no border or radius of its own. */
+  flush?: boolean
+  children: ReactNode
+}) {
   return (
-    <dl className={`overflow-hidden rounded-lg border border-rule ${className}`} id={id}>
+    <dl className={`${flush ? '' : 'overflow-hidden rounded-lg border border-rule'} ${className}`} id={id}>
       {children}
     </dl>
   )
