@@ -130,7 +130,10 @@ These ratios were computed the same way. None of them may carry information.
 
 - **Radii.** The scale comes from a 9px base (`globals.css` `@theme`). In use:
   - `rounded-md` (about 7px): buttons, inputs, nav links, review cards.
-  - `rounded-lg` (about 9px): the dashboard send card and the call panel.
+  - `rounded-lg` (about 9px): the call panel's table, and a table nested in a panel.
+  - `rounded-xl` (about 12px): panels and the send card (`panelClass`, `sendCardClass`).
+    These docs said `rounded-lg` for the send card from OR-039; the code had been
+    `rounded-xl` since OR-042.
   - `rounded-full`: tags and the add-on switch.
 - **Borders, not shadows.** Cards take a `--rule` border, and nothing in the app has a drop
   shadow. A shadow's contrast cannot be checked, and the export's 14 marketing shadows
@@ -165,7 +168,15 @@ once is made everywhere, and nothing drifts. Copies of these strings are refused
 | `linkBaseClass` | A link that must stay ink: nav links and filter chips. | `linkClass`'s shape with no colour. The element names its own colour. Never override `linkClass`'s blue instead: two text colours on one element are settled by stylesheet order, not by class order. |
 | `fieldClass` | Every text input and select. | 17px, 48px tall, a 1.5px `--border` outline, page background, `rounded-md`, block display (so its label sits above it), full width up to `max-w-sm`, with the focus outline. |
 | `mutedClass` | Secondary lines: helper text and notes. | 15px, `--muted-ink`. Never for the MLS framing sentences or anything a test requires at full contrast. |
-| `sendCardClass` | The dashboard's single send card: one message, at most one action. No figures, counts or tiles. | `--rule` border, `rounded-xl`, page background, with horizontal margins. |
+| `panelClass` | A panel (OR-044), the design's "every grouping is a panel": the call list and homeowners on the dashboard first, then the other screens in their own packets. | 1px `--rule` border, `rounded-xl`, page background, `overflow-hidden`. Placed inside a screen's components, never as a wrapper in `page.tsx`. |
+| `panelHeaderClass` | A panel's title strip. Goes on the panel's heading itself. | `--surface` fill, a 1px `--rule` below, 19px semibold, 14px by 20px (24px from `sm`). |
+| `panelBodyClass` | A panel's body padding. | 20px (24px across from `sm`). |
+| `sendCardClass` | The dashboard's send card: the plain panel, with no strip. One message, at most one primary action. No figures, counts or tiles. | `--rule` border, `rounded-xl`, page background, 22px by 20px (26px by 28px from `sm`). In the scheduled state, "Preview it" is the button and "Skip this month" a form button styled as a link (OR-044). |
+| `sendCardHeadingClass` | The send card's one sentence. | 22px semibold, 24px from `sm`. |
+
+**The panel class was held back on purpose.** OR-042's Decision D was "no panel class yet":
+it waited for the first screen packet that uses it. OR-044, the dashboard, is that packet. The
+decision was made in the OR-042 packet conversation and is recorded here for the first time.
 
 **Not in `ui.ts`, but shared the same way:**
 

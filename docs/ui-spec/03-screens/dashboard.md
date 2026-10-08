@@ -1,5 +1,5 @@
 # Dashboard — `/app`
-**Capture:** dashboard, dashboard-call-open (both at 390 and 1440). Shared chrome (top bar, Log out,
+**Capture:** dashboard, dashboard-dark, dashboard-quiet, dashboard-quiet-dark, dashboard-call-open. Shared chrome (top bar, identity line, Log out,
 view-as banner) is specified once in `top-bar.md`.
 
 ## What the agent came here to do
@@ -13,39 +13,61 @@ for their house. The "call list" is at most three of the agent's people, picked 
 recorded events ("signals"). A "matched" person is one tied to a county parcel ("a house").
 
 ## Layout
-Three blocks, in this order and nothing else (`page.tsx:29`: "Order is fixed: send status, then the
-call list, then homeowners. Nothing else."; held by `call-list.test.ts:78`):
+Three blocks, in this order and nothing else (`page.tsx`: "Order is fixed: send status, then the
+call list, then homeowners. Nothing else."; held by `call-list.test.ts:78`). Since OR-044 they sit in
+a 760px column (`max-w-[760px]`, this screen only), 20px apart (24px from `sm`), with 16px page
+margins (32px from `sm`). There is no grid and no sidebar.
 
-1. **Send card** (`HomeSendCard`, `home-card.tsx`; or `HomeBillingCard`, `home-billing-card.tsx`). A
-   bordered card, `sendCardClass` (`people/ui.ts:25`: `mx-4 mt-6 max-w-2xl rounded-lg border
-   border-rule bg-background px-5 py-6`). The class comment is the rule: "one message, at most one
-   action. No figures, counts or tiles." It holds a 22px semibold `<h1>`, a 15px body line (max-w-xl),
-   and one primary button (`buttonClass`, `mt-6`). The one exception is the scheduled state, which has a
-   text link ("Preview it") beside the button.
-2. **Call list** (`CallListSection`, `call-list.tsx`): 19px `<h2>` "Worth a call this month", an
-   optional text-notice line, then up to three rows (`<ul className="mt-4 max-w-2xl">`). Each row is
-   divided by a faint `--rule` top border, 20px vertical padding.
-3. **Your homeowners** (`homeowners-section.tsx`): 19px `<h2>`, one sentence, one "Open people" link.
+1. **Send card** (`HomeSendCard`, `home-card.tsx`; or `HomeBillingCard`, `home-billing-card.tsx`). The
+   plain panel, `sendCardClass`: a `--rule` border, `rounded-xl`, page background, no header strip.
+   The class comment is the rule: "One message, at most one primary action. No figures, counts or
+   tiles." It holds a 22px semibold `<h1>` (24px from `sm`, `sendCardHeadingClass`), a 15px body line,
+   and one primary button. In the scheduled state, "Preview it" is the primary button and "Skip this
+   month" a form button styled as a link (OR-044). An `<a>` can't post, so Skip is never a link.
+2. **Call list** (`CallListSection`, `call-list.tsx`): a panel (`panelClass`) whose `<h2>` "Worth a
+   call this month" is the `--surface` header strip (`panelHeaderClass`). Every state sits inside
+   the one panel, each block divided by `--rule`:
+   - the text-notice line
+   - the empty states
+   - up to three ranked rows in an `<ol>`
+   - the quiet line
+3. **Your homeowners** (`homeowners-section.tsx`): a panel with its header strip. The body holds one
+   17px sentence and one "Open people" link.
 
-All three sit on the left in a ~672px column (`max-w-2xl`); there is no grid and no sidebar.
+**Call row** (`call-entry.tsx`): a grid, with a 36px rank column (40px from `sm`).
+- **The rank:** the row's number, 26px bold, in ink. It is never blue, because blue means a link
+  (OR-042). It is `aria-hidden`; the `<ol>` counts the rows for screen readers.
+- **Then, top to bottom:**
+  - the name (19px semibold)
+  - the tag (`tagClass`), coloured by signal kind
+  - the signal's own sentence (17px)
+  - the address and close date in muted ink, joined by " · Closed "
+  - "Called this month.", if already called
+- **The Call button** is the secondary button (`secondaryButtonClass`), as the design draws it.
+  OR-044 changed it from primary on purpose.
+  - **1440:** it sits in a third column at its natural width (capture: dashboard).
+  - **390:** it spans the row, full width, under the text.
+- **Called rows** take the `--surface` fill.
 
-**Call row** (`call-entry.tsx:129-176`), top to bottom: name (17px semibold); the tag, a pill
-(`rounded-full px-3`, 15px) coloured by signal kind; the signal sentence (15px); address and close date
-in muted ink, joined by " · Closed "; then, if already called, "Called this month."
+**Call open** (capture: dashboard-call-open): the button label flips to "Close". An inline table
+(`call-panel.tsx`) opens under the row: a `<dl>` with a `--rule` border, `rounded-lg`, 17px.
+- **Labels** sit in an 88px `--surface` cell in muted ink (4.56:1, the tightest pair the contrast
+  test allows). Values sit on the page.
+- **Rows:**
+  - Phone
+  - Email
+  - House
+  - "On the record" (the note's own record block)
+  - "Recorded against the property" (the note's loan block)
+  - When neither record block has lines, an "On the record" row reads "Nothing recorded on this
+    house yet."
+- **Never an MLS listing under "On the record":** the design drew one there, and OR-044 refused it.
+- **Under the table:** **Mark as called** (primary) and **Not now** (secondary) side by side,
+  wrapping on a phone.
+- **No modal, ever** (`call-list.test.ts:102`).
 
-- **1440:** the text column and the **Call** button sit side by side (`flex justify-between`), the
-  button top-right of its row at its natural width (capture: dashboard).
-- **390:** `max-sm:flex-col max-sm:items-stretch` stacks them; **Call** goes full width under the
-  address (`max-sm:w-full`). Capture: dashboard-call-open (mobile) shows this.
-
-**Call open** (capture: dashboard-call-open): the button label flips to "Close" and an inline panel
-(`call-panel.tsx`) opens directly under the row: `--surface` fill, `--rule` border, `rounded-lg p-4`,
-15px. It is a definition list: Phone, Email, House; then "On the record" lines and "Recorded against
-the property" lines when present. Under the panel, **Mark as called** (primary) and **Not now**
-(outlined, `--border`) side by side, wrapping on a phone. No modal, ever (`call-list.test.ts:102`).
-
-Phones (`max-width: 639.98px`, `globals.css:105-120`): every button is at least 44px tall; the phone
-and email links in the panel carry `.tap` so they are 44px too.
+Phones (`max-width: 639.98px`): every button is at least 44px tall. The phone and email rows are
+48px, and their links carry `.tap`, so they are 44px too.
 
 ## Controls
 | Label (quoted) | What it does | Disabled look / when disabled | Where focus goes after |
@@ -56,13 +78,13 @@ and email links in the panel carry `.tap` so they are 44px too.
 | `Open the review queue` (`home-card.tsx:95`) | Link to `/app/people/review` | — | Navigates |
 | `Open people` (`home-card.tsx:109`) | Link to `/app/people` | — | Navigates |
 | `Resume` (`home-card.tsx:122`) | `resumeMonthAction`: un-skips this month's send, redirects to `/app`. Not rendered in view-as. | Never disabled | Reload, as Unpause |
-| `Preview it` (`home-card.tsx:135`) | Text link to the person page of the alphabetically first eligible person (`home-send.ts:89-95`), where the note preview lives | — | Navigates |
-| `Skip this month` (`home-card.tsx:138`) | `skipMonthAction`: skips the upcoming send, redirects to `/app`. Not rendered in view-as. | Never disabled | Reload |
+| `Preview it` (`home-card.tsx`) | The primary button (since OR-044), a link to the person page of the alphabetically first eligible person (`home-send.ts:89-95`), where the note preview lives | — | Navigates |
+| `Skip this month` (`home-card.tsx`) | A form button styled as a link (since OR-044). `skipMonthAction`: skips the upcoming send, redirects to `/app`. Not rendered in view-as. | Never disabled | Reload |
 | `Contact us` (`home-card.tsx:41`) | `mailto:help@onrecord.com?subject=Paused account - <account id>` (`config/support.ts:12`) | — | Opens the mail app |
 | Billing card action: `Start your plan` / `Open billing` / `Restart your plan` (`home-billing-card.tsx:7-28`) | Link to `/app/settings/billing` | — | Navigates |
 | `Add your people` (call list, `call-list.tsx:26-32`) | Link to `/app/people/import` | — | Navigates |
 | `Open the review queue` (call list, `call-list.tsx:33-39`) | Link to `/app/people/review` | — | Navigates |
-| `Call` / `Close` (`call-entry.tsx:96-102`) | Toggles the inline panel. `aria-expanded`, `aria-controls="call-panel-<id>"`. Shown on called rows too, and in view-as. | Never disabled | Focus stays on the button; the panel renders after it in reading order. No `focus()` call. |
+| `Call` / `Close` (`call-entry.tsx`) | The secondary button (since OR-044). Toggles the inline panel. `aria-expanded`, `aria-controls="call-panel-<id>"`. Shown on called rows too, and in view-as. | Never disabled | Focus stays on the button; the panel renders after it in reading order. No `focus()` call. |
 | Phone number, e.g. `909-555-1200` (`call-panel.tsx:11`) | `tel:+1<10 digits>` | — | Starts a call |
 | Email address (`call-panel.tsx:32`) | `mailto:` the person | — | Opens the mail app |
 | `Mark as called` (`call-entry.tsx:108`) | `logCallAction(id, 'called')`. Row turns to the called look; 5-second Undo. | `disabledClass` (surface fill, muted words, inset border ring) while the action is pending. Not rendered in view-as or once called. | The button unmounts once the row is called, so focus falls to the document. Nothing moves it. |
