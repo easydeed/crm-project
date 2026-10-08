@@ -40,8 +40,24 @@ async function findClosings(page: Page, agentId: string) {
  * settings captures the email, scrolled into view so it paints. The frame shows the note's top.
  */
 async function showNote(page: Page) {
+  const frame = page.locator('iframe[title="Email preview"]')
   await expect(page.frameLocator('iframe[title="Email preview"]').locator('body')).toContainText('What sold on your street')
-  await page.locator('iframe[title="Email preview"]').scrollIntoViewIfNeeded()
+  await frame.scrollIntoViewIfNeeded()
+  // Wait for the frame's paint to settle (OR-045). A capture once caught the note laid out about
+  // 60px wide, before the frame took its final width: the same commit, two runs, two pictures.
+  // Step 0 found it. Two identical frame shots in a row mean the paint has settled.
+  const outer = (await frame.boundingBox())!.width
+  await expect
+    .poll(async () => (await page.frameLocator('iframe[title="Email preview"]').locator('body').boundingBox())?.width ?? 0)
+    .toBeGreaterThan(outer * 0.9)
+  let last = await frame.screenshot()
+  for (let tries = 0; tries < 20; tries++) {
+    await page.waitForTimeout(100)
+    const next = await frame.screenshot()
+    if (next.equals(last)) return
+    last = next
+  }
+  throw new Error('The email preview never stopped changing')
 }
 
 /** person-detail captures the plain text, which shows the whole note, street sales included. */
