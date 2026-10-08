@@ -43,8 +43,11 @@ export const destructiveButtonClass = outlinedClass + ' text-coral-text ' + disa
  */
 export const panelClass = 'overflow-hidden rounded-xl border border-rule bg-background'
 
+/** A panel's strip with no title type: search and filters sit in it on People (OR-045). */
+export const panelStripClass = 'border-b border-rule bg-surface px-5 py-3.5 sm:px-6'
+
 /** A panel's title strip: --surface, a --rule below, 19px semibold. Put it on the panel's heading. */
-export const panelHeaderClass = 'border-b border-rule bg-surface px-5 py-3.5 text-[19px] font-semibold sm:px-6'
+export const panelHeaderClass = panelStripClass + ' text-[19px] font-semibold'
 
 /** A panel's body padding. */
 export const panelBodyClass = 'px-5 py-5 sm:px-6'

@@ -7,7 +7,7 @@ import { GroupManager } from '@/app/app/people/group-manager'
 import { PeopleBulkBar } from '@/app/app/people/people-bulk-bar'
 import { PeopleFilters } from '@/app/app/people/people-filters'
 import { PeopleList } from '@/app/app/people/people-list'
-import { fieldClass, linkClass } from '@/app/app/people/ui'
+import { buttonClass, fieldClass, linkClass, panelBodyClass, panelClass, panelStripClass } from '@/app/app/people/ui'
 import type { ContactListRow } from '@/db/contacts'
 import type { GroupListRow } from '@/db/groups'
 import { contactsToCsv, downloadCsv, peopleExportFilename } from '@/people/export'
@@ -61,67 +61,76 @@ export function PeopleBoard({
 
   return (
     <div>
-      <p className="mt-3 text-[15px]">
-        {rows.length === 1 ? '1 person' : `${rows.length} people`}
-      </p>
-      <p className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
-        <Link className={`tap ${linkClass}`} href="/app/people/import">
-          Add people
-        </Link>
-        {queueCount > 0 ? (
-          <Link className={`tap ${linkClass}`} href="/app/people/review">
-            Review them
-          </Link>
-        ) : null}
-      </p>
-      {rows.length === 0 ? (
-        <p className="mt-6 max-w-xl text-[15px]">
-          No people yet. Add a list to get started.
+      {/* The title row's second line: the count, then the two ways to add to the list. */}
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+        <p className="text-[17px] text-muted-ink">
+          {rows.length === 1 ? '1 person' : `${rows.length} people`}
         </p>
+        <p className="flex flex-wrap items-center gap-x-6 gap-y-2">
+          {queueCount > 0 ? (
+            <Link className={`tap ${linkClass}`} href="/app/people/review">
+              Review them
+            </Link>
+          ) : null}
+          <Link className={`${buttonClass} tap inline-flex items-center`} href="/app/people/import">
+            Add people
+          </Link>
+        </p>
+      </div>
+      {rows.length === 0 ? (
+        <section className={`mt-5 ${panelClass}`}>
+          <p className={`max-w-xl text-[17px] ${panelBodyClass}`}>
+            No people yet. Add a list to get started.
+          </p>
+        </section>
       ) : (
         <>
-          <label className="mt-6 block max-w-xl text-[15px]">
-            Search
-            <input
-              className={fieldClass}
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Name, email, or address"
-            />
-          </label>
-          <PeopleFilters rows={rows} groups={groups} status={status} groupId={groupId} noEmail={noEmail} />
-          {visible.length === 0 ? (
-            <p className="mt-6 max-w-xl text-[15px]">
-              {query.trim()
-                ? 'No people match that search.'
-                : 'No people match that filter.'}
-            </p>
-          ) : (
-            <PeopleList
-              rows={visible}
-              selected={selected}
-              onToggle={(id) =>
-                setSelected((current) =>
-                  current.includes(id)
-                    ? current.filter((item) => item !== id)
-                    : [...current, id],
-                )
-              }
-              onToggleAll={() =>
-                setSelected((current) => {
-                  const visibleIds = visible.map((row) => row.id)
-                  const allOn = visibleIds.every((id) => current.includes(id))
-                  return allOn
-                    ? current.filter((id) => !visibleIds.includes(id))
-                    : Array.from(new Set([...current, ...visibleIds]))
-                })
-              }
-            />
-          )}
-          <p className="mt-4">
+          <section aria-label="Your people" className={`mt-5 ${panelClass}`}>
+            <div className={panelStripClass}>
+              <label className="block max-w-sm text-[15px] font-semibold">
+                Search
+                <input
+                  className={fieldClass}
+                  type="search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Name, email, or address"
+                />
+              </label>
+              <PeopleFilters rows={rows} groups={groups} status={status} groupId={groupId} noEmail={noEmail} />
+            </div>
+            {visible.length === 0 ? (
+              <p className={`max-w-xl text-[17px] ${panelBodyClass}`}>
+                {query.trim()
+                  ? 'No people match that search.'
+                  : 'No people match that filter.'}
+              </p>
+            ) : (
+              <PeopleList
+                rows={visible}
+                selected={selected}
+                onToggle={(id) =>
+                  setSelected((current) =>
+                    current.includes(id)
+                      ? current.filter((item) => item !== id)
+                      : [...current, id],
+                  )
+                }
+                onToggleAll={() =>
+                  setSelected((current) => {
+                    const visibleIds = visible.map((row) => row.id)
+                    const allOn = visibleIds.every((id) => current.includes(id))
+                    return allOn
+                      ? current.filter((id) => !visibleIds.includes(id))
+                      : Array.from(new Set([...current, ...visibleIds]))
+                  })
+                }
+              />
+            )}
+          </section>
+          <p className="mt-3">
             <button
-              className={linkClass}
+              className={`${linkClass} min-h-11`}
               type="button"
               onClick={() =>
                 downloadCsv(peopleExportFilename(), contactsToCsv(visible))

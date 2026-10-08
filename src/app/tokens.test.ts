@@ -44,7 +44,9 @@ const PAIRS: Array<[string, string, number]> = [
   ['muted-ink', 'background', TEXT],
   // 4.56:1 light, 0.06 above the floor. Depends on it: the grey call tag (call-tags.ts) and
   // mutedClass (people/ui.ts) wherever it sits on --surface, including called call-list rows.
-  // Also disabledClass (people/ui.ts): every disabled button's words.
+  // Also disabledClass (people/ui.ts): every disabled button's words. And the label column of
+  // DetailsTable (details-table.tsx): the call panel's labels (OR-044) and the person page's
+  // details (OR-045).
   // Darken --surface and this fails first; re-derive --muted-ink with it.
   ['muted-ink', 'surface', TEXT],
   ['blue', 'background', TEXT],

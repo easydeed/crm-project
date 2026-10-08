@@ -4,7 +4,7 @@ import { useActionState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { addToGroupAction, createGroupAction, type GroupFormState } from '@/app/app/people/actions'
-import { buttonClass, fieldClass, linkClass, mutedClass } from '@/app/app/people/ui'
+import { buttonClass, fieldClass, linkClass, mutedClass, panelBodyClass, panelClass, panelHeaderClass } from '@/app/app/people/ui'
 import { VIEW_AS_READ_ONLY } from '@/auth/write-guard'
 import type { GroupListRow } from '@/db/groups'
 
@@ -32,22 +32,23 @@ export function AddToGroup({
   const pending = addPending || createPending
 
   return (
-    <section className="mt-8 max-w-xl" aria-labelledby="add-group-heading">
-      <h2 id="add-group-heading" className="text-[18px] font-semibold">
+    <section className={panelClass} aria-labelledby="add-group-heading">
+      <h2 id="add-group-heading" className={panelHeaderClass}>
         Add to group
       </h2>
-      {readOnly ? <p className="mt-3 text-[15px]">{VIEW_AS_READ_ONLY}</p> : null}
+      <div className={panelBodyClass}>
+      {readOnly ? <p className="mb-3 text-[15px]">{VIEW_AS_READ_ONLY}</p> : null}
       {error ? (
-        <p className="mt-3 text-[15px]" role="alert">
+        <p className="mb-3 text-[15px]" role="alert">
           {error}
         </p>
       ) : null}
       {groups.length === 0 ? (
         <>
-          <p className={`mt-3 ${mutedClass}`}>
+          <p className={mutedClass}>
             Groups are optional. Make one if you want to sort people.
           </p>
-          <form action={createAction} className="mt-4 flex flex-col gap-3">
+          <form action={createAction} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
             <input type="hidden" name="contactId" value={contactId} />
             <label className="text-[15px]">
               Group name
@@ -59,7 +60,7 @@ export function AddToGroup({
           </form>
         </>
       ) : (
-        <form action={addAction} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+        <form action={addAction} className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <input type="hidden" name="contactId" value={contactId} />
           <label className="text-[15px]">
             Group
@@ -82,6 +83,7 @@ export function AddToGroup({
           Manage groups
         </Link>
       </p>
+      </div>
     </section>
   )
 }

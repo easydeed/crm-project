@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation'
+import { panelBodyClass, panelClass } from '@/app/app/people/ui'
 import { PersonForm } from '@/app/app/people/[id]/edit/person-form'
 import { readRequestSession } from '@/auth/current-session'
 import { effectiveAccountId } from '@/auth/effective-account'
@@ -17,9 +18,16 @@ export default async function EditPersonPage({
   if (!person) notFound()
 
   return (
-    <main className="px-4 py-10">
-      <h1 className="text-[22px] font-semibold">Edit {person.name}</h1>
-      <PersonForm person={person} readOnly={Boolean(session.viewingAsAccountId)} />
+    <main className="px-4 pb-10 pt-5 sm:px-8 sm:pb-16 sm:pt-7">
+      <div className="max-w-[760px]">
+        <h1 className="text-[22px] font-semibold sm:text-[24px]">Edit {person.name}</h1>
+        {/* One plain panel (OR-045). The design titles it "Their details"; the screen adds no words. */}
+        <section aria-label={`Edit ${person.name}`} className={`mt-5 ${panelClass}`}>
+          <div className={panelBodyClass}>
+            <PersonForm person={person} readOnly={Boolean(session.viewingAsAccountId)} />
+          </div>
+        </section>
+      </div>
     </main>
   )
 }
