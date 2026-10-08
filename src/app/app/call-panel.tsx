@@ -22,7 +22,7 @@ function Phone({ phone }: { phone: string | null }) {
   if (!phone) return <>No phone on file</>
   if (!digits) return <>{phone}</>
   return (
-    <a className={`tap ${linkClass}`} href={`tel:+1${digits}`}>
+    <a className={linkClass} href={`tel:+1${digits}`}>
       {formatUsPhone(digits)}
     </a>
   )
