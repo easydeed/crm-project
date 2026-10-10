@@ -18,6 +18,7 @@ export function LoginForm({ returnTo }: { returnTo: string }) {
           type="email"
           name="email"
           autoComplete="email"
+          defaultValue="dana@coastline.example"
           required
         />
       </label>
