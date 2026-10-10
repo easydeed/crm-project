@@ -1,13 +1,26 @@
-/** A link's shape with no colour. A link that must stay ink (nav, filter chips) uses this and names its own colour. */
-export const linkBaseClass =
-  'text-[15px] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+/** A link's shape, with no size and no colour. Use one of the classes below, not this. */
+const linkShape = 'underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+
+/** A link's shape and size (17px, the body, since OR-047) with no colour. A link that must stay ink (nav, filter chips) uses this and names its own colour. */
+export const linkBaseClass = 'text-[17px] ' + linkShape
 
 /**
  * A text link (OR-042): blue, 5.17:1 light and 7.55:1 dark on the page, 4.73 and 6.58 on --surface.
  * Never on --blue-soft (4.42:1). Ink links use linkBaseClass and name their colour; they never
  * override this one, because two text colours on one element are settled by stylesheet order.
+ * 17px since OR-047, the body size. For a link that stands on its own line or row.
  */
 export const linkClass = linkBaseClass + ' text-blue'
+
+/**
+ * A link inside a sentence (OR-047): no size of its own, so it is never bigger or smaller than the
+ * words around it. "Inside a sentence" is the tap check's rule: the link's parent has a direct text
+ * node with a letter in it.
+ */
+export const inlineLinkClass = linkShape + ' text-blue'
+
+/** A meta link the design keeps at 15px (OR-047): "Log out" and a People row's "Edit". Only those. */
+export const metaLinkClass = 'text-[15px] ' + linkShape + ' text-blue'
 
 /**
  * A control that will not respond: --surface fill, --muted-ink words, a --border ring (inset, so the

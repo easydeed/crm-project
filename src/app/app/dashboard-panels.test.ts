@@ -1,4 +1,5 @@
 import { expect, test } from 'vitest'
+import { readFileSync } from 'node:fs'
 import { ancestors, attribute, byAttribute, byTag, byText, classNames, classTokens, descendants, only, parseJsx, tagOf, withAttribute } from '@/test/jsx'
 
 /**
@@ -69,4 +70,15 @@ test('Preview it is the button; Skip this month posts from a form, styled as a l
   expect(classNames(jsx, skip)).toContain('linkClass')
   const form = ancestors(skip).find((element) => tagOf(jsx, element) === 'form')
   expect(form && attribute(jsx, form, 'action')?.initializer?.getText(jsx.source)).toBe('{skipMonthAction}')
+})
+
+test('the call panel label column is wide enough for its longest label (OR-047)', () => {
+  // Measured, not read: at 88px "Recorded against the property" was four lines and "Recorded"
+  // overflowed by 4px. 118px is the narrowest that takes it in three; 170px takes it in two.
+  const source = readFileSync(new URL('./call-panel.tsx', import.meta.url), 'utf8')
+  const labels = /const LABELS = '([^']+)'/.exec(source)?.[1] ?? ''
+  const phone = Number(/(?:^| )grid-cols-\[(\d+)px_1fr\]/.exec(labels)?.[1] ?? 0)
+  const wide = Number(/sm:grid-cols-\[(\d+)px_1fr\]/.exec(labels)?.[1] ?? 0)
+  expect(phone).toBeGreaterThanOrEqual(118)
+  expect(wide).toBeGreaterThanOrEqual(170)
 })

@@ -7,7 +7,7 @@ import { AddonConfigForm } from '@/app/app/addons/addon-config-form'
 import { AddonSwitch } from '@/app/app/addons/addon-switch'
 import { priceLabel, type AddonRowData } from '@/app/app/addons/row-data'
 import type { SwitchResult } from '@/addons/state'
-import { linkClass, mutedClass } from '@/app/app/people/ui'
+import { inlineLinkClass, mutedClass } from '@/app/app/people/ui'
 
 const SAVE_FIRST = 'Fill in the settings below to switch this on.'
 
@@ -83,7 +83,7 @@ export function AddonRow({
           {row.configHref && !enabled ? (
             <>
               {' '}
-              <Link className={linkClass} href={row.configHref}>
+              <Link className={inlineLinkClass} href={row.configHref}>
                 Go to Settings
               </Link>
             </>

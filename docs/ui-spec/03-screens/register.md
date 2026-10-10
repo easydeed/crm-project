@@ -18,30 +18,33 @@ If the agent backs out of it, Stripe sends them to `/app/settings/billing`
 (`cancelUrl`, `src/billing/account-billing.ts:54, 60`).
 
 ## Layout
-
-One centred column, the same at 1440 and 390. No responsive (`sm:`, `md:`, `lg:`) classes.
-
-- `<main>` fills the screen height and centres its child, with a 16px side gutter and 40px top and
-  bottom padding (`flex min-h-screen items-center justify-center px-4 py-10`,
-  `src/app/register/page.tsx:7`). The padding matters: on a phone the form is taller than the
-  screen, so the page scrolls.
-- A column at most 384px wide, items centred, 24px apart (`page.tsx:8`). Top to bottom:
-  1. Wordmark `onrecord`, a 15px semibold `<p>` (`page.tsx:9`).
-  2. `<h1>` `Create your account`, 22px semibold (`page.tsx:10`).
-  3. The form, fields 16px apart (`src/app/register/register-form.tsx:48`):
-     - `Name` (`:49`)
-     - `Email`, with its error underneath when there is one (`:50-57`)
-     - the password group: the word `Password`, then the requirements as a bulleted list, then the
-       input, then its error (`:58-78`)
-     - `Brokerage` (`:79`), `DRE number` (`:80`), `Phone` (`:81`)
-     - the `Create account` button (`:82-88`)
-     - the plan line, a 15px paragraph under the button (`:89-91`)
-  4. The text link `Sign in` (`page.tsx:12-17`).
-
-On a phone every input and button is at least 44px tall (`src/app/globals.css:106-114`). The
-button stretches to the column because the form is a flex column.
-
-A "DRE number" is the agent's California real-estate licence number (Department of Real Estate).
+Since OR-047:
+- **The bar (OR-047).** The navy bar pair (`--bar`, words `--on-bar`), 44px, with the wordmark
+  "onrecord" centred at 18px bold (`src/app/auth-bar.tsx`).
+  - The wordmark is a `<span>`, not a link: on these screens it isn't a control, and the column
+    already has its cross-link.
+  - There is no nav and no identity line.
+- **The column.** 384px (`max-w-sm`), 24px between blocks.
+- **The heading.** `<h1>`, 24px semibold, centred, with its words unchanged.
+- **The form** sits in a plain panel (`panelClass`), padded 24px top and bottom and 20px at the
+  sides, with 18px between fields.
+  - Each label's words are 16px semibold. The label element itself stays regular, because inputs
+    inherit font and the typed text would otherwise be bold.
+  - The fields are `fieldClass`, 48px and 17px.
+  - The error line is 17px.
+  - The submit button is full width.
+- **The cross-link** is `linkClass`: 17px, 44px tall on phones, centred under the panel.
+- **No field is ever filled in**, in code, fixtures or mocks (`auth-panels.test.ts`). The design drew
+  this screen with a prefilled email and a masked password, and that was refused.
+- **Register sits at the top**, as drawn: the form is long enough that centring it would push it off
+  a phone.
+- **Password** has a real `<label>`. The input's accessible name is "Password", and its rule ("At
+  least 10 characters", in muted ink) is the input's description, through `aria-describedby`.
+  - Before OR-047 the input had no accessible name or description at all.
+- **A `--rule` line** comes before Brokerage, DRE number and Phone. The design's "Optional" after
+  each was refused: it is new copy, and it would change three accessible names.
+- **The plan line**, "Next you add a card in Stripe: {PLAN_LINE}. Cancel any time from Settings.",
+  is 17px. It is still built from `PLAN_LINE`, never typed.
 
 ## Controls
 
