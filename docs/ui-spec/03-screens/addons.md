@@ -18,30 +18,26 @@ Prices come only from `ADDON_PRICES` in `src/config/costs.ts:18-24`; the base pl
 `PLAN.priceCents` = $19 (`src/config/costs.ts:8-12`).
 
 ## Layout
-
-Top to bottom (`src/app/app/addons/page.tsx:31-36`, `addons-panel.tsx:13-40`):
-
-1. App top bar and "Log out" (shared shell, `src/app/app/layout.tsx`).
-2. `<h1>` "Add-ons", 22px semibold.
-3. One section per **band** that has at least one add-on (`addons-panel.tsx:18`). A band is a
-   price group: `extras` ("Extras") and `texting` ("Texting your clients", with a muted note
-   explaining carrier costs) (`row-data.ts:23-30`). In production both add-ons are `extras`, so
-   **only "Extras" renders; the texting heading and its carrier note never appear on the live
-   page** today. They are proven only by the test fixture (`src/addons/fixtures.ts:30-34`).
-4. Each row (`addon-row.tsx:69-96`), separated by a faint `--rule` line under each row:
-   title (17px semibold), then the saved-config summary if any (e.g. "Marcus Lee · NMLS 123456",
-   `lender.ts:38-41`), blurb, price line, an optional muted row note, and the switch.
-5. The **bill bar** (`bill-bar.tsx:9-23`): a navy box on the bar pair (`bg-bar`, `--on-bar` words), navy in both themes since OR-042. Before, it was `bg-foreground` and turned light in dark mode.
-   listing "Base plan", then each add-on that is on, a divider, "Total a month" and the total,
-   and the note "Changes take effect on your next bill."
-
-**1440 vs 390.** There are no `sm:/md:/lg:` breakpoints on this page. Each row is
-`flex flex-wrap justify-between` with the text capped at `max-w-xl` (576px). At 1440 the switch
-sits at the far right edge of the row, about 750px from the end of the blurb (capture: addons,
-desktop). At 390 the text fills the line and the switch wraps under the price, left-aligned
-(capture: addons, mobile). The bill bar spans the full content width at both sizes.
-The switch gets `max-sm:-my-1 max-sm:py-2` (`addon-switch.tsx:19`) and the global phone rule
-gives every button `min-height: 44px` (`src/app/globals.css:106-114`).
+Since OR-046: a 760px column.
+1. `<h1>` "Add-ons".
+2. **Each band is a panel**: "Extras", then "Texting your clients" when it applies.
+   - The `<h2>` is the `--surface` strip.
+   - A band's note sits under the strip, in muted ink.
+3. **Rows**, divided by `--rule`:
+   - title 19px semibold
+   - summary and blurb 17px
+   - price 17px semibold
+   - the row note 15px muted
+   - "Go to Settings", the config form and the lender summary all stay
+4. **The switch** is 56×32, with "On"/"Off" at 17px semibold.
+   - Off stays outlined in `--foreground` with a `--foreground` knob. A switched-off add-on is a
+     choice, not a control that won't respond (the asymmetry rule below).
+   - The design drew off in `--border` (3.61:1); OR-046 refused it.
+5. **The bill bar**: navy (`--bar`, words `--on-bar`), radius 12px.
+   - Lines at 17px, the total at 22px semibold, the divider `border-on-bar`.
+   - The footnote stays at full strength in `--on-bar`.
+   - The design's brass total, muted footnote and slate divider were refused. None has a dark value
+     or a checked pair, and `addons-ui.test` rejects them.
 
 ## Controls
 

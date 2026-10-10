@@ -11,18 +11,13 @@ runs out, and the agent can undo that on Billing with "Keep my plan" until then
 (`src/billing/account-billing.ts:65-77`).
 
 ## Layout
-
-`src/app/app/settings/billing/cancel/page.tsx:23-39`, top to bottom:
-
-1. App top bar and "Log out" (shared shell). No back link.
-2. `<h1>` "Cancel your plan", 22px.
-3. One sentence, 15px, `max-w-xl`, built by `cancelSentence(date)` (`billing-copy.ts:6-8`).
-4. One row (`flex flex-wrap items-center gap-6`): a form whose only control is the filled
-   **Cancel my plan** button, then the **Keep my plan** text link.
-
-**1440 vs 390.** No breakpoints. At both widths the button and link sit side by side on one line
-(capture: billing-cancel, mobile); `flex-wrap` would put the link under the button only on a
-narrower screen.
+Since OR-046: a 760px column.
+1. `<h1>` "Cancel your plan".
+2. **One plain panel** (`panelClass` and its body, no strip). It holds:
+   - the cancel sentence, unchanged
+   - one `<form>` with "Cancel my plan" (the primary button)
+   - "Keep my plan" (a link, 44px on phones)
+   It isn't `sendCardClass`: that class is the dashboard's send card.
 
 ## Controls
 

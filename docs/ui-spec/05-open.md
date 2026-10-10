@@ -163,6 +163,12 @@ Each item says how it is known:
     - That may be a write-only field (CLAUDE.md invariant 2), or a reader my search missed.
     - It will matter when real parcel data lands and a stale parcel needs to look stale.
 
+27. **A sticky element at `top: 24px` slides under the view-as banner.** *From the code, OR-046.*
+    - The banner is `sticky top-0 z-20` (`src/app/app/view-as-banner.tsx`).
+    - The design's sticky Settings preview (`top: 24px`) would have slid under it in view-as.
+    - OR-046 didn't take that column, so nothing does this today. Anything that sticks near the top
+      later needs the banner's height as its offset.
+
 ## Smaller things
 
 - `src/app/fonts/fonts.ts` says Fraunces is "used nowhere yet". Since OR-038 it is used on

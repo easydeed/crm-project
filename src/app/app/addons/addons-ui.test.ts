@@ -81,6 +81,9 @@ test('the bill bar is the bar pair at full strength, which the contrast test che
     for (const token of classTokens(jsx, element)) {
       expect(token, `${tagOf(jsx, element)}: ${token}`).not.toMatch(/muted|opacity|^(?:[a-z]+:)*bg-/)
       if (/^(?:[a-z]+:)*text-(?!\[)/.test(token)) expect(token, tagOf(jsx, element)).toBe('text-on-bar')
+      // OR-046: an arbitrary text value is a size, never a colour. text-[#d4a84b] (the design's brass
+      // total) slipped past the line above, which skips every text-[…].
+      if (/^(?:[a-z]+:)*text-\[/.test(token)) expect(token, tagOf(jsx, element)).toMatch(/^(?:[a-z]+:)*text-\[\d+(?:\.\d+)?(?:px|rem)\]$/)
     }
     expect(borderColours(classTokens(jsx, element)).filter((colour) => colour !== 'border-on-bar')).toEqual([])
   }

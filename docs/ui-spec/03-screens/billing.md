@@ -11,24 +11,28 @@ cancel or resume shows the moment it happens. There is no Stripe Customer Portal
 (`packets/OR-018-billing.md`: "no Customer Portal, no offer, no survey").
 
 ## Layout
+Since OR-046: a 760px column with the same margins and gaps as Settings.
 
-Top to bottom (`src/app/app/settings/billing/page.tsx:35-78`), one `flex-col gap-8` column:
-
-1. App top bar and "Log out" (shared shell).
-2. A back link "Settings", then `<h1>` "Billing" (22px). Under it, a one-line notice when the URL
-   carries a result (`?done=canceled` etc., `page.tsx:30, 41`).
-3. **Your plan** (`page.tsx:54-71`): a two-column definition list (`grid-cols-[auto_1fr]`):
-   Plan, Status, Next charge (or Ends), Card. Then the single state-dependent action.
-4. **Invoices** (`invoice-list.tsx`): one line per invoice: date, amount, status words, and a
-   link when Stripe gave one.
-
-If the agent has no subscription the two sections are replaced by one: "You don't have a plan
-yet." with the plan line and "Start your plan" (`page.tsx:44-51`).
-
-**1440 vs 390.** No breakpoints on this page. The list is capped at `max-w-xl`; at 390 the plan
-value wraps ("$19 a month, up to 250 / homeowners", capture: billing, mobile). Invoice lines are
-`flex-wrap gap-x-4` and wrap only if they run out of room. The standalone "Cancel my plan" link
-takes `.tap`, so it is 44px tall on phones (`page.tsx:87`, `src/app/globals.css:116-120`).
+1. The "Settings" back link (44px on phones), then `<h1>` "Billing", then any notice.
+   - The link keeps its words; the design's "←" was refused.
+2. **No plan**: one plain panel.
+   - Its heading is the sentence "You don't have a plan yet.", not a strip.
+   - Then the plan line and "Start your plan".
+3. **Your plan**: a panel with a strip.
+   - The rows are the shared `DetailsTable` with `flush`: a `<dl>` running to the panel's edges.
+     Labels sit in a 120px (160px from `sm`) `--surface` column in muted ink.
+   - Rows: Plan, Status, then Next charge or Ends, then Card.
+   - Statuses stay plain words. The design coloured "Active" and "Paid" green and said nothing
+     about the other states, so no status is coloured (OR-046, Decision C).
+   - The plan action sits in a footer under a `--rule`. It is one of:
+     - "Cancel my plan"
+     - "Keep my plan"
+     - the past-due sentence
+     - "Restart your plan"
+4. **Invoices**: a panel with a strip.
+   - Each row, divided by `--rule`: date · amount (semibold) · status · link.
+   - The link is pushed right. Standing alone, it is 44px on a phone (`.tap`).
+   - "No invoices yet…" when there are none.
 
 ## Controls
 

@@ -6,6 +6,7 @@ import type { AccountRecord } from '@/db/accounts'
 import { saveSendingAction, type SendingState } from '@/app/app/settings/actions'
 import { FieldError, Muted, fieldClass } from '@/app/app/settings/field'
 import { SaveButton } from '@/app/app/settings/save-button'
+import { panelBodyClass, panelClass, panelHeaderClass } from '@/app/app/people/ui'
 
 export function SendingForm({
   account,
@@ -19,8 +20,11 @@ export function SendingForm({
   const [state, action, pending] = useActionState(saveSendingAction, {} as SendingState)
 
   return (
-    <form action={action} className="flex max-w-xl flex-col gap-4">
-      <h2 className="text-[18px] font-semibold">Sending</h2>
+    <section aria-labelledby="sending-heading" className={panelClass}>
+      <h2 className={panelHeaderClass} id="sending-heading">
+        Sending
+      </h2>
+    <form action={action} className={`grid gap-4 sm:grid-cols-3 ${panelBodyClass}`}>
       <label className="text-[15px]">
         Send day
         <select
@@ -69,10 +73,10 @@ export function SendingForm({
         </select>
         <FieldError message={state.timezone} />
       </label>
-      <div>
-        <label className="flex items-center gap-2 text-[15px] max-sm:min-h-11">
+      <div className="sm:col-span-3">
+        <label className="flex min-h-11 items-center gap-3 text-[15px]">
           <input
-            className="h-4 w-4 accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="size-5.5 accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             type="checkbox"
             name="paused"
             defaultChecked={account.paused || systemPaused}
@@ -86,9 +90,12 @@ export function SendingForm({
             : 'Nothing sends while this is on. Turn it back on any time.'}
         </Muted>
       </div>
-      {readOnly ? <Muted>Viewing as another agent is read only.</Muted> : null}
-      <FieldError message={state.error} />
-      <SaveButton pending={pending} savedAt={state.savedAt} readOnly={readOnly} />
+      <div className="flex flex-col gap-4 sm:col-span-3">
+        {readOnly ? <Muted>Viewing as another agent is read only.</Muted> : null}
+        <FieldError message={state.error} />
+        <SaveButton pending={pending} savedAt={state.savedAt} readOnly={readOnly} />
+      </div>
     </form>
+    </section>
   )
 }

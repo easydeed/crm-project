@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useActionState } from 'react'
-import { linkClass } from '@/app/app/people/ui'
+import { linkClass, panelBodyClass, panelClass, panelHeaderClass } from '@/app/app/people/ui'
 import { startHref } from '@/signup/start-href'
 import { formatUsPhone } from '@/config/phone'
 import type { AccountRecord } from '@/db/accounts'
@@ -20,8 +20,11 @@ export function DetailsForm({
   const [state, action, pending] = useActionState(saveDetailsAction, {} as DetailsState)
 
   return (
-    <form action={action} className="flex max-w-xl flex-col gap-4">
-      <h2 className="text-[18px] font-semibold">Your details</h2>
+    <section aria-labelledby="details-heading" className={panelClass}>
+      <h2 className={panelHeaderClass} id="details-heading">
+        Your details
+      </h2>
+    <form action={action} className={`grid gap-4 sm:grid-cols-2 ${panelBodyClass}`}>
       <label className="text-[15px]">
         Full name
         <input
@@ -34,7 +37,7 @@ export function DetailsForm({
         />
         <FieldError message={state.name} />
       </label>
-      <div>
+      <div className="sm:col-span-2">
         <p className="text-[15px]">Email</p>
         <p className={`${fieldClass} border-transparent px-0`}>{account.email}</p>
         <Muted>Contact us to change your email.</Muted>
@@ -81,19 +84,22 @@ export function DetailsForm({
         <FieldError message={state.mlsAgentId} />
         <Muted>It&apos;s on your MLS profile page.</Muted>
       </label>
-      <p className="text-[15px]">
+      <p className="text-[15px] sm:col-span-2">
         <Link className={`tap ${linkClass}`} href={startHref(account.mlsAgentId)}>
           Find my closings again
         </Link>
       </p>
-      {readOnly ? <Muted>Viewing as another agent is read only.</Muted> : null}
-      <FieldError message={state.error} />
-      {state.notice ? (
-        <p className="text-[15px]" role="status">
-          {state.notice}
-        </p>
-      ) : null}
-      <SaveButton pending={pending} savedAt={state.savedAt} readOnly={readOnly} />
+      <div className="flex flex-col gap-4 sm:col-span-2">
+        {readOnly ? <Muted>Viewing as another agent is read only.</Muted> : null}
+        <FieldError message={state.error} />
+        {state.notice ? (
+          <p className="text-[15px]" role="status">
+            {state.notice}
+          </p>
+        ) : null}
+        <SaveButton pending={pending} savedAt={state.savedAt} readOnly={readOnly} />
+      </div>
     </form>
+    </section>
   )
 }

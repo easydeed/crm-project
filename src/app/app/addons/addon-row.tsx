@@ -66,13 +66,13 @@ export function AddonRow({
   }
 
   return (
-    <li className="border-b border-rule py-5">
+    <li className="px-5 py-5.5 sm:px-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-xl">
-          <h3 className="text-[17px] font-semibold">{row.title}</h3>
-          {row.summary ? <p className="mt-1 text-[15px]">{row.summary}</p> : null}
-          <p className="mt-1 text-[15px]">{row.blurb}</p>
-          <p className="mt-1 text-[15px]">{priceLabel(row)}</p>
+          <h3 className="text-[19px] font-semibold">{row.title}</h3>
+          {row.summary ? <p className="mt-1 text-[17px]">{row.summary}</p> : null}
+          <p className="mt-1 text-[17px]">{row.blurb}</p>
+          <p className="mt-1 text-[17px] font-semibold">{priceLabel(row)}</p>
           {row.rowNote ? <p className={`mt-1 ${mutedClass}`}>{row.rowNote}</p> : null}
         </div>
         <AddonSwitch checked={enabled} disabled={readOnly || pending} label={row.title} onToggle={toggle} />

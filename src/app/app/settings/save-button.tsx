@@ -23,7 +23,7 @@ export function SaveButton({
 
   return (
     <button
-      className={`${buttonClass} mt-4`}
+      className={`${buttonClass} self-start`}
       type="submit"
       disabled={pending || readOnly}
     >

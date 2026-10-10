@@ -6,8 +6,8 @@ import { formatDollars } from '@/config/costs'
 export function BillBar({ baseCents, rows, enabled }: { baseCents: number; rows: AddonRowData[]; enabled: Record<string, boolean> }) {
   const bill = computeBill(baseCents, rows.map((row) => ({ ...row, enabled: enabled[row.key] === true })))
   return (
-    <section aria-label="Your monthly bill" className="mt-10 rounded-md bg-bar px-5 py-5 text-on-bar">
-      <ul className="flex flex-col gap-2 text-[15px]">
+    <section aria-label="Your monthly bill" className="mt-5 rounded-xl bg-bar px-6 py-5.5 text-on-bar sm:mt-6">
+      <ul className="flex flex-col gap-2 text-[17px]">
         {bill.lines.map((line) => (
           <li key={line.key} className="flex justify-between gap-6">
             <span>{line.label}</span>
@@ -15,10 +15,11 @@ export function BillBar({ baseCents, rows, enabled }: { baseCents: number; rows:
           </li>
         ))}
       </ul>
-      <p className="mt-4 flex justify-between gap-6 border-t border-on-bar pt-4 text-[17px] font-semibold">
+      <p className="mt-4 flex items-baseline justify-between gap-6 border-t border-on-bar pt-4 text-[22px] font-semibold">
         <span>Total a month</span>
         <span data-testid="bill-total">{formatDollars(bill.totalCents)}</span>
       </p>
+      {/* Full strength (OR-046): the design's muted footnote, brass total and slate rule have no dark values or checked pairs. */}
       <p className="mt-2 text-[15px] text-on-bar">{NEXT_BILL}</p>
     </section>
   )

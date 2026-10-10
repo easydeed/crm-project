@@ -9,33 +9,36 @@ monthly email looks to homeowners (sender name, reply-to, accent colour) while w
 preview, choose when it sends or pause it, verify a phone for texts, and find the way to billing.
 
 ## Layout
+Since OR-046: a 760px column with 16px page margins (32px from `sm`), panels 20px apart (24px
+from `sm`). In order:
 
-Top to bottom (`src/app/app/settings/page.tsx:38-51`), a single `flex-col gap-10` column:
-
-1. App top bar and "Log out" (shared shell).
-2. `<h1>` "Settings", 22px.
-3. **Your details** form (`details-form.tsx:23-97`): Full name, Email (read-only text, not an
-   input), Brokerage, DRE number, Phone, MLS agent ID with a muted helper, the link
-   "Find my closings again", and its own Save button.
-4. **Phone for texts** (`phone-verification.tsx:67-77`), anchored `id="phone"` so the add-ons
-   page can link straight to it (`/app/settings#phone`, `src/addons/text-call-list.ts:30`).
-5. **How the email looks** form plus **Preview** (`appearance-form.tsx:30-93`): sender name,
-   reply-to, five accent swatches, Save; the preview of the real email beside it.
-6. **Sending** form (`sending-form.tsx:22-92`): Send day, Time of day, Timezone (all selects),
-   "Pause my monthly note" checkbox with a muted line under it, Save.
-7. **Billing**: an `<h2>` and one link, "Plan, card, invoices, and canceling" (`page.tsx:44-51`).
-
-Every form is `max-w-xl` (576px). Inputs are the shared `fieldClass` (block, full width up to
-`max-w-sm`, 384px), so labels sit above inputs. Each Save is `buttonClass` in a `flex-col` form,
-so it stretches to the form's width (capture: settings, desktop shows 576px-wide Save bars).
-
-**1440 vs 390.** The only breakpoint is `lg:grid-cols-2` on the appearance block
-(`appearance-form.tsx:30`): from 1024px the preview sits in a right-hand column beside
-"How the email looks"; below that it stacks under the form. The preview frame has a
-Desktop/Phone width toggle (600 or 380px) capped by `max-w-full` (`src/app/digest/preview-panel.tsx:70-78`).
-On phones, accent swatch labels get `max-sm:-m-1 max-sm:p-1` to reach 44px
-(`appearance-form.tsx:57`), the pause label `max-sm:min-h-11` (`sending-form.tsx:73`), and
-standalone links use `.tap` (`page.tsx:47`, `details-form.tsx:85`).
+1. `<h1>` "Settings", 22px (24px from `sm`).
+2. **Your details**: a panel with a `--surface` strip.
+   - The fields sit in a 2-column grid from `sm`. The email line, "Find my closings again" and the
+     Save row span both columns.
+   - Save is the primary button at its own width (`self-start`).
+3. **Phone for texts**: a panel with a strip, `id="phone"` (with `scroll-mt-6`).
+   - All three states and the code form are unchanged.
+   - The design drew the copy and the button side by side. They still stack.
+4. **How the email looks**: a panel with a strip.
+   - Sender name and reply-to sit in a 2-column grid; the accent row spans both columns.
+   - The swatches are 44px, up from 36px, so they pass the tap rule on their own. Their names
+     stay in `aria-label` and `title`, as before.
+   - Their colours are unchanged. The design's new hexes were refused, because they change the
+     email and reset saved accents.
+5. **Preview**: its own panel with a strip (`DigestPreviewPanel framed`), directly under "How the
+   email looks".
+   - It is rendered by the same component as the form and fed by the form's live sender name and
+     accent.
+   - The design put it in a sticky column beside the form, about 304px inside. There, Desktop
+     (600px) and Phone (380px) would have rendered the same: a dead control.
+   - In the 760px column the frame is 600px with Desktop and 380px with Phone. The capture's
+     prepare step measures both.
+6. **Sending**: a panel with a strip.
+   - The three selects sit in three columns from `sm`.
+   - The pause checkbox is 22px, inside a 44px label.
+   - Both pause lines stay. The design dropped them.
+7. **Billing**: a panel with a strip, holding the one link to the billing page.
 
 ## Controls
 
@@ -59,11 +62,11 @@ standalone links use `.tap` (`page.tsx:47`, `details-form.tsx:85`).
   `MLS agent ID` reads `CRMLS-P0000`, left there by the start-* captures (the seed value is
   `C01998432`, `src/db/fixtures/la-verne.ts:24`); no accent swatch is selected, because the seed's
   `#1f4d3a` is not one of the five (`la-verne.ts:20` vs `src/config/settings.ts:3-9`); and the
-  Preview shows the line `Nothing new on their street this month.` instead of an email frame,
-  because the first matched contact has nothing new (`load-settings-preview.ts:16-27`). **No
-  capture shows the email preview frame on this page.**
+  Preview shows Aisha Rahman's note: since OR-043a, e2e setup gives her street live sales, and the
+  capture's prepare step (`showNote`) fails unless the note has its street sales.
 - **Preview with a real email** — the first matched contact's note, re-styled live with the typed
-  sender name and chosen accent (`appearance-preview.tsx:19-24`). Not captured.
+  sender name and chosen accent (`appearance-preview.tsx`). Captured since OR-043a, in the settings
+  capture.
 - **Sample preview** — when the agent has no matched people: the line
   `Sample — add your people to see theirs.` (`src/digest/skip-copy.ts:5`) above a sample note
   (`load-settings-preview.ts:18-21`). Not producible from the seed (it has matched contacts).
