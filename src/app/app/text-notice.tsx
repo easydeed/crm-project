@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { inlineLinkClass } from '@/app/app/people/ui'
+import { inlineLinkClass, linkClass } from '@/app/app/people/ui'
 import type { TextNotice } from '@/text/text-notice'
 
 /** One plain line when texting the call list stopped on its own. */
@@ -10,7 +10,7 @@ export function TextNoticeLine({ notice }: { notice: TextNotice }) {
       {notice === 'stopped' ? (
         <>
           You replied STOP, so we stopped texting you. Turn it back on{' '}
-          <Link className={inlineLinkClass} href="/app/addons">
+          <Link className={linkClass} href="/app/addons">
             here
           </Link>{' '}
           and confirm your number again.
