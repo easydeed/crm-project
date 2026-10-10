@@ -4,8 +4,8 @@ import type { CallPanel as CallPanelData } from '@/app/app/call-list-view'
 import { linkClass } from '@/app/app/people/ui'
 import { formatUsPhone, normalizeUsPhone } from '@/config/phone'
 
-/** The call panel's label column: 88px, as drawn (OR-044). */
-const LABELS = 'grid-cols-[88px_1fr]'
+/** The call panel's label column (OR-047): 120px at 390, 170px from sm. At 88px "Recorded against the property" took four lines and "Recorded" overflowed its cell by 4px, measured, at every width. */
+const LABELS = 'grid-cols-[120px_1fr] sm:grid-cols-[170px_1fr]'
 
 function Row({ label, tall, children }: { label: string; tall?: boolean; children: ReactNode }) {
   return (

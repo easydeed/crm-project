@@ -16,7 +16,10 @@ const LISTED: Record<string, string> = {}
 const visible = (value: string) => value.slice(0, value.includes(' disabled:') ? value.indexOf(' disabled:') : undefined)
 const PRIMARY = visible(buttonClass)
 const OUTLINED = visible(secondaryButtonClass).replace(' text-foreground', '')
-const LINK = linkBaseClass.replace('text-[15px] ', '')
+// The size comes off so a copy at any size is found. OR-047: this stripped 'text-[15px] ' after the
+// size moved to 17px, matched nothing, and so quietly stopped finding copies. It now fails if the
+// strip misses.
+const LINK = linkBaseClass.replace(/^text-\[\d+px\] /, '')
 
 /** Copies of linkClass's string (OR-037), the same way. Empty since OR-043 brought the banner in. */
 const LINK_LISTED: Record<string, string> = {}
@@ -45,6 +48,7 @@ test('buttonClass is defined once; the only copies of its string are the listed 
 })
 
 test('linkClass is defined once; the only copies of its string are the listed ones', () => {
+  expect(LINK, 'the size must come off, or a copy at another size goes unseen').not.toMatch(/text-\[/)
   const carrying = sourceFiles().filter((file) => readFileSync(path.join(appRoot, file), 'utf8').includes(LINK))
   expect(carrying).toContain('app/people/ui.ts')
   const copies = carrying.filter((file) => file !== 'app/people/ui.ts').sort()
