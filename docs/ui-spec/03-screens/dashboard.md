@@ -51,8 +51,8 @@ margins (32px from `sm`). There is no grid and no sidebar.
 
 **Call open** (capture: dashboard-call-open): the button label flips to "Close". An inline table
 (`call-panel.tsx`) opens under the row: a `<dl>` with a `--rule` border, `rounded-lg`, 17px.
-- **Labels** sit in an 88px `--surface` cell in muted ink (4.56:1, the tightest pair the contrast
-  test allows). Values sit on the page.
+- **Labels** sit in a `--surface` cell in muted ink: 120px at 390, 170px from `sm` (OR-047). At 88px, measured in the live panel, "Recorded against the property" took four lines and "Recorded" overflowed its cell by 4px at every width. At 120px it takes three lines with no overflow; at 170px, two. Muted ink on `--surface` is 4.56:1, the tightest pair the contrast
+  test allows. Values sit on the page.
 - **Rows:**
   - Phone
   - Email
