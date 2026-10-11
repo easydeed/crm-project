@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useActionState, useState } from 'react'
 import { importClosingsAction, type ImportClosingsState } from '@/app/app/start/actions'
-import { buttonClass, linkClass, mutedClass } from '@/app/app/people/ui'
+import { buttonClass, inlineLinkClass, linkClass, mutedClass } from '@/app/app/people/ui'
 import { formatMoney, formatRecordedDay } from '@/digest/format'
 import { MlsAttribution } from '@/digest/mls-attribution'
 import { peopleListHref } from '@/people/url'
@@ -47,7 +47,7 @@ export function ClosingsResults({
       {isFew(listings.length) ? (
         <p className="mt-3 text-[15px]">
           {START_COPY.fewNote}{' '}
-          <a className={linkClass} href="#upload">
+          <a className={inlineLinkClass} href="#upload">
             {START_COPY.fewLink}
           </a>
           .

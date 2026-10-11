@@ -15,33 +15,26 @@ This is the product's front door, not marketing. That is why it carries no Fraun
 display type (OR-036 Decision B, `packets/OR-036-reskin-auth.md`).
 
 ## Layout
-
-One centred column, the same at 1440 and 390. The page has no responsive (`sm:`, `md:`, `lg:`)
-classes, so nothing changes between widths except how much empty space surrounds the column.
-
-- `<main>` fills the screen height and centres its child both ways, with a 16px side gutter
-  (`flex min-h-screen items-center justify-center px-4`, `src/app/login/page.tsx:13`).
-- A column at most 384px wide (`max-w-sm`), items centred, 24px apart (`page.tsx:14`). Top to bottom:
-  1. The wordmark `onrecord`, 15px semibold. It is a `<p>`, not a heading or an image (`page.tsx:15`).
-  2. The page heading `Sign in`, an `<h1>` at 22px semibold (`page.tsx:16`).
-  3. The form, full column width, fields 16px apart (`src/app/login/login-form.tsx:11`):
-     - "Email" label with its input underneath (`login-form.tsx:13-22`)
-     - "Password" label with its input underneath (`login-form.tsx:23-32`)
-     - the error line, only after a failed attempt (`login-form.tsx:33-37`)
-     - the "Sign in" button (`login-form.tsx:38-44`)
-  4. The text link `Create an account` (`page.tsx:18-23`).
-
-Labels sit above their inputs because `fieldClass` is `block` (`src/app/app/people/ui.ts:15-16`).
-That was made true everywhere in OR-037 after labels sat beside inputs on some screens.
-
-On a phone (under 640px), every `button` and `input` is at least 44px tall, from the global rule
-in `src/app/globals.css:106-114`. Desktop keeps its natural sizes.
-
-The button is not full width: `buttonClass` sets no width, but the form is a flex column, so the
-button stretches to the column (`login-form.tsx:11`). The link stays its text width.
-
-Colours follow the light or dark system setting through the tokens. There is no theme switch
-(PROJECT_STATE rejects a dark mode toggle).
+Since OR-047:
+- **The bar (OR-047).** The navy bar pair (`--bar`, words `--on-bar`), 44px, with the wordmark
+  "onrecord" centred at 18px bold (`src/app/auth-bar.tsx`).
+  - The wordmark is a `<span>`, not a link: on these screens it isn't a control, and the column
+    already has its cross-link.
+  - There is no nav and no identity line.
+- **The column.** 384px (`max-w-sm`), 24px between blocks.
+- **The heading.** `<h1>`, 24px semibold, centred, with its words unchanged.
+- **The form** sits in a plain panel (`panelClass`), padded 24px top and bottom and 20px at the
+  sides, with 18px between fields.
+  - Each label's words are 16px semibold. The label element itself stays regular, because inputs
+    inherit font and the typed text would otherwise be bold.
+  - The fields are `fieldClass`, 48px and 17px.
+  - The error line is 17px.
+  - The submit button is full width.
+- **The cross-link** is `linkClass`: 17px, 44px tall on phones, centred under the panel.
+- **No field is ever filled in**, in code, fixtures or mocks (`auth-panels.test.ts`). The design drew
+  this screen with a prefilled email and a masked password, and that was refused.
+- **Login sits in the middle of the page**, under the bar. The labels and button keep their exact
+  words: "Email", "Password" and "Sign in". `e2e/auth.setup.ts` signs every capture in through them.
 
 ## Controls
 

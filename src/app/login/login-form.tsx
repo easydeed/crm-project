@@ -8,10 +8,11 @@ export function LoginForm({ returnTo }: { returnTo: string }) {
   const [state, action, pending] = useActionState(loginAction, {} as LoginState)
 
   return (
-    <form action={action} className="flex w-full max-w-sm flex-col gap-4">
+    <form action={action} className="flex w-full flex-col gap-4.5 px-5 py-6">
       <input type="hidden" name="returnTo" value={returnTo} />
-      <label className="text-[15px]">
-        Email
+      {/* The label's words carry the weight; the input inherits font, so the label itself stays regular. */}
+      <label className="text-[16px]">
+        <span className="font-semibold">Email</span>
         <input
           className={fieldClass}
           type="email"
@@ -20,8 +21,8 @@ export function LoginForm({ returnTo }: { returnTo: string }) {
           required
         />
       </label>
-      <label className="text-[15px]">
-        Password
+      <label className="text-[16px]">
+        <span className="font-semibold">Password</span>
         <input
           className={fieldClass}
           type="password"
@@ -31,7 +32,7 @@ export function LoginForm({ returnTo }: { returnTo: string }) {
         />
       </label>
       {state.error ? (
-        <p className="text-[15px] text-foreground" role="alert">
+        <p className="text-[17px] text-foreground" role="alert">
           {state.error}
         </p>
       ) : null}

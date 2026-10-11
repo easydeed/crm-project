@@ -5,7 +5,7 @@ import { ViewAsBanner } from '@/app/app/view-as-banner'
 import { logoutAction } from '@/app/login/actions'
 import { readRequestSession } from '@/auth/current-session'
 import { getAccountById } from '@/db/accounts'
-import { linkClass, mutedClass } from '@/app/app/people/ui'
+import { metaLinkClass, mutedClass } from '@/app/app/people/ui'
 
 export default async function AppLayout({
   children,
@@ -33,7 +33,7 @@ export default async function AppLayout({
           {shown?.brokerage ? ` · ${shown.brokerage}` : null}
         </p>
         <form action={logoutAction}>
-          <button className={`${linkClass} min-h-11`} type="submit">
+          <button className={`${metaLinkClass} min-h-11`} type="submit">
             Log out
           </button>
         </form>

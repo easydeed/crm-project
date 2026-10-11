@@ -6,7 +6,7 @@ import {
 } from '@/app/app/send-actions'
 import type { HomeSend } from '@/app/app/home-send'
 import { HomeBillingCard } from '@/app/app/home-billing-card'
-import { buttonClass, linkClass, sendCardClass, sendCardHeadingClass } from '@/app/app/people/ui'
+import { buttonClass, inlineLinkClass, linkClass, sendCardClass, sendCardHeadingClass } from '@/app/app/people/ui'
 import { pausedAccountMailto } from '@/config/support'
 
 const ctaClass = `${buttonClass} mt-6 inline-block`
@@ -37,7 +37,7 @@ export function HomeSendCard({
         <p className="mt-3 max-w-xl text-[15px]">
           A few people marked it as spam, so we stopped to protect everyone&apos;s
           delivery.{' '}
-          <a className={linkClass} href={pausedAccountMailto(view.accountId)}>
+          <a className={inlineLinkClass} href={pausedAccountMailto(view.accountId)}>
             Contact us
           </a>
         </p>
