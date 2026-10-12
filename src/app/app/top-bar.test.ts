@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { expect, test } from 'vitest'
 import { attribute, byTag, classVariants, only, parseJsx } from '@/test/jsx'
 
-test('top bar is three visible links, not a hamburger', () => {
+test('top bar is three visible links, never a hamburger', () => {
   const src = readFileSync(new URL('./top-bar.tsx', import.meta.url), 'utf8')
   expect(src).toContain('href="/app/people"')
   expect(src).toContain('href="/app/addons"')
