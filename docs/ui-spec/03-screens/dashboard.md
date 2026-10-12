@@ -102,18 +102,18 @@ Results of Mark as called / Not now / Undo are announced: the row area is `aria-
 | State | Renders (quoted) | Source |
 |---|---|---|
 | missing-account | Whole page replaced: `We could not load your account.` / `Sign out and sign in again. If it keeps happening, the account may have been removed.` (`page.tsx:20-24`). No call list, no homeowners. | Not producible from the seed; described from the code |
-| billing: no_subscription | `Start your plan to send the monthly note.` / `Everything you set up stays here. Nothing goes to your homeowners until the plan is active.` / `Start your plan` | Producible: `pnpm db:seed` alone writes no subscription; `scripts/e2e-setup.ts:32-35` adds an active one, so it is not captured |
-| billing: past_due | `Your last payment did not go through.` / `The monthly note is on hold until the open invoice is paid. Your people and your call list are all still here.` / `Open billing` | Not producible from the seed; code at `home-billing-card.tsx:13-17` |
+| billing: no_subscription | `Start your plan to send the monthly note.` / `Everything you set up stays here. Nothing goes to your homeowners until the plan is active.` / `Start your plan` | **Captured** since OR-044a: dashboard-no-plan (the noPlan e2e agent); `home-billing-card.tsx` |
+| billing: past_due | `Your last payment did not go through.` / `The monthly note is on hold until the open invoice is paid. Your people and your call list are all still here.` / `Open billing` | **Captured** since OR-044a: dashboard-past-due (the pastDue agent); `home-billing-card.tsx` |
 | billing: canceled | `Your plan has ended.` / `Your homeowners are not getting the monthly note. Your people and their matches are still here.` / `Restart your plan` | Not producible; `home-billing-card.tsx:18-22`. Also shown when a cancel-at-period-end plan passes its end date (`billing/status.ts:19`) |
 | billing: inactive | `Your plan is not active.` / `The monthly note is on hold. Your people and your call list are all still here.` / `Open billing` | Not producible; `home-billing-card.tsx:23-27`. Any Stripe status other than active, past_due, canceled |
-| system-paused | `We paused your monthly note.` / `A few people marked it as spam, so we stopped to protect everyone's delivery.` + `Contact us`. No Unpause: only an admin can lift it. | Not producible; `home-card.tsx:33-46`. Set when complaints cross a threshold; the latest admin action is `complaint_pause` (`db/system-pause.ts`) |
-| paused | `Your monthly note is paused.` / `Nothing sends until you turn it back on.` / `Unpause` | Not producible (seed agent has `paused: false`, `db/fixtures/la-verne.ts:23`); `home-card.tsx:48-56` |
-| settings | `Set when the note goes out.` / `Pick a send day, a time, and a timezone.` / `Open settings` | **Captured** (dashboard, dashboard-call-open): the seed agent has no send time (`db/fixtures/la-verne.ts:11-25` sets no `sendTime`); `home-card.tsx:58-70` |
-| import (no people yet) | `Let's get your people in.` / `Add the folks you've closed with and we'll match each address to the county record. Takes about four minutes.` / `Add your people` | Not producible; `home-card.tsx:72-85` |
+| system-paused | `We paused your monthly note.` / `A few people marked it as spam, so we stopped to protect everyone's delivery.` + `Contact us`. No Unpause: only an admin can lift it. | **Captured** since OR-044a: dashboard-system-paused (an agent whose latest admin action is `complaint_pause`); `home-card.tsx:33-46`, `db/system-pause.ts` |
+| paused | `Your monthly note is paused.` / `Nothing sends until you turn it back on.` / `Unpause` | **Captured** since OR-044a: dashboard-paused (the paused agent); `home-card.tsx:48-56` |
+| settings | `Set when the note goes out.` / `Pick a send day, a time, and a timezone.` / `Open settings` | **Captured** (dashboard-quiet, dashboard-quiet-dark): the quiet agent has no send time. Until OR-044a the seeded agent had none either, so every dashboard capture showed this state; `home-card.tsx:58-70` |
+| import (no people yet) | `Let's get your people in.` / `Add the folks you've closed with and we'll match each address to the county record. Takes about four minutes.` / `Add your people` | **Captured** since OR-044a: dashboard-empty (the empty agent: a send time, no people); `home-card.tsx` |
 | review | `Some addresses still need a house.` / `The monthly note only goes to people matched to a county record.` / `Open the review queue` | Not producible as-is (seed lacks a send time, which wins first); `home-card.tsx:87-99` |
 | none-subscribed | `No one is set to get the monthly note.` / `People need a matched house and an active monthly note.` / `Open people` | Not producible; `home-card.tsx:101-113` |
 | skipped | `Skipped.` / `The {when} note will not go out.` (e.g. "October 1") / `Resume` | Not producible; `home-card.tsx:115-125` |
-| scheduled | `<h1>` is `Your next email goes out {when} to {count} homeowner(s).` (`jobs/schedule-time.ts:111-114`), then `Preview it` and `Skip this month` | Not producible; `home-card.tsx:127-142` |
+| scheduled | `<h1>` is `Your next email goes out {when} to {count} homeowner(s).` (`jobs/schedule-time.ts:111-114`), then `Preview it` and `Skip this month` | **Captured** since OR-044a (dashboard, dashboard-dark, dashboard-call-open): e2e setup gives the seeded agent a send time (Decision A). The view-as capture shows Preview it alone: Skip writes, so read-only hides it; `home-card.tsx:127-142` |
 
 The order matters to a designer: billing outranks a pause, a pause outranks missing settings. The call
 list renders under every send-card state, including paused and billing (`call-list-data.ts:28`: "The
@@ -155,7 +155,7 @@ the panel, but in place of the two actions it shows `Viewing as another agent is
 (`call-entry.tsx:115`, `auth/write-guard.ts:3`). Navigation links (Open settings, Open billing, etc.)
 stay. Not producible: the seed has no admin account.
 
-**Loading** (`loading.tsx`): `Loading…` (15px, `px-4 py-10`). Not captured.
+**Loading** (`loading.tsx`): `Loading…` (15px, `px-4 py-10`). Captured since OR-044a: loading-app, held on screen by holding the navigation (Decision C).
 
 **Error** (`error.tsx`): `We couldn't load your home page.` / `Try again. If it keeps happening,
 sign out and sign in.` / `Try again` (a text-style button that calls `reset`). Not producible. The top
