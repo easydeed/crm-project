@@ -12,7 +12,7 @@ import { PLAN } from '@/config/costs'
 
 export type AgentKey =
   | 'dana' | 'quiet' | 'empty' | 'groups' | 'paused' | 'systemPaused' | 'pastDue' | 'setToEnd'
-  | 'ended' | 'spare' | 'noPlan' | 'missing' | 'unreachable' | 'extrasOn' | 'admin' | 'taken'
+  | 'ended' | 'noPlan' | 'missing' | 'unreachable' | 'extrasOn' | 'admin' | 'taken'
 
 export type E2EInvoice = { id: string; created: string; status: 'paid' | 'open'; url: string | null }
 
@@ -104,7 +104,6 @@ export const E2E_AGENTS: E2EAgent[] = [
     ],
     expects: { phone: 'verified' },
   }),
-  made(16, 'spare', 'Spare Agent', { billing: { plan: 'none' }, expects: {} }),
   // Decision B: a real admin, who signs in and clicks View as.
   made(14, 'admin', 'Ops Admin', { role: 'admin', billing: { plan: 'none' }, expects: {} }),
   // Decision D: an address that is registered and is not a login.
