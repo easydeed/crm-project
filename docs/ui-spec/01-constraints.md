@@ -519,7 +519,7 @@ belong to a separate pass, not a redesign.
   which OR-047 refused. A capture is a picture of a page, so the same rule holds for what
   a capture types. **Enforced by.** `src/app/auth-panels.test.ts` “no auth field is ever
   filled in: no value or defaultValue, mocks included” and
-  `src/db/fixtures/e2e-agents.test.ts` “no capture types an e2e login: no signed-in agent
+  `src/db/fixtures/e2e-logins.test.ts` “no capture types an e2e login: no signed-in agent
   email, and never the e2e password”.
 - **Marketing copy may not claim behaviour the product does not have.** The export's
   "Three past clients… We tell you which three" promised clients. See
