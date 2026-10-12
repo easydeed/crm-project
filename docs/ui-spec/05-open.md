@@ -186,6 +186,13 @@ Each item says how it is known:
     - The add-ons texting band: reserved for consumer SMS, and absent until that add-on exists.
       `addons-ui.test` holds the absence; a capture would only show the page without it.
 
+30. **Settings shows a send time nobody saved.** *Found by OR-044a's comparison.*
+    - `sending-form.tsx:49` sets `defaultValue={account.sendTime ?? '09:00'}`.
+    - An agent with no send time sees "9:00" chosen in Settings, while the dashboard says "Set
+      when the note goes out."
+    - Saving the form untouched would set 09:00, so the default may be intended. The two screens
+      disagree about whether a time is set, and nothing records which one is right.
+
 ## Smaller things
 
 - `src/app/fonts/fonts.ts` says Fraunces is "used nowhere yet". Since OR-038 it is used on
