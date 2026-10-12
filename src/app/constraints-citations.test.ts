@@ -12,6 +12,9 @@ import { expect, test } from 'vitest'
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const DOC = 'docs/ui-spec/01-constraints.md'
 const doc = readFileSync(path.join(root, DOC), 'utf8')
+/** The findings register cites the test that holds each finding now: the same rule applies. */
+const REGISTER = 'docs/audits/check-findings.md'
+const register = readFileSync(path.join(root, REGISTER), 'utf8')
 const collapse = (text: string) => text.replace(/\s+/g, ' ').trim()
 
 /** `path` “name”: a test by its title, or any other file by a string in it. Names may wrap lines. */
@@ -47,6 +50,14 @@ test('every test the constraints document cites exists, by file and by name', ()
   // Bare paths to code must exist too.
   const bare = [...doc.matchAll(/`((?:src|e2e|scripts)\/[^`\s]+\.(?:ts|tsx|css|mjs))`/g)].map((m) => m[1]!)
   expect(bare.filter((file) => !existsSync(path.join(root, file)))).toEqual([])
+})
+
+test('every finding in the register names the test that holds it now, and each exists', () => {
+  const findings = register.split(/\n(?=\d+\. \*\*)/).slice(1)
+  expect(findings).toHaveLength(16)
+  for (const finding of findings) expect(citations(finding.split('## Near misses')[0]!).length, finding.slice(0, 60)).toBeGreaterThan(0)
+  expect(missing(register)).toEqual([])
+  expect(register.match(/\.(?:ts|tsx|css|mjs):\d/g) ?? []).toEqual([])
 })
 
 test('every "Enforced by" names a test, or says plainly that nothing enforces it', () => {

@@ -2,7 +2,7 @@
 
 **This file is authoritative.** Do not resurrect rejected concepts unless explicitly instructed. When this file and any other document conflict, this file wins. Update it only through an approved task.
 
-Last updated: 2026-09-23
+Last updated: 2026-10-12
 
 ---
 
@@ -56,6 +56,12 @@ Match values, not spellings. The tokens-only scan recognised hex and named utili
 
 Probe with the real thing. A test fixture written from the same assumption as the rule it checks will agree with the rule and tell you nothing. The rgba scan's probes were space-padded while Tailwind writes spaces as underscores, so the rule passed its own tests and missed every real occurrence.
 
+A dimension stated from reading is a guess. A size, a line count or a cause written into a report is measured in the renderer first. Three times on this project a stated dimension was wrong and only a measurement showed it: a label "three lines" that was four with an overflow, a 44px link that rendered 162.9px wide, and a settings field explained from the code when it was a default. `docs/ui-spec/01-constraints.md` §9.2 has them.
+
+Prove the transformation applied. A check that transforms its input before asserting (strips a size, skips a family of tokens, holds a copy of the value it looks for) goes quiet when the code moves under it, and nothing announces it. It must fail when the transformation no longer applies. Three instances: the copy detector held a typed copy of `buttonClass` (OR-042), the bill bar test skipped every `text-[…]` (OR-046), and the link detector stripped a `text-[15px] ` that was about to become 17px (OR-047). `src/app/shared-classes.test.ts` asserts that its strip removed the size before it searches; that is the pattern.
+
+Sixteen checks on this project were found checking less than their names said. Each one, what it claimed, what it checked, and the test that holds it now: `docs/audits/check-findings.md`.
+
 ## Rejected ideas — do not rebuild
 
 | Rejected | Reason |
@@ -95,17 +101,25 @@ RLS is not covered by the schema drift check. The app connects as `postgres`, wh
 
 ## Current phase
 
-Pre-implementation. v0 prototypes exist for marketing, dashboard, People, Add-ons, Settings, and a `/lab` exploration set. No production code written.
+Built against fixtures, not live. Everything below runs end to end on the La Verne fixture data, and nothing has reached a homeowner or taken a live payment:
+- import and address matching, and the review queue
+- the monthly note, composed and previewed, never sent: `SEND_ENABLED` is false
+- the call list and the call panel
+- Stripe billing, in test mode only (`StripeGateway` refuses any key that is not `sk_test_`)
+- add-ons: Add my lender, and Text me the call list
+- signup's find-my-closings step
+
+Real data providers are not wired: `src/providers/current.ts` serves the fixtures. Metering is in place, so `/admin/costs` fills once they are. The redesign audited in OR-040 has been applied screen by screen (OR-042 to OR-047), and the browser pass photographs and measures 72 states (OR-044a). What stands between this and launch is `docs/GO_LIVE.md`.
 
 ## Build order
 
-1. Schema + provider interfaces against captured fixtures
-2. Digest renderer as a pure function — test thin cases first
-3. Address matching + review UI
-4. Send pipeline (5 idempotent jobs)
-5. **Wire real providers, measure cost per parcel, STOP and check economics**
-6. Auth, Stripe, add-on framework
-7. Signup MLS lookup — build the found-nothing path first
+1. Schema + provider interfaces against captured fixtures. **Done.**
+2. Digest renderer as a pure function — test thin cases first. **Done.**
+3. Address matching + review UI. **Done.**
+4. Send pipeline (5 idempotent jobs). **Built, and gated off** until `SEND_ENABLED`.
+5. **Wire real providers, measure cost per parcel, STOP and check economics.** **Not done.** The providers are fixtures; this is the next step that touches the business.
+6. Auth, Stripe, add-on framework. **Done**, ahead of step 5. Stripe is test mode only.
+7. Signup MLS lookup — build the found-nothing path first. **Done** against the fixture corpus, ahead of step 5.
 
 ## Current task
 
@@ -113,4 +127,4 @@ _none assigned_
 
 ## Last approved commit
 
-_none_
+The head of `main`. When this was written: `96ba8d3`, OR-044a (PR #66), the merge before OR-048.
