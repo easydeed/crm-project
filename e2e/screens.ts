@@ -1,18 +1,13 @@
 import { readFileSync } from 'node:fs'
 import { expect, type BrowserContext, type Page } from '@playwright/test'
-import type { AgentKey } from '../src/db/fixtures/e2e-agents'
+import { findClosings, MLS, showNote, showNoteText, state } from './screens/prepare'
+import type { Screen } from './screens/types'
+import { ACCOUNT_SCREENS } from './screens/account'
+import { AUTH_SCREENS } from './screens/auth'
+import { DASHBOARD_SCREENS } from './screens/dashboard'
+import { PEOPLE_SCREENS } from './screens/people'
 
-const state = JSON.parse(readFileSync('e2e/.state.json', 'utf8')) as { personId: string; unsubscribeToken: string }
-
-type Screen = {
-  name: string
-  path: string
-  loggedOut?: boolean
-  colorScheme?: 'light' | 'dark'
-  /** Signed in as another e2e agent (OR-044a's table) rather than the seeded one. */
-  as?: Exclude<AgentKey, 'dana' | 'taken'>
-  prepare?: (page: Page) => Promise<void>
-}
+export type { Screen }
 
 /** Visit a screen as its viewer sees it: a logged-out screen gets no session cookie, a dark one dark mode. */
 export async function openScreen(page: Page, screen: Screen) {
@@ -25,63 +20,12 @@ export async function openScreen(page: Page, screen: Screen) {
   return page.goto(screen.path)
 }
 
-/** Agent ids in the OR-024 fixture corpus (src/providers/fixtures/closed-listings.ts). */
-const MLS = { many: 'CRMLS-P4700', thin: 'CRMLS-P0300', none: 'CRMLS-P0000' }
-
-async function findClosings(page: Page, agentId: string) {
-  await page.getByLabel('Your MLS agent ID').fill(agentId)
-  await page.getByRole('button', { name: 'Find my closings' }).click()
-}
-
 /**
- * The in-app email preview carrying a note (OR-043a). It had only ever shown a skipped note, and a
- * full-page capture leaves an iframe below the fold unpainted, so either fault looked like a blank
- * frame. Each step fails unless the note has its street sales.
- *
- * settings captures the email, scrolled into view so it paints. The frame shows the note's top.
+ * Every agent-facing screen, signed out and in, the marketing pages, and the homeowner's unsubscribe
+ * page. /admin is desktop only by design. The first list is the 27 captured before OR-044a; the
+ * states nobody had looked at follow, by area.
  */
-async function showNote(page: Page) {
-  const frame = page.locator('iframe[title="Email preview"]')
-  await expect(page.frameLocator('iframe[title="Email preview"]').locator('body')).toContainText('What sold on your street')
-  // The Desktop/Phone toggle has to change something (OR-046): where the column allows 600px, the
-  // frame is 600 with Desktop and 380 with Phone. A preview squeezed into a narrow column would make
-  // the two identical, a dead control.
-  if ((page.viewportSize()?.width ?? 0) >= 1024) {
-    const width = async () => (await frame.boundingBox())?.width ?? 0
-    await page.getByRole('button', { name: 'Phone', exact: true }).click()
-    await expect.poll(width).toBe(380)
-    await page.getByRole('button', { name: 'Desktop', exact: true }).click()
-    await expect.poll(width).toBe(600)
-  }
-  await frame.scrollIntoViewIfNeeded()
-  // Wait for the frame's paint to settle (OR-045). A capture once caught the note laid out about
-  // 60px wide, before the frame took its final width: the same commit, two runs, two pictures.
-  // Step 0 found it. Two identical frame shots in a row mean the paint has settled.
-  const outer = (await frame.boundingBox())!.width
-  await expect
-    .poll(async () => (await page.frameLocator('iframe[title="Email preview"]').locator('body').boundingBox())?.width ?? 0)
-    .toBeGreaterThan(outer * 0.9)
-  let last = await frame.screenshot()
-  for (let tries = 0; tries < 20; tries++) {
-    await page.waitForTimeout(100)
-    const next = await frame.screenshot()
-    if (next.equals(last)) return
-    last = next
-  }
-  throw new Error('The email preview never stopped changing')
-}
-
-/** person-detail captures the plain text, which shows the whole note, street sales included. */
-async function showNoteText(page: Page) {
-  await page.getByRole('button', { name: 'Plain text' }).click()
-  // Plain text has no block labels, so the street sales are found by their document numbers.
-  const text = page.locator('pre')
-  await expect(text).toContainText('document E2E-LIVE-B117')
-  await expect(text).toContainText('document E2E-LIVE-B131')
-}
-
-/** Every agent-facing screen, signed out and in, the marketing pages, and the homeowner's unsubscribe page. /admin is desktop only by design. */
-export const SCREENS: Screen[] = [
+const CAPTURED: Screen[] = [
   // What a prospect sees (OR-038).
   { name: 'home', path: '/', loggedOut: true },
   { name: 'sample', path: '/sample', loggedOut: true },
@@ -196,3 +140,5 @@ export const SCREENS: Screen[] = [
     },
   },
 ]
+
+export const SCREENS: Screen[] = [...CAPTURED, ...DASHBOARD_SCREENS, ...PEOPLE_SCREENS, ...ACCOUNT_SCREENS, ...AUTH_SCREENS]

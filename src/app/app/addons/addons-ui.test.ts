@@ -53,6 +53,17 @@ test('two bands with their headings, the carrier note under texting, and a bill 
   expect(html).not.toMatch(/<span>Fixture extra<\/span><span>\$2<\/span>/)
 })
 
+test('a band no add-on is in renders nothing: the texting band stays absent until its add-on exists (OR-044a)', () => {
+  const extrasOnly = rowsFrom().filter((row) => row.band === 'extras')
+  expect(extrasOnly.length).toBeGreaterThan(0)
+  const html = renderToStaticMarkup(createElement(AddonsPanel, { rows: extrasOnly, baseCents: 1900, readOnly: false }))
+  expect(html).toContain('>Extras</h2>')
+  const texting = BANDS.find((band) => band.band === 'texting')!
+  expect(html).not.toContain(texting.heading)
+  expect(html).not.toContain(texting.note!.slice(0, 30))
+  expect(BANDS.filter((band) => html.includes(`>${band.heading}</h2>`)).map((band) => band.band)).toEqual(['extras'])
+})
+
 test('every switch action goes through assertWritable, so view-as cannot toggle', () => {
   const actions = src('./actions.ts')
   const exported = [...actions.matchAll(/export async function (\w+)\([^)]*\)[^{]*\{([\s\S]*?)\n\}/g)]
