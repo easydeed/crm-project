@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { expect, type BrowserContext, type Page } from '@playwright/test'
+import type { AgentKey } from '../src/db/fixtures/e2e-agents'
 
 const state = JSON.parse(readFileSync('e2e/.state.json', 'utf8')) as { personId: string; unsubscribeToken: string }
 
@@ -8,17 +9,17 @@ type Screen = {
   path: string
   loggedOut?: boolean
   colorScheme?: 'light' | 'dark'
-  /** Signed in as the quiet agent (OR-043) rather than the seeded one. */
-  as?: 'quiet'
+  /** Signed in as another e2e agent (OR-044a's table) rather than the seeded one. */
+  as?: Exclude<AgentKey, 'dana' | 'taken'>
   prepare?: (page: Page) => Promise<void>
 }
 
 /** Visit a screen as its viewer sees it: a logged-out screen gets no session cookie, a dark one dark mode. */
 export async function openScreen(page: Page, screen: Screen) {
   if (screen.loggedOut || screen.as) await page.context().clearCookies()
-  if (screen.as === 'quiet') {
-    const quiet = JSON.parse(readFileSync('test-results/auth-quiet.json', 'utf8')) as { cookies: Parameters<BrowserContext['addCookies']>[0] }
-    await page.context().addCookies(quiet.cookies)
+  if (screen.as) {
+    const signedIn = JSON.parse(readFileSync(`test-results/auth-${screen.as}.json`, 'utf8')) as { cookies: Parameters<BrowserContext['addCookies']>[0] }
+    await page.context().addCookies(signedIn.cookies)
   }
   if (screen.colorScheme) await page.emulateMedia({ colorScheme: screen.colorScheme })
   return page.goto(screen.path)
