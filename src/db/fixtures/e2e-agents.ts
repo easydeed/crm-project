@@ -83,7 +83,7 @@ export const E2E_AGENTS: E2EAgent[] = [
     groups: [{ name: 'Open house', members: [3, 4] }, { name: 'Past clients', members: [0, 1, 2] }],
     expects: { home: 'settings', people: 7 },
   }),
-  made(5, 'paused', 'Morgan Lee', { ...SET_UP, billing: stripe('paused'), expects: { home: 'paused' } }),
+  made(5, 'paused', 'Morgan Lee', { ...SET_UP, paused: true, billing: stripe('paused'), expects: { home: 'paused' } }),
   made(6, 'systemPaused', 'Riley Shah', { ...SET_UP, paused: true, complaintPause: true, billing: stripe('systemPaused'), expects: { home: 'system-paused' } }),
   made(7, 'pastDue', 'Avery Cole', {
     billing: stripe('pastDue', { status: 'past_due', invoices: [{ id: 'in_e2e_pastDue_3', created: '2026-10-01T16:00:00Z', status: 'open', url: invoiceUrl('in_e2e_pastDue_3') }, ...PAID('pastDue', null)] }),
