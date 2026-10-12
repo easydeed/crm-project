@@ -9,7 +9,7 @@ function Empty({ href, label, text }: { href: string; label: string; text: strin
   return (
     <div className={panelBodyClass}>
       <p className="max-w-xl text-[17px]">{text}</p>
-      <Link className={`mt-3 inline-block ${linkClass}`} href={href}>
+      <Link className={`tap mt-3 inline-block ${linkClass}`} href={href}>
         {label}
       </Link>
     </div>

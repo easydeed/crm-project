@@ -38,7 +38,7 @@ export function DetailsRow({
   return (
     <div className={`grid ${labels} border-t border-rule first:border-t-0`}>
       <dt className="bg-surface px-3.5 py-3 font-medium text-muted-ink">{label}</dt>
-      <dd className={`min-w-0 bg-background px-3.5 py-3 ${tall ? 'flex min-h-12 items-center' : ''}`}>{children}</dd>
+      <dd className={`min-w-0 break-words bg-background px-3.5 py-3 ${tall ? 'flex min-h-12 items-center' : ''}`}>{children}</dd>
     </div>
   )
 }
