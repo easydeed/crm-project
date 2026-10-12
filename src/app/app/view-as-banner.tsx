@@ -11,7 +11,7 @@ export function ViewAsBanner({ name }: { name: string }) {
     <div className="sticky top-0 z-20 flex items-center justify-between gap-3 bg-alert px-4 py-2 text-[15px] font-semibold text-on-alert">
       <p>Viewing as {name} — read only</p>
       <form action={exitViewAsAction}>
-        <button className={`${linkBaseClass} min-h-11 text-on-alert`} type="submit">
+        <button className={`${linkBaseClass} min-h-11 min-w-11 text-on-alert`} type="submit">
           Exit
         </button>
       </form>

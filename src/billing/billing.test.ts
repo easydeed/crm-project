@@ -1,8 +1,9 @@
 import { readFileSync } from 'node:fs'
-import { afterEach, expect, test } from 'vitest'
+import { afterEach, expect, test, vi } from 'vitest'
+import { SubscriptionNotFound } from '@/billing/gateway'
 import { signStripePayload, verifyStripeSignature } from '@/billing/signature'
 import { billingAllowsSending, billingIssue } from '@/billing/status'
-import { stripeSecretKey, toSubscription } from '@/billing/stripe-gateway'
+import { StripeGateway, stripeSecretKey, toSubscription } from '@/billing/stripe-gateway'
 import { assertSendAllowed } from '@/jobs/send-guard'
 
 const NOW = new Date('2026-10-01T12:00:00Z')
@@ -10,6 +11,7 @@ const LATER = new Date('2026-10-20T00:00:00Z')
 const env = { ...process.env }
 afterEach(() => {
   process.env = { ...env }
+  vi.unstubAllGlobals()
 })
 
 const active = { status: 'active', currentPeriodEnd: LATER, cancelAtPeriodEnd: false }
@@ -75,4 +77,23 @@ test('the subscription period end is read from either API shape', () => {
   })
   expect(old).toMatchObject({ customerId: 'cus_1', currentPeriodEnd: LATER, accountId: 'a', cancelAtPeriodEnd: false })
   expect(basil).toMatchObject({ customerId: 'cus_1', currentPeriodEnd: LATER, cancelAtPeriodEnd: true, cardLast4: '4242' })
+})
+
+/** Answers every request with one Stripe error. Nothing leaves the process. */
+function stripeAnswers(status: number, error: Record<string, string>) {
+  process.env.STRIPE_SECRET_KEY = 'sk_test_unit'
+  vi.stubGlobal('fetch', async () => new Response(JSON.stringify({ error }), { status }))
+}
+
+test('Stripe saying "no such subscription" is SubscriptionNotFound; every other error stays an error (OR-044a)', async () => {
+  const gateway = new StripeGateway()
+  stripeAnswers(404, { code: 'resource_missing', message: "No such subscription: 'sub_gone'" })
+  await expect(gateway.getSubscription('sub_gone')).rejects.toBeInstanceOf(SubscriptionNotFound)
+  // A different 404, a 500, or a refused key is not "missing": the page must not hide them.
+  for (const [status, code] of [[404, 'url_invalid'], [500, 'api_error'], [401, 'invalid_api_key']] as const) {
+    stripeAnswers(status, { code, message: 'no' })
+    const thrown = await gateway.getSubscription('sub_x').catch((err: unknown) => err)
+    expect(thrown).toBeInstanceOf(Error)
+    expect(thrown).not.toBeInstanceOf(SubscriptionNotFound)
+  }
 })

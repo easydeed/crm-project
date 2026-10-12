@@ -53,6 +53,19 @@ The browser pass adds events dated from the run (`pnpm e2e:setup`, from
 Run `pnpm e2e:setup` after `pnpm db:seed` to see them locally. Moving dates stay out of the seed
 by rule (OR-043a).
 
+**The browser pass signs in as fifteen agents, each built for one state** (OR-044a). They live in
+`src/db/fixtures/e2e-agents.ts`: the seeded agent (with a send time, so her dashboard is the
+scheduled card), the quiet one, and one each for no people, groups, paused, paused by a complaint,
+past due, set to end, ended, no plan, a plan Stripe has no record of, Stripe unreachable, extras
+on, an admin who clicks View as, and a registered address that is not a login. `pnpm e2e:setup`
+builds them and then reads each back through the loaders its screens use; if one no longer shows
+its state, setup fails and says which. To capture a new state that only data can produce:
+1. Add an agent to the table, with `expects` naming the state.
+2. Add a capture with `as: '<key>'` in `e2e/screens/<area>.ts`, whose prepare checks the state's
+   own words.
+`e2e-agents.test.ts` fails on an agent no capture uses. A state a prepare reaches by clicking must
+not write anything another capture reads.
+
 ## Two things that will not be compromised
 
 **Plain language.** The buyer is a working agent, median age 57, who already pays for software they don't open. If a sentence makes someone pause for half a second, rewrite it. Jargon inside a picture of a document is evidence; jargon in a sentence is a lost reader.

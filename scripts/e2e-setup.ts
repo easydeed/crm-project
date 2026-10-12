@@ -6,7 +6,7 @@
  * is on the host in DATABASE_URL, not on a flag anyone could set.
  */
 import { writeFileSync } from 'node:fs'
-import { and, asc, eq, ilike, not } from 'drizzle-orm'
+import { and, asc, eq, ilike } from 'drizzle-orm'
 import { isLocalDatabaseUrl } from '../src/config/database-url'
 
 const url = process.env.DATABASE_URL
@@ -20,40 +20,22 @@ export const E2E_EMAIL = 'dana@coastline.example'
 export const E2E_PASSWORD = 'e2e-local-scratch-only'
 
 async function main() {
-  const { hashPassword } = await import('../src/auth/password')
   const { getRuntimeDb, resetRuntimeDb } = await import('../src/db/runtime')
-  const { accounts, contacts, parcelEvents, parcels, subscriptions } = await import('../src/db/schema')
+  const { contacts, parcelEvents, parcels } = await import('../src/db/schema')
   const { callListEntries } = await import('../src/db/schema-call-lists')
   const { AGENT_ID } = await import('../src/db/fixtures/la-verne')
   const { buildCallLists } = await import('../src/jobs/build-call-lists')
   const { signUnsubscribeToken } = await import('../src/unsubscribe/token')
 
   const { db } = getRuntimeDb()
-  await db.update(accounts).set({ passwordHash: await hashPassword(E2E_PASSWORD) }).where(eq(accounts.id, AGENT_ID))
-  await db
-    .insert(subscriptions)
-    .values({ accountId: AGENT_ID, stripeCustomerId: 'cus_e2e', stripeSubId: 'sub_e2e', plan: 'base', status: 'active', currentPeriodEnd: new Date('2099-01-01') })
-    .onConflictDoNothing()
   const now = new Date()
 
-  // A second agent whose people have nothing recent, for the quiet dashboard (OR-043). Its three
-  // people are copies of Dana's, on parcels away from Oakdale, so no event reaches them.
-  const { quietAgent, quietContactId, QUIET_AGENT_ID } = await import('../src/db/fixtures/e2e-live')
-  await db.insert(accounts).values({ ...quietAgent, passwordHash: await hashPassword(E2E_PASSWORD) }).onConflictDoNothing()
-  await db
-    .insert(subscriptions)
-    .values({ accountId: QUIET_AGENT_ID, stripeCustomerId: 'cus_e2e_quiet', stripeSubId: 'sub_e2e_quiet', plan: 'base', status: 'active', currentPeriodEnd: new Date('2099-01-01') })
-    .onConflictDoNothing()
-  const away = await db
-    .select()
-    .from(contacts)
-    .where(and(eq(contacts.accountId, AGENT_ID), eq(contacts.status, 'matched'), not(ilike(contacts.addressRaw, '%Oakdale%'))))
-    .orderBy(asc(contacts.name))
-    .limit(3)
-  for (const [index, row] of away.entries()) {
-    const { id: _id, createdAt: _created, updatedAt: _updated, ...copy } = row as typeof row & { createdAt?: unknown; updatedAt?: unknown }
-    await db.insert(contacts).values({ ...copy, id: quietContactId(index), accountId: QUIET_AGENT_ID }).onConflictDoNothing()
-  }
+  // Every agent the captures sign in as, the seeded one included (OR-044a). Each exists for one
+  // state, and checkAgents below fails the run if it stops showing it.
+  const { buildAgents, checkAgents } = await import('./e2e-agents')
+  const { E2E_AGENTS, agentContactId, e2eAgent } = await import('../src/db/fixtures/e2e-agents')
+  const { QUIET_AGENT_ID } = await import('../src/db/fixtures/e2e-live')
+  await buildAgents(db, E2E_PASSWORD)
 
   // Events dated from this run (OR-043), so the seeded agent's three Oakdale people carry three
   // different call tags every month, and the previewed person has a note (OR-043a). New parcels
@@ -114,11 +96,28 @@ async function main() {
   const note = input ? renderDigest(input) : null
   if (!note?.send) throw new Error(`${PREVIEW_PERSON}'s note is skipped: the live street sales no longer reach it`)
   if (!note.blocks.includes('street_sales')) throw new Error(`${PREVIEW_PERSON}'s note has no street sales`)
+  await checkAgents(db, now)
+
+  // The seeded agent's two unmatched shapes, for the person-page and review captures.
+  const firstWith = async (status: 'needs_review' | 'no_parcel') => {
+    const [row] = await db
+      .select({ id: contacts.id })
+      .from(contacts)
+      .where(and(eq(contacts.accountId, AGENT_ID), eq(contacts.status, status)))
+      .orderBy(asc(contacts.name))
+      .limit(1)
+    if (!row) throw new Error(`The seed has no ${status} person`)
+    return row.id
+  }
   const state = {
     email: E2E_EMAIL,
     password: E2E_PASSWORD,
-    quietEmail: quietAgent.email,
+    // Everyone the captures sign in as. The admin signs in and clicks View as (Decision B).
+    agents: Object.fromEntries(E2E_AGENTS.filter((row) => row.login).map((row) => [row.key, { id: row.id, email: row.email }])),
     personId: person.id,
+    needsReviewId: await firstWith('needs_review'),
+    noParcelId: await firstWith('no_parcel'),
+    groupsPersonId: agentContactId(Number.parseInt(e2eAgent('groups').id.slice(-12), 16), 0),
     unsubscribeToken: signUnsubscribeToken(person.id, 'monthly'),
   }
   writeFileSync('e2e/.state.json', JSON.stringify(state, null, 2))

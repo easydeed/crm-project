@@ -9,6 +9,7 @@
 ## Stripe
 
 - [ ] **Lift the `sk_test_` enforcement by a packet.** `StripeGateway` refuses any key that is not `sk_test_`. Lifting it is a code change with its own review, never an env flip.
+- [ ] **Clear the test-mode subscription rows before the live key goes in.** Every `subscriptions` row written in test mode names a `sub_` id the live account has never seen. Read with the live key, each one is a 404, and its agent's Billing page shows "We can't find your plan." (OR-044a). Delete those rows, or point their accounts at real live subscriptions, in the same change that lifts the `sk_test_` guard.
 - [ ] **Failed payment moves the subscription out of `active`.** In the Stripe dashboard, subscription behavior on failed payment must end in `past_due` or `unpaid`. Otherwise `past_due` never fires and sending never pauses for a failed card.
 - [ ] **The webhook endpoint sends exactly these four events:** `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`.
 - [ ] **Deployed env:** `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_ID`.

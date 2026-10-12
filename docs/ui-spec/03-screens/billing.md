@@ -60,15 +60,24 @@ Since OR-046: a 760px column with the same margins and gaps as Settings.
   `scripts/e2e-setup.ts:33-34` inserting one.
 - **Set to end** — `Status` `Active until the end of this period`, the date row reads `Ends`,
   action `Keep my plan`. Notice after cancelling: `Your plan is set to end. Nothing changes until then.`
-  Producible by confirming the cancel screen; not captured.
+  Captured: billing-set-to-end (the setToEnd e2e agent), with a `View invoice` link.
 - **Payment failed** — `Status` `Payment failed`, no date row, the pay-the-invoice sentence, and
   the open invoice reads `Not paid yet` with `Pay this invoice`. Not producible from the seed;
-  described from `billing-copy.ts:21`, `page.tsx:93-95`, `invoice-list.tsx:8, 27`.
+  described from `billing-copy.ts:21`, `page.tsx:93-95`, `invoice-list.tsx:8, 27`. Captured since
+  OR-044a: billing-past-due (the pastDue agent; its open invoice has a link).
 - **Ended** — `Status` `Ended`, action `Restart your plan`. Any other Stripe status reads
-  `Not active` (`billing-copy.ts:22-23`). Not producible from the seed.
+  `Not active` (`billing-copy.ts:22-23`). Captured: billing-ended (the ended agent).
 - **No plan** — `You don't have a plan yet.` and
   `$19 a month, up to 250 homeowners. Your homeowners start getting the monthly note once the plan is active.`
-  with `Start your plan` (`page.tsx:46-50`). Producible with the plain seed (no e2e setup); not captured.
+  with `Start your plan` (`page.tsx:46-50`). Captured: billing-no-plan (the noPlan agent).
+- **Plan not found** (OR-044a) — the account has a subscription id that Stripe answers 404
+  `resource_missing` for. Shows `We can't find your plan.` and
+  `Write to help@onrecord.com and we'll sort it out.`, the address a `mailto:` built by
+  `supportMailto` with the account id in the subject. It offers no action. The account's own row
+  still reads active, so sending continues, and a second checkout could charge twice. It is
+  shown in the page, not on the error screen: Stripe was reached, and trying again never helps.
+  This is every test-mode subscription read with a live key (`docs/GO_LIVE.md`). Captured:
+  billing-missing (the missing agent).
 - **No card / no invoices** — `No card on file`; `No invoices yet. Your first one appears here after the first charge.` (`page.tsx:68`, `invoice-list.tsx:16`). Not captured.
 - **Invoice status words** — `Paid`, `Not paid yet`, `Voided`, `Not collected`, `Being prepared` (`invoice-list.tsx:6-12`).
 - **Notices** (`billing-copy.ts:10-17`), `role="status"`: `Your plan will keep going. Nothing else changed.`;
@@ -76,18 +85,22 @@ Since OR-046: a 760px column with the same margins and gaps as Settings.
   `We could not open checkout. Try again in a minute.`;
   `We could not cancel your plan. Try again in a minute; nothing changed.`;
   `We could not resume your plan. Try again in a minute; nothing changed.`
+  Captured: one `billing-notice-*` capture each, by its query string (OR-044a).
 - **View-as** — the details and invoices show, but no action renders (`page.tsx:50, 70`); a
   submitted action is bounced back here (`actions.ts:14`). Not producible from the seed.
 - **Loading** — `Loading your billing…` (`loading.tsx:4`). Not captured.
 - **Error** — `We couldn't reach Stripe for your billing.`,
   `Nothing about your plan changed. Try again in a minute.`, `Try again` (`error.tsx:13-23`).
   It names Stripe because the page reads Stripe live; the likeliest failure is Stripe being slow.
+  Captured: billing-unreachable (the e2e stand-in fails that agent's lookup on purpose).
+  A subscription Stripe has no record of is not this screen; it is "Plan not found" above.
   Not captured.
 
 ## Fixed copy
 
 - `$19 a month, up to 250 homeowners` (`PLAN_LINE`) **Fixed** — `billing-ui.test.ts:46`. Built from `PLAN` in `src/config/costs.ts`, never typed in.
 - `You don't have a plan yet.` **Fixed** — `billing-ui.test.ts:43`.
+- `We can't find your plan.` (`MISSING_PLAN`) and `and we'll sort it out.` **Fixed** — `billing-ui.test.ts`, "a plan Stripe has no record of". The address is `SUPPORT_EMAIL`, never typed.
 - `Loading your billing`, `Try again` **Fixed** — `billing-ui.test.ts:41-42`.
 - `Not paid yet`, `Pay this invoice`, `View invoice`, `No invoices yet` **Fixed** — `billing-ui.test.ts:22-26`.
 - Status words and notices: no test; they state what Stripe reports and what changed, nothing more.
@@ -97,6 +110,9 @@ Since OR-046: a 760px column with the same margins and gaps as Settings.
 - `src/app/app/settings/billing/billing-ui.test.ts:10` — invoice history renders Stripe's dates, amounts and status, a pay link on an open invoice, and the empty line.
 - `billing-ui.test.ts:40` — four states, and the Stripe customer portal is never used (`src/billing/stripe-gateway.ts` has no `billing_portal`); `PLAN_LINE` wording.
 - `src/app/app/settings/settings-reskin.test.ts:30` — `billing/page.tsx`, `billing/error.tsx`, `billing/invoice-list.tsx` use `linkClass`, not a copy.
+- `billing-ui.test.ts` "a plan Stripe has no record of" — the missing state's words and support link, and no form, button or checkout in it.
+- `src/billing/billing.test.ts` — `StripeGateway` turns 404 `resource_missing` into `SubscriptionNotFound`; any other 404, a 500 or a refused key stays an error.
+- `src/billing/billing.integration.test.ts` "a subscription Stripe has no record of" — `loadBillingView` returns `missing` (and wins over a failed invoice list); a 500 still throws to the error screen.
 - `src/billing/billing.integration.test.ts:129` — cancel keeps sending until the period ends, resume restores it, the end stops mail but keeps everything.
 - `billing.integration.test.ts:166` — a failed payment moves the account to past due.
 - `billing.integration.test.ts:178` — the billing view reads card and invoices from Stripe.

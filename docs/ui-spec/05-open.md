@@ -169,6 +169,30 @@ Each item says how it is known:
     - OR-046 didn't take that column, so nothing does this today. Anything that sticks near the top
       later needs the banner's height as its offset.
 
+28. **Phone verification can't be reached in the browser pass.** *From the code, OR-044a.*
+    - `src/text/current.ts` always uses Twilio, and e2e has no texter stand-in like billing's.
+    - So the code-sent state, its three confirm errors and "Send a new code" have no capture and
+      no browser test. Clicking "Text me a code" in e2e would try a real send.
+    - A stand-in for e2e would open all of them. That is its own packet.
+
+29. **States still uncaptured after OR-044a, and why.** *From the OR-044a audit.*
+    - Error boundaries other than billing's: each needs a server error only test code in `src`
+      could throw.
+    - States a prepare could reach only by writing to data other captures read: called,
+      dismissed and Undo; Skip and Resume; saved settings; import results; `/u` after a POST.
+      Each needs its own agent.
+    - The text-stopped dashboard notice: it needs an agent with a stopped `text_messages`
+      history.
+    - The add-ons texting band: reserved for consumer SMS, and absent until that add-on exists.
+      `addons-ui.test` holds the absence; a capture would only show the page without it.
+
+30. **Settings shows a send time nobody saved.** *Found by OR-044a's comparison.*
+    - `sending-form.tsx:49` sets `defaultValue={account.sendTime ?? '09:00'}`.
+    - An agent with no send time sees "9:00" chosen in Settings, while the dashboard says "Set
+      when the note goes out."
+    - Saving the form untouched would set 09:00, so the default may be intended. The two screens
+      disagree about whether a time is set, and nothing records which one is right.
+
 ## Smaller things
 
 - `src/app/fonts/fonts.ts` says Fraunces is "used nowhere yet". Since OR-038 it is used on
@@ -178,5 +202,6 @@ Each item says how it is known:
   word.
 - The `start` capture shows whichever MLS ID the last browser run searched for, not the
   seed's, because a search saves the ID to the account.
-- The edit screen and the per-person review entry are not in the browser pass, so none of
-  the 390px checks run on them.
+- The per-person review entry is a redirect, so the browser pass covers it through the review
+  queue (`review-couldnt-find`). The edit screen is captured since OR-044a (`person-edit`), so
+  the 390px checks now run on both.

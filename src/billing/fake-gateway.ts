@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import type { BillingGateway, BillingInvoice, BillingSubscription, CheckoutInput } from '@/billing/gateway'
+import { SubscriptionNotFound, type BillingGateway, type BillingInvoice, type BillingSubscription, type CheckoutInput } from '@/billing/gateway'
 
 /** Plays Stripe in tests. Holds subscriptions in memory; nothing leaves the process. */
 export class FakeBillingGateway implements BillingGateway {
@@ -29,13 +29,13 @@ export class FakeBillingGateway implements BillingGateway {
 
   update(subscriptionId: string, change: Partial<BillingSubscription>) {
     const sub = this.subscriptions.get(subscriptionId)
-    if (!sub) throw new Error(`No such subscription: ${subscriptionId}`)
+    if (!sub) throw new SubscriptionNotFound(subscriptionId)
     this.subscriptions.set(subscriptionId, { ...sub, ...change })
   }
 
   async getSubscription(subscriptionId: string) {
     const sub = this.subscriptions.get(subscriptionId)
-    if (!sub) throw new Error(`No such subscription: ${subscriptionId}`)
+    if (!sub) throw new SubscriptionNotFound(subscriptionId)
     return { ...sub }
   }
 

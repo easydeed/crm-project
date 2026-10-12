@@ -27,6 +27,17 @@ export type CheckoutInput = {
   cancelUrl: string
 }
 
+/**
+ * Stripe answered and has no such subscription (404 resource_missing). It is not a failure to reach
+ * Stripe, so retrying never helps: billing shows it in the page, not as the "couldn't reach" error.
+ */
+export class SubscriptionNotFound extends Error {
+  constructor(readonly subscriptionId: string) {
+    super(`No such subscription: ${subscriptionId}`)
+    this.name = 'SubscriptionNotFound'
+  }
+}
+
 export interface BillingGateway {
   createCheckoutSession(input: CheckoutInput): Promise<{ url: string }>
   getSubscription(subscriptionId: string): Promise<BillingSubscription>
