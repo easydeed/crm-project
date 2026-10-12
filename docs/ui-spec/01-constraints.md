@@ -8,8 +8,12 @@ Every rule below has three parts:
 - **Why.** Most of these exist because something went wrong once. A rule with a reason
   survives a design review. A rule without one gets argued away, so the reason is the
   important part.
-- **Enforced by.** The test that fails if the rule is broken, by file and line. "Not
-  enforced" means a person has to hold it. Those are the ones to be most careful with.
+- **Enforced by.** The test that fails if the rule is broken, by file and test name: the file's
+  path in backticks, then the test's name in curly quotes. Code that is not a test is cited
+  the same way, by a string that appears in it verbatim. "Not enforced" means a person has to hold it. Those are the
+  ones to be most careful with. `src/app/constraints-citations.test.ts` fails if a cited
+  file or name stops existing, so a citation here cannot outlive what it points at
+  (OR-048; until then, 35 of the 56 line numbers had drifted).
 - **What breaks it.** A concrete design move that would turn the test red.
 
 A word on how the tests work, because it shapes what you can change freely. Most of these
@@ -54,8 +58,10 @@ CI runs the phone pass on every pull request.
   that hides its overflow, and no text runs past the right edge.
 - **Why.** A page that scrolls sideways on a phone feels broken. An agent between
   appointments will not find a hidden column.
-- **Enforced by.** `e2e/checks.ts:23-24` (no-horizontal-scroll), `:68` and `:74`
-  (no-clipping), and `:83-84`, which requires the page width to equal the viewport.
+- **Enforced by.** `e2e/checks.ts` “rule: 'no-horizontal-scroll'” and
+  `e2e/checks.ts` “rule: 'no-clipping'” (text past the right edge, and text a container hides), and
+  `e2e/checks.ts` “expect(scrollWidth).toBe(page.viewportSize()?.width)”, which requires
+  the page width to equal the viewport.
 - **What breaks it.**
   - A fixed-width table.
   - A long email address or document number with no wrapping.
@@ -71,20 +77,21 @@ CI runs the phone pass on every pull request.
   exempt (WCAG 2.5.8). A link that stands alone on its line is not exempt, and on a phone
   it takes the `.tap` class (`02-system.md`).
 - **How the check decides.** A link counts as inside a sentence only when its own parent
-  element holds words of its own (`e2e/checks.ts:35-37`). Until OR-041 the check asked
+  element holds words of its own (`e2e/checks.ts` “const isInlineLink”). Until OR-041 the check asked
   whether the link's nearest block held *any* other text, so every link placed directly in
   a page column passed, standalone or not. OR-041 narrowed it and made the 13 kinds of link
   it then found 44px with `.tap`. That was the twelfth check on this project found checking
   less than its name said.
 - **Owned exceptions.** A standalone link still under 44px must have an entry in
-  `e2e/tap-allowlist.ts`, which names the packet that fixes it. Today there is one: each
-  People row's name and "Edit" links, owned by OR-045, which redesigns that row. The list
-  fails both ways: an unlisted small link is red, and an entry that matches nothing is red
-  until it is deleted.
+  `e2e/tap-allowlist.ts`, which names the packet that fixes it. Today there are none: the
+  last two, each People row's name and "Edit" links, were fixed and deleted in OR-045. The
+  list fails both ways: an unlisted small link is red, and an entry that matches nothing is
+  red until it is deleted.
 - **Why.** Fingers, not cursors. This is the rule the export broke most: its shared button
   and input were 32px.
-- **Enforced by.** `e2e/checks.ts:52` (tap-44) and `:54-56` (the allowlist's other
-  direction). It runs on the phone pass only. Desktop is not measured for tap size.
+- **Enforced by.** `e2e/checks.ts` “rule: 'tap-44'”, which also reports an allowlist
+  entry that "matches nothing here". It runs on the phone pass only. Desktop is not
+  measured for tap size.
 - **What breaks it.**
   - A 32px "compact" button.
   - An icon-only button smaller than 44×44.
@@ -103,9 +110,10 @@ CI runs the phone pass on every pull request.
 - **Why.** Legibility for the actual user. The export had about 440 uses of sizes under
   15px.
 - **Enforced by.**
-  - `e2e/checks.ts:66` (text-15), on every captured screen at both widths.
-  - `src/app/app/people/review/review-ui.test.ts:68` additionally requires the review
-    screens' source to use 15 or 22px.
+  - `e2e/checks.ts` “rule: 'text-15'”, on every captured screen at both widths.
+  - `src/app/app/people/review/review-ui.test.ts` “review UI stays 15px with focus rings”.
+    It is weaker than its name: it requires each review file to contain a 15px or 22px
+    size, and does not forbid a smaller one. The browser check is what holds the rule.
 - **What breaks it.**
   - A 13px timestamp.
   - A 12px "helper" line.
@@ -116,14 +124,20 @@ CI runs the phone pass on every pull request.
 
 Read this before trusting a green run.
 
-- **Only listed screens are measured.** A state that no screen in `e2e/screens.ts`
-  produces is never checked. Examples are a paused account, a system-paused account and
-  the view-as banner (`03-screens/*` says which states are captured).
-- **Dark mode is measured on one screen only.** That screen is `sample-text-dark`. Every
-  other capture is light. Dark contrast is held by the token pairs (§2), not by a
+- **Only listed screens are measured.** A state that no capture produces is never
+  checked. Since OR-044a there are 72 captures (`e2e/screens.ts` and `e2e/screens/`). The
+  states only data can produce come from e2e agents, one per state, in
+  `src/db/fixtures/e2e-agents.ts`; e2e setup fails if one stops showing its state. The
+  first time they were photographed, three of those states failed the phone checks: a 26px
+  "Add your people" link on every agent with no people, a 30px-wide view-as "Exit", and a
+  long email clipped by 61px. What is still unseen, and why, is `05-open.md` #28 and #29.
+- **Dark mode is measured on six captures:** `sample-text-dark`, `dashboard-dark`,
+  `dashboard-quiet-dark`, `addons-dark`, `login-dark` and `register-dark`. Every other
+  capture is light. Dark contrast everywhere else is held by the token pairs (§2), not by a
   browser.
 - **Focus rings are not measured in the browser.** See §6.
-- **The People row links are under 44px by an owned exception** (§1.2), until OR-045.
+- **No tap target has an owned exception.** `e2e/tap-allowlist.ts` has been empty since
+  OR-045 (§1.2).
 
 ---
 
@@ -132,21 +146,24 @@ Read this before trusting a green run.
 ### 2.1 Use the token pairs, and only the token pairs
 
 - **Rule.** Every colour comes from a token in `src/app/globals.css`. A token can only be
-  used in the combinations listed in `src/app/tokens.test.ts:37`, the PAIRS list, which
-  is checked at 4.5:1 for words and 3:1 for non-text marks, in light and in dark.
+  used in the combinations listed in `PAIRS` in `src/app/tokens.test.ts`, which is checked
+  at 4.5:1 for words and 3:1 for non-text marks, in light and in dark.
   `02-system.md` has every pair with its real ratio.
 - **Why.** Before the tokens existed, the app was full of `foreground/20`-style tints.
   Their contrast depended on what sat behind them, and nobody could say whether a line was
   readable. A pair list turns "is this readable?" into a test.
 - **Enforced by.**
-  - `src/app/tokens.test.ts:65` requires every token to have a light and a dark value.
-  - `:70-79` check every pair against its floor, in both schemes.
-  - `src/app/design-debt.test.ts:113` scans every source file under `src/app` for any
+  - `src/app/tokens.test.ts` “every colour token has a light and a dark value”.
+  - `src/app/tokens.test.ts` “%s on %s clears %s:1” checks every pair against its floor,
+    once in each scheme.
+  - `src/app/design-debt.test.ts` “all of src/app is tokens only, apart from the debt
+    listed here” scans every source file under `src/app` for any
     colour that is not a token: hex in any length, `rgb()`/`rgba()`/`hsl()`/`oklch()`/
     `color-mix()` and the other functional forms, `foreground/20`-style opacity colours,
     Tailwind palette colours like `text-gray-500` or `bg-white`, arbitrary keyword values
     like `text-[red]`, and colour keywords in style props.
-  - `:126` proves the scan recognises each of those spellings.
+  - `src/app/design-debt.test.ts` “the scan matches a colour however it is written, and
+    leaves tokens alone” proves the scan recognises each of those spellings.
   - The only exceptions are listed in the file with a reason (admin, which is unstyled by
     decision, and the email preview's white canvas).
 - **What breaks it.**
@@ -170,7 +187,8 @@ Redesign around them, not through them.
 | `--green` on `--background` | 3.39 | 5.85 | 3 | green marks on the page |
 | `--muted-ink` on `--background` | 4.98 | 7.81 | 4.5 | secondary text |
 
-The comment at `tokens.test.ts:45-48` names what depends on the tightest one. If
+The comment beside the `--muted-ink` on `--surface` pair in `src/app/tokens.test.ts`
+names what depends on the tightest one. If
 `--surface` is darkened, `--muted-ink` has to be re-derived with it.
 
 ### 2.3 Never blue text on `--blue-soft`
@@ -180,10 +198,17 @@ The comment at `tokens.test.ts:45-48` names what depends on the tightest one. If
 - **Why.** `--blue` on `--blue-soft` is 4.42:1 in light, under the floor. The export used
   exactly this pair for its current nav item and filters.
 - **Enforced by.**
-  - `src/app/app/top-bar.test.ts:24` (the current page in the top bar).
-  - `src/app/app/people/people-ui.test.ts:155` (the current People filter).
-  - `src/app/app/call-list.test.ts:155` (the "Taxes worth a talk" call tag).
-  - `src/app/app/people/review/review-ui.test.ts:86` ("Name matches").
+  - `src/app/app/people/people-ui.test.ts` “the current filter is marked like the top bar:
+    dark text on blue-soft, with aria-current”, and `src/app/app/people/people-panels.test.ts`
+    “every filter chip takes exactly one fill: --blue-soft when current, the page otherwise,
+    never blue words” (the current People filter).
+  - `src/app/app/call-list.test.ts` “each call tag is a token pair the contrast test checks,
+    never blue text on blue-soft” (the "Taxes worth a talk" call tag).
+  - `src/app/app/people/review/review-ui.test.ts` “"Name matches" is a tag in the neutral
+    pair, which the contrast test checks: evidence, not an answer”.
+  - The top bar's current page used `--blue-soft` until OR-043 moved it to the bar's light
+    pill. `src/app/app/top-bar.test.ts` “the current page is the light pill on the dark bar:
+    the bar pair, with aria-current (OR-043)” now bans blue on it entirely.
 - **What breaks it.** Any `text-blue` on a `bg-blue-soft` element.
 
 ### 2.4 Fill colours and text colours are different tokens
@@ -192,7 +217,8 @@ The comment at `tokens.test.ts:45-48` names what depends on the tightest one. If
   colours use `--coral-text` and `--green-text`, held at 4.5:1.
 - **Why.** The export's coral and green are 3.35:1 and 3.39:1 on white. That is fine for a
   dot and too faint for a word.
-- **Enforced by.** The PAIRS list (`tokens.test.ts:37`). `--coral` and `--green` are
+- **Enforced by.** `PAIRS` in `src/app/tokens.test.ts`, checked by
+  `src/app/tokens.test.ts` “%s on %s clears %s:1”. `--coral` and `--green` are
   paired only at the 3:1 floor, so using them for words is a pair the list does not
   allow. No test reads an element and checks that its words use the `-text` token, so a
   reviewer has to catch it.
@@ -207,12 +233,14 @@ The comment at `tokens.test.ts:45-48` names what depends on the tightest one. If
   is today**.
 - **The one documented exception.** On the review queue, candidate house cards take
   `--border`, because on a phone they stack, and the outline says which "This one" button
-  picks which house (`src/app/globals.css:12-13`).
+  picks which house (`src/app/globals.css` “One exception, OR-032”).
 - **Enforced by.**
-  - `src/app/app/people/review/review-ui.test.ts:94` (the card exception).
-  - `src/app/app/start/start-reskin.test.ts:54` (the drop zone edge is `--border`, and the
-    skeleton rows are `--rule`).
-  - `src/app/sweep.test.ts:19` (the email preview toggles are outlined in `--border`).
+  - `src/app/app/people/review/review-ui.test.ts` “candidate cards are outlined in --border,
+    the documented exception to --rule”.
+  - `src/app/app/start/start-reskin.test.ts` “the skeleton rows fill with --rule and the
+    drop zone edge is --border (a swap may not make either fainter)”.
+  - `src/app/sweep.test.ts` “the email preview: plain text sits on the page background, and
+    the toggles are outlined like controls”.
 - **What breaks it.** Outlining an input, a toggle or a drop zone in `--rule`.
 
 ### 2.6 Colour never carries meaning alone
@@ -221,19 +249,22 @@ The comment at `tokens.test.ts:45-48` names what depends on the tightest one. If
   says. Someone who cannot see the colour loses nothing.
 - **Why.** Colour-blind users, glare on a phone, and printouts.
 - **Enforced by.**
-  - `src/app/app/people/people-ui.test.ts:129` (each People status tag is a checked pair,
-    and the label still renders its words).
-  - `src/app/app/call-list.test.ts:65` (each call tag has its label: "Big sale next door",
-    "Paid off their loan", "Taxes worth a talk", "Been a while").
+  - `src/app/app/people/people-ui.test.ts` “each status is a tag in a token pair the
+    contrast test checks; the label still carries it”.
+  - `src/app/app/call-list.test.ts` “tag text and color match the signal kind” (each call
+    tag has its label: "Big sale next door", "Paid off their loan", "Taxes worth a talk",
+    "Been a while").
 - **What breaks it.** A coloured dot with no label, or a status shown only as a row tint.
 
 ### 2.7 Dark mode
 
 - **Rule.** The app follows the phone's or computer's setting. Every token has a dark
   value. There is no theme switch.
-- **Enforced by.** `src/app/tokens.test.ts:65`, with every pair checked in dark at
-  `:70-79`. One dark screen is captured: `sample-text-dark`, the email preview's plain
-  text.
+- **Enforced by.** `src/app/tokens.test.ts` “every colour token has a light and a dark
+  value”, with every pair checked in dark by `src/app/tokens.test.ts` “%s on %s clears
+  %s:1”. Six dark screens are
+  captured: `sample-text-dark` (the email preview's plain text), `dashboard-dark`,
+  `dashboard-quiet-dark`, `addons-dark`, `login-dark` and `register-dark`.
 - **What went wrong.** Until OR-037, the email preview's plain text was drawn on a
   hard-coded white background in the app's dark-mode ink: #ededed on white, 1.17:1,
   unreadable. Nothing caught it, because nothing scanned that file. Now the colour scan
@@ -252,8 +283,9 @@ The comment at `tokens.test.ts:45-48` names what depends on the tightest one. If
   loading, not for decoration.
 - **Why.** A faded control's contrast depends on what is behind it, so no test can check
   it. A faded word looks like it doesn't matter.
-- **Enforced by.** `src/app/disabled-state.test.ts:19`, which scans every source file
-  under `src/app` with no exceptions.
+- **Enforced by.** `src/app/disabled-state.test.ts` “no source file under src/app uses an
+  opacity utility, for any state”, which scans every source file under `src/app` with no
+  exceptions.
 - **What breaks it.**
   - `opacity-50` on a disabled button.
   - `disabled:opacity-…`.
@@ -269,11 +301,13 @@ The comment at `tokens.test.ts:45-48` names what depends on the tightest one. If
   verification buttons had no disabled style at all, so they looked live while a code was
   sending.
 - **Enforced by.**
-  - `src/app/disabled-state.test.ts:28` (the three tokens are checked pairs, and every
-    button style ends with the disabled treatment).
-  - `:59` (only native elements carry `disabled`; nothing uses `aria-disabled`).
-  - `src/app/app/settings/settings-reskin.test.ts:23` (phone verification uses the shared
-    button).
+  - `src/app/disabled-state.test.ts` “disabled is --surface, --muted-ink and a --border
+    ring: pairs the contrast test checks” (and every button style ends with the disabled
+    treatment).
+  - `src/app/disabled-state.test.ts` “every control marked disabled is a native one that
+    honours it; nothing uses aria-disabled”.
+  - `src/app/app/settings/settings-reskin.test.ts` “phone verification uses buttonClass, so
+    its buttons look disabled while a code is sending”.
 - **What breaks it.** A custom disabled colour, or a `<div role="button" aria-disabled>`.
 
 ### 3.3 The asymmetry: an "off" choice is not a disabled control
@@ -283,7 +317,8 @@ The comment at `tokens.test.ts:45-48` names what depends on the tightest one. If
   disabled button, by contrast, must look unavailable.
 - **Why.** "Off" is the agent's own choice, and they can turn it back on. Greying it out
   says "you can't have this", which is false, and the export did exactly that.
-- **Enforced by.** `src/app/app/addons/addons-ui.test.ts:21`. It renders a row on and
+- **Enforced by.** `src/app/app/addons/addons-ui.test.ts` “a switched-off row renders at
+  full contrast: only the switch differs from an on row”. It renders a row on and
   off, removes the switch from both, and requires the rest to be identical, with no
   opacity, faded text or disabled styling.
 - **What breaks it.** Muting an off row's name or price, or changing its badge colour.
@@ -294,12 +329,19 @@ The comment at `tokens.test.ts:45-48` names what depends on the tightest one. If
   names the next action, such as "No people yet. Add a list to get started."
 - **Why.** A blank screen with nothing to do is the one an agent gives up on.
 - **Enforced by.** Per screen, not across the tree:
-  - `people-ui.test.ts:104`
-  - `review-ui.test.ts:61`
-  - `addons-ui.test.ts:64`
-  - `settings-ui.test.ts:27`
-  - `billing-ui.test.ts:40`
-  - `call-list.test.ts:94` (the dashboard's call list)
+  - `src/app/app/people/people-ui.test.ts` “four states exist for the list and the person
+    screen”
+  - `src/app/app/people/review/review-ui.test.ts` “four states exist for the review screen”
+  - `src/app/app/addons/addons-ui.test.ts` “the page has four states”
+  - `src/app/app/settings/settings-ui.test.ts` “settings has four states”
+  - `src/app/app/settings/billing/billing-ui.test.ts` “billing has four states and never
+    uses the Stripe customer portal”
+  - `src/app/app/call-list.test.ts` “the call list shows every state” (the dashboard's call
+    list)
+
+  These check that each state's file and words exist. Whether a state looks right is
+  held by the captures: since OR-044a the browser pass photographs and measures 72 states
+  (`e2e/screens.ts` and `e2e/screens/`).
 
   A new screen is not covered until it adds its own test. Each screen file lists its
   states.
@@ -320,10 +362,29 @@ The comment at `tokens.test.ts:45-48` names what depends on the tightest one. If
   found and removed in OR-037. A copy drifts: one copy of the button style had no
   disabled state.
 - **Enforced by.**
-  - `src/app/shared-classes.test.ts:30` and `:39`. These scan the whole tree, and their
-    allowlists are empty apart from the deliberately loud view-as banner.
-  - Per-screen tests: `auth-reskin.test.ts:8,16`, `settings-reskin.test.ts:9,30`,
-    `start-reskin.test.ts:59`, `review-ui.test.ts:109`, `addons-ui.test.ts:76,82,88`.
+  - `src/app/shared-classes.test.ts` “buttonClass is defined once; the only copies of its
+    string are the listed ones” and `src/app/shared-classes.test.ts` “linkClass is defined
+    once; the only copies of its string are the listed ones”. These scan the whole tree,
+    and both allowlists are empty. Each fails if its own size strip stops applying
+    (OR-047), so it cannot go quiet when the class changes.
+  - Per-screen tests:
+    - `src/app/login/auth-reskin.test.ts` “both auth forms use the shared fieldClass and
+      keep none of their own”
+    - `src/app/login/auth-reskin.test.ts` “both auth pages link with linkClass, not a copy
+      of its string”
+    - `src/app/app/settings/settings-reskin.test.ts` “settings inputs use the shared
+      fieldClass, and helper lines use mutedClass”
+    - `src/app/app/settings/settings-reskin.test.ts` “settings and billing links use
+      linkClass, not a copy of its string”
+    - `src/app/app/start/start-reskin.test.ts` “start and import links use linkClass, not a
+      copy of its string”
+    - `src/app/app/people/review/review-ui.test.ts` “the review screens use linkClass rather
+      than a copy of its string”
+    - `src/app/app/addons/addons-ui.test.ts` “the config form uses the shared fieldClass and
+      keeps no input class of its own”
+    - `src/app/app/addons/addons-ui.test.ts` “secondary lines on the page use mutedClass”
+    - `src/app/app/addons/addons-ui.test.ts` “the error screen uses linkClass rather than a
+      copy of its string”
 - **Consequence for a redesign.** Changing a shared style changes every screen that uses
   it, which is usually what you want. `02-system.md` lists them. Change the class, not
   its copies.
@@ -339,8 +400,10 @@ The comment at `tokens.test.ts:45-48` names what depends on the tightest one. If
   It never says "cannot be undone", because that is false: a re-import brings them back.
 - **Why.** The export deleted on click and showed a toast.
 - **Enforced by.**
-  - `src/app/app/people/people-ui.test.ts:120` (the sentence, and no "cannot be undone").
-  - `:145` (the outlined coral button and `window.confirm(` on both screens).
+  - `src/app/app/people/people-ui.test.ts` “the delete confirmation says what really
+    happens: a re-import brings them back” (the sentence, and no "cannot be undone").
+  - `src/app/app/people/people-ui.test.ts` “Delete is the outlined coral button on both
+    screens, and the question it asks is unchanged” (and `window.confirm(` on both).
 - **What breaks it.**
   - Removing the confirmation.
   - Replacing it with an undo toast.
@@ -351,22 +414,26 @@ The comment at `tokens.test.ts:45-48` names what depends on the tightest one. If
 
 - **Rule.** "Mark as called" and "Not now" on the call list, and the review queue's
   choices, can be undone for five seconds.
-- **Enforced by.** `src/app/app/call-list.test.ts:115` (`UNDO_SECONDS = 5`) and
-  `review-ui.test.ts:54`.
+- **Enforced by.** `src/app/app/call-list.test.ts` “both actions persist through server
+  actions and undo for five seconds” (`UNDO_SECONDS = 5`) and
+  `src/app/app/people/review/review-ui.test.ts` “undo is a five-second control”
+  (`UNDO_MS = 5000`).
 - **What breaks it.** A confirm-then-redirect flow (the export redirected after 700ms),
   or a shorter undo.
 
 ### 3.8 The call panel opens inline, never as a modal
 
-- **Enforced by.** `call-list.test.ts:102`: no `<dialog>`, no `role="dialog"`, no
+- **Enforced by.** `src/app/app/call-list.test.ts` “Call is live and opens a panel inline,
+  never a modal”: no `<dialog>`, no `role="dialog"`, no
   `aria-modal`, no full-screen fixed overlay. "Call" toggles to "Close" with
   `aria-expanded`. The panel's phone and email are real `tel:` and `mailto:` links.
 - **Why.** On a phone, a modal over the list loses the agent's place in it.
 
 ### 3.9 Only "This one" picks a house
 
-- **Enforced by.** `review-ui.test.ts:101`. Tapping a candidate card does nothing; only
-  its "This one" button chooses it.
+- **Enforced by.** `src/app/app/people/review/review-ui.test.ts` “"This one" is the only
+  thing that picks a house: the card itself never calls onChoose”. Tapping a candidate card
+  does nothing; only its "This one" button chooses it.
 - **Why.** A whole-card tap target on a stacked list of similar houses was too easy to hit
   by accident while scrolling.
 
@@ -386,9 +453,11 @@ belong to a separate pass, not a redesign.
   - "Cancel my plan" is the filled primary button because cancelling is what the agent
     came to do. Shrinking it, outlining it in coral, or making "Keep my plan" the bigger
     target is retention by layout.
-  - **Enforced by.** `billing-ui.test.ts:29` (the exact sentence, the banned words,
-    exactly one `<form>`, no portal) and `settings-reskin.test.ts:16` (primary button and
-    plain link).
+  - **Enforced by.** `src/app/app/settings/billing/billing-ui.test.ts` “the cancel screen
+    says exactly what happens and offers nothing else” (the exact sentence, the banned
+    words, exactly one `<form>`, no portal) and
+    `src/app/app/settings/settings-reskin.test.ts` “the cancel screen carries out the
+    decision with the primary button; keeping the plan is a plain link”.
 - **The MLS framing sentences render at full contrast.**
   - The signup import is homes the agent *sold*, and the email goes to whoever lives
     there now, usually the buyer, not the seller the agent represented. Past clients come
@@ -396,8 +465,10 @@ belong to a separate pass, not a redesign.
   - The sentences that say so are what stop an agent mailing a stranger as if they were a
     client.
   - **Enforced by.**
-    - `src/signup/signup.test.ts:88` (the words).
-    - `src/app/app/start/start-reskin.test.ts:44`. This walks from each framing sentence
+    - `src/signup/signup.test.ts` “the MLS import is framed as homes sold, written to
+      whoever lives there now; past clients come from the agent’s own list” (the words).
+    - `src/app/app/start/start-reskin.test.ts` “%s renders %s at full contrast: no muted
+      ink, no colour, no fill, on it or around it”. This walks from each framing sentence
       up through every element around it, and requires no muted ink, no colour other than
       `--foreground`, and no background fill.
   - **What breaks it.** Greying the framing note into a footnote, putting it behind a
@@ -405,26 +476,30 @@ belong to a separate pass, not a redesign.
 - **Found-nothing is not an error.**
   - When an MLS search finds no closings, the screen shows a neutral status line and the
     upload path, never red text, an alert or "sorry".
-  - **Enforced by.** `signup.test.ts:54`.
+  - **Enforced by.** `src/signup/signup.test.ts` “found-nothing is a neutral fork: a
+    status line with the upload path, never an error”.
 - **Plain language in what homeowners and agents read about a home.**
   - The email body and the call-list sentences may not use: reconveyed, reconveyance,
     recorded transfer, grant deed, assessed value, base year, parcel, portability, deed
     prices, title officer, tax cap.
   - The one exception is inside the email's recorder-stamp block, which quotes the
     record.
-  - **Enforced by.** `src/digest/plain-language.test.ts:26` and
-    `src/signals/plain-language.test.ts:19`.
+  - **Enforced by.** `src/digest/plain-language.test.ts` “plain language holds outside the
+    record block on every scenario” and `src/signals/plain-language.test.ts` “every detail
+    sentence passes the plain-language test”.
 - **No invented metrics.**
   - Only the statuses the database defines appear: matched, needs review, no parcel,
     unsubscribed. There are no engagement labels ("Opening", "Never opened", "Quiet",
     "May have moved"), no open-rate percentages, no stat cards, no counters, no progress
     bars.
   - **Enforced by.**
-    - `people-ui.test.ts:162`, an allowlist of the words in the status cell.
-    - `call-list.test.ts:88` (no stat cards, counters, `%` or progress bars on the
-      dashboard).
-    - `call-list.test.ts:78`: the dashboard is send status, call list, homeowners, in
-      that order, and nothing else.
+    - `src/app/app/people/people-ui.test.ts` “the status column says only the schema
+      status and Unsubscribed, never an engagement label”, an allowlist of the words in the
+      status cell.
+    - `src/app/app/call-list.test.ts` “no stat cards, counters, or progress bars on /app”
+      (and no `%`).
+    - `src/app/app/call-list.test.ts` “/app renders send status, call list, homeowners — in
+      that order, nothing else”.
 - **Domain rules** (CLAUDE.md, and `scripts/check-invariants.mjs` for some). A designer
   may not add:
   - a loan payoff balance
@@ -435,10 +510,17 @@ belong to a separate pass, not a redesign.
   Recorded figures carry a document number. MLS figures carry a status and a date.
 - **Every MLS-sourced block shows its attribution.** "Listing courtesy of …" appears on
   every MLS listing, previews and samples included. **Enforced by.**
-  `signup.test.ts:71` (every closing on the start screen) and the email's own tests
+  `src/signup/signup.test.ts` “the results screen renders MLS attribution on every
+  listing” (every closing on the start screen) and the email's own tests
   (`04-email.md`).
-- **Never show a password, a demo login or any credential on any page.** The export
-  printed a demo password on its sign-in page. Not enforced by a test.
+- **Never show a password, a demo login or any credential on any page, including mocks
+  and captures.** The export printed a demo password on its sign-in page. The redesign
+  audited in OR-040 drew the sign-in form prefilled with an agent's email and a masked password,
+  which OR-047 refused. A capture is a picture of a page, so the same rule holds for what
+  a capture types. **Enforced by.** `src/app/auth-panels.test.ts` “no auth field is ever
+  filled in: no value or defaultValue, mocks included” and
+  `src/db/fixtures/e2e-agents.test.ts` “no capture types an e2e login: no signed-in agent
+  email, and never the e2e password”.
 - **Marketing copy may not claim behaviour the product does not have.** The export's
   "Three past clients… We tell you which three" promised clients. See
   `03-screens/marketing.md`. Not enforced by a test.
@@ -450,14 +532,17 @@ belong to a separate pass, not a redesign.
 - **Inter everywhere. Fraunces only on the marketing home page's `<h1>`.** The serif is
   one display moment on the one page that is selling rather than working.
 - **Enforced by.**
-  - `src/app/design-scope.test.ts:31`, an allowlist of the four files in the whole source
-    tree that may name Fraunces.
-  - `src/app/marketing.test.ts:31` (the `<h1>` is the only serif element on the page).
+  - `src/app/design-scope.test.ts` “Fraunces stays on the marketing page: only the listed
+    files under src name it”, an allowlist of the four files in the whole source tree that
+    may name Fraunces.
+  - `src/app/marketing.test.ts` “Fraunces is the home <h1> and nothing else on the page
+    (OR-038)”
 - **What breaks it.** A serif heading in the app, or on login or register, which are the
   product's front door, not marketing. A serif heading in the shared email-preview panel
   would leak into the app.
 - **The email has its own fonts** (Georgia-style serif body, 12px stamp labels), and app
-  tokens must never reach it: `design-scope.test.ts:39`. See `04-email.md`.
+  tokens must never reach it: `src/app/design-scope.test.ts` “the email keeps its own
+  design: nothing in src/digest reads an app token”. See `04-email.md`.
 
 ## 6. Focus
 
@@ -467,7 +552,9 @@ belong to a separate pass, not a redesign.
   export's focus halo was 2.16:1.
 - **Enforced by.** Only in part:
   - The shared classes carry it.
-  - `review-ui.test.ts:68` requires it on the review screens.
+  - `src/app/app/people/review/review-ui.test.ts` “review UI stays 15px with focus rings”
+    requires some focus ring, or a shared class that carries one, in each review file that
+    has a control. It does not check every control.
   - No test checks focus across the whole app, and the browser pass does not tab through
     screens. A redesign that removes `focus-visible:outline` from a one-off control would
     pass.
@@ -477,7 +564,8 @@ belong to a separate pass, not a redesign.
 - **Rule.** Respect `prefers-reduced-motion`. `src/app/globals.css` cuts every animation
   and transition to near zero when it is set. There is almost no motion in the app today:
   the add-on switch and the email preview's resize.
-- **Enforced by.** Only `src/app/digest/preview-panel.test.ts` checks
+- **Enforced by.** Only `src/app/digest/preview-panel.test.ts` “preview frame is sandboxed
+  and does not leak email css onto the page”, which also checks
   `motion-reduce:transition-none` on the preview. Nothing else is tested. The global CSS
   rule is the backstop.
 - **What to avoid.** Count-up numbers, parallax, scroll reveals, auto-playing anything.
@@ -487,9 +575,68 @@ belong to a separate pass, not a redesign.
 
 Ask before changing any of these. Each is held by a test named above.
 
-- The top bar is three visible links, not a menu icon (`top-bar.test.ts:4`).
-- People shows name, address and status only (`people-ui.test.ts:8`).
-- The bulk bar exists only while something is selected (`people-ui.test.ts:52`).
-- Groups live on the People page and are optional (`people-ui.test.ts:63`).
-- A paused account still sees its call list, below the notice (`call-list.test.ts:142`).
-- Billing never uses Stripe's hosted customer portal (`billing-ui.test.ts:40`).
+- The top bar is three visible links, not a menu icon (`src/app/app/top-bar.test.ts` “top
+  bar is three visible links, not a hamburger”).
+- People shows name, address and status only (`src/app/app/people/people-ui.test.ts` “list
+  columns are name, address, and status only”).
+- The bulk bar exists only while something is selected
+  (`src/app/app/people/people-ui.test.ts` “bulk bar is only rendered when a selection
+  exists”).
+- Groups live on the People page and are optional (`src/app/app/people/people-ui.test.ts`
+  “groups stay on this page and are optional”).
+- A paused account still sees its call list, below the notice
+  (`src/app/app/call-list.test.ts` “a paused account still gets its call list below the
+  notice”).
+- Billing never uses Stripe's hosted customer portal
+  (`src/app/app/settings/billing/billing-ui.test.ts` “billing has four states and never
+  uses the Stripe customer portal”).
+
+## 9. Reading a design
+
+Two habits, each learned three times on this project.
+
+### 9.1 A static comp shows the control, not what it does
+
+- **Rule.** For every control a design draws, say what it does, then check that the drawn
+  layout still lets it do that. A control that is drawn but cannot work is a dead control
+  (CLAUDE.md invariant 1), however good it looks.
+- **Why.** A picture shows a button; it cannot show the click. Three times, a design for
+  this product removed the mechanism that made a control work, and each looked right:
+  - The v0 export's Delete fired on click and showed a toast. There was no confirmation
+    (§3.6).
+  - The redesign audited in OR-040 drew "Add to group" at 390 as a select with no submit button.
+    Nothing could send the choice. OR-045 kept the button.
+  - The same redesign put the email preview in a sticky column about 304px wide. Desktop
+    (600px) and Phone (380px) would both have been squeezed to the column, so the toggle
+    between them would have changed nothing. OR-046 put the preview under its form.
+- **Enforced by.**
+  - `src/app/app/people/people-panels.test.ts` “the bulk bar is navy, its controls are the
+    bar pill, and every group control stays” (both group actions keep a submit button at
+    every width).
+  - `e2e/screens/prepare.ts` “await expect.poll(width).toBe(600)”: at 1440 the settings
+    capture measures the preview at 380px with Phone and 600px with Desktop.
+  - `src/app/app/people/people-ui.test.ts` “Delete is the outlined coral button on both
+    screens, and the question it asks is unchanged” (and it asks with `window.confirm(`).
+  Each holds one instance. The habit itself is not testable: it is a question to ask of
+  every new design.
+
+### 9.2 A dimension stated from reading is a guess
+
+- **Rule.** A size, a line count or a cause stated about a layout is measured in the
+  renderer, at the width that matters, before it is written down. Reading the classes is
+  not measuring.
+- **Why.** Three times a stated dimension was wrong, and each time only a measurement
+  showed it:
+  - OR-044's report said "Recorded against the property" wrapped to three lines in the
+    call panel's 88px label column. Measured in OR-047, it was four lines, and "Recorded"
+    overflowed the cell by 4px, at every width.
+  - OR-045's row "Edit" link was given `.tap` and a 44px minimum width. Measured at 390 it
+    was 162.9×44, stretched across its grid cell, until `justify-self-start` pinned it at
+    44×44.
+  - OR-044a's comparison found Settings unchanged after the seeded agent gained a send
+    time. The first explanation, written from reading, was wrong. Measured, the field had
+    shown 09:00 all along because it defaults to 09:00 when nothing is saved
+    (`05-open.md` #30).
+- **Enforced by.** Not enforced by a test. A report states the number it measured, and
+  how.
+
