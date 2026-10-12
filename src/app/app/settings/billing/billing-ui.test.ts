@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { expect, test } from 'vitest'
-import { cancelSentence, PLAN_LINE } from '@/app/app/settings/billing/billing-copy'
+import { cancelSentence, MISSING_PLAN, PLAN_LINE } from '@/app/app/settings/billing/billing-copy'
 import { InvoiceList } from '@/app/app/settings/billing/invoice-list'
 
 const src = (relative: string) => readFileSync(new URL(relative, import.meta.url), 'utf8')
@@ -35,6 +35,19 @@ test('the cancel screen says exactly what happens and offers nothing else', () =
   expect(page).not.toMatch(/discount|offer|coupon|survey|reason|feedback|% off/i)
   expect(page.match(/<form/g)).toHaveLength(1)
   expect(page).not.toMatch(/billing_portal|customer_portal/i)
+})
+
+test('a plan Stripe has no record of: our words, the support address, and nothing to buy', () => {
+  expect(MISSING_PLAN).toBe("We can't find your plan.")
+  const page = src('./page.tsx')
+  const missing = page.slice(page.indexOf("view.kind === 'missing'"), page.indexOf("view.kind === 'none'"))
+  expect(missing).toContain('{MISSING_PLAN}')
+  expect(missing).toContain('{SUPPORT_EMAIL}')
+  expect(missing).toContain('supportMailto(')
+  expect(missing).toContain('and we&apos;ll sort it out.')
+  // No way to start or restart a plan from here: the account still reads as active.
+  expect(missing).not.toMatch(/Action|startCheckout|<form|<button/)
+  expect(missing).not.toMatch(/stripe/i)
 })
 
 test('billing has four states and never uses the Stripe customer portal', () => {

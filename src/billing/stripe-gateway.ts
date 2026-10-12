@@ -1,4 +1,4 @@
-import type { BillingGateway, BillingInvoice, BillingSubscription, CheckoutInput } from '@/billing/gateway'
+import { SubscriptionNotFound, type BillingGateway, type BillingInvoice, type BillingSubscription, type CheckoutInput } from '@/billing/gateway'
 
 const API = 'https://api.stripe.com/v1'
 
@@ -18,6 +18,13 @@ function stripePriceId(): string {
 
 type Json = Record<string, unknown>
 
+/** A request Stripe answered with an error, carrying its status and code so callers can tell "no such thing" from a failure. */
+class StripeRequestError extends Error {
+  constructor(message: string, readonly status: number, readonly code: unknown) {
+    super(message)
+  }
+}
+
 async function call(method: 'GET' | 'POST', path: string, params: Record<string, string> = {}): Promise<Json> {
   const body = new URLSearchParams(params).toString()
   const url = method === 'GET' && body ? `${API}${path}?${body}` : `${API}${path}`
@@ -32,8 +39,8 @@ async function call(method: 'GET' | 'POST', path: string, params: Record<string,
   })
   const json = (await response.json().catch(() => ({}))) as Json
   if (!response.ok) {
-    const message = (json.error as Json | undefined)?.message
-    throw new Error(`Stripe ${method} ${path} failed (${response.status}): ${String(message ?? 'no message')}`)
+    const error = (json.error as Json | undefined) ?? {}
+    throw new StripeRequestError(`Stripe ${method} ${path} failed (${response.status}): ${String(error.message ?? 'no message')}`, response.status, error.code)
   }
   return json
 }
@@ -83,10 +90,15 @@ export class StripeGateway implements BillingGateway {
   }
 
   async getSubscription(subscriptionId: string) {
-    const raw = await call('GET', `/subscriptions/${encodeURIComponent(subscriptionId)}`, {
-      'expand[]': 'default_payment_method',
-    })
-    return toSubscription(raw)
+    try {
+      const raw = await call('GET', `/subscriptions/${encodeURIComponent(subscriptionId)}`, {
+        'expand[]': 'default_payment_method',
+      })
+      return toSubscription(raw)
+    } catch (err) {
+      if (err instanceof StripeRequestError && err.status === 404 && err.code === 'resource_missing') throw new SubscriptionNotFound(subscriptionId)
+      throw err
+    }
   }
 
   async setCancelAtPeriodEnd(subscriptionId: string, cancel: boolean) {

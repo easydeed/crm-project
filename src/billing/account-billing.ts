@@ -1,12 +1,14 @@
 import { eq } from 'drizzle-orm'
 import { getBillingGateway } from '@/billing/current'
-import type { BillingInvoice } from '@/billing/gateway'
+import { SubscriptionNotFound, type BillingInvoice } from '@/billing/gateway'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts, subscriptions } from '@/db/schema'
 import { publicOrigin } from '@/unsubscribe/links'
 
 export type BillingView =
   | { kind: 'none' }
+  /** The row names a subscription Stripe has no record of, e.g. a test-mode id read with a live key. */
+  | { kind: 'missing' }
   | {
       kind: 'subscribed'
       status: string
@@ -27,10 +29,17 @@ export async function loadBillingView(accountId: string): Promise<BillingView> {
   const row = await cachedRow(accountId)
   if (!row?.stripeSubId || !row.stripeCustomerId) return { kind: 'none' }
   const gateway = getBillingGateway()
-  const [sub, invoices] = await Promise.all([
+  const [subResult, invoiceResult] = await Promise.allSettled([
     gateway.getSubscription(row.stripeSubId),
     gateway.listInvoices(row.stripeCustomerId),
   ])
+  // Checked first: a missing subscription often brings a failed invoice list with it, and that
+  // failure would otherwise send the page to "couldn't reach Stripe".
+  if (subResult.status === 'rejected' && subResult.reason instanceof SubscriptionNotFound) return { kind: 'missing' }
+  if (subResult.status === 'rejected') throw subResult.reason
+  if (invoiceResult.status === 'rejected') throw invoiceResult.reason
+  const sub = subResult.value
+  const invoices = invoiceResult.value
   return {
     kind: 'subscribed',
     status: sub.status,

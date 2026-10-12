@@ -7,6 +7,12 @@ export function cancelSentence(endDate: string) {
   return `Your homeowners stop getting the monthly note after ${endDate}. Your people and their matches stay here. Come back any time.`
 }
 
+/**
+ * The plan Stripe has no record of (OR-044a). Said in the agent's terms, not the vendor's, and with
+ * no "Start your plan": the account still reads as active, so a second checkout could charge twice.
+ */
+export const MISSING_PLAN = "We can't find your plan."
+
 export const NOTICES: Record<string, string> = {
   'done=canceled': 'Your plan is set to end. Nothing changes until then.',
   'done=resumed': 'Your plan will keep going. Nothing else changed.',

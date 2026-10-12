@@ -187,6 +187,37 @@ describe.skipIf(!databaseUrl)('OR-018 Stripe billing against the database', () =
     })
   })
 
+  test('a subscription Stripe has no record of is the missing view; any other failure still throws (OR-044a)', async () => {
+    const accountId = await newAccount()
+    const { sub } = await subscribe(accountId)
+    // The row stays as the webhook wrote it, active, while Stripe forgets the id: a test-mode
+    // subscription read with a live key.
+    fake.subscriptions.delete(sub.id)
+    expect(await loadBillingView(accountId)).toEqual({ kind: 'missing' })
+    expect((await row(accountId))?.status).toBe('active')
+    // A missing subscription wins over a failed invoice list, which tends to come with it.
+    const listInvoices = fake.listInvoices
+    fake.listInvoices = async () => {
+      throw new Error('Stripe GET /invoices failed (400): No such customer')
+    }
+    try {
+      expect(await loadBillingView(accountId)).toEqual({ kind: 'missing' })
+      fake.subscriptions.set(sub.id, sub)
+      await expect(loadBillingView(accountId)).rejects.toThrow(/No such customer/)
+    } finally {
+      fake.listInvoices = listInvoices
+    }
+    const getSubscription = fake.getSubscription
+    fake.getSubscription = async () => {
+      throw new Error('Stripe GET /subscriptions failed (500): no message')
+    }
+    try {
+      await expect(loadBillingView(accountId)).rejects.toThrow(/\(500\)/)
+    } finally {
+      fake.getSubscription = getSubscription
+    }
+  })
+
   test('an event for a subscription nobody owns is recorded and changes nothing', async () => {
     const response = await deliver(eventBody('customer.created', { id: 'cus_nobody' }))
     expect(await response.json()).toMatchObject({ outcome: 'recorded' })
