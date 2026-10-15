@@ -21,7 +21,9 @@ function cronSecretOk(request: Request): boolean {
  */
 export const dynamic = 'force-dynamic'
 
-export const GET = undefined as unknown as (request: Request) => Promise<Response>
+export async function GET(request: Request) {
+  return tick(request)
+}
 
 export async function POST(request: Request) {
   return tick(request)
