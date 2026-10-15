@@ -4,7 +4,6 @@ import { afterAll, beforeAll, describe, expect, test } from 'vitest'
 import { hashPassword, verifyPassword } from '@/auth/password'
 import { createDb } from '@/db/client'
 import { demoCounts, seedDemo } from '@/db/demo-seed'
-import { AGENT_ID } from '@/db/fixtures/la-verne'
 import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { accounts, parcelEvents } from '@/db/schema'
 
@@ -59,7 +58,8 @@ describe.skipIf(!databaseUrl)('the demo seeder (OR-050)', () => {
   })
 
   test('the rerun sets the password the demo signs in with', async () => {
-    const [agent] = await demo.db.select({ hash: accounts.passwordHash }).from(accounts).where(eq(accounts.id, AGENT_ID))
+    // The only account: the fixture agent.
+    const [agent] = await demo.db.select({ hash: accounts.passwordHash }).from(accounts)
     expect(await verifyPassword(PASSWORD, agent!.hash)).toBe(true)
     expect(await verifyPassword('first-password', agent!.hash)).toBe(false)
   })

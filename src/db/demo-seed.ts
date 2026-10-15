@@ -1,9 +1,10 @@
-import { and, eq, ilike, inArray, ne, sql } from 'drizzle-orm'
+import { and, count, eq, ilike, inArray, ne, sql } from 'drizzle-orm'
 import type { createDb } from '@/db/client'
 import { liveBonitaSales, liveOakdaleEvents, LIVE_HOUSES, PREVIEW_STREET } from '@/db/fixtures/e2e-live'
 import { AGENT_ID, buildLaVerneFixtures } from '@/db/fixtures/la-verne'
+import { contactsTable, liveContacts } from '@/db/live-contacts'
 import { persistReviewCandidates } from '@/db/persist-review-candidates'
-import { accounts, contactMatchCandidates, contacts, parcelEvents, parcels } from '@/db/schema'
+import { accounts, contactMatchCandidates, parcelEvents, parcels } from '@/db/schema'
 
 type Db = ReturnType<typeof createDb>['db']
 
@@ -26,12 +27,13 @@ export async function seedDemo(db: Db, passwordHash: string, now: Date) {
   await db.update(accounts).set({ passwordHash, sendTime: '09:00' }).where(eq(accounts.id, AGENT_ID))
   await db.insert(parcels).values(fixture.parcels).onConflictDoNothing()
   await db
-    .insert(contacts)
+    .insert(contactsTable)
     .values(fixture.contacts.map((contact) => ({ ...contact, accountId: AGENT_ID })))
     .onConflictDoNothing()
   await db.insert(parcelEvents).values(fixture.parcelEvents).onConflictDoNothing()
 
   // The review queue's candidates have no fixed ids, so they are written once, on the first run.
+  // Deleted people's candidates count too, deliberately: this asks only whether the rows exist.
   const reviewIds = fixture.reviewContacts.map((row) => row.id)
   const [written] = await db.select({ n: sql<number>`count(*)::int` }).from(contactMatchCandidates).where(inArray(contactMatchCandidates.contactId, reviewIds))
   if (!written?.n) await persistReviewCandidates(db, fixture.reviewContacts)
@@ -67,11 +69,11 @@ async function addLiveStreets(db: Db, now: Date) {
   }
 }
 
-/** What the demo holds, for the seeder's last line. */
+/** What the demo holds, for the seeder's last line. People are the live ones. */
 export async function demoCounts(db: Db) {
+  const [people] = await db.select({ n: count() }).from(liveContacts).where(eq(liveContacts.accountId, AGENT_ID))
   const [row] = await db
     .select({
-      contacts: sql<number>`(select count(*)::int from contacts where account_id = ${AGENT_ID})`,
       parcels: sql<number>`(select count(*)::int from parcels)`,
       events: sql<number>`(select count(*)::int from parcel_events)`,
       candidates: sql<number>`(select count(*)::int from contact_match_candidates)`,
@@ -79,5 +81,5 @@ export async function demoCounts(db: Db) {
     })
     .from(accounts)
     .where(eq(accounts.id, AGENT_ID))
-  return row
+  return row ? { ...row, contacts: people?.n ?? 0 } : undefined
 }
