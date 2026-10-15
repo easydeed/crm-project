@@ -15,6 +15,7 @@
     "db:migrate": "tsx scripts/migrate.ts",
     "db:drift": "tsx scripts/schema-diff.ts",
     "db:seed": "tsx scripts/seed.ts",
+    "demo:seed": "tsx scripts/demo-seed.ts",
     "digest:preview": "tsx scripts/digest-preview.ts",
     "e2e": "playwright test",
     "e2e:setup": "tsx scripts/e2e-setup.ts",

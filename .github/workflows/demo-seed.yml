@@ -1,0 +1,38 @@
+name: demo-seed
+
+# Migrates and fills the hosted demo's database (OR-050). Run by hand from the Actions tab:
+# a Claude Code cloud session can't open a Postgres connection, and the runner can.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: demo-seed
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    env:
+      # Repository secrets. Never DATABASE_URL: the demo has its own database.
+      PREVIEW_DATABASE_URL: ${{ secrets.PREVIEW_DATABASE_URL }}
+      DEMO_AGENT_PASSWORD: ${{ secrets.DEMO_AGENT_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Migrate and seed the demo database
+        run: pnpm demo:seed
