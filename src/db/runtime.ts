@@ -23,6 +23,14 @@ export function getRuntimeDb() {
   return globalForDb.__onrecordRuntimeDb
 }
 
+/**
+ * A script that owns its connection hands it to the loaders here (OR-050: demo-seed reads the demo
+ * project through its session URL, not the app's pooler).
+ */
+export function setRuntimeDb(handle: RuntimeDb) {
+  globalForDb.__onrecordRuntimeDb = handle
+}
+
 export async function resetRuntimeDb() {
   const current = globalForDb.__onrecordRuntimeDb
   globalForDb.__onrecordRuntimeDb = undefined

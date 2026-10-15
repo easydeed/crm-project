@@ -54,7 +54,7 @@ test('every test the constraints document cites exists, by file and by name', ()
 
 test('every finding in the register names the test that holds it now, and each exists', () => {
   const findings = register.split(/\n(?=\d+\. \*\*)/).slice(1)
-  expect(findings).toHaveLength(16)
+  expect(findings).toHaveLength(17)
   for (const finding of findings) expect(citations(finding.split('## Near misses')[0]!).length, finding.slice(0, 60)).toBeGreaterThan(0)
   expect(missing(register)).toEqual([])
   expect(register.match(/\.(?:ts|tsx|css|mjs):\d/g) ?? []).toEqual([])

@@ -205,6 +205,22 @@ Each item says how it is known:
     - The fix is probably "queue if the send day has passed and this month has no send", not
       more ticks. That is a packet.
 
+32. **Two captures are unstable: `people-bulk-bar` and `people-view-as`.** *Step 0 failed on them
+    in OR-049 and again in OR-051.*
+    - What is measured: five runs on one build and one database. The sticky navy bulk bar sits in
+      the same place every time, and one anti-aliased pixel at its top-right corner, where it
+      crosses the panel's right border, differs between runs. A fractional move would change every
+      edge pixel of the bar, so this is rasterization varying between browser processes, not
+      layout.
+    - What is suspected: the sticky bar, composited over the border.
+    - Options (OR-049 report):
+      - scroll each capture to the end, so the bar rests below the panel;
+      - leave both out of the exact comparison, with a reason (the carve-out finding #12 warns
+        about);
+      - find why the corner rasterizes differently.
+    - Unresolved. The pixel comparison is the main instrument for the re-skin, and an instrument
+      that occasionally lies is worse than one that is broken.
+
 ## Smaller things
 
 - `src/app/fonts/fonts.ts` says Fraunces is "used nowhere yet". Since OR-038 it is used on
