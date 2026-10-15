@@ -193,6 +193,18 @@ Each item says how it is known:
     - Saving the form untouched would set 09:00, so the default may be intended. The two screens
       disagree about whether a time is set, and nothing records which one is right.
 
+31. **A missed tick on the send day loses that month's send, with no signal.** *Found by OR-051,
+    from the code.*
+    - `src/jobs/schedule.ts` queues a month's send only from a tick on the send day, and compose
+      only from one the day before. Nothing looks back.
+    - A send day with no successful tick means the note is never queued. There is no error, no
+      retry and no record, and the agent's homeowners simply get nothing that month.
+    - It is a design that assumes ticks arrive, not a Hobby limit. One daily run makes it a single
+      missed run. On any plan, an outage, a broken deploy or a missing `CRON_SECRET` across the
+      day does it. The 405 OR-051 fixed would have done it every month.
+    - The fix is probably "queue if the send day has passed and this month has no send", not
+      more ticks. That is a packet.
+
 ## Smaller things
 
 - `src/app/fonts/fonts.ts` says Fraunces is "used nowhere yet". Since OR-038 it is used on

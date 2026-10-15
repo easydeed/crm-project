@@ -33,3 +33,8 @@
 ## Account deletion
 
 - [ ] **No screen deletes an account yet.** An account that ever subscribed must be removed in Stripe first (`docs/ERASURE.md`). Exposing deletion is its own packet.
+
+## Jobs
+
+- [ ] **`CRON_SECRET` is set in the Vercel project.** Vercel sends it on every cron call as `Authorization: Bearer …`, and `/api/cron/tick` answers 404 without it. Until OR-051 the route answered POST only and Vercel calls GET, so no cron had ever reached the job runner.
+- [ ] **Crons run against the production deployment only.** A preview deployment never runs the job runner. A Hobby plan lands a run anywhere in the scheduled hour. Delivery is best effort: a run can be missed or repeated. A repeat is safe, because each job is idempotent, and a job already queued is still due at the next tick. Scheduling is not, and this is a product defect, not a plan limit (`docs/ui-spec/05-open.md` #31): a month's send is queued only by a tick that succeeds on the send day (compose, the day before). A send day with no successful tick loses that month's note, with no error, no retry and no record. On one run a day that is one missed run. On any plan it is any outage, broken deploy or missing `CRON_SECRET` that spans the day, and the 405 above would have done it every month.

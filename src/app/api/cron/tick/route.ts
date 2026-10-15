@@ -14,7 +14,22 @@ function cronSecretOk(request: Request): boolean {
   return false
 }
 
+/**
+ * Vercel Cron calls this path with GET, sending CRON_SECRET as `Authorization: Bearer …`
+ * (vercel.com/docs/cron-jobs). Until OR-051 the route answered POST only, so every cron call got a
+ * 405 and the job runner never ran on Vercel. POST stays for a manual run; both share one check.
+ */
+export const dynamic = 'force-dynamic'
+
+export async function GET(request: Request) {
+  return tick(request)
+}
+
 export async function POST(request: Request) {
+  return tick(request)
+}
+
+async function tick(request: Request) {
   if (!cronSecretOk(request)) {
     return new NextResponse(null, { status: 404 })
   }
