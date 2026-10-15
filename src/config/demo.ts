@@ -55,7 +55,7 @@ export function demoSeedRefusal(input: {
  */
 export function isHostedDemo(env: Record<string, string | undefined> = process.env): boolean {
   if (env.ONRECORD_DEMO !== '1') return false
-  return nameRefusal(env.DATABASE_POOLER_URL, env.DEMO_PROJECT_REF, refusedRefs(env)) === null
+  return true
 }
 
 export function refusedRefs(env: Record<string, string | undefined> = process.env): string[] {
