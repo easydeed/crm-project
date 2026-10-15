@@ -10,7 +10,6 @@ function cronSecretOk(request: Request): boolean {
   const header = request.headers.get('x-cron-secret')
   if (header === expected) return true
   const auth = request.headers.get('authorization')
-  if (auth === `Bearer ${expected}`) return true
   return false
 }
 
