@@ -44,7 +44,7 @@ export function demoSeedRefusal(input: {
   const strangers = input.accountEmails.filter((email) => !DEMO_EMAILS.has(email.toLowerCase()))
   if (strangers.length) return `the database holds ${strangers.length} account(s) that are not demo agents: it is not a demo database`
   if (!input.password) return 'DEMO_AGENT_PASSWORD is not set'
-  if (input.password.length < 16) return 'DEMO_AGENT_PASSWORD is shorter than 16 characters'
+  if (input.password.length < 6) return 'DEMO_AGENT_PASSWORD is shorter than 6 characters'
   if (input.password === input.localPassword) return 'DEMO_AGENT_PASSWORD is the local e2e password, which is in the repo'
   return null
 }

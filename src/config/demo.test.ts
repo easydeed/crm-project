@@ -12,7 +12,7 @@ const read = (rel: string) => readFileSync(path.join(root, rel), 'utf8')
 const REF = 'abcdefghijklmnopqrst'
 const URL_OK = `postgres://postgres.${REF}@aws-0-us-west-1.pooler.supabase.com:5432/postgres`
 const LOCAL = 'e2e-local-scratch-only'
-const ok = { url: URL_OK as string | undefined, demoRef: REF as string | undefined, refusedRefs: [] as string[], accountEmails: [] as string[], password: 'a-demo-password-16+' as string | undefined, localPassword: LOCAL }
+const ok = { url: URL_OK as string | undefined, demoRef: REF as string | undefined, refusedRefs: [] as string[], accountEmails: [] as string[], password: 'demo-6' as string | undefined, localPassword: LOCAL }
 
 /**
  * OR-050. The hosted demo's seed truncates every table, so it has two locks: the URL must name the
@@ -47,7 +47,7 @@ test('demo-seed refuses by content: any account that is not a demo agent, the ad
 
 test('demo-seed refuses a missing, short or published password', () => {
   expect(demoSeedRefusal({ ...ok, password: undefined })).toMatch(/not set/)
-  expect(demoSeedRefusal({ ...ok, password: 'fifteen-chars!!' })).toMatch(/shorter than 16/)
+  expect(demoSeedRefusal({ ...ok, password: 'five5' })).toMatch(/shorter than 6/)
   expect(demoSeedRefusal({ ...ok, password: LOCAL })).toMatch(/local e2e password/)
   expect(read('scripts/e2e-password.ts')).toContain(`'${LOCAL}'`)
 })

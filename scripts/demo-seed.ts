@@ -6,7 +6,7 @@
  *   DATABASE_URL         crm-preview's session pooler (port 5432)
  *   DEMO_PROJECT_REF     crm-preview's project ref; the URL must carry it
  *   DEMO_REFUSED_REFS    optional, comma-separated refs to refuse as well (crm-dev's)
- *   DEMO_AGENT_PASSWORD  the demo agents' password: 16+ characters, never committed
+ *   DEMO_AGENT_PASSWORD  the demo agents' password: 6+ characters, never committed
  *
  * The live events are dated from the day it runs: reseed every few weeks to keep the call tags.
  */

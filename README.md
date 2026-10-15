@@ -79,7 +79,7 @@ otherwise:
 - It carries neither the crm ref nor any ref in `DEMO_REFUSED_REFS`.
 - The database holds no account that is not a demo agent: empty, or seeded by this script before.
   crm-dev holds real accounts, so it is refused whatever its URL says.
-- `DEMO_AGENT_PASSWORD` is set, at least 16 characters, and not the local e2e password. It is the
+- `DEMO_AGENT_PASSWORD` is set, at least 6 characters, and not the local e2e password. It is the
   demo agents' password, never committed. The demo emails are in this repo, so it is the only
   secret.
 
