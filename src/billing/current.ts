@@ -1,10 +1,12 @@
 import type { BillingGateway } from '@/billing/gateway'
 import { e2eBillingGateway } from '@/billing/e2e-gateway'
 import { StripeGateway } from '@/billing/stripe-gateway'
+import { isHostedDemo } from '@/config/demo'
 import { isLocalE2E } from '@/config/e2e'
 
-// A local browser test never reaches Stripe; see isLocalE2E for why a flag alone cannot do this.
-let current: BillingGateway = isLocalE2E() ? e2eBillingGateway() : new StripeGateway()
+// A local browser test never reaches Stripe; see isLocalE2E for why a flag alone cannot do this. The
+// hosted demo (OR-050) uses the same stand-in, but only on the demo project: see isHostedDemo.
+let current: BillingGateway = isLocalE2E() || isHostedDemo() ? e2eBillingGateway() : new StripeGateway()
 
 export function getBillingGateway(): BillingGateway {
   return current

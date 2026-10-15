@@ -74,9 +74,10 @@ async function copyPeople(db: Db, row: E2EAgent) {
   }
 }
 
-export async function buildAgents(db: Db, password: string) {
+/** `rows` is every agent locally; the hosted demo passes its own set, without the admin (OR-050). */
+export async function buildAgents(db: Db, password: string, rows: E2EAgent[] = E2E_AGENTS) {
   const passwordHash = await hashPassword(password)
-  for (const row of E2E_AGENTS) {
+  for (const row of rows) {
     if (row.insert) await insertAccount(db, row, passwordHash)
     else await db.update(accounts).set({ passwordHash, sendTime: row.sendTime ?? null }).where(eq(accounts.id, row.id))
     if (row.billing.plan === 'stripe') {
@@ -110,9 +111,9 @@ async function billingState(accountId: string) {
  * Fail here, not quietly in a screenshot (OR-043a's rule, for every agent): each agent is read back
  * through the loaders its screens use, and any that no longer shows its state stops the run.
  */
-export async function checkAgents(db: Db, now: Date) {
+export async function checkAgents(db: Db, now: Date, rows: E2EAgent[] = E2E_AGENTS) {
   const wrong: string[] = []
-  for (const row of E2E_AGENTS) {
+  for (const row of rows) {
     const { home, billing, people, phone } = row.expects
     if (home !== undefined) {
       const kind = (await loadHomeSend(row.id, now)).kind

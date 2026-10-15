@@ -66,6 +66,42 @@ its state, setup fails and says which. To capture a new state that only data can
 `e2e-agents.test.ts` fails on an agent no capture uses. A state a prepare reaches by clicking must
 not write anything another capture reads.
 
+## The hosted demo
+
+A preview of the app interior, on demo data, for looking at it in a browser (OR-050). It is a
+**branch deploy** on Vercel against **crm-preview**, never `main` and never crm-dev or crm. Vercel's
+production deployment of `main` exists, with no data and no `CRON_SECRET`, so nothing runs there; it
+stays an empty placeholder until something is deliberately promoted.
+
+Seed it with `pnpm demo:seed`. It runs only when all of this holds, and says which lock refused it
+otherwise:
+- `DATABASE_URL` is crm-preview's session pooler (port 5432) and carries `DEMO_PROJECT_REF`.
+- It carries neither the crm ref nor any ref in `DEMO_REFUSED_REFS`.
+- The database holds no account that is not a demo agent: empty, or seeded by this script before.
+  crm-dev holds real accounts, so it is refused whatever its URL says.
+- `DEMO_AGENT_PASSWORD` is set, at least 16 characters, and not the local e2e password. It is the
+  demo agents' password, never committed. The demo emails are in this repo, so it is the only
+  secret.
+
+Run `pnpm db:migrate` against crm-preview first; the deploy does not migrate. The admin agent is
+seeded locally only. The live events are dated from the day the seed runs, so reseed every few
+weeks or the call tags expire.
+
+The branch deploy's environment:
+- **Set:**
+  - `DATABASE_POOLER_URL` (crm-preview's transaction pooler, port 6543)
+  - `SESSION_SECRET`, `UNSUBSCRIBE_SECRET`, `APP_ORIGIN`
+  - `ONRECORD_DEMO=1` and `DEMO_PROJECT_REF`: the billing stand-in, so each demo agent's plan
+    shows as it does locally; honoured only on the demo project
+- **Left unset on purpose:**
+  - `SEND_ENABLED`, `TEXTING_ENABLED`: nothing sends
+  - `STRIPE_*`: the stand-in plays Stripe
+  - `POSTMARK_*`, `TWILIO_*`
+  - `CRON_SECRET`: preview deployments never run crons anyway
+
+Deployment Protection covers the branch deploy, so a browser check against it needs a protection-
+bypass token.
+
 ## Two things that will not be compromised
 
 **Plain language.** The buyer is a working agent, median age 57, who already pays for software they don't open. If a sentence makes someone pause for half a second, rewrite it. Jargon inside a picture of a document is evidence; jargon in a sentence is a lost reader.

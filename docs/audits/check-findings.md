@@ -1,11 +1,11 @@
 # Checks that checked less than their names said
 
-Sixteen times on this project, a check was found passing while it verified less than it
+Seventeen times on this project, a check was found passing while it verified less than it
 claimed. Each was found by breaking something on purpose, or by looking at a state no check
 had looked at. This register is what the principles in `PROJECT_STATE.md` ("Enforcement, not
 instruction") were drawn from. Read it before trusting a green run.
 
-The numbering is the reviews'. Fourteen numbers are stated in them. Two, #1 and #10, are
+The numbering is the reviews'. Fifteen numbers are stated in them. Two, #1 and #10, are
 inferred, with the reason given. Each entry says what the check claimed, what it actually
 checked, the kind of failure, and the test that holds the property now. Tests are cited by
 file and name, and `src/app/constraints-citations.test.ts` fails if one stops existing.
@@ -14,7 +14,7 @@ file and name, and `src/app/constraints-citations.test.ts` fails if one stops ex
 
 | Kind | Findings | The principle it fed |
 |---|---|---|
-| Compared against the wrong thing | #1, #2, #3 | Enforcement, not instruction: a check that throws, not a line that describes |
+| Compared against the wrong thing | #1, #2, #3, #17 | Enforcement, not instruction: a check that throws, not a line that describes |
 | A keyword or a list, not the property | #4, #5, #6, #7 | Prefer an allowlist; a test named for a property checks the property |
 | Scope: named directories, not the tree | #8, #9, #10 | Scan trees, not lists |
 | Notation: the spelling, not the value | #11 | Match values, not spellings |
@@ -22,7 +22,7 @@ file and name, and `src/app/constraints-citations.test.ts` fails if one stops ex
 | Check drift: the check transforms or copies what it checks | #13, #15, #16 | Prove the transformation applied |
 | Fixtures that expire | #14 | Moving dates stay out of the seed |
 
-## The sixteen
+## The seventeen
 
 1. **CI "Push schema" reported success while doing nothing.** *Found in OR-017a; fixed in
    OR-000d. Inferred as #1: the reviews never number it, but name it beside #2 as the same
@@ -136,7 +136,7 @@ file and name, and `src/app/constraints-citations.test.ts` fails if one stops ex
       past them, three of the four call-tag kinds stopped rendering, and no test failed.
     - Held now by: `src/db/fixtures/seed-dates.test.ts` “no recorded event in the seed is
       newer than the seed has ever had”, the events dated from each run in
-      `src/db/fixtures/e2e-live.ts`, and `scripts/e2e-setup.ts` “the live events no longer
+      `src/db/fixtures/e2e-live.ts`, and `scripts/live-data.ts` “the live events no longer
       reach it”, which stops the run if the tags disappear.
 
 15. **The bill bar test skipped every `text-[…]`.** *OR-046.*
@@ -154,6 +154,16 @@ file and name, and `src/app/constraints-citations.test.ts` fails if one stops ex
     - Held now by: `src/app/shared-classes.test.ts` “linkClass is defined once; the only
       copies of its string are the listed ones”, which strips any size and fails if the strip
       misses.
+
+17. **The cron route's test called the handler that existed, not the one the platform calls.**
+    *OR-051.*
+    - Claimed: the cron tick works.
+    - Checked: POST, called directly, and only its refusal. Vercel calls a cron path with GET and
+      an `Authorization: Bearer` header, so the route answered every real cron with a 405 and the
+      job runner never ran on Vercel. Nothing had deployed, so nothing showed it.
+    - Held now by: `src/app/api/cron/tick/route.test.ts` “every cron path in vercel.json is a route
+      that answers the method Vercel calls it with” and `src/app/api/cron/tick/route.test.ts` “a
+      request shaped like Vercel's cron runs the scheduler and the runner”.
 
 ## Near misses
 
