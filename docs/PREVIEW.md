@@ -51,7 +51,8 @@ Redeploy the preview after adding them. Vercel reads environment variables at de
 Open the preview URL, go to `/login`, and sign in as `dana@coastline.example` with
 `DEMO_AGENT_PASSWORD`.
 
-What it shows: the dashboard with three people to call, People with matched, needs-review and
-no-parcel rows, the review queue, a person's page and the note preview. What it doesn't: Billing
-shows no plan, and starting one fails without a Stripe test key. No cron runs on a preview, so
-nothing is composed or sent.
+What it shows: the dashboard's three people worth a call this month, each with a different reason,
+People with matched, needs-review and no-parcel rows, the review queue, a person's page and the
+note preview. The dashboard leads with "Start your plan", because the demo agent has no plan.
+Starting one goes to Stripe and needs `STRIPE_SECRET_KEY` (a test key) and `STRIPE_PRICE_ID` in
+Vercel. No cron runs on a preview, so nothing is composed or sent.
