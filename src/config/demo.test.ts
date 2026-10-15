@@ -91,7 +91,9 @@ test('seed and e2e-setup keep their local-only guard; the shared seed bodies hav
       if (statSync(path.join(root, rel)).isDirectory()) return name === 'node_modules' ? [] : files(rel)
       return /\.tsx?$/.test(name) && !/\.test\./.test(name) ? [rel] : []
     })
-  const importers = (module: string) => [...files('scripts'), ...files('src'), ...files('e2e')].filter((file) => new RegExp(`from '\\./${module}'|${module}'\\)`).test(read(file))).sort()
+  // Any relative path naming the module counts: `from`, a bare `import`, `import()` and `require()`.
+  const importers = (module: string) =>
+    [...files('scripts'), ...files('src'), ...files('e2e')].filter((file) => new RegExp(`['"](?:\\.{1,2}/)+(?:[\\w-]+/)*${module}(?:\\.tsx?)?['"]`).test(read(file))).sort()
   expect(importers('seed-core')).toEqual(['scripts/demo-seed.ts', 'scripts/seed.ts'])
   expect(importers('live-data')).toEqual(['scripts/demo-seed.ts', 'scripts/e2e-setup.ts'])
 })
