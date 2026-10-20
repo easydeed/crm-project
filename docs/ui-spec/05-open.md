@@ -223,11 +223,6 @@ Each item says how it is known:
 
 ## Smaller things
 
-- `src/app/fonts/fonts.ts` says Fraunces is "used nowhere yet". Since OR-038 it is used on
-  the home `<h1>`. This is a stale comment.
-- The home page types "Oakdale" by hand (`src/app/home-story.tsx:24`). The email derives
-  the street name from the address. The shared-story test checks the figures, not that
-  word.
 - The `start` capture shows whichever MLS ID the last browser run searched for, not the
   seed's, because a search saves the ID to the account.
 - The per-person review entry is a redirect, so the browser pass covers it through the review

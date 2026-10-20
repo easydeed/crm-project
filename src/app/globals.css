@@ -19,6 +19,12 @@
  *
  * The alert (OR-043): the view-as banner, coral with navy words in both themes, so it can never
  * merge with the bar it sits above (5.34:1 against the light bar, 4.12:1 against the dark).
+ *
+ * Marketing (OR-053): --gold and --cream, the landing page's accents. The design's gold
+ * (oklch 0.80 0.12 82, #e4b65c) is 1.88:1 on white, so the light value is darkened to #b3811e:
+ * 5.18:1 as words on the bar, 5.18:1 under --on-gold words, 3.46:1 and 3.12:1 as a mark on the
+ * page and on --cream. Dark keeps the design's gold, which clears every pair on dark grounds.
+ * Nothing on --cream is muted: --muted-ink on it is 4.50:1, under the floor.
  */
 :root {
   --background: #ffffff;
@@ -43,6 +49,9 @@
   --on-bar-danger: #b42d17;
   --alert: #ff4a2b;
   --on-alert: #0e1729;
+  --gold: #b3811e;
+  --on-gold: #0e1729;
+  --cream: #f7f3ea;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -69,6 +78,9 @@
     --on-bar-danger: #b42d17;
     --alert: #ff4a2b;
     --on-alert: #0e1729;
+    --gold: #e4b65c;
+    --on-gold: #0e1729;
+    --cream: #1c1912;
   }
 }
 
@@ -95,10 +107,13 @@
   --color-on-bar-danger: var(--on-bar-danger);
   --color-alert: var(--alert);
   --color-on-alert: var(--on-alert);
+  --color-gold: var(--gold);
+  --color-on-gold: var(--on-gold);
+  --color-cream: var(--cream);
 
-  /* Inter everywhere. Fraunces is the marketing page's serif and nothing else's. */
+  /* Inter everywhere. Archivo is the marketing page's display face and nothing else's (OR-053). */
   --font-sans: var(--font-inter), var(--font-inter-latin-ext), var(--font-inter-vietnamese), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-fraunces), var(--font-fraunces-latin-ext), var(--font-fraunces-vietnamese), ui-serif, Georgia, serif;
+  --font-display: var(--font-archivo), var(--font-inter), var(--font-inter-latin-ext), var(--font-inter-vietnamese), ui-sans-serif, system-ui, sans-serif;
 
   /* The export's radius scale, from a 9px base. */
   --radius-sm: 0.3375rem;

@@ -1,43 +1,35 @@
-import Link from 'next/link'
-import { buttonClass, linkClass } from '@/app/app/people/ui'
+import { Hero } from '@/app/marketing/hero'
+import { Addons, Features, PriceAndClose } from '@/app/marketing/plan'
+import { SiteFooter, SiteHeader } from '@/app/marketing/site-chrome'
+import { HowItWorks, WhatItIs, WhyToCall } from '@/app/marketing/story'
+import { TheNote } from '@/app/marketing/the-note'
 import type { CanonicalFacts } from '@/digest/canonical-facts'
+import type { DigestResult } from '@/digest/types'
 
-const ctaClass = `${buttonClass} inline-block tap`
-
-export function HomeStory({ facts }: { facts: CanonicalFacts }) {
+/**
+ * The marketing page (OR-053, from the Claude design's Landing Page v6, audited in OR-052). Every
+ * figure on it comes from `facts` (canonicalFacts()), the real email (`digest`), the signal
+ * fixtures (sample-calls.ts), the add-on registry or costs.ts. None is typed in.
+ */
+export function HomeStory({ facts, digest }: { facts: CanonicalFacts; digest: DigestResult }) {
   return (
-    <main className="mx-auto flex min-h-screen max-w-xl flex-col justify-center gap-6 px-4 py-10">
-      <p className="text-[15px] font-semibold tracking-tight">onrecord</p>
-      <h1 className="font-serif text-[32px] font-medium leading-tight tracking-[-0.01em] sm:text-[40px]">
-        A note about their house, from the county record.
-      </h1>
-      <p className="text-[17px] leading-relaxed">
-        {facts.address}, {facts.city} {facts.zip}. {facts.firstName}.
-      </p>
-      <p className="text-[17px] leading-relaxed">
-        Homes on Oakdale have recently sold for {facts.streetMedian}. A buyer
-        paying that would be taxed on it.
-      </p>
-      <p className="text-[17px] leading-relaxed">
-        The county taxes this house on {facts.taxedOn}.
-      </p>
-      <p className="text-[17px] leading-relaxed">
-        That difference is {facts.benefit} a year.
-      </p>
-      <p className="text-[17px] leading-relaxed">
-        California lets some homeowners carry this to their next home.
-      </p>
-      <div className="flex flex-wrap items-center gap-4">
-        <Link className={ctaClass} href="/sample">
-          See the sample note
-        </Link>
-        <Link className={`tap ${linkClass}`} href="/register">
-          Create an account
-        </Link>
-        <Link className={`tap ${linkClass}`} href="/login">
-          Sign in
-        </Link>
+    <>
+      <div className="bg-bar text-on-bar">
+        <SiteHeader onHome />
       </div>
-    </main>
+      <main>
+        <div className="bg-bar text-on-bar">
+          <Hero />
+        </div>
+        <WhatItIs />
+        <HowItWorks />
+        <WhyToCall />
+        <TheNote facts={facts} digest={digest} />
+        <Features />
+        <Addons />
+        <PriceAndClose />
+      </main>
+      <SiteFooter />
+    </>
   )
 }

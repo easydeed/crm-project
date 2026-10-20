@@ -1,11 +1,11 @@
 # Checks that checked less than their names said
 
-Seventeen times on this project, a check was found passing while it verified less than it
+Nineteen times on this project, a check was found passing while it verified less than it
 claimed. Each was found by breaking something on purpose, or by looking at a state no check
 had looked at. This register is what the principles in `PROJECT_STATE.md` ("Enforcement, not
 instruction") were drawn from. Read it before trusting a green run.
 
-The numbering is the reviews'. Fifteen numbers are stated in them. Two, #1 and #10, are
+The numbering is the reviews'. Seventeen numbers are stated in them. Two, #1 and #10, are
 inferred, with the reason given. Each entry says what the check claimed, what it actually
 checked, the kind of failure, and the test that holds the property now. Tests are cited by
 file and name, and `src/app/constraints-citations.test.ts` fails if one stops existing.
@@ -15,14 +15,14 @@ file and name, and `src/app/constraints-citations.test.ts` fails if one stops ex
 | Kind | Findings | The principle it fed |
 |---|---|---|
 | Compared against the wrong thing | #1, #2, #3, #17 | Enforcement, not instruction: a check that throws, not a line that describes |
-| A keyword or a list, not the property | #4, #5, #6, #7 | Prefer an allowlist; a test named for a property checks the property |
+| A keyword or a list, not the property | #4, #5, #6, #7, #19 | Prefer an allowlist; a test named for a property checks the property |
 | Scope: named directories, not the tree | #8, #9, #10 | Scan trees, not lists |
-| Notation: the spelling, not the value | #11 | Match values, not spellings |
+| Notation: the spelling, not the value | #11, #18 | Match values, not spellings |
 | A carve-out wider than its name | #12 | Scan trees, not lists (an exemption is a scope) |
 | Check drift: the check transforms or copies what it checks | #13, #15, #16 | Prove the transformation applied |
 | Fixtures that expire | #14 | Moving dates stay out of the seed |
 
-## The seventeen
+## The nineteen
 
 1. **CI "Push schema" reported success while doing nothing.** *Found in OR-017a; fixed in
    OR-000d. Inferred as #1: the reviews never number it, but name it beside #2 as the same
@@ -105,8 +105,10 @@ file and name, and `src/app/constraints-citations.test.ts` fails if one stops ex
     check" and the next "the eleventh".*
     - Claimed: Fraunces appears only on the marketing page.
     - Checked: four directories. `font-serif` on the shared preview panel passed.
-    - Held now by: `src/app/design-scope.test.ts` “Fraunces stays on the marketing page: only
-      the listed files under src name it”, over every file under `src`.
+    - Held now by: `src/app/design-scope.test.ts` “Archivo stays on the marketing page: only
+      the listed files under src name it, and only marketing files import them”, over every
+      file under `src`. Archivo replaced Fraunces as the marketing face in OR-053; the
+      allowlist moved with it.
 
 11. **The colour scan matched spellings, not values.** *OR-038.*
     - Claimed: no colour outside the tokens.
@@ -164,6 +166,22 @@ file and name, and `src/app/constraints-citations.test.ts` fails if one stops ex
     - Held now by: `src/app/api/cron/tick/route.test.ts` “every cron path in vercel.json is a route
       that answers the method Vercel calls it with” and `src/app/api/cron/tick/route.test.ts` “a
       request shaped like Vercel's cron runs the scheduler and the runner”.
+
+18. **The no-opacity scan read class names, not styles.** *OR-052; closed in OR-053.*
+    - Claimed: no source file under `src/app` uses opacity, for any state.
+    - Checked: Tailwind `opacity-NN` utilities only. The marketing design's recorder stamp was
+      `style="opacity:.85"`, and a style prop or a CSS rule would have passed.
+    - Held now by: `src/app/disabled-state.test.ts` “no source file under src/app sets opacity
+      in a style either: not in a style prop, not in CSS”, which also proves its pattern on
+      each spelling.
+
+19. **"Fonts are bundled" checked one way of fetching them.** *OR-052; closed in OR-053.*
+    - Claimed: no build fetches fonts from Google.
+    - Checked: imports of `next/font/google`. The marketing design loaded Archivo with a
+      `<link>` to fonts.googleapis.com, which the test could not see.
+    - Held now by: `src/app/design-scope.test.ts` “fonts are bundled: nothing imports
+      next/font/google or links to Google Fonts, so no page fetches from Google”, which scans
+      src and public for either Google host and proves its pattern on each spelling.
 
 ## Near misses
 

@@ -244,7 +244,7 @@ may be redesigned; the iframe's white canvas and the email inside it may not.
 | Test | File:line | Asserts |
 |---|---|---|
 | the email keeps its own design: nothing in src/digest reads an app token | `src/app/design-scope.test.ts:39` | no file under src/digest contains `var(--<token>)` for any token in globals.css, or names globals.css |
-| Fraunces stays on the marketing page | `src/app/design-scope.test.ts:31` | Fraunces / `font-serif` only in four listed files; the email's serif is Georgia, not the app's display face |
+| Archivo stays on the marketing page | `src/app/design-scope.test.ts` | Archivo / `font-display` only in four listed files (Fraunces until OR-053); the email's serif is Georgia, not the app's display face |
 | digest renderer does not import a clock, database, or network | `src/digest/purity.test.ts:24` | no `Date.now(`, `fetch(`, drizzle, `node:fs`, postgres or date-fns in the renderer (build-input.ts and fixtures exempt) |
 | renderer source stays free of a database | `src/digest/build-input.test.ts:25` | render.ts names no drizzle, getRuntimeDb, buildDigestInput, fetch or Date.now |
 | digest:preview script writes fixture html without touching the renderer clock | `src/digest/script.test.ts:4` | the `pnpm digest:preview` script renders fixtures with no clock or database |

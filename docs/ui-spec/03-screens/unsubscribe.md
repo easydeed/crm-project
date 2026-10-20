@@ -138,8 +138,8 @@ contacts (`load.ts:43`), so a homeowner can always leave.
   (`docs/audits/reskin-screen-log.md:60`).
 
 Not covered: `src/app/design-debt.test.ts` scans `src/app` for raw colours, so the hex values in
-`src/unsubscribe/html.ts` are outside it. The Fraunces allowlist (`design-scope.test.ts:31`) does
-cover it, so Fraunces may not appear here.
+`src/unsubscribe/html.ts` are outside it. The display-face allowlist (`design-scope.test.ts`, Archivo since OR-053) does
+cover it, so no display face may appear here.
 
 ## What the v0 export did, and why we did not take it
 
