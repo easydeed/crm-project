@@ -127,7 +127,7 @@ that shows "By creating an account you agree to our Terms" has to wait for real 
 - `src/app/login/auth-reskin.test.ts:16` — the page's link is `className={linkClass}`, not a copy.
 - `src/app/disabled-state.test.ts:43` — the button uses `buttonClass`, not a copy of its string.
 - `src/app/shared-classes.test.ts:30, 39` — `buttonClass` and `linkClass` defined once across the tree.
-- `src/app/design-scope.test.ts:31` — Fraunces is allowlisted to four files; this page is not one.
+- `src/app/design-scope.test.ts` — the marketing display face (Archivo since OR-053) is allowlisted to four files; this page is not one.
 - `src/app/app/settings/billing/billing-ui.test.ts:46` — the plan line's words and figures.
 - `src/auth/password.test.ts:10` — the requirement says 10 characters; short fails, long passes.
 - `src/auth/auth.integration.test.ts:26, 48` — register creates an agent; a duplicate email is refused with the quoted message.
@@ -149,7 +149,7 @@ homeowner `/register`" under "Ignore entirely" (`:439`).
 
 | Export | Where | Why not |
 |---|---|---|
-| Fraunces `Start following your home` | `register/page.tsx:76-78` | Homeowner copy; Fraunces is the marketing `<h1>` only. |
+| Fraunces `Start following your home` | `register/page.tsx:76-78` | Homeowner copy; the display face is marketing only. |
 | Three steps: account, address, `Is this your lot?` | `:15`, `:129-131`, `:172-174` | Our step 2 is the agent's MLS closings at `/app/start`, not a homeowner's address. |
 | Blue progress bars and `Step {n} of 3` at 11px | `:49-61` | Decorative; under 15px; claims steps our flow does not have (OR-036). |
 | No password field, a `Continue` button, and `setTimeout` redirects | `:106-112`, `:186` | Mock auth with no account or session (audit `:407`). |

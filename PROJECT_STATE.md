@@ -60,7 +60,7 @@ A dimension stated from reading is a guess. A size, a line count or a cause writ
 
 Prove the transformation applied. A check that transforms its input before asserting (strips a size, skips a family of tokens, holds a copy of the value it looks for) goes quiet when the code moves under it, and nothing announces it. It must fail when the transformation no longer applies. Three instances: the copy detector held a typed copy of `buttonClass` (OR-042), the bill bar test skipped every `text-[…]` (OR-046), and the link detector stripped a `text-[15px] ` that was about to become 17px (OR-047). `src/app/shared-classes.test.ts` asserts that its strip removed the size before it searches; that is the pattern.
 
-Seventeen checks on this project were found checking less than their names said. Each one, what it claimed, what it checked, and the test that holds it now: `docs/audits/check-findings.md`.
+Nineteen checks on this project were found checking less than their names said. Each one, what it claimed, what it checked, and the test that holds it now: `docs/audits/check-findings.md`.
 
 ## Rejected ideas — do not rebuild
 
@@ -109,7 +109,7 @@ Built against fixtures, not live. Everything below runs end to end on the La Ver
 - add-ons: Add my lender, and Text me the call list
 - signup's find-my-closings step
 
-Real data providers are not wired: `src/providers/current.ts` serves the fixtures. Metering is in place, so `/admin/costs` fills once they are. The redesign audited in OR-040 has been applied screen by screen (OR-042 to OR-047), and the browser pass photographs and measures 72 states (OR-044a). What stands between this and launch is `docs/GO_LIVE.md`.
+Real data providers are not wired: `src/providers/current.ts` serves the fixtures. Metering is in place, so `/admin/costs` fills once they are. The redesign audited in OR-040 has been applied screen by screen (OR-042 to OR-047), the marketing page was rebuilt from the audited landing design (OR-052, OR-053), and the browser pass photographs and measures 73 states. What stands between this and launch is `docs/GO_LIVE.md`.
 
 ## Build order
 

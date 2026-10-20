@@ -11,7 +11,7 @@ Every signed-in page sends a visitor here with a `returnTo` address, for example
 `redirect('/login?returnTo=/app')` (`src/app/app/page.tsx:13`). After signing in they go back to
 that page, or to `/app` (the dashboard) if there was none.
 
-This is the product's front door, not marketing. That is why it carries no Fraunces and no
+This is the product's front door, not marketing. That is why it carries no display face and no
 display type (OR-036 Decision B, `packets/OR-036-reskin-auth.md`).
 
 ## Layout
@@ -98,7 +98,7 @@ first in its DO NOT block.
 - `src/app/login/auth-reskin.test.ts:16` — the page's link uses `className={linkClass}`, not a copy of its string.
 - `src/app/disabled-state.test.ts:43` — the button uses `buttonClass` (and so its disabled look), not a copy.
 - `src/app/shared-classes.test.ts:30, 39` — `buttonClass` and `linkClass` are defined once across the tree.
-- `src/app/design-scope.test.ts:31` — only the four allowlisted files may name Fraunces; this page is not one.
+- `src/app/design-scope.test.ts` — only the four allowlisted files may name Archivo, the marketing face (Fraunces until OR-053); this page is not one.
 - `src/auth/session.test.ts:33` — `returnTo` accepts only same-origin relative paths.
 - `src/auth/auth.integration.test.ts:64, 71` — a wrong password and a missing email look the same; the right password signs in.
 - `e2e/auth.setup.ts:4-12` — signs in through this page by label; every signed-in capture depends on it.
@@ -118,7 +118,7 @@ The export's sign-in is `reference/v0-export/app/login/page.tsx`, inside an `Aut
 | Export | Where | Why not |
 |---|---|---|
 | A printed demo password, and a mock check against it | audit `:124`, `:407` | Never show a credential (OR-036 DO NOT). |
-| Fraunces headline `Sign in to your desk`, 30px | `login/page.tsx:59-61` | Fraunces is the marketing `<h1>` only (`design-scope.test.ts:20-31`). |
+| Fraunces headline `Sign in to your desk`, 30px | `login/page.tsx:59-61` | The display face is marketing only (`design-scope.test.ts`; Archivo since OR-053). |
 | `Welcome back` eyebrow, 11px mono uppercase | `login/page.tsx:54-56` | Under 15px and carries words (invariant 10). |
 | Three blue progress bars, "setup complete" | `login/page.tsx:48-53` | Decorative and claims steps the flow does not show (OR-036). |
 | Error in coral at 13px | `login/page.tsx:96` | Coral is a fill, not checked as a text pair; under 15px. |

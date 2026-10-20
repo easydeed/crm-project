@@ -42,6 +42,9 @@ there is no in-app theme switch.
 | `--on-bar-danger` | `#b42d17` | `#b42d17` | Delete's words on the pill (OR-045). The same in both themes: `--coral-text` lightens for a dark page (`#ff8a75`), which is 1.96:1 on the light pill, so the bar needs its own danger colour. |
 | `--alert` | `#ff4a2b` | `#ff4a2b` | The view-as banner (OR-043): coral, the same in both themes, so it never merges with the bar. |
 | `--on-alert` | `#0e1729` | `#0e1729` | Words on the banner, 5.34:1. |
+| `--gold` | `#b3811e` | `#e4b65c` | Marketing only (OR-053): words on the bar, a fill under `--on-gold` words, a mark on the page or `--cream`. The design's gold, darkened in light until every pair passes. |
+| `--on-gold` | `#0e1729` | `#0e1729` | Words on a gold card. |
+| `--cream` | `#f7f3ea` | `#1c1912` | Marketing only: the alternate section ground. Words on it are `--foreground`, never muted (4.50:1). |
 
 ## Every checked pair, with its real ratio
 
@@ -80,6 +83,11 @@ change breaks.
 | `--on-bar-danger` on `--bar-current` (bulk Delete, OR-045) | 4.5:1 | 6.31:1 | 5.39:1 | 0.89 |
 | `--on-alert` on `--alert` | 4.5:1 | 5.34:1 | 5.34:1 | 0.84 |
 | `--alert` against `--bar` (the banner's edge) | 3:1 | 5.34:1 | 4.12:1 | 1.12 |
+| `--gold` on `--bar` | 4.5:1 | 5.18:1 | 7.33:1 | 0.68 |
+| `--on-gold` on `--gold` | 4.5:1 | 5.18:1 | 9.50:1 | 0.68 |
+| `--gold` on `--background` (a mark) | 3:1 | 3.46:1 | 10.51:1 | **0.46** |
+| `--gold` on `--cream` (a mark) | 3:1 | 3.12:1 | 9.31:1 | **0.12** |
+| `--foreground` on `--cream` | 4.5:1 | 16.16:1 | 14.98:1 | 10.48 |
 
 ### Combinations that are not pairs, and why
 
@@ -101,12 +109,15 @@ These ratios were computed the same way. None of them may carry information.
 
 - **Inter** is used everywhere in the app, on login, on register and in the email preview's
   chrome.
-- **Fraunces**, a display serif, is used only on the marketing home page's `<h1>`, at weight
-  500.
+- **Archivo**, a display sans at weights 500 to 900, is used only on the marketing page (`/`
+  and `/sample`), through `displayClass` in `src/app/marketing/ui.ts` (OR-053). It replaced
+  Fraunces, which was the home `<h1>` from OR-038 and is no longer bundled.
 - Both are bundled in `src/app/fonts/` (`fonts.ts`), with no request to Google at build or
-  run time. Each covers the Latin, Latin-extended and Vietnamese character ranges, because
-  agents' contact names arrive in all three; the seed includes one of each.
-- Where Fraunces may appear is enforced by `src/app/design-scope.test.ts:31`.
+  run time. Inter covers the Latin, Latin-extended and Vietnamese character ranges, because
+  agents' contact names arrive in all three; the seed includes one of each. Archivo is Latin
+  only: the marketing page's words are Latin, and its stack falls through to Inter.
+- Where Archivo may appear is enforced by `src/app/design-scope.test.ts` “Archivo stays on the
+  marketing page: only the listed files under src name it, and only marketing files import them”.
 
 **Sizes in use** in `src/app`, counted from the source.
 
@@ -118,7 +129,7 @@ These ratios were computed the same way. None of them may carry information.
 | 19px | 2 | The dashboard's two section headings: the call list and homeowners. |
 | 22px | 56 | The page heading (`<h1>`) on every app screen, login and register. |
 | 28px | 5 | Admin only, for cost totals. Admin is unstyled by decision. |
-| 32 / 40px | 1 | The marketing home `<h1>` in Fraunces: 32px on a phone, 40px from 640px up. |
+| 22 to 200px | — | Marketing only, in Archivo (OR-053): card titles 22–30px, section headings 40/72px, the home `<h1>` 72/128px, the price 120/200px. |
 
 **Weights.**
 

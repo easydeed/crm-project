@@ -75,6 +75,13 @@ const PAIRS: Array<[string, string, number]> = [
   // OR-043: the view-as banner, and its edge against the bar it sits above.
   ['on-alert', 'alert', TEXT],
   ['alert', 'bar', NON_TEXT],
+  // OR-053, the marketing page: gold words on the bar, words on a gold card, gold marks on the page
+  // and on cream, and words on cream. --muted-ink on --cream is 4.50:1 light, so it is not a pair.
+  ['gold', 'bar', TEXT],
+  ['on-gold', 'gold', TEXT],
+  ['gold', 'background', NON_TEXT],
+  ['gold', 'cream', NON_TEXT],
+  ['foreground', 'cream', TEXT],
 ]
 
 test('every colour token has a light and a dark value', () => {

@@ -101,7 +101,8 @@ CI runs the phone pass on every pull request.
 ### 1.3 No text under 15px
 
 - **Rule.** Nothing on a screen that carries information is under 15px. The app uses 15,
-  17, 19 and 22px, plus 32 and 40px for the one marketing heading.
+  17, 19 and 22px. The marketing page's Archivo display type runs larger, from 22px to its
+  200px price (OR-053); its smallest words are 15px too.
 - **Where smaller is correct.** The monthly email, shown inside an iframe in the app, is
   not measured. Its 12px stamp labels, MLS attribution and footer are part of its own
   design (`04-email.md`). The same MLS attribution renders at 15px in the app
@@ -125,13 +126,13 @@ CI runs the phone pass on every pull request.
 Read this before trusting a green run.
 
 - **Only listed screens are measured.** A state that no capture produces is never
-  checked. Since OR-044a there are 72 captures (`e2e/screens.ts` and `e2e/screens/`). The
+  checked. Since OR-053 there are 73 captures (`e2e/screens.ts` and `e2e/screens/`). The
   states only data can produce come from e2e agents, one per state, in
   `src/db/fixtures/e2e-agents.ts`; e2e setup fails if one stops showing its state. The
   first time they were photographed, three of those states failed the phone checks: a 26px
   "Add your people" link on every agent with no people, a 30px-wide view-as "Exit", and a
   long email clipped by 61px. What is still unseen, and why, is `05-open.md` #28 and #29.
-- **Dark mode is measured on six captures:** `sample-text-dark`, `dashboard-dark`,
+- **Dark mode is measured on seven captures:** `home-dark`, `sample-text-dark`, `dashboard-dark`,
   `dashboard-quiet-dark`, `addons-dark`, `login-dark` and `register-dark`. Every other
   capture is light. Dark contrast everywhere else is held by the token pairs (§2), not by a
   browser.
@@ -186,6 +187,7 @@ Redesign around them, not through them.
 | `--coral` on `--background` | 3.35 | 5.91 | 3 | coral marks on the page |
 | `--green` on `--background` | 3.39 | 5.85 | 3 | green marks on the page |
 | `--muted-ink` on `--background` | 4.98 | 7.81 | 4.5 | secondary text |
+| `--gold` on `--cream` | **3.12** | 9.31 | 3 | the marketing page's gold marks on its cream sections (OR-053) |
 
 The comment beside the `--muted-ink` on `--surface` pair in `src/app/tokens.test.ts`
 names what depends on the tightest one. If
@@ -262,8 +264,8 @@ names what depends on the tightest one. If
   value. There is no theme switch.
 - **Enforced by.** `src/app/tokens.test.ts` “every colour token has a light and a dark
   value”, with every pair checked in dark by `src/app/tokens.test.ts` “%s on %s clears
-  %s:1”. Six dark screens are
-  captured: `sample-text-dark` (the email preview's plain text), `dashboard-dark`,
+  %s:1”. Seven dark screens are
+  captured: `home-dark` (the marketing page, OR-053), `sample-text-dark` (the email preview's plain text), `dashboard-dark`,
   `dashboard-quiet-dark`, `addons-dark`, `login-dark` and `register-dark`.
 - **What went wrong.** Until OR-037, the email preview's plain text was drawn on a
   hard-coded white background in the app's dark-mode ink: #ededed on white, 1.17:1,
@@ -285,7 +287,9 @@ names what depends on the tightest one. If
   it. A faded word looks like it doesn't matter.
 - **Enforced by.** `src/app/disabled-state.test.ts` “no source file under src/app uses an
   opacity utility, for any state”, which scans every source file under `src/app` with no
-  exceptions.
+  exceptions, and `src/app/disabled-state.test.ts` “no source file under src/app sets opacity
+  in a style either: not in a style prop, not in CSS”. The first read class names only, so a
+  `style="opacity:.85"` passed it until OR-053 (finding #18).
 - **What breaks it.**
   - `opacity-50` on a disabled button.
   - `disabled:opacity-…`.
@@ -340,7 +344,7 @@ names what depends on the tightest one. If
     list)
 
   These check that each state's file and words exist. Whether a state looks right is
-  held by the captures: since OR-044a the browser pass photographs and measures 72 states
+  held by the captures: since OR-053 the browser pass photographs and measures 73 states
   (`e2e/screens.ts` and `e2e/screens/`).
 
   A new screen is not covered until it adds its own test. Each screen file lists its
@@ -522,24 +526,32 @@ belong to a separate pass, not a redesign.
   `src/db/fixtures/e2e-agents.test.ts` “no capture types an e2e login: no signed-in agent
   email, and never the e2e password”.
 - **Marketing copy may not claim behaviour the product does not have.** The export's
-  "Three past clients… We tell you which three" promised clients. See
-  `03-screens/marketing.md`. Not enforced by a test.
+  "Three past clients… We tell you which three" promised clients, and the Claude design's
+  landing page sold texting homeowners, an engagement signal and a county check, none of
+  them built (`docs/audits/OR-052-marketing-design-audit.md`). See `03-screens/marketing.md`.
+  **Enforced by.** `src/app/marketing.test.ts` “the marketing page does not claim %s
+  (OR-052)”, one test per claim, on the rendered page and its source, and
+  `src/app/marketing.test.ts` “no figure on the marketing page is typed in: every price and
+  amount comes from facts, the fixtures or costs.ts”. A new claim is held by a person: the
+  test knows only the claims already found.
 
 ---
 
 ## 5. Type and fonts
 
-- **Inter everywhere. Fraunces only on the marketing home page's `<h1>`.** The serif is
-  one display moment on the one page that is selling rather than working.
+- **Inter everywhere. Archivo only on the marketing page** (OR-053, replacing Fraunces on the
+  home `<h1>`). The display face is for the one page that is selling rather than working.
+  Both are bundled with `next/font/local`; nothing fetches from Google.
 - **Enforced by.**
-  - `src/app/design-scope.test.ts` “Fraunces stays on the marketing page: only the listed
-    files under src name it”, an allowlist of the four files in the whole source tree that
-    may name Fraunces.
-  - `src/app/marketing.test.ts` “Fraunces is the home <h1> and nothing else on the page
-    (OR-038)”
-- **What breaks it.** A serif heading in the app, or on login or register, which are the
-  product's front door, not marketing. A serif heading in the shared email-preview panel
-  would leak into the app.
+  - `src/app/design-scope.test.ts` “Archivo stays on the marketing page: only the listed files
+    under src name it, and only marketing files import them”, an allowlist of the four files
+    that may name it, and of the files that may import the marketing styles.
+  - `src/app/design-scope.test.ts` “fonts are bundled: nothing imports next/font/google or
+    links to Google Fonts, so no page fetches from Google”. Until OR-053 it checked the import
+    only, and a `<link>` to fonts.googleapis.com passed (finding #19).
+- **What breaks it.** A display heading in the app, or on login or register, which are the
+  product's front door, not marketing. Archivo in the shared email-preview panel would leak
+  into the app.
 - **The email has its own fonts** (Georgia-style serif body, 12px stamp labels), and app
   tokens must never reach it: `src/app/design-scope.test.ts` “the email keeps its own
   design: nothing in src/digest reads an app token”. See `04-email.md`.

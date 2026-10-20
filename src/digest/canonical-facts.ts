@@ -1,7 +1,8 @@
 import { streetMedianSale } from '@/digest/blocks/taxes'
 import { scenarios } from '@/digest/fixtures/scenarios'
-import { formatAboutMoney, formatMoney, roundToHundred } from '@/digest/format'
+import { formatAboutMoney, formatMoney, formatRecordedDay, roundToHundred } from '@/digest/format'
 import { renderDigest } from '@/digest/render'
+import { GRANT_DEED } from '@/digest/types'
 
 export function fullScenario() {
   const row = scenarios.find((scenario) => scenario.name === 'full')
@@ -21,6 +22,9 @@ export function canonicalFacts() {
   const benefit = roundToHundred((median - assessed) * input.tax.defaultTaxRatePct)
   const listing = input.nearbyListing
   if (!listing) throw new Error('full scenario is missing the listing')
+  // The purchase the email's recorder stamp quotes. A recorded figure carries its document number.
+  const deed = input.events.find((event) => event.kind === GRANT_DEED)
+  if (!deed || deed.amount == null) throw new Error('full scenario is missing the grant deed')
   return {
     firstName: input.contact.firstName,
     address: input.parcel.address,
@@ -32,6 +36,12 @@ export function canonicalFacts() {
     benefit: formatAboutMoney(benefit),
     listingAddress: listing.address,
     listingPrice: listing.listPrice != null ? formatMoney(listing.listPrice) : null,
+    deed: {
+      instrument: 'Grant deed',
+      recorded: formatRecordedDay(deed.recordedAt),
+      document: deed.docNumber,
+      amount: formatMoney(deed.amount),
+    },
   }
 }
 

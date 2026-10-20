@@ -28,6 +28,8 @@ export async function openScreen(page: Page, screen: Screen) {
 const CAPTURED: Screen[] = [
   // What a prospect sees (OR-038).
   { name: 'home', path: '/', loggedOut: true },
+  // OR-053: the marketing page took tokens with dark values (gold, cream), so dark is measured too.
+  { name: 'home-dark', path: '/', loggedOut: true, colorScheme: 'dark' },
   { name: 'sample', path: '/sample', loggedOut: true },
   {
     // The plain-text preview drew #ededed on white in dark mode until OR-037. This keeps it in a capture.

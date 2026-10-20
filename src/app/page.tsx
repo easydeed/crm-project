@@ -1,6 +1,6 @@
 import { HomeStory } from '@/app/home-story'
-import { canonicalFacts } from '@/digest/canonical-facts'
+import { canonicalFacts, fullDigest } from '@/digest/canonical-facts'
 
 export default function Home() {
-  return <HomeStory facts={canonicalFacts()} />
+  return <HomeStory facts={canonicalFacts()} digest={fullDigest()} />
 }

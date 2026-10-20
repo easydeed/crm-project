@@ -25,6 +25,24 @@ test('no source file under src/app uses an opacity utility, for any state', () =
   expect(offenders).toEqual([])
 })
 
+/**
+ * OR-053. The scan above reads class names, so opacity set in a style passed it: the marketing
+ * design's recorder stamp was `style="opacity:.85"` (OR-052 §4). This reads styles, in JSX and CSS.
+ */
+const STYLE_OPACITY = /(?<![\w-])opacity\s*:/
+
+test('no source file under src/app sets opacity in a style either: not in a style prop, not in CSS', () => {
+  const files = [...sourceFiles(), 'globals.css']
+  const offenders = files.filter((file) => STYLE_OPACITY.test(read(file)))
+  expect(offenders).toEqual([])
+  for (const spelling of ['style={{ opacity: 0.85 }}', 'style="opacity:.85"', '.stamp { opacity: .5 }', "style={{ ...base, opacity: on ? 1 : 0 }}"]) {
+    expect(STYLE_OPACITY.test(spelling), spelling).toBe(true)
+  }
+  for (const clean of ['--opacity-scale: 1', 'className="text-foreground"']) {
+    expect(STYLE_OPACITY.test(clean), clean).toBe(false)
+  }
+})
+
 test('disabled is --surface, --muted-ink and a --border ring: pairs the contrast test checks', () => {
   expect(disabledClass).toContain('disabled:cursor-not-allowed')
   expect(disabledClass).toContain('disabled:ring-1 disabled:ring-inset')
