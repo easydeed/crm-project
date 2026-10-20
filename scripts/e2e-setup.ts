@@ -6,8 +6,9 @@
  * is on the host in DATABASE_URL, not on a flag anyone could set.
  */
 import { writeFileSync } from 'node:fs'
-import { and, asc, eq, ilike } from 'drizzle-orm'
+import { and, asc, eq } from 'drizzle-orm'
 import { isLocalDatabaseUrl } from '../src/config/database-url'
+import { E2E_PASSWORD } from './e2e-password'
 
 const url = process.env.DATABASE_URL
 if (!isLocalDatabaseUrl(url)) {
@@ -17,14 +18,12 @@ if (!isLocalDatabaseUrl(url)) {
 process.env.ONRECORD_E2E = '1'
 
 export const E2E_EMAIL = 'dana@coastline.example'
-export const E2E_PASSWORD = 'e2e-local-scratch-only'
+export { E2E_PASSWORD }
 
 async function main() {
   const { getRuntimeDb, resetRuntimeDb } = await import('../src/db/runtime')
-  const { contacts, parcelEvents, parcels } = await import('../src/db/schema')
-  const { callListEntries } = await import('../src/db/schema-call-lists')
+  const { contacts } = await import('../src/db/schema')
   const { AGENT_ID } = await import('../src/db/fixtures/la-verne')
-  const { buildCallLists } = await import('../src/jobs/build-call-lists')
   const { signUnsubscribeToken } = await import('../src/unsubscribe/token')
 
   const { db } = getRuntimeDb()
@@ -34,48 +33,12 @@ async function main() {
   // state, and checkAgents below fails the run if it stops showing it.
   const { buildAgents, checkAgents } = await import('./e2e-agents')
   const { E2E_AGENTS, agentContactId, e2eAgent } = await import('../src/db/fixtures/e2e-agents')
-  const { QUIET_AGENT_ID } = await import('../src/db/fixtures/e2e-live')
   await buildAgents(db, E2E_PASSWORD)
 
-  // Events dated from this run (OR-043), so the seeded agent's three Oakdale people carry three
-  // different call tags every month, and the previewed person has a note (OR-043a). New parcels
-  // copy the shape of a seeded house on the same street.
-  const { liveOakdaleEvents, liveBonitaSales, LIVE_HOUSES, PREVIEW_STREET, PREVIEW_PERSON, CALL_TAG_KINDS } = await import('../src/db/fixtures/e2e-live')
-  const streets = [
-    { template: '1840 Oakdale Ave', street: 'Oakdale Ave', houses: LIVE_HOUSES, events: liveOakdaleEvents(now) },
-    { ...PREVIEW_STREET, events: liveBonitaSales(now) },
-  ]
-  for (const { template, street, houses, events } of streets) {
-    const [shape] = await db.select().from(parcels).where(eq(parcels.address, template))
-    if (!shape) throw new Error(`The seed has no ${template}`)
-    const { id: _id, ...copy } = shape
-    for (const house of houses) {
-      await db.insert(parcels).values({ ...copy, apn: `E2E-${house}`, address: `${house} ${street}` }).onConflictDoNothing()
-    }
-    const onStreet = await db
-      .select({ id: parcels.id, address: parcels.address })
-      .from(parcels)
-      .where(and(eq(parcels.zip, copy.zip), ilike(parcels.address, `% ${street}`)))
-    for (const event of events) {
-      const parcelId = onStreet.find((row) => row.address === `${event.house} ${street}`)?.id
-      if (!parcelId) throw new Error(`No parcel at ${event.house} ${street}`)
-      await db
-        .insert(parcelEvents)
-        .values({ parcelId, county: copy.county, kind: event.kind, docNumber: event.docNumber, recordedAt: event.recordedAt, amount: event.amount })
-        .onConflictDoNothing()
-    }
-  }
-
-  for (const accountId of [AGENT_ID, QUIET_AGENT_ID]) {
-    await buildCallLists({ accountId, asOf: now.toISOString() }, { jobId: 'e2e', attempt: 1, now })
-  }
-
-  // Fail here, not quietly in a screenshot: the captures exist to show these tags.
-  const kinds = new Set(
-    (await db.select({ kind: callListEntries.kind }).from(callListEntries).where(eq(callListEntries.accountId, AGENT_ID))).map((row) => row.kind),
-  )
-  const missing = CALL_TAG_KINDS.filter((kind) => !kinds.has(kind))
-  if (missing.length) throw new Error(`The seeded agent's call list is missing ${missing.join(', ')}: the live events no longer reach it`)
+  // Events dated from this run (OR-043), shared with the hosted demo's seed (OR-050).
+  const { buildLiveData } = await import('./live-data')
+  await buildLiveData(db, now)
+  const { PREVIEW_PERSON } = await import('../src/db/fixtures/e2e-live')
 
   const [person] = await db
     .select({ id: contacts.id })

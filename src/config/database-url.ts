@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 
-const CRM_PROD_REF = 'eajfpzavqvcvwkeicdww'
+export const CRM_PROD_REF = 'eajfpzavqvcvwkeicdww'
 
 function applyEnvFile(path: string, overwrite: boolean) {
   if (!existsSync(path)) return

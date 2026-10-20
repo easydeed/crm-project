@@ -33,9 +33,8 @@ test('every e2e agent is used by a capture, and every capture signs in as a list
  */
 test('no capture types an e2e login: no signed-in agent email, and never the e2e password', () => {
   const logins = E2E_AGENTS.filter((row) => row.login).map((row) => row.email)
-  const setup = read('scripts/e2e-setup.ts')
-  const password = setup.match(/E2E_PASSWORD = '([^']+)'/)?.[1]
-  expect(password, 'the e2e password is read from e2e-setup').toBeTruthy()
+  const password = read('scripts/e2e-password.ts').match(/E2E_PASSWORD = '([^']+)'/)?.[1]
+  expect(password, 'the e2e password is read from scripts/e2e-password.ts').toBeTruthy()
   expect(logins.length).toBeGreaterThan(10)
   for (const { file, text } of captures) {
     for (const email of logins) expect(text, `${file} types ${email}`).not.toContain(email)
