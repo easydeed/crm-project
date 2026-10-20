@@ -20,6 +20,7 @@ const FEATURES = [
   { title: 'Skip a month', body: 'One button. Resume just as fast.' },
   { title: 'Your day, your time', body: 'Pick the send day, time and timezone.' },
   { title: 'Your name on it', body: 'Your name, brokerage and DRE on every note.' },
+  { title: 'Text my clients', body: 'Homeowners can text you back.' },
   { title: 'Groups', body: 'Sort people into groups right inside your list.' },
   { title: 'Export anytime', body: 'Download your list as a spreadsheet.' },
   { title: 'Unsubscribes handled', body: 'One click for them. Nothing for you to manage.' },
