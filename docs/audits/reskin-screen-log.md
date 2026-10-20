@@ -1,7 +1,7 @@
 # Re-skin: which desktop screens each packet changed
 
 The exact record, from OR-030a on. Each row compares fresh desktop captures (1440×900, every screen in
-`e2e/screens.ts`: 18 until OR-036 added /login and /register, signed out, for 20; 23 from OR-038, which added /, /sample and /sample's plain text in dark mode) of a packet's parent commit and its merge. Every file is rewritten
+`e2e/screens.ts`: 18 until OR-036 added /login and /register, signed out, for 20; 23 from OR-038, which added /, /sample and /sample's plain text in dark mode; 72 from OR-044a; 73 from OR-053, which added home in dark mode) of a packet's parent commit and its merge. Every file is rewritten
 (`--update-snapshots=all`), the database is reseeded before each capture, and the two sets are
 compared byte for byte. Two captures of one build are byte-identical, so a differing file is a real
 change.
@@ -40,6 +40,7 @@ old threshold. OR-030's five muted-text screens are the change it would have hid
 | OR-047 links and auth | c41b99d → f214e7e → 2d2ae50 | Links: 22 (of 27). Auth: login, register | Links: ~26 of 27, "Log out" moving every signed-in screen. Auth: login and register only | Step 0: three fresh-seed captures of 2d2ae50, byte-identical 27 of 27, all hashing 8ca4c313c4b479e3. Links (c1): every screen with a standalone link changes; dashboard-call-open also takes the call panel's wider label column. The prediction was wrong by four, and the reason is Decision A: "Log out" became the 15px meta link, so it no longer moves every signed-in screen. Unchanged: addons, addons-dark, addons-lender-form (their only page link, "Go to Settings", is inline and takes its sentence's 15px), import (its links render only after an import), unsubscribe (its own CSS). Auth (c2): login and register take the navy wordmark bar, the 384px column, the panel and 16px label words; nothing else moves. |
 | OR-044a unseen states | 4567570 → 2b49be2 | dashboard, dashboard-dark, dashboard-call-open (of the 27 that existed) | The same three (Decision A) | Not a re-skin. Step 0: three fresh-seed captures of 2b49be2, byte-identical 72 of 72, all hashing 852864fe2a6b9495. The three changes are the seeded agent's send card: e2e setup now gives her a send time, so it is the scheduled card ("Preview it", "Skip this month") that OR-044 restyled and no capture had shown. The other 24 are byte-identical. Settings did not move, measured, because its send-time field already showed 09:00 with nothing saved (`sending-form.tsx:49`, `defaultValue={account.sendTime ?? '09:00'}`): see 05-open #30. 45 new captures have no baseline: they are every state the e2e agents table exists for. Three of them failed the 390 checks on first sight, and c3 fixed each with a class ("Add your people" 26px tall, the view-as Exit 30px wide, a long email clipped 61px in DetailsRow). |
 | OR-048 constraints and findings | 96ba8d3 → b2e1f6e | 0 (of 72) | 0 | Not a re-skin: documents and one test. Step 0: three fresh-seed captures of b2e1f6e, byte-identical 72 of 72, all hashing 852864fe2a6b9495, the same hash as main's capture taken the same day. |
+| OR-053 marketing page | 0239934 → d6161e9 | home, sample, sample-text-dark (of 72); home-dark new | home and sample | Step 0: three fresh-seed captures of d6161e9, byte-identical 73 of 73, all hashing 91b62090f13e6b29. Main captured the same day. home is the landing page built from the audited design (OR-052): 900px tall before, 6062px now. sample and sample-text-dark are both /sample, which took the marketing header, an Archivo `<h1>` and the footer: each 259px taller, the preview panel unchanged. people-bulk-bar differs by one pixel at (791, 681), the known unstable corner (05-open #32), not this packet. The other 68 are byte-identical. home-dark is a new capture: the page's gold and cream have dark values, so dark is measured. |
 
 ## Shared classes move screens early
 
@@ -105,11 +106,9 @@ decision closes it.
     - /admin carried table borders in eight files that the "permanent" entries never recorded. They
       are listed now.
 
-- **The marketing page does not answer the comprehension test (raised in OR-038).** PROJECT_STATE
-  validation 3 expects "it tells me who to call" after ten seconds on the page. The page talks
-  about the note and the tax difference and never mentions the call list. The Director's "who to
-  call" hero rewrite exists and has not shipped. This is a copy decision for Jerry, not a re-skin
-  one. OR-038 changed no words.
+- **The marketing page does not answer the comprehension test (raised in OR-038). Closed in
+  OR-053.** The hero now reads "Three calls." and "Then it tells you which three of them to call,
+  and why", above a sample call list.
 
 - **No privacy policy or terms page (raised in OR-038). No owner; flagged for Jerry.** Register
   collects names, emails and phone numbers, and neither page exists in src/app. In California this
@@ -117,7 +116,7 @@ decision closes it.
   link today. The export's footer links to both, and that is why OR-038 took no footer. Nothing
   may link to these pages, and no support or privacy address may be invented, until they exist.
 
-What remains open: the unlabelled assessor facts, the comprehension gap and the missing privacy
+What remains open: the unlabelled assessor facts and the missing privacy
 and terms pages, all product decisions recorded above.
 
 ## How to measure a packet
