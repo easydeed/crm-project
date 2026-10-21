@@ -14,7 +14,7 @@ export function HowItWorks() {
           <h2 className="text-[clamp(56px,9vw,128px)] leading-[0.86] font-black tracking-[-0.03em]">
             Set it up once.
             <br />
-            <span className="underline decoration-mkt-gold decoration-[10px] underline-offset-[14px]">Then done.</span>
+            <span className="underline decoration-mkt-navy decoration-[10px] underline-offset-[14px]">Then done.</span>
           </h2>
           <p className="max-w-[360px] text-[20px] leading-snug font-bold">
             Add your people, check the few we weren&apos;t sure about, pick a day. Then it runs every month without you.
