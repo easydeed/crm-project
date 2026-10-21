@@ -195,3 +195,16 @@ cached entitlement is already off after an ambiguous accepted update.
 Round two's extra browser harness also captures the new dashboard billing-pending
 notice after the Settings failure, seven main/head states in total. The original
 six captures and all existing desktop comparison thresholds are retained.
+
+Final review also repaired the same cached-off shortcut on phone change. It now
+confirms provider switch-off even if the last cached entitlement is off; a pending
+accepted activation cannot silently keep billing after a phone change. The new
+regression covers refusal, visible pending state and worker recovery. This is
+within the texting/billing findings, not a change to sending eligibility.
+
+Linux 4aaff61 verification passed 760 tests, 44 mutations and 166 browser checks.
+Its raw 73-state main/head and main/repeat comparisons were exact (marketing too),
+but the later strict login-mismatch comparison failed by one pixel. This failure
+is retained, not rerun away. Extra captures now precede strict comparison so they
+are not lost when it fails, and strict expected/actual/diff PNGs are preserved.
+The comparison's original nonzero exit is still returned. See 05-open.

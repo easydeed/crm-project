@@ -82,10 +82,10 @@ export async function onPhoneChanged(accountId: string): Promise<{ addonTurnedOf
   const { db } = getRuntimeDb()
   await db.update(accounts).set({ phoneVerifiedAt: null }).where(eq(accounts.id, accountId))
   await db.delete(phoneVerifications).where(eq(phoneVerifications.accountId, accountId))
-  if (!(await isAddonEnabled(accountId, TEXT_CALL_LIST_KEY))) return { addonTurnedOff: false }
+  const wasOn = await isAddonEnabled(accountId, TEXT_CALL_LIST_KEY)
   await queueStopRecovery(accountId)
   const result = await switchAddonOff(accountId, TEXT_CALL_LIST_KEY)
   if (!result.ok) return { addonTurnedOff: false, error: `Your phone was saved and texts are paused, but the paid add-on could not be turned off. ${result.message}` }
   await finishStopRecovery(accountId)
-  return { addonTurnedOff: true }
+  return { addonTurnedOff: wasOn }
 }

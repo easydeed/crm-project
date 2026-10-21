@@ -21,6 +21,7 @@ import { loadCallList } from '@/app/app/call-list-data'
 import { loadTextNotice } from '@/text/text-notice'
 import { handleTwilioWebhook } from '@/text/twilio-webhook'
 import { twilioSignature } from '@/text/twilio-signature'
+import { onPhoneChanged } from '@/text/verification'
 import { stopTexting } from '@/text/text-facts'
 import { retryStopTexting } from '@/text/stop-recovery'
 import { reconcileBilling } from '@/billing/reconcile'
@@ -134,6 +135,18 @@ describe.skipIf(!tryLoadIntegrationDatabaseUrl())('OR-056 round two', () => {
     await expect(buildCallLists({ accountId: home.accountId, asOf: AUDIT_NOW.toISOString() }, ctx)).rejects.toThrow(/switch-off failed/)
     expect(await loadTextNotice(home.accountId)).toBe('billing_pending')
     expect(await isAddonEnabled(home.accountId, KEY)).toBe(true)
+  })
+  test('a phone change confirms switch-off even when its cached entitlement is off', async () => {
+    const home = await account()
+    home.fake.update(home.subId, { addonKeys: [KEY], monthlyCents: PLAN.priceCents + ADDON_PRICES.cents[KEY] })
+    expect(await isAddonEnabled(home.accountId, KEY)).toBe(false)
+    const failed = vi.spyOn(home.fake, 'setMonthlyTotal').mockRejectedValue(new Error('billing unavailable'))
+    expect(await onPhoneChanged(home.accountId)).toMatchObject({ addonTurnedOff: false, error: expect.stringMatching(/could not be turned off/) })
+    expect(await loadTextNotice(home.accountId)).toBe('billing_pending')
+    failed.mockRestore()
+    await retryStopTexting({ accountId: home.accountId }, ctx)
+    expect((await home.fake.getSubscription(home.subId)).addonKeys).toEqual([])
+    expect((await home.fake.getSubscription(home.subId)).monthlyCents).toBe(PLAN.priceCents)
   })
   test.each([false, true])('STOP confirms provider switch-off even when cached state is off: worker=%s', async (worker) => {
     const home = await account()

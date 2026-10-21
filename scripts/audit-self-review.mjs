@@ -58,6 +58,7 @@ const probes = [
   { name: 'remove Vercel branch config', file: 'vercel.json', from: '"crons": [', to: '"git": {"deploymentEnabled": {"codex/or-056-review-fixes": false}}, "crons": [', suite: 'src/config/round-two-config.test.ts', match: 'OR-056 leaves no branch-only' },
   { name: 'remove evidence branch condition', file: '.github/workflows/review-evidence.yml', from: '  desktop-pixels:', to: "  desktop-pixels:\n    if: github.head_ref == 'codex/or-056-review-fixes'", suite: 'src/config/round-two-config.test.ts', match: 'OR-056 desktop evidence is not restricted' },
   { name: 'old checkout recovery window', file: 'src/billing/checkout-quote.ts', from: 'Math.floor(created / 1000) - 60', to: 'Math.floor(Date.now() / 1000) - 86400', suite: 'src/billing/round-two.integration.test.ts', match: 'old lost-response recovery searches' },
+  { name: 'phone change cannot trust cached off', file: 'src/text/verification.ts', from: 'const wasOn = await isAddonEnabled(accountId, TEXT_CALL_LIST_KEY)', to: 'const wasOn = await isAddonEnabled(accountId, TEXT_CALL_LIST_KEY); if (!wasOn) return { addonTurnedOff: false }', suite: 'src/billing/round-two.integration.test.ts', match: 'a phone change confirms switch-off' },
 ]
 
 function run(suite, label, filter) {

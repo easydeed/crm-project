@@ -38,9 +38,21 @@ export default { ...base, projects: base.projects?.filter(p => ['setup', 'deskto
 CONFIG
   local flags=()
   if [ "$update" = yes ]; then flags+=(--update-snapshots=all); fi
-  PW_DESKTOP_COMPARE=1 pnpm exec playwright test --config capture.config.ts --project=setup --project=desktop "${flags[@]}" >"$EVIDENCE/$name-browser.log" 2>&1
+  local result=0
+  if PW_DESKTOP_COMPARE=1 pnpm exec playwright test --config capture.config.ts --project=setup --project=desktop "${flags[@]}" >"$EVIDENCE/$name-browser.log" 2>&1; then
+    result=0
+  else
+    result=$?
+  fi
+  mkdir -p "$EVIDENCE/$name-results"
+  find test-results -type f -name '*.png' -exec cp --parents {} "$EVIDENCE/$name-results/" \;
+  if [ "$update" = yes ]; then
+    mkdir -p "$EVIDENCE/$name-expected"
+    cp e2e/__snapshots-local__/*.png "$EVIDENCE/$name-expected/"
+  fi
   rm capture.config.ts
   popd >/dev/null
+  return "$result"
 }
 
 extra_capture() {
@@ -69,10 +81,10 @@ capture "$ROOT" head yes
 node scripts/compare-screen-pixels.mjs "$EVIDENCE/parent" "$EVIDENCE/main" "$EVIDENCE/or055.json" --require-marketing
 node scripts/compare-screen-pixels.mjs "$EVIDENCE/main" "$EVIDENCE/main-repeat" "$EVIDENCE/stability.json" --require-marketing
 node scripts/compare-screen-pixels.mjs "$EVIDENCE/main" "$EVIDENCE/head" "$EVIDENCE/or056.json" --require-marketing
+extra_capture "$RUNNER_TEMP/or056-main" main
+extra_capture "$ROOT" head
+node scripts/compare-screen-pixels.mjs "$EVIDENCE/main-extra" "$EVIDENCE/head-extra" "$EVIDENCE/or056-extra.json"
 strict_pixels "$RUNNER_TEMP/or056-main" main-baseline yes
 mkdir -p e2e/__snapshots-local__/
 cp "$RUNNER_TEMP/or056-main"/e2e/__snapshots-local__/*.png e2e/__snapshots-local__/
 strict_pixels "$ROOT" head-strict no
-extra_capture "$RUNNER_TEMP/or056-main" main
-extra_capture "$ROOT" head
-node scripts/compare-screen-pixels.mjs "$EVIDENCE/main-extra" "$EVIDENCE/head-extra" "$EVIDENCE/or056-extra.json"

@@ -239,3 +239,13 @@ Each item says how it is known:
 - The per-person review entry is a redirect, so the browser pass covers it through the review
   queue (`review-couldnt-find`). The edit screen is captured since OR-044a (`person-edit`), so
   the 390px checks now run on both.
+
+### OR-056 round-two capture evidence (4aaff61)
+
+Linux run 39683181324: raw main/repeat-main and main/head both matched all
+73 states, marketing included. The later strict Playwright main/head pass failed
+login-mismatch by one pixel (72/73 comparisons passed; 86 including auth setup).
+No tolerance, skip, assertion or baseline was changed to hide it. This remains
+part of the open intermittent login capture issue, not a proven layout regression.
+The failure occurred before the extra state captures; the harness now runs those
+first and preserves strict failure PNGs while returning the original failure code.
