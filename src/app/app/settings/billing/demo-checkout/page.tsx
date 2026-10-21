@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { readRequestSession } from '@/auth/current-session'
 import { assertWritable } from '@/auth/write-guard'
 import { completeDemoCheckout, readDemoCheckout } from '@/billing/demo-checkout'
@@ -11,6 +12,8 @@ async function confirm(form: FormData) {
   const session = await readRequestSession()
   if (!session || !assertWritable(session).ok) redirect('/login')
   const path = await completeDemoCheckout(String(form.get('token') ?? ''), session.accountId)
+  revalidatePath('/app/settings/billing')
+  revalidatePath('/app')
   redirect(path)
 }
 

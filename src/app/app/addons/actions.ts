@@ -19,7 +19,10 @@ export async function enableAddonAction(key: string, submitted: Record<string, u
   const gate = await writableAccountId()
   if (!gate.ok) return gate.result
   const result = await switchAddonOn(gate.accountId, key, submitted)
-  if (result.ok) revalidatePath('/app/addons')
+  if (result.ok) {
+    revalidatePath('/app/addons')
+    revalidatePath('/app/settings/billing')
+  }
   return result
 }
 
@@ -27,6 +30,9 @@ export async function disableAddonAction(key: string): Promise<SwitchResult> {
   const gate = await writableAccountId()
   if (!gate.ok) return gate.result
   const result = await switchAddonOff(gate.accountId, key)
-  if (result.ok) revalidatePath('/app/addons')
+  if (result.ok) {
+    revalidatePath('/app/addons')
+    revalidatePath('/app/settings/billing')
+  }
   return result
 }

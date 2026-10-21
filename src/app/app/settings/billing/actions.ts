@@ -1,6 +1,7 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { readRequestSession } from '@/auth/current-session'
 import { effectiveAccountId } from '@/auth/effective-account'
 import { assertWritable } from '@/auth/write-guard'
@@ -31,6 +32,8 @@ export async function cancelPlanAction() {
   let to = `${BILLING}?done=canceled`
   try {
     await setCancelAtPeriodEnd(accountId, true)
+    revalidatePath(BILLING)
+    revalidatePath('/app')
   } catch (err) {
     console.error('[billing] cancel failed', err)
     to = `${BILLING}?error=cancel`
@@ -43,6 +46,8 @@ export async function resumePlanAction() {
   let to = `${BILLING}?done=resumed`
   try {
     await setCancelAtPeriodEnd(accountId, false)
+    revalidatePath(BILLING)
+    revalidatePath('/app')
   } catch (err) {
     console.error('[billing] resume failed', err)
     to = `${BILLING}?error=resume`
