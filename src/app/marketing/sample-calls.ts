@@ -10,7 +10,7 @@ import type { SignalKind } from '@/signals/types'
  * the house it is shown with. Nothing is typed in, so nothing can be borrowed from another house.
  */
 const SAMPLES: Array<{ scenario: string; kind: SignalKind; name: string }> = [
-  { scenario: 'a strong nearby sale', kind: 'sold_nearby', name: 'Marilyn Okafor' },
+  { scenario: 'a strong nearby sale', kind: 'sold_nearby', name: 'Elena Brooks' },
   { scenario: 'a reconveyance', kind: 'loan_paid_off', name: 'Glenn Sato' },
   { scenario: 'a large tax gap with long tenure', kind: 'tax_upside', name: 'Ray Villanueva' },
 ]
@@ -25,8 +25,9 @@ export function sampleCalls(): SampleCall[] {
     if (!signal || signal.kind !== kind) throw new Error(`sample call: "${scenario}" no longer selects ${kind}`)
     const contact = row.input.contacts.find((candidate) => candidate.id === signal.contactId)
     if (!contact?.parcel) throw new Error(`sample call: "${scenario}" has no house`)
-    // All three signal scenarios use the La Verne fixture ZIP. Names are illustrative;
-    // addresses and explanations remain the actual signal output for each scenario.
+    // All three signal scenarios use the La Verne fixture ZIP. Names are illustrative, and never
+    // the canonical Marilyn, whose house is 1142 Oakdale Ave; addresses and explanations remain
+    // the actual signal output for each scenario.
     return { kind, tag: CALL_TAGS[kind].label, address: contact.parcel.address, detail: signal.detail, name, city: 'La Verne' }
   })
 }

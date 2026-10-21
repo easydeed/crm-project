@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useState } from 'react'
 import { callBarClass } from '@/app/marketing/ui'
 import type { SampleCall } from '@/app/marketing/sample-calls'
@@ -12,8 +11,10 @@ const POS = [
 ]
 
 /**
- * The three sample calls as the v6 fan. Card 3 starts in front. Hover and click
- * bring a card forward; below 1024px the same cards are a vertical list.
+ * The three sample calls as the v6 fan. Card 3 starts in front. Hover, click and keyboard focus
+ * bring a card forward; below 1024px the same cards are a vertical list. The "Call" bar is drawn,
+ * as v6 drew it: a picture of the call list's button, not a control (OR-054). Each card takes
+ * focus itself, so a keyboard can still bring a covered card to the front.
  */
 export function HeroCards({ calls }: { calls: SampleCall[] }) {
   const [front, setFront] = useState(calls.length - 1)
@@ -26,7 +27,9 @@ export function HeroCards({ calls }: { calls: SampleCall[] }) {
         return (
           <article
             key={call.kind}
-            className="hero-card flex flex-col overflow-hidden rounded-[24px] bg-mkt-gold p-[22px] text-mkt-navy shadow-[var(--mkt-card-shadow)]"
+            tabIndex={0}
+            aria-label={`Sample call ${index + 1}: ${call.name}, ${call.tag}`}
+            className="hero-card flex flex-col overflow-hidden rounded-[24px] bg-mkt-gold p-[22px] text-mkt-navy shadow-[var(--mkt-card-shadow)] focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-mkt-white"
             style={{
               ['--left' as string]: place.left,
               ['--top' as string]: top,
@@ -35,6 +38,7 @@ export function HeroCards({ calls }: { calls: SampleCall[] }) {
             }}
             onMouseEnter={() => setFront(index)}
             onClick={() => setFront(index)}
+            onFocus={() => setFront(index)}
           >
             <div className="mb-4 hidden h-[124px] shrink-0 flex-col justify-end gap-0.5 overflow-hidden rounded-[14px] bg-mkt-navy p-4 lg:flex">
               <p className="font-mono text-[15px] font-medium text-mkt-gold">{call.address}</p>
@@ -52,9 +56,9 @@ export function HeroCards({ calls }: { calls: SampleCall[] }) {
               <p className="text-[36px] leading-[0.98] font-extrabold tracking-[-0.03em]">{call.name}</p>
               <p className="text-[16px] leading-snug font-medium">{call.detail}</p>
             </div>
-            <Link className={`${callBarClass} mt-4`} href="/sample" onFocus={() => setFront(index)}>
+            <span aria-hidden="true" className={`${callBarClass} mt-4`}>
               Call {call.name.split(' ')[0]}
-            </Link>
+            </span>
           </article>
         )
       })}

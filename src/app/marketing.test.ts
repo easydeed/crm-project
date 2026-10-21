@@ -4,6 +4,7 @@ import ts from 'typescript'
 import { expect, test } from 'vitest'
 import { CALL_TAGS } from '@/app/app/call-tags'
 import { HomeStory } from '@/app/home-story'
+import { SurveyEtch } from '@/app/marketing/etch'
 import { sampleCalls } from '@/app/marketing/sample-calls'
 import { planPrice } from '@/app/marketing/ui'
 import { getAddonRegistry } from '@/addons/registry'
@@ -79,11 +80,15 @@ test('no figure on the marketing page is typed in: every price and amount comes 
 const NOT_BUILT: Array<[string, RegExp]> = [
   ['texting homeowners', /text(ing)? (my|your) clients|homeowners can text/i],
   ['an engagement signal', /reading it closely|opened your last|clicked the/i],
-  ['a county list', /los angeles, orange|not in yours yet/i],
+  // OR-054 found the county check back, as "We'll tell you at signup if your county isn't on yet":
+  // no county check exists at signup. The apostrophe is matched however the source spells it.
+  ['a county list and a county check', /los angeles, orange|we(?:'|&apos;|’)ll tell you at signup|not in yours yet|county isn(?:'|&apos;|’)t on/i],
   ['past clients from an MLS import', /past clients/i],
   ['an unmeasured setup time', /four minutes|\d+ minutes/i],
   ['no daily logins', /daily logins/i],
   ['the v0 export’s campaigns and weekly note', /campaign|weekly/i],
+  // The note's footer is name, brokerage and DRE; it prints no phone number (OR-054).
+  ['a phone number on every note', /dre and phone|name and number|phone on every note/i],
 ]
 
 test.each(NOT_BUILT)('the marketing page does not claim %s (OR-052)', (_claim, pattern) => {
@@ -106,8 +111,28 @@ test('the sample call list is the real signal code on its own fixtures: three re
   expect(calls[0]!.detail).not.toMatch(/list/i)
 })
 
-test('the county line says we will say so at signup, and does not name a county', () => {
-  expect(homeWords()).toMatch(/we'll tell you at signup if your county isn't on yet/i)
+/**
+ * OR-054. The hero cards' "Call" bars are a picture of the call list's button, as v6 drew them, so
+ * none is a link or a button that a visitor could take for a call. And no card puts the canonical
+ * Marilyn, whose real email is on the page, on a house that is not hers.
+ */
+test('the hero cards draw Call, never offer it, and never put Marilyn on another house', () => {
+  const markup = homeMarkup()
+  const controls = [...markup.matchAll(/<(a|button)\b[^>]*>([\s\S]*?)<\/\1>/g)].map((m) => m[2]!.replace(/<[^>]+>/g, '').trim())
+  expect(controls.filter((text) => /^call\b/i.test(text))).toEqual([])
+  expect(markup).toMatch(/aria-hidden="true"[^>]*>Call /)
+  const facts = canonicalFacts()
+  for (const call of sampleCalls()) {
+    if (call.name === facts.owner) expect(call.address, call.name).toBe(facts.address)
+  }
+})
+
+/** The survey etch is decoration drawn by CSS: it holds no words for the clipping check to miss. */
+test('the survey etch is aria-hidden and holds no text', () => {
+  const markup = renderToStaticMarkup(SurveyEtch())
+  expect(markup).toMatch(/^<div aria-hidden="true"/)
+  expect(markup.replace(/<[^>]+>/g, '').trim()).toBe('')
+  expect(markup.match(/data-etch="[^"]+"/g)).toHaveLength(4)
 })
 
 test('the add-ons are the ones the app sells, at its prices', () => {

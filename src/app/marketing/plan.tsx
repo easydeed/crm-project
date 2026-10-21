@@ -9,7 +9,7 @@ const FEATURES = [
   { title: 'Preview before it sends', body: 'See exactly what any homeowner will get.' },
   { title: 'Skip a month', body: 'One button. Resume just as fast.' },
   { title: 'Your day, your time', body: 'Pick the send day, time and timezone.' },
-  { title: 'Your name on it', body: 'Name, brokerage, DRE and phone on every note.' },
+  { title: 'Your name on it', body: 'Name, brokerage and DRE on every note.' },
   { title: 'Groups', body: 'Sort people into groups right inside your list.' },
   { title: 'Export anytime', body: 'Download your whole list as a spreadsheet.' },
   { title: 'Unsubscribes handled', body: 'One click for them. Nothing for you to manage.' },
@@ -80,7 +80,7 @@ export function PriceAndClose() {
           </div>
           <div className="flex flex-col items-start gap-5">
             <p className="max-w-[480px] text-[20px] leading-normal font-medium">
-              For agents in California. We&apos;ll tell you at signup if your county isn&apos;t on yet.
+              For agents in California.
             </p>
             <Link className={goldCtaClass} href="/register">
               Start for {planPrice} a month

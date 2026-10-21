@@ -64,7 +64,7 @@ export function HowItWorks() {
             <span className={numeralClass}>3</span>
             <div className="mt-auto flex flex-col gap-1.5">
               <div className="flex items-center justify-between gap-3 rounded-[12px] bg-mkt-cream py-2.5 pr-2.5 pl-3.5 text-mkt-navy">
-                <span className="text-[15px] font-extrabold">Marilyn Okafor</span>
+                <span className="text-[15px] font-extrabold">Elena Brooks</span>
                 <span className="rounded-full bg-mkt-navy px-3 py-[7px] text-[15px] font-extrabold text-mkt-white">Call</span>
               </div>
               <div className="flex items-center justify-between gap-3 rounded-[12px] bg-mkt-cream py-2.5 pr-2.5 pl-3.5 text-mkt-navy">

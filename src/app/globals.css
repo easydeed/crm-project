@@ -231,7 +231,7 @@ body {
   transform: translateY(-2px);
 }
 .mkt-nav:hover {
-  color: #ffffff;
+  color: var(--mkt-white);
 }
 .hero-card {
   position: relative;
@@ -290,4 +290,8 @@ body {
 }
 .mkt-page header nav a {
   box-sizing: content-box;
+}
+/* The survey etch's labels: decoration drawn by CSS, never text (etch.tsx). */
+.mkt-etch-label::before {
+  content: attr(data-etch);
 }

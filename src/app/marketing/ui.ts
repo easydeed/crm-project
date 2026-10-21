@@ -34,4 +34,5 @@ export const goldCtaClass = `tap mkt-lift inline-flex items-center justify-cente
 /** The sample page's button, and the "Read the full sample" button on cream. */
 export const ctaClass = `tap mkt-lift inline-flex items-center justify-center self-start rounded-[14px] bg-mkt-navy px-[26px] py-[18px] font-display text-[17px] leading-[normal] font-extrabold text-mkt-cream ${focus}`
 
-export const callBarClass = `tap inline-flex h-[52px] items-center justify-center rounded-[12px] bg-mkt-navy font-display text-[16px] font-bold text-mkt-white ${focus}`
+/** The drawn "Call" bar on a hero card: a picture of the button, not a control, so no focus or tap size. */
+export const callBarClass = 'inline-flex h-[52px] items-center justify-center rounded-[12px] bg-mkt-navy font-display text-[16px] font-bold text-mkt-white'

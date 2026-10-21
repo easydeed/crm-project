@@ -24,7 +24,7 @@ export function TheNote({ facts, digest }: { facts: CanonicalFacts; digest: Dige
         <div className="flex flex-col gap-[22px]">
           <h2 className={`${headingClass} text-mkt-navy`}>The note they actually open.</h2>
           <p className="max-w-[480px] text-[20px] leading-normal font-medium text-mkt-brown">
-            It&apos;s about their house, not your listings. Your name and number sit at the bottom.
+            It&apos;s about their house, not your listings. Your name sits at the bottom, and replies come to you.
           </p>
           <Link className={ctaClass} href="/sample">
             Read the full sample
