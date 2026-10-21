@@ -19,6 +19,8 @@ ready transition, and no deployment. Other editors remain paused.
    the batch while support replaces a recipient. Deleted contacts' historical
    receipts are excluded from rebuilds. The admin page reports a completed rebuild
    or an explicit refusal instead of silently redirecting after no change.
+   Only a fresh pre-attempt hold reason is eligible: older generic stale errors
+   might already have overwritten attempt history in #75, so they fail closed.
 3. **External transaction safety.** DB configuration commits before provider
    mutation. Paid entitlement and recurring price are written in one Stripe
    subscription update and read from that same provider object. A DB proposal is
@@ -30,6 +32,9 @@ ready transition, and no deployment. Other editors remain paused.
    timestamp/notice when billing switch-off fails. STOP clears verification first,
    propagates switch-off failure, and keeps unverified owners discoverable for a
    webhook retry. All owners are processed before any failure is propagated.
+   A persisted-details flag refreshes Settings after a partial phone save while
+   retaining the billing error, so the uncontrolled input cannot reset to the old
+   number. Provider read outages return the same honest partial-save state.
 5. **Redirects.** Reject backslashes, off-site origins, control characters, escaped
    delimiters, and malformed escapes. Preserve ordinary local paths/query/hash.
 6. **Consent/deletion race coverage.** Tests compose first, then unsubscribe or
@@ -49,6 +54,11 @@ ready transition, and no deployment. Other editors remain paused.
 - No existing test assertion, threshold, skip, or source guard was relaxed.
 - The existing self-review runner gains review probes and selects unit/integration
   projects from suite suffixes so the new redirect suite is actually executed.
+- The new shared visual harness explicitly captures known-bad main with baseline
+  mode. Head defaults to strict assertions for the billing error and saved phone
+  value. It waits for admin content/state and completed POST responses before
+  capturing, so streaming placeholders and pre-action DOM cannot count as visual
+  evidence. No existing browser test or comparison assertion changes.
 
 ## Evidence plan
 

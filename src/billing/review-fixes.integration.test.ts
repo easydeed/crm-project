@@ -109,6 +109,7 @@ describe.skipIf(!tryLoadIntegrationDatabaseUrl())('OR-056 billing and texting re
     expect(result.error).toMatch(/could not be turned off/)
     expect(result.notice).toBeUndefined()
     expect(result.savedAt).toBeUndefined()
+    expect(result.detailsPersisted).toBe(true)
     expect(await onPhoneChanged(home.accountId)).toMatchObject({ addonTurnedOff: false, error: expect.any(String) })
     expect(await isAddonEnabled(home.accountId, KEY)).toBe(true)
   })
@@ -121,6 +122,18 @@ describe.skipIf(!tryLoadIntegrationDatabaseUrl())('OR-056 billing and texting re
     const [account] = await getRuntimeDb().db.select().from(accounts).where(eq(accounts.id, home.accountId))
     expect(account.phoneVerifiedAt).toBeNull()
     expect(await isAddonEnabled(home.accountId, KEY)).toBe(true)
+  })
+
+  test('a provider read outage after a phone save returns a persisted error, never success', async () => {
+    const home = await readyAccount()
+    expect((await switchAddonOn(home.accountId, KEY, null)).ok).toBe(true)
+    vi.spyOn(home.fake, 'getSubscription').mockRejectedValue(new Error('provider read unavailable'))
+    const form = new FormData(); form.set('name', 'Review Agent'); form.set('phone', '9095550155')
+    const result = await saveDetails({ accountId: home.accountId, role: 'agent', exp: 2000000000 }, form)
+    expect(result).toMatchObject({ detailsPersisted: true, error: expect.stringMatching(/could not confirm/) })
+    expect(result.savedAt).toBeUndefined(); expect(result.notice).toBeUndefined()
+    const [account] = await getRuntimeDb().db.select().from(accounts).where(eq(accounts.id, home.accountId))
+    expect(account.phone).toBe('9095550155'); expect(account.phoneVerifiedAt).toBeNull()
   })
 
   test('a STOP webhook can retry switch-off after verification was cleared', async () => {

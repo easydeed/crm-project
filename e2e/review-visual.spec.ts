@@ -7,6 +7,7 @@ import { createDb } from '../src/db/client'
 import { accounts, accountAddons, adminActions, jobs, sends } from '../src/db/schema'
 import { isLocalDatabaseUrl } from '../src/config/database-url'
 import { TEXT_CALL_LIST_KEY } from '../src/addons/text-call-list'
+import { normalizeUsPhone } from '../src/config/phone'
 
 if (!isLocalDatabaseUrl(process.env.DATABASE_URL)) throw new Error('Review captures require an explicit local scratch database')
 const handle = createDb(process.env.DATABASE_URL!)
@@ -43,15 +44,31 @@ test('review capture: admin recomposition states', async ({ page }) => {
   createdSends.push(send.id)
   const destination = `/admin/sends/${send.id}`
   await login(page, 'admin', destination)
-  await capture(page, 'admin-send-ready')
-  await page.getByRole('button', { name: 'Recompose changed people who were never sent' }).click()
   await expect(page.getByRole('heading', { name: 'Dana Whitfield', exact: true })).toBeVisible()
+  await expect(page.getByText(/2030 · ready ·/)).toBeVisible()
+  await capture(page, 'admin-send-ready')
+  await Promise.all([
+    page.waitForResponse((response) => response.request().method() === 'POST' && response.url().includes(destination)),
+    page.getByRole('button', { name: 'Recompose changed people who were never sent' }).click(),
+  ])
+  if (process.env.OR056_BASELINE !== '1') {
+    await expect(page).toHaveURL(/recompose=unavailable$/)
+    await expect(page.getByRole('status')).toContainText('Nothing was recomposed')
+  }
+  // Main's old same-URL redirect does not refresh its receipt; read persisted state.
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Dana Whitfield', exact: true })).toBeVisible()
+  await expect(page.getByText(process.env.OR056_BASELINE === '1' ? /2030 · scheduled ·/ : /2030 · ready ·/)).toBeVisible()
   await capture(page, 'admin-recompose-refusal')
   await handle.db.update(sends).set({ state: 'done' }).where(eq(sends.id, send.id))
   await page.goto(destination)
+  await expect(page.getByRole('heading', { name: 'Dana Whitfield', exact: true })).toBeVisible()
+  await expect(page.getByText(/2030 · done ·/)).toBeVisible()
   await capture(page, 'admin-send-done')
   // As with the existing billing notice captures, prepare a receipt-message state.
   await page.goto(`${destination}?recompose=done`)
+  await expect(page.getByRole('heading', { name: 'Dana Whitfield', exact: true })).toBeVisible()
+  if (process.env.OR056_BASELINE !== '1') await expect(page.getByRole('status')).toContainText('Recomposed the changed')
   await capture(page, 'admin-recompose-success-notice')
 })
 
@@ -78,5 +95,9 @@ test('review capture: Settings after failed phone-change billing switch-off', as
   await expect(details.getByText(/turned off Text me the call list|paid add-on could not be turned off/)).toBeVisible()
   await page.waitForLoadState('networkidle')
   await expect(details.getByRole('button', { name: 'Save', exact: true })).toBeVisible()
+  if (process.env.OR056_BASELINE !== '1') {
+    await expect(details.getByRole('alert')).toContainText('paid add-on could not be turned off')
+    await expect.poll(async () => normalizeUsPhone(await details.getByLabel('Phone', { exact: true }).inputValue())).toBe('9095550177')
+  }
   await details.screenshot({ path: path.join(output!, 'settings-phone-change-billing-failure.png'), animations: 'disabled' })
 })

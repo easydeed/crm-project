@@ -53,7 +53,9 @@ extra_capture() {
 import base from './playwright.config'
 export default { ...base, projects: base.projects?.filter(p => ['setup', 'desktop'].includes(p.name!)).map(p => p.name === 'desktop' ? { ...p, testMatch: /review-visual\.spec\.ts/ } : p) }
 CONFIG
-  OR056_CAPTURE_DIR="$EVIDENCE/$name-extra" pnpm exec playwright test --config capture.config.ts --project=setup --project=desktop >"$EVIDENCE/$name-extra-browser.log" 2>&1
+  local baseline=0
+  if [ "$name" = main ]; then baseline=1; fi
+  OR056_BASELINE="$baseline" OR056_CAPTURE_DIR="$EVIDENCE/$name-extra" pnpm exec playwright test --config capture.config.ts --project=setup --project=desktop >"$EVIDENCE/$name-extra-browser.log" 2>&1
   rm capture.config.ts
   popd >/dev/null
 }

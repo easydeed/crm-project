@@ -1,5 +1,7 @@
 export type DetailsState = {
   savedAt?: number
+  /** Details committed even though the related billing change failed. */
+  detailsPersisted?: boolean
   error?: string
   name?: string
   dre?: string

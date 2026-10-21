@@ -9,6 +9,7 @@ import { accounts, contactSubscriptions, sendRecipients, sends } from '@/db/sche
 import { auditFixtures, AUDIT_CONTEXT as ctx } from '@/test/audit-fixtures'
 import { composeSend } from '@/jobs/compose'
 import { recomposeUnsentSend } from '@/jobs/recompose-send'
+import { CHANGED_BEFORE_ATTEMPT } from '@/jobs/delivery-hold'
 import { sendMail } from '@/jobs/send-job'
 import { setMailer } from '@/mail/current'
 import { FakeMailer } from '@/mail/fake-mailer'
@@ -29,7 +30,7 @@ describe.skipIf(!tryLoadIntegrationDatabaseUrl())('OR-056 delivery review', () =
     const { db } = getRuntimeDb()
     await composeSend({ accountId: home.accountId, sendId: home.sendId }, ctx)
     await db.update(accounts).set({ role: 'admin' }).where(eq(accounts.id, home.accountId))
-    await db.update(sendRecipients).set({ permanentFailure: true, error: 'Person or house changed after composition. Review before sending.' }).where(eq(sendRecipients.sendId, home.sendId))
+    await db.update(sendRecipients).set({ permanentFailure: true, error: CHANGED_BEFORE_ATTEMPT }).where(eq(sendRecipients.sendId, home.sendId))
     await db.update(sends).set({ state }).where(eq(sends.id, home.sendId))
     const before = await db.select().from(sendRecipients).where(eq(sendRecipients.sendId, home.sendId))
     expect(await recomposeUnsentSend(home.accountId, home.sendId)).toBe(false)
@@ -43,7 +44,7 @@ describe.skipIf(!tryLoadIntegrationDatabaseUrl())('OR-056 delivery review', () =
     await composeSend({ accountId: home.accountId, sendId: home.sendId }, ctx)
     await db.update(accounts).set({ role: 'admin' }).where(eq(accounts.id, home.accountId))
     const [held] = await db.select().from(sendRecipients).where(eq(sendRecipients.sendId, home.sendId))
-    await db.update(sendRecipients).set({ permanentFailure: true, error: 'Person or house changed after composition. Review before sending.' }).where(eq(sendRecipients.id, held.id))
+    await db.update(sendRecipients).set({ permanentFailure: true, error: CHANGED_BEFORE_ATTEMPT }).where(eq(sendRecipients.id, held.id))
     await db.update(contactsTable).set({ name: 'Corrected Homeowner' }).where(eq(contactsTable.id, home.contact.id))
     const [uncertain] = await db.insert(contactsTable).values({ ...home.contact, id: randomUUID(), email: `uncertain-${home.accountId}@example.com` }).returning()
     const [fresh] = await db.insert(contactsTable).values({ ...home.contact, id: randomUUID(), email: `new-${home.accountId}@example.com` }).returning()
@@ -76,7 +77,7 @@ describe.skipIf(!tryLoadIntegrationDatabaseUrl())('OR-056 delivery review', () =
     const { db } = getRuntimeDb()
     await composeSend({ accountId: home.accountId, sendId: home.sendId }, ctx)
     await db.update(accounts).set({ role: 'admin' }).where(eq(accounts.id, home.accountId))
-    await db.update(sendRecipients).set({ permanentFailure: true, error: 'Person or house changed after composition. Review before sending.' }).where(eq(sendRecipients.sendId, home.sendId))
+    await db.update(sendRecipients).set({ permanentFailure: true, error: CHANGED_BEFORE_ATTEMPT }).where(eq(sendRecipients.sendId, home.sendId))
     const before = await db.select().from(sendRecipients).where(eq(sendRecipients.sendId, home.sendId))
     await deleteContactsForAccount(home.accountId, [home.contact.id])
     expect(await recomposeUnsentSend(home.accountId, home.sendId)).toBe(false)
@@ -91,6 +92,17 @@ describe.skipIf(!tryLoadIntegrationDatabaseUrl())('OR-056 delivery review', () =
     expect(mailer.calls).toHaveLength(0)
     const [row] = await getRuntimeDb().db.select().from(sendRecipients).where(eq(sendRecipients.sendId, home.sendId))
     expect(row.sentAt).toBeNull(); expect(row.permanentFailure).toBe(true)
+  })
+
+  test('older generic stale receipts are ambiguous and remain held', async () => {
+    const home = await fixtures.household()
+    const { db } = getRuntimeDb()
+    await composeSend({ accountId: home.accountId, sendId: home.sendId }, ctx)
+    await db.update(accounts).set({ role: 'admin' }).where(eq(accounts.id, home.accountId))
+    await db.update(sendRecipients).set({ permanentFailure: true, error: 'Person or house changed after composition. Review before sending.' }).where(eq(sendRecipients.sendId, home.sendId))
+    const before = await db.select().from(sendRecipients).where(eq(sendRecipients.sendId, home.sendId))
+    expect(await recomposeUnsentSend(home.accountId, home.sendId)).toBe(false)
+    expect(await db.select().from(sendRecipients).where(eq(sendRecipients.sendId, home.sendId))).toEqual(before)
   })
 
   test('deleting after composition prevents delivery and preserves history', async () => {

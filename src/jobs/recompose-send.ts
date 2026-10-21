@@ -1,4 +1,4 @@
-import { and, eq, inArray, isNotNull, isNull, sql } from 'drizzle-orm'
+import { and, eq, inArray, isNotNull, isNull } from 'drizzle-orm'
 import { liveContacts } from '@/db/live-contacts'
 import { getAccountById } from '@/db/accounts'
 import { getRuntimeDb, withTransactionDb } from '@/db/runtime'
@@ -6,6 +6,7 @@ import { withOperationLock } from '@/db/operation-lock'
 import { adminActions, sendRecipients, sends } from '@/db/schema'
 import { enqueue } from '@/jobs/enqueue'
 import { composeSend } from '@/jobs/compose'
+import { CHANGED_BEFORE_ATTEMPT } from '@/jobs/delivery-hold'
 
 /** Rebuild only fingerprinted content held before its first provider attempt. */
 export async function recomposeUnsentSend(adminAccountId: string, sendId: string, now = new Date()) {
@@ -21,7 +22,7 @@ export async function recomposeUnsentSend(adminAccountId: string, sendId: string
         isNull(sendRecipients.deliveryClaimedAt), isNotNull(sendRecipients.composedFingerprint),
         // Historical receipts for deleted people stay intact; only live targets rebuild.
         inArray(sendRecipients.contactId, tx.select({ id: liveContacts.id }).from(liveContacts).where(eq(liveContacts.accountId, send.accountId))),
-        sql`${sendRecipients.error} like 'Person or house changed after composition.%'`,
+        eq(sendRecipients.error, CHANGED_BEFORE_ATTEMPT),
       )).returning({ contactId: sendRecipients.contactId })
       if (!removed.length) return false
       await tx.update(sends).set({ state: 'scheduled' }).where(eq(sends.id, sendId))

@@ -40,6 +40,8 @@ const probes = [
   { name: 'STOP webhook recovery', file: 'src/text/twilio-webhook.ts', from: '.where(sql`right(regexp_replace', to: '.where(sql`${accounts.phoneVerifiedAt} is not null and right(regexp_replace', suite: 'src/billing/review-fixes.integration.test.ts', match: 'a STOP webhook can retry switch-off' },
   { name: 'unpriced legacy plan refusal', file: 'src/billing/paid-state.ts', from: 'if (sub.monthlyCents !== expected)', to: 'if (false)', suite: 'src/billing/review-fixes.integration.test.ts', match: 'an unpriced legacy plan is refused' },
   { name: 'legacy entitlement read barrier', file: 'src/billing/paid-state.ts', from: 'if (sub.monthlyCents !== expected)', to: 'if (false)', suite: 'src/billing/review-fixes.integration.test.ts', match: 'legacy entitlement cannot outrun' },
+  { name: 'partial Settings refresh', file: 'src/app/app/settings/actions.ts', from: 'if (result.savedAt || result.detailsPersisted)', to: 'if (result.savedAt)', suite: 'src/app/app/settings/phone-save-action.test.ts', match: 'partial phone save refreshes persisted details without success' },
+  { name: 'ambiguous legacy receipt refusal', file: 'src/jobs/recompose-send.ts', from: 'eq(sendRecipients.error, CHANGED_BEFORE_ATTEMPT)', to: 'isNotNull(sendRecipients.error)', suite: 'src/jobs/review-fixes.integration.test.ts', match: 'older generic stale receipts are ambiguous' },
 ]
 
 function run(suite, label, filter) {

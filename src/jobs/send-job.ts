@@ -1,4 +1,5 @@
 import { recipientFingerprint } from '@/jobs/recipient-fingerprint'
+import { CHANGED_BEFORE_ATTEMPT } from '@/jobs/delivery-hold'
 import { withOperationLock } from '@/db/operation-lock'
 import { assertSendAllowed } from '@/jobs/send-guard'
 import { definitelyRejected } from '@/mail/delivery-error'
@@ -97,7 +98,7 @@ const sendMailInLock: JobHandler = async (payload, ctx) => {
       }
       assertSendAllowed(guard)
       if (!row.composedFingerprint || row.composedFingerprint !== recipientFingerprint(contact)) {
-        await db.update(sendRecipients).set({ error: row.error ? `${row.error} Person or house also changed after composition.` : 'Person or house changed after composition. Review before sending.', permanentFailure: true }).where(eq(sendRecipients.id, row.id))
+        await db.update(sendRecipients).set({ error: row.error ? `${row.error} Person or house also changed after composition.` : row.deliveryClaimedAt !== null || row.providerId !== null ? 'Delivery outcome requires reconciliation. Person or house also changed after composition.' : CHANGED_BEFORE_ATTEMPT, permanentFailure: true }).where(eq(sendRecipients.id, row.id))
         return
       }
       if (row.deliveryClaimedAt) {
