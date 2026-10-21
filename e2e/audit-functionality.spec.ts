@@ -76,6 +76,12 @@ test('imports, optional email edits, hidden selections, mid-queue navigation, an
   await page.goto(`/app/people/review?contact=${thirdId}`)
   await expect(page.getByText('Audit Third', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Leave them out' }).click()
+  // The canonical Oakdale address is ambiguous in this fixture, so First also
+  // needs review. Starting at Third must wrap through both earlier people.
+  await expect(page.getByText('Audit First', { exact: true })).toBeVisible()
+  const none = page.getByRole('button', { name: 'None of these', exact: true })
+  if (await none.isVisible()) await none.click()
+  await page.getByRole('button', { name: 'Leave them out' }).click()
   await expect(page.getByText('Audit Second', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Leave them out' }).click()
   await expect(page.getByRole('link', { name: 'Back to your people' })).toBeVisible()
