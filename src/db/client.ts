@@ -1,6 +1,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import {
+  isLocalDatabaseUrl,
   loadDatabasePoolerUrl,
   loadDatabaseUrl,
   usesTransactionPooler,
@@ -11,7 +12,7 @@ export function createPostgresClient(url: string) {
   return postgres(url, {
     max: 1,
     prepare: !usesTransactionPooler(url),
-    ssl: 'require',
+    ssl: isLocalDatabaseUrl(url) ? false : 'require',
   })
 }
 

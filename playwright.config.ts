@@ -25,19 +25,19 @@ export default defineConfig({
     { name: 'setup', testMatch: /auth\.setup\.ts/ },
     {
       name: 'mobile',
-      testMatch: /screens\.spec\.ts/,
+      testMatch: /(screens|audit-functionality)\.spec\.ts/,
       dependencies: ['setup'],
       use: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2, storageState: 'test-results/auth.json' },
     },
     {
       name: 'desktop',
-      testMatch: /(screens|desktop-unchanged)\.spec\.ts/,
+      testMatch: /(screens|desktop-unchanged|audit-functionality)\.spec\.ts/,
       dependencies: ['setup'],
       use: { viewport: { width: 1440, height: 900 }, storageState: 'test-results/auth.json' },
     },
   ],
   webServer: {
-    command: `pnpm exec next start -p ${PORT}`,
+    command: `node node_modules/next/dist/bin/next start -p ${PORT}`,
     url: `${baseURL}/login`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

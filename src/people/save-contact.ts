@@ -39,7 +39,7 @@ export async function saveContact(
 
   const contactId = String(formData.get('contactId') ?? '')
   const name = parseContactName(String(formData.get('name') ?? ''))
-  const email = parseContactEmail(String(formData.get('email') ?? ''))
+  const email = parseContactEmail(String(formData.get('email') ?? ''), true)
   const phone = parseOptionalUsPhone(String(formData.get('phone') ?? ''))
   const address = parseContactAddress(String(formData.get('address') ?? ''))
   const closeDate = parseCloseDate(String(formData.get('closeDate') ?? ''))

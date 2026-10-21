@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { AdminNav, formatWhen } from '@/app/admin/admin-nav'
-import { rerunSendAction } from '@/app/admin/send-actions'
+import { rerunSendAction, recomposeSendAction } from '@/app/admin/send-actions'
 import { readRequestSession } from '@/auth/current-session'
 import { getSendForAdmin } from '@/db/admin-sends'
 
@@ -45,6 +45,11 @@ export default async function AdminSendDetailPage({
           Re-run this send
         </button>
       </form>
+      <form action={recomposeSendAction} className="mt-4">
+        <input name="sendId" type="hidden" value={send.id} />
+        <button className={linkClass} type="submit">Recompose changed people who were never sent</button>
+      </form>
+      <p className="mt-2 max-w-xl text-[15px]">Uncertain deliveries stay held. Check their outcome with the provider before any retry.</p>
       <p className="mt-8 flex gap-4 text-[15px]">
         <Link className={linkClass} href={tabHref(send.id, 'composed')}>
           Composed

@@ -1,0 +1,1 @@
+ALTER TABLE "contacts" ADD COLUMN "review_version" integer DEFAULT 0 NOT NULL;

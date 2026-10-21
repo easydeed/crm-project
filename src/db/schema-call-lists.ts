@@ -1,5 +1,5 @@
 import { integer, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core'
-import { accounts, contacts } from './schema'
+import { accounts, contacts, mlsListings } from './schema'
 
 export const callListEntries = pgTable(
   'call_list_entries',
@@ -13,6 +13,7 @@ export const callListEntries = pgTable(
       .references(() => contacts.id, { onDelete: 'cascade' }),
     kind: text('kind').notNull(),
     detail: text('detail').notNull(),
+    listingId: uuid('listing_id').references(() => mlsListings.id, { onDelete: 'set null' }),
     score: integer('score').notNull(),
     period: text('period').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),

@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import ts from 'typescript'
 import * as statusTag from '@/app/app/people/status-tag'
 import * as ui from '@/app/app/people/ui'
@@ -16,7 +17,7 @@ import * as ui from '@/app/app/people/ui'
  */
 const SHARED: Record<string, unknown> = { ...ui, ...statusTag }
 
-const srcRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
+const srcRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
 export type Jsx = { source: ts.SourceFile; file: string }
 export type Element = ts.JsxElement | ts.JsxSelfClosingElement

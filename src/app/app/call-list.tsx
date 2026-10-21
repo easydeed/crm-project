@@ -51,8 +51,8 @@ export function CallListSection({ list, readOnly, textNotice = null }: { list: C
             ))}
           </ol>
         ) : null}
-        {list.kind === 'list' && list.quiet ? (
-          <p className={`${panelBodyClass} ${mutedClass}`}>Quiet month. That happens.</p>
+        {list.kind === 'list' && (list.quiet || list.entries.length === 0) ? (
+          <p className={`${panelBodyClass} ${mutedClass}`}>{list.quiet ? 'Quiet month. That happens.' : 'You’ve worked through this month’s names. New names appear next month.'}</p>
         ) : null}
       </div>
     </section>

@@ -1,3 +1,8 @@
+import { eq } from 'drizzle-orm'
+import { demoBilling, demoCheckoutUrl } from '@/billing/demo-checkout'
+import type { CheckoutInput } from '@/billing/gateway'
+import { getRuntimeDb } from '@/db/runtime'
+import { subscriptions } from '@/db/schema'
 import { FakeBillingGateway } from '@/billing/fake-gateway'
 import { E2E_AGENTS, E2E_PERIOD_END, E2E_PLAN_CENTS, stripeIds } from '@/db/fixtures/e2e-agents'
 
@@ -13,8 +18,29 @@ class E2EBillingGateway extends FakeBillingGateway {
 
   override async getSubscription(subscriptionId: string) {
     if (this.unreachable.has(subscriptionId)) throw new Error(`Stripe GET /subscriptions/${subscriptionId} failed (503): e2e stand-in, unreachable on purpose`)
+    if (demoBilling()) {
+      const { db } = getRuntimeDb()
+      const [row] = await db.select().from(subscriptions).where(eq(subscriptions.stripeSubId, subscriptionId)).limit(1)
+      if (row && (subscriptionId.startsWith('sub_demo_') || this.subscriptions.has(subscriptionId))) return { id: subscriptionId, customerId: row.stripeCustomerId!, status: row.status, currentPeriodEnd: row.currentPeriodEnd, cancelAtPeriodEnd: row.cancelAtPeriodEnd, accountId: row.accountId, cardLast4: '4242', monthlyCents: row.monthlyCents }
+    }
     return super.getSubscription(subscriptionId)
   }
+  override async createCheckoutSession(input: CheckoutInput) {
+    return demoBilling() ? { url: demoCheckoutUrl(input) } : super.createCheckoutSession(input)
+  }
+
+  override async setCancelAtPeriodEnd(subscriptionId: string, cancel: boolean) {
+    if (!demoBilling()) return super.setCancelAtPeriodEnd(subscriptionId, cancel)
+    await this.getSubscription(subscriptionId)
+    await getRuntimeDb().db.update(subscriptions).set({ cancelAtPeriodEnd: cancel }).where(eq(subscriptions.stripeSubId, subscriptionId))
+  }
+
+  override async setMonthlyTotal(subscriptionId: string, cents: number) {
+    if (!demoBilling()) return super.setMonthlyTotal(subscriptionId, cents)
+    await this.getSubscription(subscriptionId)
+    await getRuntimeDb().db.update(subscriptions).set({ monthlyCents: cents }).where(eq(subscriptions.stripeSubId, subscriptionId))
+  }
+
 }
 
 export function e2eBillingGateway() {

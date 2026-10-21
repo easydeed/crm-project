@@ -2,7 +2,7 @@
 
 **This file is authoritative.** Do not resurrect rejected concepts unless explicitly instructed. When this file and any other document conflict, this file wins. Update it only through an approved task.
 
-Last updated: 2026-10-12
+Last updated: 2026-10-21
 
 ---
 
@@ -123,7 +123,10 @@ Real data providers are not wired: `src/providers/current.ts` serves the fixture
 
 ## Current task
 
-_none assigned_
+OR-055 — demo functionality repair, owned by Codex on `codex/demo-functionality`.
+Owner authorized implementation of the functionality audit on 2026-10-21.
+See `packets/OR-055-demo-functionality.md` and `docs/audits/OR-055-functionality.md`.
+Keep other editors paused until this branch is merged or parked.
 
 ## Last approved commit
 

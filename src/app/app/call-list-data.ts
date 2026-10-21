@@ -1,7 +1,7 @@
 import { and, eq, sql } from 'drizzle-orm'
 import { toCallList, type CallList, type CallPanel } from '@/app/app/call-list-view'
 import { getRuntimeDb } from '@/db/runtime'
-import { accounts, parcels } from '@/db/schema'
+import { accounts, parcels, mlsListings } from '@/db/schema'
 import { liveContacts } from '@/db/live-contacts'
 import { callListEntries, callLog } from '@/db/schema-call-lists'
 import { renderLoan } from '@/digest/blocks/loan'
@@ -55,9 +55,12 @@ export async function loadCallList(accountId: string, now = new Date()): Promise
       address: parcels.address,
       closeDate: liveContacts.closeDate,
       outcome: callLog.outcome,
+      listingOffice: mlsListings.listingOffice,
+      listingAgent: mlsListings.listingAgent,
     })
     .from(callListEntries)
     .innerJoin(liveContacts, eq(liveContacts.id, callListEntries.contactId))
+    .leftJoin(mlsListings, eq(mlsListings.id, callListEntries.listingId))
     .leftJoin(parcels, eq(parcels.id, liveContacts.parcelId))
     .leftJoin(
       callLog,

@@ -19,6 +19,8 @@ export type CallEntryRow = {
   score: number
   address: string | null
   closeDate: string | null
+  listingOffice?: string | null
+  listingAgent?: string | null
   outcome?: 'called' | 'dismissed' | null
   panel?: CallPanel
 }
@@ -30,6 +32,8 @@ export type CallEntry = {
   sentence: string
   address: string
   closeDate: string | null
+  listingOffice?: string | null
+  listingAgent?: string | null
   called: boolean
   panel: CallPanel | null
 }
@@ -70,6 +74,7 @@ export function toCallList(input: {
         closeDate: row.closeDate ? formatRecordedDay(row.closeDate.slice(0, 10)) : null,
         called: row.outcome === 'called',
         panel: row.panel ?? null,
+        ...(row.kind === 'home_listed' || row.kind === 'listed_nearby' ? { listingOffice: row.listingOffice, listingAgent: row.listingAgent } : {}),
       }),
     )
   return { kind: 'list', entries, quiet: valid.length < CALL_LIST_SIZE }

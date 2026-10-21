@@ -4,6 +4,8 @@ export type CallTag = { label: string; color: 'coral' | 'green' | 'blue' | 'grey
 
 // Text on tint, as token pairs from the contrast test (tokens.test.ts PAIRS), light and dark.
 export const CALL_TAGS: Record<SignalKind, CallTag> = {
+  home_listed: { label: 'Their house is listed', color: 'coral', className: 'bg-coral-soft text-coral-text' },
+  listed_nearby: { label: 'A neighbor is listed', color: 'coral', className: 'bg-coral-soft text-coral-text' },
   sold_nearby: {
     label: 'Big sale next door',
     color: 'coral',

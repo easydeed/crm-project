@@ -1,5 +1,7 @@
 'use client'
 
+import { MlsAttribution } from '@/digest/mls-attribution'
+
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState, useTransition } from 'react'
 import { logCallAction, undoCallAction } from '@/app/app/call-actions'
@@ -95,6 +97,7 @@ export function CallEntryItem({ entry, rank, readOnly }: { entry: CallEntry; ran
             {entry.address}
             {entry.closeDate ? ` · Closed ${entry.closeDate}` : null}
           </p>
+          {entry.kind === 'home_listed' || entry.kind === 'listed_nearby' ? <MlsAttribution office={entry.listingOffice ?? null} agent={entry.listingAgent ?? null} variant="app" /> : null}
           {called ? <p className="mt-2 text-[15px] font-medium">Called this month.</p> : null}
         </div>
         <button

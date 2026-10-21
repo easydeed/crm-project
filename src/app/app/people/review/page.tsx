@@ -38,9 +38,8 @@ export default async function ReviewQueuePage({
   }
 
   const items = await listReviewQueueForAccount(accountId)
-  const startIndex = contactId
-    ? Math.max(items.findIndex((item) => item.id === contactId), 0)
-    : 0
+  const startIndex = contactId ? items.findIndex((item) => item.id === contactId) : 0
+  if (contactId && startIndex < 0) notFound()
 
   return (
     <ReviewQueue

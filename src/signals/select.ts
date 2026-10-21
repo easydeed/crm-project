@@ -4,13 +4,15 @@ import type { Signal, SignalInput, SignalKind } from '@/signals/types'
 export const SCORE_CLOSE = 40
 
 const KIND_ORDER: Record<SignalKind, number> = {
+  home_listed: -2,
+  listed_nearby: -1,
   sold_nearby: 0,
   loan_paid_off: 1,
   tax_upside: 2,
   quiet_a_while: 3,
 }
 
-const NEW_EVENT: SignalKind[] = ['sold_nearby', 'loan_paid_off']
+const NEW_EVENT: SignalKind[] = ['home_listed', 'listed_nearby', 'sold_nearby', 'loan_paid_off']
 
 export function compareStrength(left: Signal, right: Signal) {
   if (left.score !== right.score) return right.score - left.score

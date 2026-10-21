@@ -20,9 +20,10 @@ export async function enqueue(
       payload,
       payloadKey,
       runAfter,
+      enqueuedFor: runAfter,
     })
     .onConflictDoNothing({
-      target: [jobs.kind, jobs.payloadKey, jobs.runAfter],
+      target: [jobs.kind, jobs.payloadKey, jobs.enqueuedFor],
     })
     .returning({ id: jobs.id })
 
@@ -37,7 +38,7 @@ export async function enqueue(
       and(
         eq(jobs.kind, kind),
         eq(jobs.payloadKey, payloadKey),
-        eq(jobs.runAfter, runAfter),
+        eq(jobs.enqueuedFor, runAfter),
       ),
     )
     .limit(1)

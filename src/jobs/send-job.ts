@@ -1,4 +1,7 @@
-import { and, eq, isNull } from 'drizzle-orm'
+import { recipientFingerprint } from '@/jobs/recipient-fingerprint'
+import { assertSendAllowed } from '@/jobs/send-guard'
+import { definitelyRejected } from '@/mail/delivery-error'
+import { and, eq, isNull, sql } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts, contactSubscriptions, sendRecipients, sends } from '@/db/schema'
 import { liveContacts } from '@/db/live-contacts'
@@ -24,6 +27,8 @@ export const sendMail: JobHandler = async (payload, ctx) => {
   const [send] = await db.select().from(sends).where(eq(sends.id, sendId)).limit(1)
   if (!send) throw new Error('Send not found')
   if (send.state === 'skipped' || send.state === 'done') return
+  if (send.state !== 'ready') throw new Error('Send is waiting for composition')
+  await maybePauseForComplaints(send.accountId, ctx.now)
 
   const [account] = await db
     .select()
@@ -32,7 +37,6 @@ export const sendMail: JobHandler = async (payload, ctx) => {
     .limit(1)
   if (!account) throw new Error('Account not found')
 
-  const billing = await loadBillingState(db, account.id)
   const from = monthlyFromAddress(account.senderName)
   const replyTo = account.replyTo?.trim() || account.email
   const pending = await db
@@ -49,7 +53,7 @@ export const sendMail: JobHandler = async (payload, ctx) => {
   let retryable = 0
   await mapLimit(pending, SEND_CONCURRENCY, async (row) => {
     const [contact] = await db
-      .select({ email: liveContacts.email })
+      .select({ email: liveContacts.email, name: liveContacts.name, addressRaw: liveContacts.addressRaw, parcelId: liveContacts.parcelId, closeDate: liveContacts.closeDate, status: liveContacts.status })
       .from(liveContacts)
       .where(and(eq(liveContacts.id, row.contactId), eq(liveContacts.accountId, account.id)))
       .limit(1)
@@ -79,16 +83,35 @@ export const sendMail: JobHandler = async (payload, ctx) => {
       )
       .limit(1)
 
+    let claimed = false
     try {
+      const [freshAccount] = await db.select({ paused: accounts.paused }).from(accounts).where(eq(accounts.id, account.id)).limit(1)
+      const billing = await loadBillingState(db, account.id)
+      const guard = {
+        recipientEmail: contact.email,
+        unsubscribed: !sub || Boolean(sub.unsubscribedAt),
+        suppressed: await isSuppressed(db, contact.email, 'monthly'),
+        accountPaused: !freshAccount || freshAccount.paused,
+        billingActive: billingAllowsSending(billing, ctx.now),
+      }
+      assertSendAllowed(guard)
+      if (!row.composedFingerprint || row.composedFingerprint !== recipientFingerprint(contact)) {
+        await db.update(sendRecipients).set({ error: 'Person or house changed after composition. Review before sending.', permanentFailure: true }).where(eq(sendRecipients.id, row.id))
+        return
+      }
+      if (row.deliveryClaimedAt) {
+        if (ctx.now.getTime() - row.deliveryClaimedAt.getTime() < 15 * 60_000) { retryable += 1; return }
+        await db.update(sendRecipients).set({ error: 'Delivery outcome unknown. Reconcile with the provider before retrying.', permanentFailure: true }).where(eq(sendRecipients.id, row.id))
+        return
+      }
+
+      const acquired = await db.update(sendRecipients).set({ deliveryClaimedAt: ctx.now })
+        .where(and(eq(sendRecipients.id, row.id), isNull(sendRecipients.deliveryClaimedAt), isNull(sendRecipients.sentAt), sql`exists (select 1 from ${sends} where ${sends.id} = ${sendId} and ${sends.state} = 'ready')`))
+        .returning({ id: sendRecipients.id })
+      if (!acquired.length) { retryable += 1; return }
+      claimed = true
       const { providerId } = await deliverRecipient(
-        getMailer(),
-        {
-          recipientEmail: contact.email,
-          unsubscribed: Boolean(sub?.unsubscribedAt),
-          suppressed: await isSuppressed(db, contact.email, 'monthly'),
-          accountPaused: account.paused,
-          billingActive: billingAllowsSending(billing, ctx.now),
-        },
+        getMailer(), guard,
         {
           to: contact.email,
           from,
@@ -107,17 +130,18 @@ export const sendMail: JobHandler = async (payload, ctx) => {
         .where(and(eq(sendRecipients.id, row.id), isNull(sendRecipients.sentAt)))
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
-      const permanent = isPermanentDeliveryError(err)
+      const uncertain = claimed && !definitelyRejected(err)
+      const permanent = uncertain || isPermanentDeliveryError(err)
       await db
         .update(sendRecipients)
-        .set({ error: message, permanentFailure: permanent })
+        .set({ error: uncertain ? `Delivery outcome unknown. Reconcile before retrying: ${message}` : message, permanentFailure: permanent, ...(claimed && !uncertain ? { deliveryClaimedAt: null } : {}) })
         .where(eq(sendRecipients.id, row.id))
       if (!permanent) retryable += 1
     }
   })
 
   if (retryable === 0) {
-    await db.update(sends).set({ state: 'done' }).where(eq(sends.id, sendId))
+    await db.update(sends).set({ state: 'done' }).where(and(eq(sends.id, sendId), eq(sends.state, 'ready')))
     await maybePauseForComplaints(send.accountId, ctx.now)
     return
   }

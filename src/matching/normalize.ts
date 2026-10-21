@@ -150,3 +150,19 @@ function formatStreet(
   if (suffix) parts.push(SUFFIX_LABEL[suffix] ?? suffix)
   return parts.join(' ')
 }
+
+export function sameHouse(left: string, right: string): boolean {
+  const a = parseAddress(left)
+  const b = parseAddress(right)
+  return Boolean(a && b && a.number === b.number && a.name === b.name && a.unit === b.unit && a.directional === b.directional && a.suffix === b.suffix)
+}
+
+
+/** Same street, within five address steps; ZIP is checked by the caller. */
+export function nearbyHouse(left: string, right: string): boolean {
+  const a = parseAddress(left)
+  const b = parseAddress(right)
+  if (!a || !b || a.name !== b.name || a.suffix !== b.suffix || a.directional !== b.directional) return false
+  const difference = Math.abs(Number(a.number) - Number(b.number))
+  return difference > 0 && difference <= 10
+}

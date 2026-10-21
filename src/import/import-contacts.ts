@@ -1,3 +1,5 @@
+import { parseOptionalUsPhone } from '@/config/phone'
+import { parseCloseDate } from '@/people/parse-fields'
 import { randomUUID } from 'node:crypto'
 import { and, eq, inArray } from 'drizzle-orm'
 import { candidateInsertRows } from '@/db/persist-contact-candidates'
@@ -47,6 +49,7 @@ export async function importContacts(
     accountId: string
     name: string
     email: string | null
+    phone: string | null
     addressRaw: string
     parcelId: string | null
     closeDate: string | null
@@ -63,6 +66,12 @@ export async function importContacts(
   const cache = new Map<string, ParcelRecord[]>()
 
   for (const row of rows) {
+    const phone = parseOptionalUsPhone(row.phone ?? '')
+    const date = parseCloseDate(row.closeDate ?? '')
+    if (!phone.ok || !date.ok || row.invalidCloseDate) {
+      skipped.push({ line: row.line, name: row.name, reason: !phone.ok ? SKIP.invalidPhone : SKIP.invalidDate })
+      continue
+    }
     if (row.email === null) {
       const address = row.address.trim()
       const name = row.name.trim()
@@ -86,7 +95,7 @@ export async function importContacts(
       // No email means no suppression to check and no deleted person to restore by address.
       const contactId = randomUUID()
       toInsert.push({
-        id: contactId, accountId, name, email: null, addressRaw: address, parcelId: match.parcelId,
+        id: contactId, accountId, name, email: null, phone: phone.phone, addressRaw: address, parcelId: match.parcelId,
         closeDate: row.closeDate, status: match.status, matchSource: 'auto', noParcelKind: match.noParcelKind,
       })
       candidateRows.push(...candidateInsertRows(contactId, match.candidates))
@@ -129,6 +138,7 @@ export async function importContacts(
       accountId,
       name: name || email,
       email,
+      phone: phone.phone,
       addressRaw: address,
       parcelId: match.parcelId,
       closeDate: row.closeDate,

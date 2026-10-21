@@ -75,7 +75,7 @@ export function HomeSendCard({
         <h1 className={sendCardHeadingClass}>Let&apos;s get your people in.</h1>
         <p className="mt-3 max-w-xl text-[15px]">
           Add the folks you&apos;ve closed with and we&apos;ll match each address to the
-          county record. Takes about four minutes.
+          county record.
         </p>
         <Link className={`${ctaClass} tap`} href="/app/people/import">
           Add your people
@@ -103,7 +103,7 @@ export function HomeSendCard({
       <section className={sendCardClass}>
         <h1 className={sendCardHeadingClass}>No one is set to get the monthly note.</h1>
         <p className="mt-3 max-w-xl text-[15px]">
-          People need a matched house and an active monthly note.
+          People need an email address, a matched house, and an active monthly note. Unsubscribed addresses stay excluded.
         </p>
         <Link className={`${ctaClass} tap`} href="/app/people">
           Open people

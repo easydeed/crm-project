@@ -29,6 +29,7 @@ export type ReviewQueueItem = {
 }
 
 export type ReviewSnapshot = {
+  version?: number
   contactId: string
   status: ContactMatchStatus
   parcelId: string | null

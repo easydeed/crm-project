@@ -35,7 +35,7 @@ export function ImportForm({ readOnly }: { readOnly?: boolean }) {
   const roles = mapping ?? detected?.mapping ?? []
   const ready = mappingIsComplete(roles)
   const rows = table.length ? applyMapping(table, roles, hasHeader) : []
-  const needsMapping = table.length > 0 && !ready
+  const needsMapping = table.length > 0
 
   if (state.result) return <ImportResultView result={state.result} />
 
@@ -122,8 +122,8 @@ export function ImportForm({ readOnly }: { readOnly?: boolean }) {
           }}
         />
       ) : null}
-      <input type="hidden" name="rows" value={JSON.stringify(rows)} />
-      <button className={`${buttonClass} mt-6`} type="submit" disabled={pending || readOnly || !rows.length}>
+      <input type="hidden" name="rows" value={JSON.stringify(ready ? rows : [])} />
+      <button className={`${buttonClass} mt-6`} type="submit" disabled={pending || readOnly || !ready || !rows.length}>
         {pending ? 'Matching addresses…' : 'Import'}
       </button>
     </form>

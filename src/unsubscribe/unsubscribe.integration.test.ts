@@ -201,7 +201,7 @@ describe.skipIf(!sessionUrl)('homeowner unsubscribe', () => {
     const missed = await post(token, 'intent=update&address=' + encodeURIComponent('PO Box 14, La Verne, CA 91750'))
     const missedHtml = await missed.text()
     expect(missedHtml).toContain("We couldn't find that house on the record.")
-    expect(missedHtml).toContain("You're still getting these emails.")
+    expect(missedHtml).toContain("Your notes are paused until your agent matches the address.")
     const { db } = getRuntimeDb()
     const [still] = await db
       .select()

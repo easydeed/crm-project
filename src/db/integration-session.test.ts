@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { usesTransactionPooler } from '@/config/database-url'
+import { usesTransactionPooler, isLocalDatabaseUrl } from '@/config/database-url'
 import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 
 test('integration URL helper never accepts the transaction pooler', () => {
@@ -11,6 +11,6 @@ test('integration URL helper never accepts the transaction pooler', () => {
   const url = tryLoadIntegrationDatabaseUrl()
   if (url) {
     expect(usesTransactionPooler(url)).toBe(false)
-    expect(url).toMatch(/:5432(?:\/|$|\?)/)
+    if (!isLocalDatabaseUrl(url)) expect(url).toMatch(/:5432(?:\/|$|\?)/)
   }
 })

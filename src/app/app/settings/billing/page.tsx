@@ -1,3 +1,4 @@
+import { formatDollars } from '@/config/costs'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { readRequestSession } from '@/auth/current-session'
@@ -7,8 +8,9 @@ import { getAccountById } from '@/db/accounts'
 import { resumePlanAction, startCheckoutAction } from '@/app/app/settings/billing/actions'
 import { formatBillingDate, MISSING_PLAN, NOTICES, PLAN_LINE, statusWords } from '@/app/app/settings/billing/billing-copy'
 import { InvoiceList } from '@/app/app/settings/billing/invoice-list'
+import { PlanButton } from '@/app/app/settings/billing/plan-button'
 import { DetailsRow, DetailsTable } from '@/app/app/details-table'
-import { buttonClass, inlineLinkClass, linkClass, panelBodyClass, panelClass, panelHeaderClass } from '@/app/app/people/ui'
+import { inlineLinkClass, linkClass, panelBodyClass, panelClass, panelHeaderClass } from '@/app/app/people/ui'
 import { SUPPORT_EMAIL, supportMailto } from '@/config/support'
 
 /** The plan table's label column: 120px at 390, 160px from sm, as drawn. */
@@ -17,9 +19,7 @@ const LABELS = 'grid-cols-[120px_1fr] sm:grid-cols-[160px_1fr]'
 function Action({ action, label }: { action: () => Promise<void>; label: string }) {
   return (
     <form action={action}>
-      <button className={buttonClass} type="submit">
-        {label}
-      </button>
+      <PlanButton label={label} />
     </form>
   )
 }
@@ -81,6 +81,7 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
               <DetailsRow label="Plan" labels={LABELS}>
                 {PLAN_LINE}
               </DetailsRow>
+              {view.monthlyCents != null ? <DetailsRow label="Monthly total" labels={LABELS}>{formatDollars(view.monthlyCents)} including enabled extras</DetailsRow> : null}
               <DetailsRow label="Status" labels={LABELS}>
                 {statusWords(view.status, view.cancelAtPeriodEnd)}
               </DetailsRow>

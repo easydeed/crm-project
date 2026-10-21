@@ -51,8 +51,9 @@ export function PeopleBoard({
     () => filterPeople(rows, { status, groupId, q: query, leftOut, noEmail }),
     [rows, status, groupId, query, leftOut, noEmail],
   )
-  const selectedSet = new Set(selected)
-  const selectedRows = rows.filter((row) => selectedSet.has(row.id))
+  const visibleSelected = selected.filter((id) => visible.some((row) => row.id === id))
+  const selectedSet = new Set(visibleSelected)
+  const selectedRows = visible.filter((row) => selectedSet.has(row.id))
 
   const refresh = useCallback(() => {
     setSelected([])
@@ -108,7 +109,7 @@ export function PeopleBoard({
             ) : (
               <PeopleList
                 rows={visible}
-                selected={selected}
+                selected={visibleSelected}
                 onToggle={(id) =>
                   setSelected((current) =>
                     current.includes(id)
@@ -142,7 +143,7 @@ export function PeopleBoard({
         </>
       )}
       <PeopleBulkBar
-        selected={selected}
+        selected={visibleSelected}
         groups={groups}
         names={selectedRows.map((row) => row.name)}
         readOnly={readOnly}

@@ -45,6 +45,10 @@ export class FakeBillingGateway implements BillingGateway {
     this.update(subscriptionId, { cancelAtPeriodEnd: cancel })
   }
 
+  async setMonthlyTotal(subscriptionId: string, cents: number) {
+    this.update(subscriptionId, { monthlyCents: cents })
+  }
+
   async listInvoices(customerId: string) {
     return this.invoices.get(customerId) ?? []
   }

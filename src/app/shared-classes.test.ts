@@ -27,7 +27,7 @@ const appRoot = path.dirname(fileURLToPath(import.meta.url))
 
 function sourceFiles(dir = ''): string[] {
   return readdirSync(path.join(appRoot, dir)).flatMap((name) => {
-    const rel = path.join(dir, name)
+    const rel = path.join(dir, name).replaceAll('\\', '/')
     if (statSync(path.join(appRoot, rel)).isDirectory()) return rel === 'admin' ? [] : sourceFiles(rel)
     return /\.tsx?$/.test(name) && !/\.test\./.test(name) ? [rel] : []
   })

@@ -11,6 +11,7 @@ export const subscriptions = pgTable('subscriptions', {
   stripeSubId: text('stripe_sub_id').unique(),
   plan: text('plan').notNull(),
   status: text('status').notNull(),
+  monthlyCents: integer('monthly_cents'),
   currentPeriodEnd: timestamp('current_period_end', { withTimezone: true }),
   cancelAtPeriodEnd: boolean('cancel_at_period_end').notNull().default(false),
 })

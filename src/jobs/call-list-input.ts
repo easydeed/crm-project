@@ -1,6 +1,6 @@
 import { and, eq, inArray } from 'drizzle-orm'
 import type { createDb } from '@/db/client'
-import { contactSubscriptions, parcelEvents, parcels } from '@/db/schema'
+import { contactSubscriptions, mlsListings, parcelEvents, parcels } from '@/db/schema'
 import { liveContacts } from '@/db/live-contacts'
 import { callListEntries, callLog } from '@/db/schema-call-lists'
 import { GRANT_DEED } from '@/digest/types'
@@ -145,6 +145,7 @@ export async function loadCallListInput(db: Db, accountId: string, asOf: Date) {
     ]
   })
 
+  const listings = zips.length ? await db.select().from(mlsListings).where(inArray(mlsListings.zip, zips)) : []
   const priorCalls: PriorCall[] = [...priors, ...dismissed]
-  return { asOf, contacts: contactsOut, streetSales, priorCalls }
+  return { asOf, contacts: contactsOut, streetSales, priorCalls, listings }
 }

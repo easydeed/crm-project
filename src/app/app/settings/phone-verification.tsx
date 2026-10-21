@@ -30,7 +30,7 @@ export function PhoneVerification({ phone, verified, readOnly }: { phone: string
               startTransition(async () => {
                 const result = await requestCodeAction()
                 setSent(result.ok)
-                setMessage(result.ok ? 'Code sent. It expires in 10 minutes.' : result.message)
+                setMessage(result.ok ? result.demoCode ? `Demo code: ${result.demoCode}. No text was sent. It expires in 10 minutes.` : 'Code sent. It expires in 10 minutes.' : result.message)
               })
             }
             type="button"

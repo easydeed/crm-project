@@ -49,6 +49,10 @@ export async function claimNextJob(
       WHERE completed_at IS NULL
         AND attempts < ${MAX_ATTEMPTS}
         AND run_after <= ${nowIso}::timestamptz
+        AND (kind <> 'send' OR NOT EXISTS (
+          SELECT 1 FROM sends WHERE sends.id::text = jobs.payload->>'sendId'
+            AND sends.state = 'scheduled'
+        ))
         AND (locked_at IS NULL OR locked_at < ${abandonedIso}::timestamptz)
       ORDER BY run_after ASC
       FOR UPDATE SKIP LOCKED

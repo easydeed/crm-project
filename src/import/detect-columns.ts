@@ -1,3 +1,4 @@
+import { isCalendarDate } from '@/config/calendar-date'
 import type { ColumnDetection, FieldRole, ImportRow } from '@/import/types'
 
 const ALIASES: Record<string, FieldRole> = {
@@ -12,6 +13,9 @@ const ALIASES: Record<string, FieldRole> = {
   lastname: 'last',
   surname: 'last',
   email: 'email',
+  phone: 'phone',
+  mobile: 'phone',
+  'phone number': 'phone',
   'e-mail': 'email',
   'e mail': 'email',
   address: 'address',
@@ -35,6 +39,7 @@ export const FIELD_OPTIONS: { role: FieldRole; label: string }[] = [
   { role: 'first', label: 'This is the first name' },
   { role: 'last', label: 'This is the last name' },
   { role: 'email', label: 'This is the email' },
+  { role: 'phone', label: 'This is the phone' },
   { role: 'address', label: 'This is the address' },
   { role: 'street', label: 'This is the street' },
   { role: 'city', label: 'This is the city' },
@@ -56,11 +61,15 @@ export function detectColumns(headers: string[]): ColumnDetection {
 }
 
 export function mappingIsComplete(mapping: FieldRole[]): boolean {
+  const assigned = mapping.filter((role) => role !== 'skip')
+  if (new Set(assigned).size !== assigned.length) return false
   const set = new Set(mapping)
+  if (set.has('name') && (set.has('first') || set.has('last'))) return false
+  if (set.has('address') && (set.has('street') || set.has('city') || set.has('zip'))) return false
   const hasName = set.has('name') || (set.has('first') && set.has('last'))
   const hasEmail = set.has('email')
   const hasAddress =
-    set.has('address') || set.has('street') || (set.has('city') && set.has('zip'))
+    set.has('address') || (set.has('street') && (set.has('city') || set.has('zip')))
   return hasName && hasEmail && hasAddress
 }
 
@@ -97,17 +106,20 @@ export function rowFromCells(cells: string[], mapping: FieldRole[], line: number
     line,
     name,
     email: picked.email?.trim() ?? '',
+    phone: picked.phone?.trim() ?? '',
     address,
     closeDate: parseCloseDate(picked.closeDate ?? ''),
+    ...(picked.closeDate?.trim() && !parseCloseDate(picked.closeDate) ? { invalidCloseDate: true } : {}),
   }
 }
 
 export function parseCloseDate(raw: string): string | null {
   const value = raw.trim()
-  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value
+  if (isCalendarDate(value)) return value
   const us = value.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/)
   if (us) {
-    return `${us[3]}-${us[1].padStart(2, '0')}-${us[2].padStart(2, '0')}`
+    const date = `${us[3]}-${us[1].padStart(2, '0')}-${us[2].padStart(2, '0')}`
+    return isCalendarDate(date) ? date : null
   }
   return null
 }

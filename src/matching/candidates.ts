@@ -1,4 +1,4 @@
-import { and, eq, sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 import * as schema from '@/db/schema'
 import { parcels } from '@/db/schema'
@@ -18,15 +18,6 @@ export type ParcelRecord = {
 const CANDIDATE_LIMIT = 50
 const FUZZY_MIN = 0.2
 
-const parcelCols = {
-  id: parcels.id,
-  apn: parcels.apn,
-  county: parcels.county,
-  address: parcels.address,
-  city: parcels.city,
-  zip: parcels.zip,
-}
-
 export function escapeLike(value: string): string {
   return value.replace(/[\\%_]/g, '\\$&')
 }
@@ -41,9 +32,16 @@ export async function findCandidateParcels(
   db: ParcelDb,
   normalized: NormalizedAddress,
 ): Promise<ParcelRecord[]> {
+  const query = candidateQuery(normalized)
+  if (!query) return []
+  return db.execute<ParcelRecord>(query)
+}
+
+/** Shared with EXPLAIN tests so the budget measures the query users run. */
+export function candidateQuery(normalized: NormalizedAddress) {
   const name = normalized.name
   const partition = partitionFor(normalized)
-  if (!name || !partition) return []
+  if (!name || !partition) return null
 
   const score = sql<number>`greatest(
     case when ${parcels.streetNameNorm} = ${name} then 1 else 0 end,
@@ -53,28 +51,20 @@ export async function findCandidateParcels(
     ? sql`case when ${parcels.address} ilike ${`${escapeLike(normalized.number)} %`} then 0 else 1 end`
     : sql`1`
 
-  const rows = await db
-    .select({ ...parcelCols, score })
-    .from(parcels)
-    .where(
-      and(
-        partition,
-        sql`(
-          ${parcels.streetNameNorm} = ${name}
-          or ${parcels.streetNameNorm} % ${name}
-          or similarity(${parcels.streetNameNorm}, ${name}) >= ${FUZZY_MIN}
-        )`,
-      ),
+  // A ZIP may hold thousands of houses on the same streets. Materialize names
+  // before fuzzy comparison, preserving the low-similarity typo fallback.
+  return sql`
+    with street_names as materialized (
+      select distinct ${parcels.streetNameNorm} as name from ${parcels} where ${partition}
+    ), matching_names as materialized (
+      select name from street_names where name = ${name}
+        or name % ${name} or similarity(name, ${name}) >= ${FUZZY_MIN}
     )
-    .orderBy(numberMatch, sql`${score} desc`, parcels.address)
-    .limit(CANDIDATE_LIMIT)
-
-  return rows.map((row) => ({
-    id: row.id,
-    apn: row.apn,
-    county: row.county,
-    address: row.address,
-    city: row.city,
-    zip: row.zip,
-  }))
+    select ${parcels.id} as id, ${parcels.apn} as apn, ${parcels.county} as county,
+      ${parcels.address} as address, ${parcels.city} as city, ${parcels.zip} as zip
+    from ${parcels}
+    where ${partition} and ${parcels.streetNameNorm} in (select name from matching_names)
+    order by ${numberMatch}, ${score} desc, ${parcels.address}
+    limit ${CANDIDATE_LIMIT}
+  `
 }
