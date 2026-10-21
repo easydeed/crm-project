@@ -82,7 +82,9 @@ authoritative entitlement, rather than promising an impossible cross-system
 rollback. A provider outage makes paid-state reads fail visibly. External manual
 changes that split metadata and price fail closed and require reconciliation.
 Legacy priced subscriptions with no metadata require a matching existing total
-before initialization; mismatches are not silently charged or entitled.
+before initialization and before every entitlement read; mismatches are not
+silently charged or entitled. A matching legacy state initializes before its
+configuration can change, so rejection/rollback still preserves provider truth.
 
 Ambiguous Checkout creation before its session ID is saved keeps a durable hold
 for support/provider reconciliation. No automatic repeat charge is attempted.
@@ -98,11 +100,16 @@ outcome, quote ownership, durable holds, callback rollback, stale cached status,
 recipient scope, historical/deleted receipts, and STOP retry behavior.
 
 Production connectivity and connection limits for dedicated direct-session locks
-have not been load-tested. The existing 73-state pixel suite does not capture
-admin send details or the newer demo checkout/recovery pages; the demo flow runs
-through real forms in the browser suite and admin rebuild semantics have DB tests.
-Do not describe those uncaptured pages as pixel-identical. Pixel counts and the
-OR-055 screen inventory will be recorded from the same-runner artifacts.
+have not been load-tested. The evidence harness adds six main/head captures
+beyond the existing 73: ready/done admin sends, refused/success admin notices,
+demo checkout, and the Settings panel after failed phone-change billing switch-off.
+They are prepared through real login/forms against local fixture state and are
+reported separately from the historical 73-state inventory. Recovery pages are
+unchanged in this packet. Pixel counts are retained in the CI artifacts/PR report.
+
+The initial parent/main capture measured the twenty requested states plus the
+review queue's corrected "4 of 7" → "1 of 7" counter: 21 total. All are recorded
+individually in `reskin-screen-log.md`, including the extra measured state.
 
 API contracts consulted: [Stripe Checkout](https://docs.stripe.com/api/checkout/sessions/create)
 and [subscription update](https://docs.stripe.com/api/subscriptions/update).

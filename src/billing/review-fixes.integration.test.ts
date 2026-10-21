@@ -10,7 +10,7 @@ import { StripeGateway } from '@/billing/stripe-gateway'
 import { e2eBillingGateway } from '@/billing/e2e-gateway'
 import { completeDemoCheckout } from '@/billing/demo-checkout'
 import { startCheckout } from '@/billing/account-billing'
-import { isAddonEnabled, switchAddonOff, switchAddonOn } from '@/addons/state'
+import { isAddonEnabled, loadAddonStates, switchAddonOff, switchAddonOn } from '@/addons/state'
 import { createRegistry, setAddonRegistry } from '@/addons/registry'
 import { TEXT_CALL_LIST, TEXT_CALL_LIST_KEY as KEY } from '@/addons/text-call-list'
 import { PLAN, ADDON_PRICES } from '@/config/costs'
@@ -146,5 +146,24 @@ describe.skipIf(!tryLoadIntegrationDatabaseUrl())('OR-056 billing and texting re
     const update = vi.spyOn(home.fake, 'setMonthlyTotal')
     expect(await switchAddonOn(home.accountId, KEY, null)).toMatchObject({ ok: false, message: expect.stringMatching(/reconciliation/) })
     expect(update).not.toHaveBeenCalled()
+  })
+
+  test('a correctly priced legacy plan initializes before its first switch', async () => {
+    const home = await readyAccount()
+    home.fake.update(home.subId, { addonKeys: undefined })
+    expect((await switchAddonOn(home.accountId, KEY, null)).ok).toBe(true)
+    expect(await home.fake.getSubscription(home.subId)).toMatchObject({ monthlyCents: PLAN.priceCents + ADDON_PRICES.cents[KEY], addonKeys: [KEY] })
+  })
+
+  test('legacy entitlement cannot outrun its provider price even before a switch', async () => {
+    const home = await readyAccount()
+    const { db } = getRuntimeDb()
+    const [cached] = await db.select().from(subscriptions).where(eq(subscriptions.accountId, home.accountId))
+    await db.delete(subscriptions).where(eq(subscriptions.accountId, home.accountId))
+    expect((await switchAddonOn(home.accountId, KEY, null)).ok).toBe(true)
+    await db.insert(subscriptions).values(cached)
+    home.fake.update(home.subId, { addonKeys: undefined, monthlyCents: PLAN.priceCents })
+    await expect(isAddonEnabled(home.accountId, KEY)).rejects.toThrow(/reconciliation/)
+    await expect(loadAddonStates(home.accountId)).rejects.toThrow(/reconciliation/)
   })
 })

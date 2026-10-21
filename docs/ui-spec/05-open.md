@@ -221,14 +221,18 @@ Each item says how it is known:
     - Unresolved. The pixel comparison is the main instrument for the re-skin, and an instrument
       that occasionally lies is worse than one that is broken.
 
-## Smaller things
-
 33. **`login-mismatch` has a newly reported unstable capture (nine differing pixels).**
     Independent review of PR #75 reported this on `1088036`. Record it separately
     from an intentional auth-layout change: "9px" is a differing-pixel count, not
     proof of a nine-pixel layout displacement. OR-056's same-runner, fresh-seed
     main/repeat-main evidence measures it alongside the known bulk-bar captures.
+    Its first Linux run reproduced eight differing pixels at x 910–911, y 604–608
+    between unchanged auth layouts. Main/repeat-main matched 73/73 and the strict
+    comparison passed 73/73, so a passing strict run does not erase this observed
+    raw-capture instability. Evidence: OR-056 run `39664635767`.
     Do not mask it or increase pixel tolerance to obtain a green comparison.
+
+## Smaller things
 
 - The `start` capture shows whichever MLS ID the last browser run searched for, not the
   seed's, because a search saves the ID to the account.

@@ -1,4 +1,4 @@
-import { syncAddonBilling } from '@/billing/addon-billing'
+import { initializeAddonBilling, syncAddonBilling } from '@/billing/addon-billing'
 import { paidAddonKeys } from '@/billing/paid-state'
 import { withBillingLock } from '@/billing/account-lock'
 import { demoBilling } from '@/billing/demo-checkout'
@@ -32,6 +32,12 @@ async function rowsFor(accountId: string) {
     .where(eq(accountAddons.accountId, accountId))
 }
 
+async function paidKeysFor(accountId: string, rows?: Awaited<ReturnType<typeof rowsFor>>) {
+  const stored = rows ?? await rowsFor(accountId)
+  const keys = stored.filter((row) => row.enabled && (getAddonRegistry().get(row.key)?.priceCents ?? 0) > 0).map((row) => row.key)
+  return paidAddonKeys(accountId, keys)
+}
+
 /** The single check any feature uses. Unknown or switched off is false. */
 export async function isAddonEnabled(accountId: string, key: string): Promise<boolean> {
   if (!getAddonRegistry().get(key)) return false
@@ -41,7 +47,7 @@ export async function isAddonEnabled(accountId: string, key: string): Promise<bo
     .from(accountAddons)
     .where(and(eq(accountAddons.accountId, accountId), eq(accountAddons.addonKey, key)))
     .limit(1)
-  const keys = getAddonRegistry().get(key)!.priceCents > 0 ? await paidAddonKeys(accountId) : null
+  const keys = getAddonRegistry().get(key)!.priceCents > 0 ? await paidKeysFor(accountId) : null
   return keys ? keys.includes(key) : row?.enabled === true
 }
 
@@ -65,7 +71,7 @@ export async function loadAddonStates(accountId: string): Promise<{ states: Addo
   const registry = getAddonRegistry()
   const rows = await rowsFor(accountId)
   const byKey = new Map(rows.map((row) => [row.key, row]))
-  const keys = await paidAddonKeys(accountId)
+  const keys = await paidKeysFor(accountId, rows)
   const states = registry.list().map((addon) => {
     const row = byKey.get(addon.key)
     return { addon, enabled: addon.priceCents > 0 && keys ? keys.includes(addon.key) : row?.enabled === true, config: (row?.config ?? {}) as AddonConfig }
@@ -175,7 +181,7 @@ async function accountChange(accountId: string, key: string, enabled: boolean, c
     try {
       await assertCheckoutAllowsChanges(accountId)
       // Initialize a legacy provider's canonical state before changing DB config.
-      if (await paidAddonKeys(accountId) === null) await syncAddonBilling(accountId, key, await isAddonEnabled(accountId, key), true)
+      await initializeAddonBilling(accountId, key)
     } catch (error) {
       return { ok: false, reason: 'forbidden', message: error instanceof Error ? error.message : 'Could not confirm your bill.' }
     }

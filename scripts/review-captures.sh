@@ -43,6 +43,21 @@ CONFIG
   popd >/dev/null
 }
 
+extra_capture() {
+  local checkout=$1 name=$2
+  if [ "$checkout" != "$ROOT" ]; then cp "$ROOT/e2e/review-visual.spec.ts" "$checkout/e2e/review-visual.spec.ts"; fi
+  pushd "$checkout" >/dev/null
+  pnpm db:seed >"$EVIDENCE/$name-extra-seed.log" 2>&1
+  pnpm e2e:setup >>"$EVIDENCE/$name-extra-seed.log" 2>&1
+  cat >capture.config.ts <<'CONFIG'
+import base from './playwright.config'
+export default { ...base, projects: base.projects?.filter(p => ['setup', 'desktop'].includes(p.name!)).map(p => p.name === 'desktop' ? { ...p, testMatch: /review-visual\.spec\.ts/ } : p) }
+CONFIG
+  OR056_CAPTURE_DIR="$EVIDENCE/$name-extra" pnpm exec playwright test --config capture.config.ts --project=setup --project=desktop >"$EVIDENCE/$name-extra-browser.log" 2>&1
+  rm capture.config.ts
+  popd >/dev/null
+}
+
 archive "$RUNNER_TEMP/or056-parent" 775f7d0
 archive "$RUNNER_TEMP/or056-main" 1088036
 capture "$RUNNER_TEMP/or056-parent" parent yes
@@ -56,3 +71,6 @@ strict_pixels "$RUNNER_TEMP/or056-main" main-baseline yes
 mkdir -p e2e/__snapshots-local__/
 cp "$RUNNER_TEMP/or056-main"/e2e/__snapshots-local__/*.png e2e/__snapshots-local__/
 strict_pixels "$ROOT" head-strict no
+extra_capture "$RUNNER_TEMP/or056-main" main
+extra_capture "$ROOT" head
+node scripts/compare-screen-pixels.mjs "$EVIDENCE/main-extra" "$EVIDENCE/head-extra" "$EVIDENCE/or056-extra.json"
