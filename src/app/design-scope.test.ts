@@ -14,7 +14,7 @@ function sourceFiles(dir: string, pattern = /\.(tsx?|css)$/): string[] {
 }
 
 const read = (file: string) => readFileSync(file, 'utf8')
-const rel = (file: string) => path.relative(srcRoot, file)
+const rel = (file: string) => path.relative(srcRoot, file).replaceAll('\\', '/')
 
 /**
  * The only files that may name Archivo, the marketing page's display face (OR-053; Fraunces held this
@@ -29,6 +29,20 @@ const ARCHIVO: Record<string, string> = {
   'app/marketing/ui.ts': "the marketing page's display class, the only one",
 }
 const MARKETING = /^app\/(marketing\/|home-story\.tsx$|page\.tsx$|sample\/page\.tsx$)/
+
+const PLEX: Record<string, string> = {
+  'app/fonts/fonts.ts': 'loads it',
+  'app/fonts/OFL-plex.txt': 'its licence',
+  'app/globals.css': 'maps it to --font-mono',
+}
+
+test('Plex Mono stays with the marketing face: only the listed files under src name it', () => {
+  const naming = sourceFiles(srcRoot, /./)
+    .filter((file) => !/\.test\./.test(file) && /plex/i.test(read(file)))
+    .map(rel)
+    .sort()
+  expect(naming).toEqual(Object.keys(PLEX).sort())
+})
 
 test('Archivo stays on the marketing page: only the listed files under src name it, and only marketing files import them', () => {
   const naming = sourceFiles(srcRoot, /./)

@@ -75,13 +75,27 @@ const PAIRS: Array<[string, string, number]> = [
   // OR-043: the view-as banner, and its edge against the bar it sits above.
   ['on-alert', 'alert', TEXT],
   ['alert', 'bar', NON_TEXT],
-  // OR-053, the marketing page: gold words on the bar, words on a gold card, gold marks on the page
-  // and on cream, and words on cream. --muted-ink on --cream is 4.50:1 light, so it is not a pair.
+  // OR-054: gold is #e4b65c in both themes. Words on the bar, and words on a gold fill.
+  // It is not a mark on white or cream (1.88:1). --muted-ink on --cream is 4.50:1, so not a pair.
   ['gold', 'bar', TEXT],
   ['on-gold', 'gold', TEXT],
-  ['gold', 'background', NON_TEXT],
-  ['gold', 'cream', NON_TEXT],
   ['foreground', 'cream', TEXT],
+  // The landing page keeps v6's fixed palette in both OS schemes.
+  ['mkt-white', 'mkt-navy', TEXT],
+  ['mkt-muted', 'mkt-navy', TEXT],
+  ['mkt-pale', 'mkt-navy', TEXT],
+  ['mkt-gold', 'mkt-navy', TEXT],
+  ['mkt-navy', 'mkt-gold', TEXT],
+  ['mkt-navy', 'mkt-cream', TEXT],
+  ['mkt-body', 'mkt-white', TEXT],
+  ['mkt-secondary', 'mkt-white', TEXT],
+  ['mkt-secondary', 'mkt-surface', TEXT],
+  ['mkt-white', 'mkt-inset', TEXT],
+  ['mkt-pale', 'mkt-inset', TEXT],
+  ['mkt-gold', 'mkt-inset', TEXT],
+  ['mkt-brown', 'mkt-cream', TEXT],
+  ['mkt-paper-ink', 'mkt-white', TEXT],
+  ['mkt-stamp', 'mkt-white', TEXT],
 ]
 
 test('every colour token has a light and a dark value', () => {

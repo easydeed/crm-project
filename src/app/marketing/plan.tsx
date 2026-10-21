@@ -1,44 +1,34 @@
 import Link from 'next/link'
-import { priceLabel } from '@/app/app/addons/row-data'
+import { AddonSwitches } from '@/app/marketing/addon-switches'
+import { SurveyEtch } from '@/app/marketing/etch'
+import { displayClass, eyebrowClass, goldCtaClass, headingClass, planPrice, sectionClass } from '@/app/marketing/ui'
 import { getAddonRegistry } from '@/addons/registry'
-import { PLAN } from '@/config/costs'
-import {
-  barCtaClass,
-  barLinkClass,
-  bodyClass,
-  cardTitleClass,
-  displayClass,
-  eyebrowClass,
-  headingClass,
-  planPrice,
-  sectionClass,
-} from '@/app/marketing/ui'
+import { formatDollars, PLAN } from '@/config/costs'
 
-/** What the plan includes. Each one is built (docs/audits/OR-052-marketing-design-audit.md §2). */
 const FEATURES = [
   { title: 'Preview before it sends', body: 'See exactly what any homeowner will get.' },
   { title: 'Skip a month', body: 'One button. Resume just as fast.' },
   { title: 'Your day, your time', body: 'Pick the send day, time and timezone.' },
-  { title: 'Your name on it', body: 'Your name, brokerage and DRE on every note.' },
+  { title: 'Your name on it', body: 'Name, brokerage and DRE on every note.' },
   { title: 'Groups', body: 'Sort people into groups right inside your list.' },
-  { title: 'Export anytime', body: 'Download your list as a spreadsheet.' },
+  { title: 'Export anytime', body: 'Download your whole list as a spreadsheet.' },
   { title: 'Unsubscribes handled', body: 'One click for them. Nothing for you to manage.' },
   { title: 'Undo a call', body: 'Marked the wrong one? Undo is right there.' },
 ]
 
 export function Features() {
   return (
-    <section className="bg-bar text-on-bar">
+    <section id="features" className="bg-mkt-navy text-mkt-white">
       <div className={sectionClass}>
-        <div className="flex flex-col gap-4">
-          <p className={`${eyebrowClass} text-gold`}>Included in the {planPrice}</p>
-          <h2 className={headingClass}>The little things, handled.</h2>
+        <div className="flex flex-col gap-[18px]">
+          <p className={`${eyebrowClass} text-mkt-muted`}>Included in the {planPrice}</p>
+          <h2 className={`${headingClass} max-w-[900px]`}>The little things, handled.</h2>
         </div>
-        <ul className="grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="grid gap-px overflow-hidden rounded-[24px] border border-mkt-rule bg-mkt-rule sm:grid-cols-2 lg:grid-cols-4">
           {FEATURES.map((feature) => (
-            <li key={feature.title} className="flex flex-col gap-2 border-t-2 border-gold pt-4">
-              <p className={`${displayClass} text-[22px] font-extrabold leading-tight`}>{feature.title}</p>
-              <p className={bodyClass}>{feature.body}</p>
+            <li key={feature.title} className="flex min-h-[206px] flex-col gap-2.5 bg-mkt-navy p-7">
+              <p className={`${displayClass} text-[22px] leading-tight font-extrabold tracking-[-0.01em]`}>{feature.title}</p>
+              <p className="text-[16px] leading-normal font-medium text-mkt-muted">{feature.body}</p>
             </li>
           ))}
         </ul>
@@ -47,70 +37,57 @@ export function Features() {
   )
 }
 
-/** The add-ons as the app sells them: titles, blurbs and prices come from the registry and costs.ts. */
 export function Addons() {
-  const addons = getAddonRegistry().list()
-  return (
-    <section className="bg-background text-foreground">
-      <div className={`${sectionClass} lg:grid lg:grid-cols-2 lg:items-start`}>
-        <div className="flex flex-col gap-4">
-          <p className={`${eyebrowClass} text-muted-ink`}>Add-ons</p>
-          <h2 className={headingClass}>Extras, if you want them.</h2>
-          <p className="max-w-md text-[19px] leading-snug">All start off. Turn one on when you want it, off the month you don&apos;t.</p>
-        </div>
-        <ul className="flex flex-col gap-3">
-          {addons.map((addon) => (
-            <li key={addon.key} className="flex flex-col gap-2 rounded-2xl border border-rule p-6">
-              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                <p className={cardTitleClass}>{addon.title}</p>
-                <p className="text-[17px] font-semibold">{priceLabel({ priceCents: addon.priceCents })}</p>
-              </div>
-              <p className={bodyClass}>{addon.blurb}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  )
+  const addons = getAddonRegistry().list().map((addon) => ({
+    key: addon.key,
+    title: addon.title,
+    blurb: addon.blurb,
+    priceCents: addon.priceCents,
+    price: addon.priceCents ? `+${formatDollars(addon.priceCents)}/mo` : 'Free',
+  }))
+  return <AddonSwitches addons={addons} baseCents={PLAN.priceCents} />
 }
 
 const NOT_THIS = ['Lead gen', 'Dialers', 'Pipelines', 'Data entry']
 
 export function PriceAndClose() {
   return (
-    <section className="bg-bar text-on-bar">
-      <div className={sectionClass}>
-        <div className="flex flex-col gap-5">
-          <h2 className={`${eyebrowClass} text-gold`}>What it isn&apos;t</h2>
-          <ul className="flex flex-wrap gap-x-7 gap-y-2">
+    <>
+      <section className="bg-mkt-navy text-mkt-white">
+        <div className={sectionClass}>
+          <h2 className={`${eyebrowClass} text-mkt-gold`}>What it isn&apos;t</h2>
+          <ul className="flex flex-wrap gap-x-7 gap-y-2.5">
             {NOT_THIS.map((word) => (
-              <li key={word} className={`${displayClass} text-[36px] font-extrabold leading-tight line-through decoration-gold decoration-4 sm:text-[56px]`}>
+              <li key={word} className="relative text-[clamp(36px,5vw,64px)] leading-tight font-extrabold tracking-[-0.02em] text-mkt-muted">
                 {word}
+                <span className="absolute top-1/2 right-[-4px] left-[-4px] h-[5px] -translate-y-1/2 rounded-[3px] bg-mkt-gold" />
               </li>
             ))}
           </ul>
-          <p className="max-w-xl text-[19px] leading-snug">Not lead gen. Not a dialer. Not a newsletter builder. Nothing to keep up with.</p>
+          <p className="max-w-[560px] text-[20px] leading-normal font-medium text-mkt-soft-white">
+            Not a CRM. Not lead gen. Not a newsletter builder. Nothing to keep up with.
+          </p>
         </div>
-        <div className="grid gap-10 border-t border-rule pt-12 lg:grid-cols-2 lg:items-end">
+      </section>
+      <section id="price" className="relative border-y border-mkt-rule bg-mkt-inset text-mkt-white">
+        <SurveyEtch />
+        <div className="relative mx-auto grid w-full max-w-[1280px] items-end gap-12 px-[clamp(20px,4vw,48px)] py-[clamp(64px,9vw,112px)] lg:grid-cols-2">
           <div className="flex flex-col gap-2">
-            <p className={`${displayClass} text-[120px] font-black leading-[0.8] tracking-[-0.035em] text-gold sm:text-[200px]`}>{planPrice}</p>
-            <p className={`${displayClass} text-[22px] font-bold`}>
+            <p className="text-[clamp(120px,20vw,260px)] leading-[0.8] font-black tracking-[-0.035em] text-mkt-gold">{planPrice}</p>
+            <p className="text-[22px] font-bold">
               a month. Up to {PLAN.contactLimit} homeowners. Cancel any month.
             </p>
           </div>
           <div className="flex flex-col items-start gap-5">
-            <p className="text-[19px] leading-snug">For agents in California.</p>
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-              <Link className={barCtaClass} href="/register">
-                Start for {planPrice} a month
-              </Link>
-              <Link className={barLinkClass} href="/login">
-                Sign in
-              </Link>
-            </div>
+            <p className="max-w-[480px] text-[20px] leading-normal font-medium">
+              For agents in California.
+            </p>
+            <Link className={goldCtaClass} href="/register">
+              Start for {planPrice} a month
+            </Link>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   )
 }
