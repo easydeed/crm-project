@@ -4,7 +4,7 @@ import { billingAllowsSending } from '@/billing/status'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts } from '@/db/schema'
 import { textMessages } from '@/db/schema-text'
-import { switchAddonOff } from '@/addons/state'
+import { isAddonEnabled, switchAddonOff } from '@/addons/state'
 import { TEXT_CALL_LIST_KEY } from '@/addons/text-call-list'
 
 export type Db = ReturnType<typeof getRuntimeDb>['db']
@@ -27,6 +27,8 @@ export async function codesSentSince(db: Db, accountId: string, since: Date) {
  */
 export async function stopTexting(db: Db, accountId: string, toPhone: string, kind: 'stop_received' | 'call_list', now: Date) {
   await db.update(accounts).set({ phoneVerifiedAt: null }).where(eq(accounts.id, accountId))
-  await switchAddonOff(accountId, TEXT_CALL_LIST_KEY)
   if (kind === 'stop_received') await db.insert(textMessages).values({ accountId, kind, toPhone, createdAt: now })
+  if (!(await isAddonEnabled(accountId, TEXT_CALL_LIST_KEY))) return
+  const result = await switchAddonOff(accountId, TEXT_CALL_LIST_KEY)
+  if (!result.ok) throw new Error(`Texts are paused, but the paid add-on switch-off failed: ${result.message}`)
 }

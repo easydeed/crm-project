@@ -55,6 +55,13 @@ function idOf(value: unknown): string {
   return ''
 }
 
+function addonKeys(value: unknown): string[] | null {
+  if (value === undefined) return null
+  const keys: unknown = JSON.parse(String(value))
+  if (!Array.isArray(keys) || keys.some((key) => typeof key !== 'string') || new Set(keys).size !== keys.length) throw new Error('Invalid paid-feature metadata')
+  return keys
+}
+
 /** Newer API versions carry the period end on the subscription item, older ones on the subscription. */
 export function toSubscription(raw: Json): BillingSubscription {
   const items = ((raw.items as Json | undefined)?.data as Json[] | undefined) ?? []
@@ -67,6 +74,7 @@ export function toSubscription(raw: Json): BillingSubscription {
     currentPeriodEnd: epoch(raw.current_period_end) ?? epoch(items[0]?.current_period_end),
     cancelAtPeriodEnd: raw.cancel_at_period_end === true,
     accountId: typeof metadata.account_id === 'string' ? metadata.account_id : null,
+    addonKeys: addonKeys(metadata.addon_keys),
     monthlyCents: items.length && items.every((item) => typeof (item.price as Json | undefined)?.unit_amount === 'number') ? items.reduce((total, item) => total + Number((item.price as Json | undefined)?.unit_amount ?? 0) * Number(item.quantity ?? 1), 0) : null,
     cardLast4: typeof card?.last4 === 'string' ? card.last4 : null,
   }
@@ -80,6 +88,7 @@ export class StripeGateway implements BillingGateway {
       'line_items[0][quantity]': '1',
       client_reference_id: input.accountId,
       'subscription_data[metadata][account_id]': input.accountId,
+      'subscription_data[metadata][addon_keys]': JSON.stringify(input.addonKeys ?? []),
       success_url: input.successUrl,
       cancel_url: input.cancelUrl,
     }
@@ -95,9 +104,15 @@ export class StripeGateway implements BillingGateway {
     }
     if (input.customerId) params.customer = input.customerId
     else params.customer_email = input.email
+    if (input.expiresAt) params.expires_at = String(input.expiresAt)
     const session = await call('POST', '/checkout/sessions', params)
-    if (typeof session.url !== 'string') throw new Error('Stripe returned a checkout session without a URL')
-    return { url: session.url }
+    if (typeof session.url !== 'string' || typeof session.id !== 'string') throw new Error('Stripe returned an incomplete checkout session')
+    return { url: session.url, id: String(session.id) }
+  }
+
+  async getCheckoutSession(sessionId: string) {
+    const raw = await call('GET', `/checkout/sessions/${encodeURIComponent(sessionId)}`)
+    return { status: String(raw.status), url: typeof raw.url === 'string' ? raw.url : null, subscriptionId: idOf(raw.subscription) || null, accountId: typeof raw.client_reference_id === 'string' ? raw.client_reference_id : null }
   }
 
   async getSubscription(subscriptionId: string) {
@@ -118,7 +133,7 @@ export class StripeGateway implements BillingGateway {
     })
   }
 
-  async setMonthlyTotal(subscriptionId: string, cents: number) {
+  async setMonthlyTotal(subscriptionId: string, cents: number, addonKeys?: string[]) {
     const raw = await call('GET', `/subscriptions/${encodeURIComponent(subscriptionId)}`)
     const items = ((raw.items as Json | undefined)?.data as Json[] | undefined) ?? []
     if (items.length !== 1 || !Number.isSafeInteger(cents) || cents <= 0) throw new Error('Unsupported subscription pricing')
@@ -126,7 +141,7 @@ export class StripeGateway implements BillingGateway {
     const price = item.price as Json
     const recurring = price.recurring as Json | undefined
     if (price.currency !== 'usd' || recurring?.interval !== 'month' || Number(item.quantity ?? 1) !== 1) throw new Error('Expected one monthly USD plan')
-    if (price.unit_amount === cents) return
+    if (price.unit_amount === cents && addonKeys === undefined) return
     await call('POST', `/subscriptions/${encodeURIComponent(subscriptionId)}`, {
       'items[0][id]': String(item.id),
       'items[0][price_data][currency]': 'usd',
@@ -134,6 +149,7 @@ export class StripeGateway implements BillingGateway {
       'items[0][price_data][unit_amount]': String(cents),
       'items[0][price_data][recurring][interval]': 'month',
       proration_behavior: 'none',
+      ...(addonKeys ? { 'metadata[addon_keys]': JSON.stringify(addonKeys) } : {}),
     })
   }
 

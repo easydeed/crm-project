@@ -123,9 +123,10 @@ Real data providers are not wired: `src/providers/current.ts` serves the fixture
 
 ## Current task
 
-OR-055 — demo functionality repair, owned by Codex on `codex/demo-functionality`.
-Owner authorized implementation of the functionality audit on 2026-10-21.
-See `packets/OR-055-demo-functionality.md` and `docs/audits/OR-055-functionality.md`.
+OR-056 — independent review fixes, owned by Codex on `codex/or-056-review-fixes`.
+Owner authorized the six review findings and exact pixel evidence on 2026-10-21.
+See `packets/OR-056-review-fixes.md` and `docs/audits/OR-056-review-fixes.md`.
+Draft PR only: no merge, ready transition, or deployment.
 Keep other editors paused until this branch is merged or parked.
 
 ## Last approved commit

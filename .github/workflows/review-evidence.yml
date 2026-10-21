@@ -1,0 +1,45 @@
+name: OR-056 exact desktop evidence
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'e2e/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/review-evidence.yml'
+jobs:
+  desktop-pixels:
+    if: github.head_ref == 'codex/or-056-review-fixes'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -euo pipefail {0}
+    env:
+      DATABASE_URL: postgres://postgres@localhost:5432/postgres
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: echo "UNSUBSCRIBE_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+      - run: bash scripts/scratch-postgres.sh
+      - run: pnpm db:migrate
+      - name: Capture parent, main twice, and PR head on the same runner
+        run: bash scripts/review-captures.sh
+      - name: Keep exact pixel reports and every capture
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: or056-desktop-evidence
+          path: preview/or056-pixels/
+          if-no-files-found: error

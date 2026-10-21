@@ -9,6 +9,7 @@ export type BillingSubscription = {
   accountId: string | null
   cardLast4: string | null
   monthlyCents?: number | null
+  addonKeys?: string[] | null
 }
 
 export type BillingInvoice = {
@@ -25,6 +26,8 @@ export type CheckoutInput = {
   /** Reuse the Stripe customer when an account that canceled comes back. */
   customerId: string | null
   monthlyCents?: number
+  addonKeys?: string[]
+  expiresAt?: number
   successUrl: string
   cancelUrl: string
 }
@@ -41,9 +44,10 @@ export class SubscriptionNotFound extends Error {
 }
 
 export interface BillingGateway {
-  createCheckoutSession(input: CheckoutInput): Promise<{ url: string }>
+  createCheckoutSession(input: CheckoutInput): Promise<{ url: string; id?: string }>
+  getCheckoutSession(sessionId: string): Promise<{ status: string; url: string | null; subscriptionId: string | null; accountId: string | null }>
   getSubscription(subscriptionId: string): Promise<BillingSubscription>
   setCancelAtPeriodEnd(subscriptionId: string, cancel: boolean): Promise<void>
-  setMonthlyTotal(subscriptionId: string, cents: number): Promise<void>
+  setMonthlyTotal(subscriptionId: string, cents: number, addonKeys?: string[]): Promise<void>
   listInvoices(customerId: string): Promise<BillingInvoice[]>
 }

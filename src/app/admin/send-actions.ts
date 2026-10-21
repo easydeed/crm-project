@@ -31,6 +31,6 @@ export async function adminUnpauseAction(formData: FormData) {
 export async function recomposeSendAction(formData: FormData) {
   const sendId = String(formData.get('sendId') ?? '')
   const admin = await adminId(`/admin/sends/${sendId}`)
-  await recomposeUnsentSend(admin, sendId)
-  redirect(`/admin/sends/${sendId}`)
+  const changed = await recomposeUnsentSend(admin, sendId)
+  redirect(`/admin/sends/${sendId}?recompose=${changed ? 'done' : 'unavailable'}`)
 }

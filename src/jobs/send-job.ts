@@ -1,4 +1,5 @@
 import { recipientFingerprint } from '@/jobs/recipient-fingerprint'
+import { withOperationLock } from '@/db/operation-lock'
 import { assertSendAllowed } from '@/jobs/send-guard'
 import { definitelyRejected } from '@/mail/delivery-error'
 import { and, eq, isNull, sql } from 'drizzle-orm'
@@ -19,7 +20,7 @@ import { listUnsubscribeHeaders } from '@/unsubscribe/links'
 
 const SEND_CONCURRENCY = 4
 
-export const sendMail: JobHandler = async (payload, ctx) => {
+const sendMailInLock: JobHandler = async (payload, ctx) => {
   const sendId = String(payload.sendId ?? '')
   if (!sendId) throw new Error('send requires sendId')
 
@@ -96,7 +97,7 @@ export const sendMail: JobHandler = async (payload, ctx) => {
       }
       assertSendAllowed(guard)
       if (!row.composedFingerprint || row.composedFingerprint !== recipientFingerprint(contact)) {
-        await db.update(sendRecipients).set({ error: 'Person or house changed after composition. Review before sending.', permanentFailure: true }).where(eq(sendRecipients.id, row.id))
+        await db.update(sendRecipients).set({ error: row.error ? `${row.error} Person or house also changed after composition.` : 'Person or house changed after composition. Review before sending.', permanentFailure: true }).where(eq(sendRecipients.id, row.id))
         return
       }
       if (row.deliveryClaimedAt) {
@@ -147,3 +148,5 @@ export const sendMail: JobHandler = async (payload, ctx) => {
   }
   throw new Error(`Send incomplete: ${retryable} recipient(s) still unsent`)
 }
+
+export const sendMail: JobHandler = (payload, ctx) => withOperationLock(`delivery:${String(payload.sendId ?? '')}`, () => sendMailInLock(payload, ctx))

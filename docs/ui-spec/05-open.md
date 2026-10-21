@@ -223,6 +223,13 @@ Each item says how it is known:
 
 ## Smaller things
 
+33. **`login-mismatch` has a newly reported unstable capture (nine differing pixels).**
+    Independent review of PR #75 reported this on `1088036`. Record it separately
+    from an intentional auth-layout change: "9px" is a differing-pixel count, not
+    proof of a nine-pixel layout displacement. OR-056's same-runner, fresh-seed
+    main/repeat-main evidence measures it alongside the known bulk-bar captures.
+    Do not mask it or increase pixel tolerance to obtain a green comparison.
+
 - The `start` capture shows whichever MLS ID the last browser run searched for, not the
   seed's, because a search saves the ID to the account.
 - The per-person review entry is a redirect, so the browser pass covers it through the review

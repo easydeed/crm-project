@@ -1,4 +1,5 @@
 import { retryCallListText } from '@/text/retry-call-list'
+import { expireCheckoutQuote } from '@/billing/checkout-quote'
 /**
  * Handlers must be safe to run twice. Check state before acting; never
  * assume this is the first attempt. compose and send are idempotent.
@@ -26,6 +27,7 @@ export const handlers: Record<JobKind, JobHandler> = {
   send: sendMail,
   build_call_lists: buildCallLists,
   retry_call_list_text: retryCallListText,
+  checkout_quote: expireCheckoutQuote,
 }
 
 export function getHandler(kind: string): JobHandler | undefined {

@@ -6,10 +6,20 @@ export class FakeBillingGateway implements BillingGateway {
   readonly subscriptions = new Map<string, BillingSubscription>()
   readonly invoices = new Map<string, BillingInvoice[]>()
   readonly checkouts: CheckoutInput[] = []
+  readonly checkoutSessions = new Map<string, { status: string; url: string; subscriptionId: string | null; accountId: string }>()
 
-  async createCheckoutSession(input: CheckoutInput) {
+  async createCheckoutSession(input: CheckoutInput): Promise<{ url: string; id?: string }> {
     this.checkouts.push(input)
-    return { url: `https://checkout.stripe.test/${this.checkouts.length}` }
+    const id = `cs_test_${this.checkouts.length}`
+    const url = `https://checkout.stripe.test/${this.checkouts.length}`
+    this.checkoutSessions.set(id, { status: 'open', url, subscriptionId: null, accountId: input.accountId })
+    return { url, id }
+  }
+
+  async getCheckoutSession(sessionId: string) {
+    const session = this.checkoutSessions.get(sessionId)
+    if (!session) throw new Error('Checkout not found')
+    return { ...session }
   }
 
   /** What Stripe does when the agent pays: a customer and an active subscription exist. */
@@ -22,8 +32,12 @@ export class FakeBillingGateway implements BillingGateway {
       cancelAtPeriodEnd: false,
       accountId: input.accountId,
       cardLast4: '4242',
+      monthlyCents: input.monthlyCents,
+      addonKeys: input.addonKeys,
     }
     this.subscriptions.set(sub.id, sub)
+    const session = this.checkoutSessions.get(`cs_test_${this.checkouts.indexOf(input) + 1}`)
+    if (session) Object.assign(session, { status: 'complete', subscriptionId: sub.id })
     return sub
   }
 
@@ -45,8 +59,8 @@ export class FakeBillingGateway implements BillingGateway {
     this.update(subscriptionId, { cancelAtPeriodEnd: cancel })
   }
 
-  async setMonthlyTotal(subscriptionId: string, cents: number) {
-    this.update(subscriptionId, { monthlyCents: cents })
+  async setMonthlyTotal(subscriptionId: string, cents: number, addonKeys?: string[]) {
+    this.update(subscriptionId, { monthlyCents: cents, ...(addonKeys ? { addonKeys } : {}) })
   }
 
   async listInvoices(customerId: string) {

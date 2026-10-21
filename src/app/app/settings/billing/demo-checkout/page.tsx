@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { readRequestSession } from '@/auth/current-session'
 import { assertWritable } from '@/auth/write-guard'
 import { completeDemoCheckout, readDemoCheckout } from '@/billing/demo-checkout'
+import { accountMonthlyTotal } from '@/billing/addon-billing'
 import { formatDollars } from '@/config/costs'
 import { buttonClass, linkClass, panelClass, panelBodyClass } from '@/app/app/people/ui'
 
@@ -23,11 +24,13 @@ export default async function DemoCheckoutPage({ searchParams }: { searchParams:
   if (!assertWritable(session).ok) notFound()
   const { token = '' } = await searchParams
   const checkout = readDemoCheckout(token, session.accountId)
+  const total = checkout ? await accountMonthlyTotal(session.accountId) : null
   return <main className="px-4 py-10">
     <section className={`max-w-xl ${panelClass} ${panelBodyClass}`}>
       <h1 className="text-[22px] font-semibold">Demo checkout</h1>
       {checkout ? <>
-        <p className="mt-3 text-[17px]">Test plan: {formatDollars(checkout.monthlyCents)} a month. No payment is collected.</p>
+        <p className="mt-3 text-[17px]">Current test plan: {formatDollars(total!)} a month. No payment is collected.</p>
+        <p className="mt-3 text-[15px]">The demo uses the add-ons on when you activate it.</p>
         <form action={confirm} className="mt-5">
           <input type="hidden" name="token" value={token} />
           <button className={buttonClass} type="submit">Activate demo plan</button>

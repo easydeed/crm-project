@@ -36,7 +36,8 @@ export async function saveDetails(session: SessionPayload, formData: FormData): 
     mlsAgentId: mls.mlsAgentId,
   })
   if (before && before.phone !== phone.phone) {
-    const { addonTurnedOff } = await onPhoneChanged(session.accountId)
+    const { addonTurnedOff, error } = await onPhoneChanged(session.accountId)
+    if (error) return { error }
     if (addonTurnedOff) return { savedAt: Date.now(), notice: PHONE_CHANGED_ADDON_OFF }
   }
   return { savedAt: Date.now() }

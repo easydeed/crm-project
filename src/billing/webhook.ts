@@ -1,9 +1,10 @@
-import { eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
+import { cacheSubscription } from '@/billing/cache-subscription'
 import { getBillingGateway } from '@/billing/current'
 import type { BillingSubscription } from '@/billing/gateway'
 import { verifyStripeSignature } from '@/billing/signature'
 import { getRuntimeDb } from '@/db/runtime'
-import { accounts, subscriptions } from '@/db/schema'
+import { accounts, jobs, subscriptions } from '@/db/schema'
 import { stripeEvents } from '@/db/schema-billing'
 
 type Json = Record<string, unknown>
@@ -87,17 +88,7 @@ async function accountExists(tx: Tx, accountId: string) {
 }
 
 async function writeSubscription(tx: Tx, accountId: string, sub: BillingSubscription) {
-  const values = {
-    stripeCustomerId: sub.customerId,
-    stripeSubId: sub.id,
-    plan: PLAN,
-    status: sub.status,
-    monthlyCents: sub.monthlyCents ?? null,
-    currentPeriodEnd: sub.currentPeriodEnd,
-    cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
-  }
-  await tx
-    .insert(subscriptions)
-    .values({ accountId, ...values })
-    .onConflictDoUpdate({ target: subscriptions.accountId, set: values })
+  await cacheSubscription(tx, accountId, sub)
+  // Provider-confirmed activation consumes the temporary checkout hold.
+  if (sub.status === 'active') await tx.delete(jobs).where(and(eq(jobs.kind, 'checkout_quote'), sql`${jobs.payload}->>'accountId' = ${accountId}`))
 }

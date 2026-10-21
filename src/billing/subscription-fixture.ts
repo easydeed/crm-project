@@ -2,6 +2,7 @@ import { getBillingGateway, setBillingGateway } from '@/billing/current'
 import { FakeBillingGateway } from '@/billing/fake-gateway'
 import { getRuntimeDb } from '@/db/runtime'
 import { subscriptions } from '@/db/schema'
+import { PLAN } from '@/config/costs'
 
 /**
  * Integration tests that send need a paying account. This writes the cached row the
@@ -11,7 +12,7 @@ export async function giveActiveSubscription(accountId: string, periodEnd = new 
   const { db } = getRuntimeDb()
   const suffix = accountId.slice(0, 8)
   const gateway = getBillingGateway() instanceof FakeBillingGateway ? getBillingGateway() as FakeBillingGateway : new FakeBillingGateway()
-  gateway.subscriptions.set(`sub_fixture_${suffix}_${accountId}`, { id: `sub_fixture_${suffix}_${accountId}`, customerId: `cus_fixture_${suffix}_${accountId}`, status: 'active', currentPeriodEnd: periodEnd, cancelAtPeriodEnd: false, accountId, cardLast4: '4242' })
+  gateway.subscriptions.set(`sub_fixture_${suffix}_${accountId}`, { id: `sub_fixture_${suffix}_${accountId}`, customerId: `cus_fixture_${suffix}_${accountId}`, status: 'active', currentPeriodEnd: periodEnd, cancelAtPeriodEnd: false, accountId, cardLast4: '4242', monthlyCents: PLAN.priceCents, addonKeys: [] })
   setBillingGateway(gateway)
   await db
     .insert(subscriptions)

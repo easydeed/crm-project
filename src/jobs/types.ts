@@ -5,6 +5,7 @@ export const JOB_KINDS = [
   'send',
   'build_call_lists',
   'retry_call_list_text',
+  'checkout_quote',
 ] as const
 
 export type JobKind = (typeof JOB_KINDS)[number]

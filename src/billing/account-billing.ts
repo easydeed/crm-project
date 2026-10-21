@@ -1,4 +1,8 @@
 import { accountMonthlyTotal } from '@/billing/addon-billing'
+import { loadAddonStates } from '@/addons/state'
+import { quotedCheckout } from '@/billing/checkout-quote'
+import { demoBilling } from '@/billing/demo-checkout'
+import type { CheckoutInput } from '@/billing/gateway'
 import { eq } from 'drizzle-orm'
 import { getBillingGateway } from '@/billing/current'
 import { SubscriptionNotFound, type BillingInvoice } from '@/billing/gateway'
@@ -64,15 +68,17 @@ export async function startCheckout(accountId: string, options: { successPath?: 
   if (!account) throw new Error('Account not found')
   const row = await cachedRow(accountId)
   const billingUrl = `${publicOrigin()}/app/settings/billing`
-  const { url } = await getBillingGateway().createCheckoutSession({
+  const { states } = await loadAddonStates(accountId)
+  const input: CheckoutInput = {
     accountId,
     email: account.email,
     monthlyCents: await accountMonthlyTotal(accountId),
+    addonKeys: states.filter(({ addon, enabled }) => enabled && addon.priceCents > 0).map(({ addon }) => addon.key).sort(),
     customerId: row?.stripeCustomerId ?? null,
     successUrl: options.successPath ? `${publicOrigin()}${options.successPath}` : `${billingUrl}?checkout=done`,
     cancelUrl: billingUrl,
-  })
-  return url
+  }
+  return demoBilling() ? (await getBillingGateway().createCheckoutSession(input)).url : quotedCheckout(input)
 }
 
 /**

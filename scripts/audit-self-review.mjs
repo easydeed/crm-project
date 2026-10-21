@@ -24,11 +24,26 @@ const probes = [
   { name: 'spent Undo replay', file: 'src/db/review-write.ts', from: 'version: row.reviewVersion,', to: 'version: 0,', suite: people, match: 'only server-issued Undo' },
   { name: 'temporary text failure recovery', file: 'src/text/call-list-text.ts', from: 'if (!prior || prior.providerId || prior.permanentFailure || !prior.error)', to: 'if (true)', suite: texting, match: 'a failed text never fails the job' },
   { name: 'low-similarity address fallback', file: 'src/matching/candidates.ts', from: 'or similarity(name, ${name}) >= ${FUZZY_MIN}', to: '', suite: 'src/matching/candidates.integration.test.ts', match: 'never returns a ZIP-only set' },
+  { name: 'demo activation pricing', file: 'src/billing/demo-checkout.ts', from: 'const monthlyCents = await withTransactionDb(tx as unknown as typeof db, () => accountMonthlyTotal(accountId))', to: 'const monthlyCents = data.monthlyCents', suite: 'src/billing/review-fixes.integration.test.ts', match: 'demo checkout activation uses current choices' },
+  { name: 'open Stripe quote protection', file: 'src/billing/checkout-quote.ts', from: "if (quote?.status === 'open')", to: 'if (false)', suite: 'src/billing/review-fixes.integration.test.ts', match: 'Stripe checkout quote cannot go stale' },
+  { name: 'Stripe after DB commit', file: 'src/addons/state.ts', from: 'const result = await commit() // A rollback here cannot change Stripe.', to: 'await syncAddonBilling(accountId, key, enabled); const result = await commit()', suite: 'src/billing/review-fixes.integration.test.ts', match: 'DB rollback cannot update Stripe' },
+  { name: 'canonical paid entitlement', file: 'src/addons/state.ts', from: 'const keys = getAddonRegistry().get(key)!.priceCents > 0 ? await paidAddonKeys(accountId) : null', to: 'const keys = null', suite: 'src/billing/review-fixes.integration.test.ts', match: 'rejected or uncertain price updates cannot split' },
+  { name: 'phone switch-off error', file: 'src/text/verification.ts', from: 'if (!result.ok) return { addonTurnedOff:', to: 'if (false) return { addonTurnedOff:', suite: 'src/billing/review-fixes.integration.test.ts', match: 'failed phone-change switch-off' },
+  { name: 'STOP switch-off error', file: 'src/text/text-facts.ts', from: 'if (!result.ok) throw new Error', to: 'if (false) throw new Error', suite: 'src/billing/review-fixes.integration.test.ts', match: 'STOP clears verification but propagates' },
+  { name: 'off-site login redirect', file: 'src/auth/session.ts', from: 'export function safeReturnTo(value: string | null | undefined) {', to: "export function safeReturnTo(value: string | null | undefined) { if (value?.startsWith('/')) return value;", suite: 'src/auth/redirect-review.test.ts', match: 'OR-056 rejects off-site' },
+  { name: 'finished send refusal', file: 'src/jobs/recompose-send.ts', from: "if (!send || send.state !== 'ready')", to: "if (!send || send.state === 'skipped')", suite: 'src/jobs/review-fixes.integration.test.ts', match: 'admin refuses a finished' },
+  { name: 'targeted recompose scope', file: 'src/jobs/compose.ts', from: 'targets ? inArray(liveContacts.id, targets) : undefined', to: 'undefined', suite: 'src/jobs/review-fixes.integration.test.ts', match: 'active recompose touches only' },
+  { name: 'provider attempt history', file: 'src/jobs/send-job.ts', from: 'error: row.error ?', to: 'error: false ?', suite: 'src/jobs/review-fixes.integration.test.ts', match: 'a prior provider refusal cannot' },
+  { name: 'unsubscribe after compose', file: 'src/jobs/send-job.ts', from: 'unsubscribed: !sub || Boolean(sub.unsubscribedAt)', to: 'unsubscribed: false', suite: 'src/jobs/review-fixes.integration.test.ts', match: 'unsubscribing after composition' },
+  { name: 'delete after compose', file: 'src/jobs/send-job.ts', from: "import { liveContacts } from '@/db/live-contacts'", to: "import { contactsIncludingDeleted as liveContacts } from '@/db/live-contacts'", suite: 'src/jobs/review-fixes.integration.test.ts', match: 'deleting after composition' },
+  { name: 'atomic Stripe metadata', file: 'src/billing/stripe-gateway.ts', from: "'metadata[addon_keys]': JSON.stringify(addonKeys)", to: "'metadata[ignored_keys]': JSON.stringify(addonKeys)", suite: 'src/billing/stripe-review.test.ts', match: 'OR-056 writes price and paid entitlement' },
+  { name: 'STOP webhook recovery', file: 'src/text/twilio-webhook.ts', from: '.where(sql`right(regexp_replace', to: '.where(sql`${accounts.phoneVerifiedAt} is not null and right(regexp_replace', suite: 'src/billing/review-fixes.integration.test.ts', match: 'a STOP webhook can retry switch-off' },
+  { name: 'unpriced legacy plan refusal', file: 'src/billing/addon-billing.ts', from: 'if (sub.monthlyCents !== total)', to: 'if (false)', suite: 'src/billing/review-fixes.integration.test.ts', match: 'an unpriced legacy plan is refused' },
 ]
 
 function run(suite, label, filter) {
   const report = path.join(output, `${label}.json`)
-  const args = ['node_modules/vitest/vitest.mjs', 'run', '--project', suite === unit ? 'unit' : 'integration', suite, '--reporter=json', `--outputFile=${report}`]
+  const args = ['node_modules/vitest/vitest.mjs', 'run', '--project', suite.endsWith('.integration.test.ts') ? 'integration' : 'unit', suite, '--reporter=json', `--outputFile=${report}`]
   if (filter) args.push('-t', filter)
   const result = spawnSync(process.execPath, args, { encoding: 'utf8', timeout: 180_000, env: process.env })
   if (result.error || result.status === null) throw result.error ?? new Error('Test process did not finish')
