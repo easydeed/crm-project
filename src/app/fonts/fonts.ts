@@ -60,6 +60,24 @@ const interVietnamese = localFont({
 
 // Archivo, the marketing page's display face (OR-053), and nothing else's. Latin only: the page's
 // words are all latin; anything else falls through to Inter in the --font-display stack.
+// IBM Plex Mono, the marketing page's eyebrows and vignettes (OR-054). Latin only.
+const plexMono = localFont({
+  src: [
+    { path: './plex-mono-medium.woff2', weight: '500', style: 'normal' },
+    { path: './plex-mono-semibold.woff2', weight: '600', style: 'normal' },
+  ],
+  variable: '--font-plex',
+  declarations: [
+    {
+      prop: 'unicode-range',
+      value:
+        'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD',
+    },
+  ],
+  adjustFontFallback: false,
+  preload: false,
+})
+
 const archivoLatin = localFont({
   src: './archivo-latin.woff2',
   weight: '500 900',
@@ -82,6 +100,7 @@ export const fontVariables = [
   interLatinExt,
   interVietnamese,
   archivoLatin,
+  plexMono,
 ]
   .map((font) => font.variable)
   .join(' ')

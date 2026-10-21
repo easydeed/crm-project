@@ -79,7 +79,7 @@ test('no figure on the marketing page is typed in: every price and amount comes 
 const NOT_BUILT: Array<[string, RegExp]> = [
   ['texting homeowners', /text(ing)? (my|your) clients|homeowners can text/i],
   ['an engagement signal', /reading it closely|opened your last|clicked the/i],
-  ['a county list and a county check', /los angeles, orange|we'll tell you at signup|not in yours yet/i],
+  ['a county list', /los angeles, orange|not in yours yet/i],
   ['past clients from an MLS import', /past clients/i],
   ['an unmeasured setup time', /four minutes|\d+ minutes/i],
   ['no daily logins', /daily logins/i],
@@ -106,21 +106,29 @@ test('the sample call list is the real signal code on its own fixtures: three re
   expect(calls[0]!.detail).not.toMatch(/list/i)
 })
 
+test('the county line says we will say so at signup, and does not name a county', () => {
+  expect(homeWords()).toMatch(/we'll tell you at signup if your county isn't on yet/i)
+})
+
 test('the add-ons are the ones the app sells, at its prices', () => {
   const words = homeWords()
   for (const addon of getAddonRegistry().list()) expect(words).toContain(addon.title)
   expect(src('./marketing/plan.tsx')).toContain('getAddonRegistry().list()')
 })
 
+/** The fan and the add-on switches are the only client pieces. Everything else is server-rendered. */
+const CLIENT_FILES = ['./marketing/hero-cards.tsx', './marketing/addon-switches.tsx']
+
 /**
- * Nothing on the page works only on hover or only for a mouse, and every link takes a shared class
- * with `.tap`. The page is server-rendered: no file of its own is a client component.
+ * Nothing on the page works only on hover, and every link takes a marketing class with `.tap`.
+ * The fan also answers click and tap. No file uses an app button class.
  */
-test('every marketing link takes a shared class and .tap; nothing listens for the mouse', () => {
-  const shared = /\b(barCtaClass|ctaClass|barLinkClass)\b|`tap /
+test('every marketing link takes a marketing class and .tap; the fan is not hover-only', () => {
+  const shared = /\b(heroCtaClass|goldCtaClass|ctaClass|pillClass|navLinkClass|callBarClass)\b|`tap /
   for (const file of MARKETING_FILES.filter((name) => name.endsWith('.tsx'))) {
     const text = src(file)
-    expect(text, file).not.toMatch(/onMouse|onPointer|hover:|'use client'/)
+    expect(text, file).not.toMatch(/hover:|from '@\/app\/app\/people\/ui'/)
+    if (!CLIENT_FILES.includes(file)) expect(text, file).not.toMatch(/onMouse|onPointer|'use client'/)
     const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX)
     const links: string[] = []
     const visit = (node: ts.Node) => {

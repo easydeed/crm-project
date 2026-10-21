@@ -89,7 +89,7 @@ const coloursIn = (file: string) => coloursInText(readFileSync(path.join(appRoot
 
 function sourceFiles(dir: string): string[] {
   return readdirSync(path.join(appRoot, dir)).flatMap((name) => {
-    const rel = path.join(dir, name)
+    const rel = path.join(dir, name).replaceAll('\\', '/')
     if (statSync(path.join(appRoot, rel)).isDirectory()) return sourceFiles(rel)
     return /\.(tsx?|css)$/.test(name) && !/\.test\./.test(name) ? [rel] : []
   })

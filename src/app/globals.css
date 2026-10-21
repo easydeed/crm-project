@@ -20,13 +20,31 @@
  * The alert (OR-043): the view-as banner, coral with navy words in both themes, so it can never
  * merge with the bar it sits above (5.34:1 against the light bar, 4.12:1 against the dark).
  *
- * Marketing (OR-053): --gold and --cream, the landing page's accents. The design's gold
- * (oklch 0.80 0.12 82, #e4b65c) is 1.88:1 on white, so the light value is darkened to #b3811e:
- * 5.18:1 as words on the bar, 5.18:1 under --on-gold words, 3.46:1 and 3.12:1 as a mark on the
- * page and on --cream. Dark keeps the design's gold, which clears every pair on dark grounds.
+ * Marketing (OR-054): --gold is the design's own #e4b65c in both themes. It is words and fills
+ * on navy, never a mark on white or cream (1.88:1 there). --cream is the warm section ground.
  * Nothing on --cream is muted: --muted-ink on it is 4.50:1, under the floor.
  */
 :root {
+  --mkt-navy: #0e1729;
+  --mkt-gold: #e4b65c;
+  --mkt-white: #ffffff;
+  --mkt-muted: #9aa3b5;
+  --mkt-soft-white: #ededed;
+  --mkt-surface: #f2f5fa;
+  --mkt-secondary: #63708a;
+  --mkt-body: #3d4659;
+  --mkt-pale: #c7cdd8;
+  --mkt-cream: #f7f3ea;
+  --mkt-inset: #121c33;
+  --mkt-rule: #262d3a;
+  --mkt-etch: #232d44;
+  --mkt-paper-ink: #1a1a1a;
+  --mkt-brown: #3d2a1f;
+  --mkt-paper-border: #c9bfae;
+  --mkt-paper-rule: #e3dccd;
+  --mkt-stamp: #b42d17;
+  --mkt-addon-border: #dce3ee;
+  --mkt-switch: #7c879d;
   --background: #ffffff;
   --foreground: #0e1729;
   --surface: #f2f5fa;
@@ -49,13 +67,33 @@
   --on-bar-danger: #b42d17;
   --alert: #ff4a2b;
   --on-alert: #0e1729;
-  --gold: #b3811e;
+  --gold: #e4b65c;
   --on-gold: #0e1729;
   --cream: #f7f3ea;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+  --mkt-navy: #0e1729;
+  --mkt-gold: #e4b65c;
+  --mkt-white: #ffffff;
+  --mkt-muted: #9aa3b5;
+  --mkt-soft-white: #ededed;
+  --mkt-surface: #f2f5fa;
+  --mkt-secondary: #63708a;
+  --mkt-body: #3d4659;
+  --mkt-pale: #c7cdd8;
+  --mkt-cream: #f7f3ea;
+  --mkt-inset: #121c33;
+  --mkt-rule: #262d3a;
+  --mkt-etch: #232d44;
+  --mkt-paper-ink: #1a1a1a;
+  --mkt-brown: #3d2a1f;
+  --mkt-paper-border: #c9bfae;
+  --mkt-paper-rule: #e3dccd;
+  --mkt-stamp: #b42d17;
+  --mkt-addon-border: #dce3ee;
+  --mkt-switch: #7c879d;
     --background: #0a0a0a;
     --foreground: #ededed;
     --surface: #161b24;
@@ -85,6 +123,26 @@
 }
 
 @theme inline {
+  --color-mkt-navy: var(--mkt-navy);
+  --color-mkt-gold: var(--mkt-gold);
+  --color-mkt-white: var(--mkt-white);
+  --color-mkt-muted: var(--mkt-muted);
+  --color-mkt-soft-white: var(--mkt-soft-white);
+  --color-mkt-surface: var(--mkt-surface);
+  --color-mkt-secondary: var(--mkt-secondary);
+  --color-mkt-body: var(--mkt-body);
+  --color-mkt-pale: var(--mkt-pale);
+  --color-mkt-cream: var(--mkt-cream);
+  --color-mkt-inset: var(--mkt-inset);
+  --color-mkt-rule: var(--mkt-rule);
+  --color-mkt-etch: var(--mkt-etch);
+  --color-mkt-paper-ink: var(--mkt-paper-ink);
+  --color-mkt-brown: var(--mkt-brown);
+  --color-mkt-paper-border: var(--mkt-paper-border);
+  --color-mkt-paper-rule: var(--mkt-paper-rule);
+  --color-mkt-stamp: var(--mkt-stamp);
+  --color-mkt-addon-border: var(--mkt-addon-border);
+  --color-mkt-switch: var(--mkt-switch);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
@@ -114,6 +172,7 @@
   /* Inter everywhere. Archivo is the marketing page's display face and nothing else's (OR-053). */
   --font-sans: var(--font-inter), var(--font-inter-latin-ext), var(--font-inter-vietnamese), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-archivo), var(--font-inter), var(--font-inter-latin-ext), var(--font-inter-vietnamese), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex), ui-monospace, monospace;
 
   /* The export's radius scale, from a 9px base. */
   --radius-sm: 0.3375rem;
@@ -162,4 +221,73 @@ body {
     align-items: center;
     min-height: 44px;
   }
+}
+
+/* Marketing page motion (OR-054). The control works without the hover. */
+.mkt-lift {
+  transition: transform 0.2s ease;
+}
+.mkt-lift:hover {
+  transform: translateY(-2px);
+}
+.mkt-nav:hover {
+  color: #ffffff;
+}
+.hero-card {
+  position: relative;
+  width: 100%;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (min-width: 1024px) {
+  .hero-card {
+    position: absolute;
+    width: 78%;
+    height: 420px;
+    left: var(--left);
+    top: var(--top);
+    transform: rotate(var(--rot));
+    z-index: var(--z);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mkt-lift:hover,
+  .hero-card {
+    transform: none;
+    transition: none;
+  }
+}
+
+:root {
+  --mkt-card-shadow: 0 30px 60px -20px rgba(0,0,0,.55);
+  --mkt-deed-shadow: 0 20px 40px -30px rgba(61,42,31,.5);
+  --mkt-paper-shadow: 0 30px 60px -30px rgba(61,42,31,.4);
+  --mkt-knob-shadow: 0 2px 6px rgba(14,23,41,.3);
+}
+/* v6 was drawn with content-box artboards: preserve its measured column and card sizes. */
+.mkt-page {
+  overflow: hidden;
+}
+.mkt-page .max-w-\[1280px\] {
+  box-sizing: content-box;
+  width: auto;
+}
+.mkt-switch-track {
+  transition: background 0.2s ease;
+}
+.mkt-switch-knob {
+  transition: left 0.2s ease;
+}
+@media (min-width: 1024px) {
+  .hero-card {
+    box-sizing: content-box;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mkt-switch-track,
+  .mkt-switch-knob {
+    transition: none;
+  }
+}
+.mkt-page header nav a {
+  box-sizing: content-box;
 }

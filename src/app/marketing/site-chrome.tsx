@@ -1,12 +1,19 @@
 import Link from 'next/link'
-import { barCtaClass, barLinkClass, displayClass, planPrice } from '@/app/marketing/ui'
+import { displayClass, navLinkClass, pillClass, planPrice } from '@/app/marketing/ui'
 
-const wordmarkClass = `${displayClass} text-[22px] font-extrabold tracking-[-0.02em]`
+const wordmarkClass = `${displayClass} text-[22px] leading-[normal] font-extrabold tracking-[-0.02em]`
 
-/** The marketing header, on the bar. On /sample the wordmark goes home; on / it is just the name. */
+const LINKS = [
+  { href: '#how', label: 'How it works' },
+  { href: '#features', label: 'Features' },
+  { href: '#sample', label: 'Sample email' },
+  { href: '#price', label: 'Price' },
+]
+
+/** The marketing header. On / the four section links sit with Sign in. On /sample the wordmark goes home. */
 export function SiteHeader({ onHome }: { onHome: boolean }) {
   return (
-    <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 pt-6 sm:px-8">
+    <header className="mx-auto flex w-full max-w-[1280px] flex-wrap items-center justify-between gap-4 px-[clamp(20px,4vw,48px)] pt-7">
       {onHome ? (
         <p className={wordmarkClass}>onrecord</p>
       ) : (
@@ -14,17 +21,19 @@ export function SiteHeader({ onHome }: { onHome: boolean }) {
           onrecord
         </Link>
       )}
-      <nav aria-label="Site" className="flex flex-wrap items-center gap-x-5 gap-y-2">
-        {onHome ? (
-          <Link className={barLinkClass} href="/sample">
-            Sample note
-          </Link>
-        ) : null}
-        <Link className={barLinkClass} href="/login">
+      <nav aria-label="Site" className="flex flex-wrap items-center gap-1">
+        {onHome
+          ? LINKS.map((link) => (
+              <Link key={link.href} className={navLinkClass} href={link.href}>
+                {link.label}
+              </Link>
+            ))
+          : null}
+        <Link className={navLinkClass} href="/login">
           Sign in
         </Link>
-        <Link className={barCtaClass} href="/register">
-          Start for {planPrice} a month
+        <Link className={`${pillClass} ml-2`} href="/register">
+          Start for {planPrice}
         </Link>
       </nav>
     </header>
@@ -33,10 +42,10 @@ export function SiteHeader({ onHome }: { onHome: boolean }) {
 
 export function SiteFooter() {
   return (
-    <footer className="bg-bar text-on-bar">
-      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-10 sm:px-8">
-        <p className={wordmarkClass}>onrecord</p>
-        <p className="text-[15px]">California only. Digital only. One thing, done well.</p>
+    <footer className="bg-mkt-navy text-mkt-white">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-wrap items-center justify-between gap-4 px-[clamp(20px,4vw,48px)] py-10">
+        <p className={`${displayClass} text-[18px] font-extrabold tracking-[-0.02em]`}>onrecord</p>
+        <p className="text-[15px] font-medium text-mkt-muted">California only. Digital only. One thing, done well.</p>
       </div>
     </footer>
   )
