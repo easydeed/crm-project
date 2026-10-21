@@ -127,6 +127,42 @@ test('the hero cards draw Call, never offer it, and never put Marilyn on another
   }
 })
 
+/**
+ * OR-054. Gold is #e4b65c on every scheme, 9.50:1 on navy and 1.88:1 on white or cream, so it may
+ * only sit on the navy family. This walks the rendered page and, for each element painted gold,
+ * finds the nearest background behind it.
+ */
+const NAVY = new Set(['bg-mkt-navy', 'bg-mkt-inset', 'bg-mkt-rule'])
+const VOID = new Set(['br', 'img', 'input', 'meta', 'link', 'hr', 'source'])
+
+function goldGrounds(markup: string) {
+  const stack: Array<{ tag: string; bg: string | null }> = []
+  const found: string[] = []
+  for (const m of markup.replace(/srcDoc="[^"]*"/gi, '').matchAll(/<(\/?)([a-z0-9]+)([^>]*?)(\/?)>/gi)) {
+    const [, close, tag, attrs] = m
+    if (close) {
+      while (stack.length && stack.pop()!.tag !== tag) {}
+      continue
+    }
+    const cls = /class="([^"]*)"/.exec(attrs!)?.[1]?.split(/\s+/) ?? []
+    const bg = cls.find((name) => /^bg-mkt-/.test(name)) ?? null
+    if (cls.some((name) => /^(text|bg|border|decoration|outline)-mkt-gold$/.test(name))) {
+      const ground = [...stack].reverse().find((entry) => entry.bg)?.bg ?? 'none'
+      found.push(`${tag} on ${ground}`)
+    }
+    if (!VOID.has(tag!) && !m[4]) stack.push({ tag: tag!, bg })
+  }
+  return found
+}
+
+test('gold sits only on navy: never on cream or white (OR-054)', () => {
+  const grounds = goldGrounds(homeMarkup())
+  expect(grounds.length).toBeGreaterThan(10)
+  expect(grounds.filter((entry) => !NAVY.has(entry.split(' on ')[1]!))).toEqual([])
+  // The walk sees a ground: gold under cream is red.
+  expect(goldGrounds('<div class="bg-mkt-cream"><p class="text-mkt-gold">x</p></div>')).toEqual(['p on bg-mkt-cream'])
+})
+
 /** The survey etch is decoration drawn by CSS: it holds no words for the clipping check to miss. */
 test('the survey etch is aria-hidden and holds no text', () => {
   const markup = renderToStaticMarkup(SurveyEtch())
