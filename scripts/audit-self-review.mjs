@@ -23,6 +23,7 @@ const probes = [
   { name: 'future MLS listing', file: 'src/signals/listed.ts', from: 'withinTrailingDays(row.listDate, input.asOf, 45)', to: 'true', suite: unit, match: 'an active own-house listing wins' },
   { name: 'spent Undo replay', file: 'src/db/review-write.ts', from: 'version: row.reviewVersion,', to: 'version: 0,', suite: people, match: 'only server-issued Undo' },
   { name: 'temporary text failure recovery', file: 'src/text/call-list-text.ts', from: 'if (!prior || prior.providerId || prior.permanentFailure || !prior.error)', to: 'if (true)', suite: texting, match: 'a failed text never fails the job' },
+  { name: 'low-similarity address fallback', file: 'src/matching/candidates.ts', from: 'or similarity(name, ${name}) >= ${FUZZY_MIN}', to: '', suite: 'src/matching/candidates.integration.test.ts', match: 'never returns a ZIP-only set' },
 ]
 
 function run(suite, label, filter) {

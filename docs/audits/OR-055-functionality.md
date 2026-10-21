@@ -33,13 +33,15 @@ Codex owns `codex/demo-functionality`. Preserve the approved marketing design.
 | Own-home-listed signal missing | Highest-priority own-house signal plus separate nearby-listing signal. Store a real listing FK and render MLS attribution. |
 | Password recovery missing | Local demo inbox exercises expiring, single-use reset links. Password reset increments authVersion and revokes old sessions. Public environments never disclose reset credentials. |
 | Windows failures obscure real failures | Correct URL-to-path conversion, path normalization and seed invocation without weakening content/access/contrast checks. Explicit environment variables take precedence over env files so scratch tests cannot be redirected. |
+| Repeated fuzzy comparisons exceed the lookup budget on Windows | Materialize distinct street names within the same ZIP/city before applying the original fuzzy rules. EXPLAIN now measures the actual application query; retain the 50 ms limit and seven messy-address cases, plus an eighth typo that requires the low-similarity fallback. |
 
 ## Executable self-review
 
 `scripts/audit-self-review.mjs` requires an explicitly selected local database.
-It runs green baselines, then deliberately breaks nine protections: composition
+It runs green baselines, then deliberately breaks ten protections: composition
 ordering, recipient identity, uncertain delivery, proof signatures, calendar
-dates, import mapping, future MLS dates, spent Undo replay, and text retries.
+dates, import mapping, future MLS dates, spent Undo replay, text retries, and
+the low-similarity address fallback.
 
 Each probe must fail an assertion in its intended behavior test. Syntax, type
 and import errors do not count. Finally restores the exact original file bytes;
@@ -60,7 +62,7 @@ the existing screen, overflow, contrast and tap-target suite.
 
 - Full pnpm verify against local scratch data, checking its actual exit code.
 - Generated migrations applied from zero.
-- Nine deliberate-break probes rejected by the intended assertions.
+- Ten deliberate-break probes rejected by the intended assertions.
 - Existing screens and new functionality flows at phone and desktop widths.
 - Linux CI verification and browser checks on the current PR commit.
 - Final diff review: consent, ownership, schema/FKs, copy, preserved marketing.

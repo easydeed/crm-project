@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { eq, inArray } from 'drizzle-orm'
+import { eq, inArray, sql } from 'drizzle-orm'
 import { afterAll, describe, expect, test } from 'vitest'
 import { registerAccount } from '@/auth/register-account'
 import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
@@ -13,7 +13,7 @@ import {
   contacts,
   parcels,
 } from '@/db/schema'
-import { findCandidateParcels } from '@/matching/candidates'
+import { candidateQuery, findCandidateParcels } from '@/matching/candidates'
 import { parseAddress } from '@/matching/normalize'
 
 const VOLUME_ZIP = '88881'
@@ -54,6 +54,7 @@ const MESSY_VARIANTS = [
   '4721 OAKDALE AV, TEMECULA, CA 88881',
   '4721 Oakdale, Temecula, CA 88881',
   '4721 Oakdlae Ave, Temecula, CA 88881',
+  '4721 Oakldae Ave, Temecula, CA 88881',
 ]
 
 describe.skipIf(!sessionUrl)('OR-005a candidate retrieval', { timeout: 180_000 }, () => {
@@ -164,23 +165,9 @@ describe.skipIf(!sessionUrl)('OR-005a candidate retrieval', { timeout: 180_000 }
        where street_name_norm % 'oakdlae'
        limit 50`,
     )
-    const retrievalPlan = await client().unsafe(
-      `explain (analyze, format json)
-       select id from parcels
-       where zip = '${VOLUME_ZIP}'
-         and (
-           street_name_norm = 'oakdale'
-           or street_name_norm % 'oakdale'
-           or similarity(street_name_norm, 'oakdale') >= 0.2
-         )
-       order by
-         case when address ilike '4721 %' then 0 else 1 end,
-         greatest(
-           case when street_name_norm = 'oakdale' then 1 else 0 end,
-           similarity(street_name_norm, 'oakdale')
-         ) desc
-       limit 50`,
-    )
+    const query = candidateQuery(parseAddress(MESSY_VARIANTS[0])!)
+    expect(query).toBeTruthy()
+    const retrievalPlan = await db().execute(sql`explain (analyze, format json) ${query!}`)
     await client().unsafe('set enable_seqscan = on')
 
     const exactText = planText(exactPlan)
