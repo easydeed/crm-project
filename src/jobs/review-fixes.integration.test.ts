@@ -14,6 +14,7 @@ import { sendMail } from '@/jobs/send-job'
 import { setMailer } from '@/mail/current'
 import { FakeMailer } from '@/mail/fake-mailer'
 import { PostmarkMailer } from '@/mail/postmark-mailer'
+import { DeliveryRejectedError } from '@/mail/delivery-error'
 
 describe.skipIf(!tryLoadIntegrationDatabaseUrl())('OR-056 delivery review', () => {
   const fixtures = auditFixtures()
@@ -103,6 +104,50 @@ describe.skipIf(!tryLoadIntegrationDatabaseUrl())('OR-056 delivery review', () =
     const before = await db.select().from(sendRecipients).where(eq(sendRecipients.sendId, home.sendId))
     expect(await recomposeUnsentSend(home.accountId, home.sendId)).toBe(false)
     expect(await db.select().from(sendRecipients).where(eq(sendRecipients.sendId, home.sendId))).toEqual(before)
+  })
+
+  test('an empty provider error still proves an earlier attempt', async () => {
+    const home = await fixtures.household()
+    const { db } = getRuntimeDb()
+    await composeSend({ accountId: home.accountId, sendId: home.sendId }, ctx)
+    mailer.send = async (message) => { mailer.calls.push(message); throw new DeliveryRejectedError('') }
+    await expect(sendMail({ sendId: home.sendId }, ctx)).rejects.toThrow(/still unsent/)
+    // #75 stored raw errors, so retain coverage of its historical empty value.
+    await db.update(sendRecipients).set({ error: '' }).where(eq(sendRecipients.sendId, home.sendId))
+    expect((await db.select().from(sendRecipients).where(eq(sendRecipients.sendId, home.sendId)))[0].error).toBe('')
+    await db.update(contactsTable).set({ name: 'Changed after empty refusal' }).where(eq(contactsTable.id, home.contact.id))
+    await sendMail({ sendId: home.sendId }, ctx)
+    await db.update(accounts).set({ role: 'admin' }).where(eq(accounts.id, home.accountId))
+    await db.update(sends).set({ state: 'ready' }).where(eq(sends.id, home.sendId))
+    expect(await recomposeUnsentSend(home.accountId, home.sendId)).toBe(false)
+    expect(mailer.calls).toHaveLength(1)
+  })
+
+  test('missing composition proof never claims that no provider attempt occurred', async () => {
+    const home = await fixtures.household()
+    const { db } = getRuntimeDb()
+    await composeSend({ accountId: home.accountId, sendId: home.sendId }, ctx)
+    await db.update(sendRecipients).set({ composedFingerprint: null }).where(eq(sendRecipients.sendId, home.sendId))
+    await sendMail({ sendId: home.sendId }, ctx)
+    const [row] = await db.select().from(sendRecipients).where(eq(sendRecipients.sendId, home.sendId))
+    expect(row.error).toContain('identity proof is missing')
+    expect(row.error).not.toContain('No provider attempt was made')
+    expect(mailer.calls).toHaveLength(0)
+  })
+
+  test('provider error text cannot forge a pre-attempt hold', async () => {
+    const home = await fixtures.household()
+    const { db } = getRuntimeDb()
+    await composeSend({ accountId: home.accountId, sendId: home.sendId }, ctx)
+    mailer.send = async (message) => {
+      mailer.calls.push(message)
+      throw Object.assign(new DeliveryRejectedError(CHANGED_BEFORE_ATTEMPT), { code: 406 })
+    }
+    await sendMail({ sendId: home.sendId }, ctx)
+    await db.update(accounts).set({ role: 'admin' }).where(eq(accounts.id, home.accountId))
+    await db.update(sends).set({ state: 'ready' }).where(eq(sends.id, home.sendId))
+    expect(await recomposeUnsentSend(home.accountId, home.sendId)).toBe(false)
+    expect(mailer.calls).toHaveLength(1)
   })
 
   test('deleting after composition prevents delivery and preserves history', async () => {

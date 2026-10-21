@@ -33,7 +33,7 @@ const probes = [
   { name: 'off-site login redirect', file: 'src/auth/session.ts', from: 'export function safeReturnTo(value: string | null | undefined) {', to: "export function safeReturnTo(value: string | null | undefined) { if (value?.startsWith('/')) return value;", suite: 'src/auth/redirect-review.test.ts', match: 'OR-056 rejects off-site' },
   { name: 'finished send refusal', file: 'src/jobs/recompose-send.ts', from: "if (!send || send.state !== 'ready')", to: "if (!send || send.state === 'skipped')", suite: 'src/jobs/review-fixes.integration.test.ts', match: 'admin refuses a finished' },
   { name: 'targeted recompose scope', file: 'src/jobs/compose.ts', from: 'targets ? inArray(liveContacts.id, targets) : undefined', to: 'undefined', suite: 'src/jobs/review-fixes.integration.test.ts', match: 'active recompose touches only' },
-  { name: 'provider attempt history', file: 'src/jobs/send-job.ts', from: 'error: row.error ?', to: 'error: false ?', suite: 'src/jobs/review-fixes.integration.test.ts', match: 'a prior provider refusal cannot' },
+  { name: 'provider attempt history', file: 'src/jobs/delivery-hold.ts', from: 'if (row.error !== null)', to: 'if (false)', suite: 'src/jobs/review-fixes.integration.test.ts', match: 'a prior provider refusal cannot' },
   { name: 'unsubscribe after compose', file: 'src/jobs/send-job.ts', from: 'unsubscribed: !sub || Boolean(sub.unsubscribedAt)', to: 'unsubscribed: false', suite: 'src/jobs/review-fixes.integration.test.ts', match: 'unsubscribing after composition' },
   { name: 'delete after compose', file: 'src/jobs/send-job.ts', from: "import { liveContacts } from '@/db/live-contacts'", to: "import { contactsIncludingDeleted as liveContacts } from '@/db/live-contacts'", suite: 'src/jobs/review-fixes.integration.test.ts', match: 'deleting after composition' },
   { name: 'atomic Stripe metadata', file: 'src/billing/stripe-gateway.ts', from: "'metadata[addon_keys]': JSON.stringify(addonKeys)", to: "'metadata[ignored_keys]': JSON.stringify(addonKeys)", suite: 'src/billing/stripe-review.test.ts', match: 'OR-056 writes price and paid entitlement' },
@@ -42,6 +42,9 @@ const probes = [
   { name: 'legacy entitlement read barrier', file: 'src/billing/paid-state.ts', from: 'if (sub.monthlyCents !== expected)', to: 'if (false)', suite: 'src/billing/review-fixes.integration.test.ts', match: 'legacy entitlement cannot outrun' },
   { name: 'partial Settings refresh', file: 'src/app/app/settings/actions.ts', from: 'if (result.savedAt || result.detailsPersisted)', to: 'if (result.savedAt)', suite: 'src/app/app/settings/phone-save-action.test.ts', match: 'partial phone save refreshes persisted details without success' },
   { name: 'ambiguous legacy receipt refusal', file: 'src/jobs/recompose-send.ts', from: 'eq(sendRecipients.error, CHANGED_BEFORE_ATTEMPT)', to: 'isNotNull(sendRecipients.error)', suite: 'src/jobs/review-fixes.integration.test.ts', match: 'older generic stale receipts are ambiguous' },
+  { name: 'empty provider error history', file: 'src/jobs/delivery-hold.ts', from: 'if (row.error !== null)', to: 'if (Boolean(row.error))', suite: 'src/jobs/review-fixes.integration.test.ts', match: 'an empty provider error still proves' },
+  { name: 'missing composition proof', file: 'src/jobs/delivery-hold.ts', from: 'if (!row.composedFingerprint)', to: 'if (false)', suite: 'src/jobs/review-fixes.integration.test.ts', match: 'missing composition proof never claims' },
+  { name: 'provider text cannot mint a hold', file: 'src/jobs/send-job.ts', from: ': `Delivery failed: ${message}`', to: ': message', suite: 'src/jobs/review-fixes.integration.test.ts', match: 'provider error text cannot forge' },
 ]
 
 function run(suite, label, filter) {

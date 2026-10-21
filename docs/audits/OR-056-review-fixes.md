@@ -21,6 +21,10 @@ ready transition, and no deployment. Other editors remain paused.
    or an explicit refusal instead of silently redirecting after no change.
    Only a fresh pre-attempt hold reason is eligible: older generic stale errors
    might already have overwritten attempt history in #75, so they fail closed.
+   Empty provider-error strings still count as history. Missing identity proof
+   never produces the affirmative "No provider attempt was made" hold reason.
+   Provider/guard failures receive a distinct stored prefix; a provider returning
+   our hold sentence verbatim cannot mint an eligible pre-attempt hold.
 3. **External transaction safety.** DB configuration commits before provider
    mutation. Paid entitlement and recurring price are written in one Stripe
    subscription update and read from that same provider object. A DB proposal is

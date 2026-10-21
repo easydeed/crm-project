@@ -20,6 +20,7 @@ export async function recomposeUnsentSend(adminAccountId: string, sendId: string
       const removed = await tx.delete(sendRecipients).where(and(
         eq(sendRecipients.sendId, sendId), isNull(sendRecipients.sentAt), isNull(sendRecipients.providerId),
         isNull(sendRecipients.deliveryClaimedAt), isNotNull(sendRecipients.composedFingerprint),
+        eq(sendRecipients.permanentFailure, true),
         // Historical receipts for deleted people stay intact; only live targets rebuild.
         inArray(sendRecipients.contactId, tx.select({ id: liveContacts.id }).from(liveContacts).where(eq(liveContacts.accountId, send.accountId))),
         eq(sendRecipients.error, CHANGED_BEFORE_ATTEMPT),
