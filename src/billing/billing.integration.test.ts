@@ -160,7 +160,7 @@ describe.skipIf(!databaseUrl)('OR-018 Stripe billing against the database', () =
     await expect(loadCallList(accountId)).resolves.toBeDefined()
     await scheduleAccountById(accountId, SEND_DAY_NOW)
     const queued = await db.select({ kind: jobs.kind }).from(jobs).where(sql`${jobs.payload}->>'accountId' = ${accountId}`)
-    expect(queued.map((job) => job.kind)).toEqual(['build_call_lists'])
+    expect(queued.map((job) => job.kind).sort()).toEqual(['billing_reconcile', 'billing_reconcile', 'billing_reconcile', 'billing_reconcile', 'build_call_lists'])
   })
 
   test('payment_failed moves the account to past_due and the dashboard says so', async () => {

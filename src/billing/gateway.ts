@@ -45,6 +45,7 @@ export class SubscriptionNotFound extends Error {
 
 export interface BillingGateway {
   createCheckoutSession(input: CheckoutInput): Promise<{ url: string; id?: string }>
+  findCheckoutSessions(accountId: string, createdAfter: number, createdBefore: number): Promise<({ id: string } & Awaited<ReturnType<BillingGateway['getCheckoutSession']>>)[]>
   getCheckoutSession(sessionId: string): Promise<{ status: string; url: string | null; subscriptionId: string | null; accountId: string | null }>
   getSubscription(subscriptionId: string): Promise<BillingSubscription>
   setCancelAtPeriodEnd(subscriptionId: string, cancel: boolean): Promise<void>

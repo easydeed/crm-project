@@ -36,6 +36,7 @@ async function call(method: 'GET' | 'POST', path: string, params: Record<string,
     },
     body: method === 'POST' ? body : undefined,
     cache: 'no-store',
+    signal: AbortSignal.timeout(15_000),
   })
   const json = (await response.json().catch(() => ({}))) as Json
   if (!response.ok) {
@@ -108,6 +109,22 @@ export class StripeGateway implements BillingGateway {
     const session = await call('POST', '/checkout/sessions', params)
     if (typeof session.url !== 'string' || typeof session.id !== 'string') throw new Error('Stripe returned an incomplete checkout session')
     return { url: session.url, id: String(session.id) }
+  }
+
+  // Paginate the recorded attempt window, including old completed sessions;
+  // never assume the first page contains this account's lost response.
+  async findCheckoutSessions(accountId: string, createdAfter: number, createdBefore: number) {
+    const found: ({ id: string } & Awaited<ReturnType<StripeGateway['getCheckoutSession']>>)[] = []
+    let after = ''
+    for (let page = 0; page < 20; page++) {
+      const raw = await call('GET', '/checkout/sessions', { limit: '100', 'created[gte]': String(createdAfter), 'created[lte]': String(createdBefore), ...(after ? { starting_after: after } : {}) })
+      const data = (raw.data as Json[] | undefined) ?? []
+      for (const session of data) if (session.client_reference_id === accountId && session.status !== 'expired') found.push({ id: String(session.id), status: String(session.status), url: typeof session.url === 'string' ? session.url : null, subscriptionId: idOf(session.subscription) || null, accountId })
+      if (!raw.has_more) return found
+      after = String(data.at(-1)?.id ?? '')
+      if (!after) break
+    }
+    throw new Error('Checkout recovery is busy. Try again later.')
   }
 
   async getCheckoutSession(sessionId: string) {

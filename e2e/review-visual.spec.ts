@@ -100,4 +100,7 @@ test('review capture: Settings after failed phone-change billing switch-off', as
     await expect.poll(async () => normalizeUsPhone(await details.getByLabel('Phone', { exact: true }).inputValue())).toBe('9095550177')
   }
   await details.screenshot({ path: path.join(output!, 'settings-phone-change-billing-failure.png'), animations: 'disabled' })
+  await page.goto('/app')
+  if (process.env.OR056_BASELINE !== '1') await expect(page.getByRole('status')).toContainText('paid add-on switch-off is still pending')
+  await capture(page, 'dashboard-text-billing-pending')
 })

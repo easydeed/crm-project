@@ -1,4 +1,4 @@
-name: OR-056 exact desktop evidence
+name: Exact desktop evidence
 on:
   pull_request:
     paths:
@@ -10,7 +10,6 @@ on:
       - '.github/workflows/review-evidence.yml'
 jobs:
   desktop-pixels:
-    if: github.head_ref == 'codex/or-056-review-fixes'
     runs-on: ubuntu-latest
     defaults:
       run:

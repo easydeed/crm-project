@@ -45,3 +45,18 @@ test('OR-056 sends the frozen quote and expiry with checkout subscription metada
   expect(params.get('subscription_data[metadata][account_id]')).toBe(input.accountId)
   expect(params.get('expires_at')).toBe(String(input.expiresAt))
 })
+
+
+test('OR-056 checkout discovery paginates the exact recorded recovery window', async () => {
+  process.env.STRIPE_SECRET_KEY = 'sk_test_or056_mock_only'
+  const fetcher = vi.fn(async (url: string) => Response.json(url.includes('starting_after')
+    ? { data: [{ id: 'cs_ours', client_reference_id: 'ours', status: 'complete', subscription: 'sub_ours' }], has_more: false }
+    : { data: [{ id: 'cs_other', client_reference_id: 'other', status: 'open' }], has_more: true }))
+  vi.stubGlobal('fetch', fetcher)
+  expect(await new StripeGateway().findCheckoutSessions('ours', 100, 200)).toEqual([{ id: 'cs_ours', accountId: 'ours', status: 'complete', subscriptionId: 'sub_ours', url: null }])
+  expect(fetcher).toHaveBeenCalledTimes(2)
+  const first = new URL(fetcher.mock.calls[0][0]), second = new URL(fetcher.mock.calls[1][0])
+  expect(first.searchParams.get('created[gte]')).toBe('100')
+  expect(first.searchParams.get('created[lte]')).toBe('200')
+  expect(second.searchParams.get('starting_after')).toBe('cs_other')
+})

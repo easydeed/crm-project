@@ -124,7 +124,7 @@ Real data providers are not wired: `src/providers/current.ts` serves the fixture
 ## Current task
 
 OR-056 — independent review fixes, owned by Codex on `codex/or-056-review-fixes`.
-Owner authorized the six review findings and exact pixel evidence on 2026-10-21.
+Owner authorized the original six findings, round-two operational fixes, and exact pixel evidence on 2026-10-21.
 See `packets/OR-056-review-fixes.md` and `docs/audits/OR-056-review-fixes.md`.
 Draft PR only: no merge, ready transition, or deployment.
 Keep other editors paused until this branch is merged or parked.

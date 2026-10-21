@@ -6,6 +6,8 @@ export const JOB_KINDS = [
   'build_call_lists',
   'retry_call_list_text',
   'checkout_quote',
+  'billing_reconcile',
+  'stop_texting',
 ] as const
 
 export type JobKind = (typeof JOB_KINDS)[number]

@@ -7,7 +7,9 @@ export function TextNoticeLine({ notice }: { notice: TextNotice }) {
   if (!notice) return null
   return (
     <p className="max-w-xl text-[15px]" role="status">
-      {notice === 'stopped' ? (
+      {notice === 'billing_pending' ? (
+        <>Texts are paused, but the paid add-on switch-off is still pending. Check <Link className={inlineLinkClass} href="/app/settings/billing">Billing</Link> before retrying.</>
+      ) : notice === 'stopped' ? (
         <>
           You replied STOP, so we stopped texting you. Turn it back on{' '}
           <Link className={inlineLinkClass} href="/app/addons">

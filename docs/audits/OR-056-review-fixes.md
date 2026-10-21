@@ -128,3 +128,70 @@ individually in `reskin-screen-log.md`, including the extra measured state.
 API contracts consulted: [Stripe Checkout](https://docs.stripe.com/api/checkout/sessions/create)
 and [subscription update](https://docs.stripe.com/api/subscriptions/update).
 The branch exclusion follows [Vercel Git configuration](https://vercel.com/docs/project-configuration/git-configuration).
+
+## OR-056 round two — supersedes provider-read/session-lock design above
+
+Independent review found new operational defects in the first implementation.
+This round keeps PR #76 draft and replaces those mechanisms:
+
+- Quote holds are inserted only after a session ID exists. Creation failure leaves
+  no hold. Existing missing-ID holds discover provider sessions and clear themselves
+  when none exists. An open/completed orphan is recovered rather than bought twice.
+  A completed, non-holding attempt receipt retains its original timestamp before
+  the provider call. Discovery paginates that exact creation window, even months
+  later, and fails visibly if its bounded scan cannot establish a safe answer.
+  Only a known session changes that receipt into an active hold.
+- Locks use `pg_advisory_xact_lock` through a reused runtime transaction-pooler
+  client. They never use `createSessionDb`/`DATABASE_URL` in deployed runtime.
+  Local and database lock acquisition each time out after five seconds. Clients
+  have ten-second connect and twenty-second idle limits. Each process has at most
+  one lock connection plus the existing runtime connection. Work deliberately
+  commits on the latter so a mail claim/configuration cannot roll back after an
+  external call. Holding one transaction while that work runs still consumes one
+  pooler backend; production load/connection sizing remains unproven.
+- Feature reads use DB-only confirmed billing snapshots. These are completed
+  `billing_reconcile` receipts in the existing jobs table, keyed by account and
+  subscription; no schema change. Initialization, successful mutations, webhooks,
+  and reconciliation write them. A durable reconciliation job precedes provider
+  mutation; unavailable refresh retains the last confirmed state rather than
+  breaking the dashboard or skipping the call-list text. Legacy cached totals
+  are checked locally; missing legacy totals preserve existing stored state until
+  the next billing mutation validates it. No distributed transaction is claimed.
+- Texting switch-off failures propagate out of the monthly text path, leave a
+  pending billing notice, and queue `stop_texting` recovery before attempting the
+  change. STOP recovery runs through our cron/job retry system, independently of
+  whether Twilio retries. Pending/dead recovery is visible; existing job backoff
+  still exhausts after four attempts, so prolonged outages require follow-up.
+- Removed the branch-only Vercel configuration and workflow condition.
+
+Twilio's [connection overrides](https://www.twilio.com/docs/usage/webhooks/webhooks-connection-overrides)
+use a default connection-timeout retry policy, not a general HTTP-500 guarantee.
+The [configuration API](https://www.twilio.com/docs/usage/webhooks/webhook-settings)
+has no retries when retryPolicy is omitted. Recovery therefore does not rely on
+provider retries. A database outage before an event is persisted cannot be
+promised recoverable; the request fails rather than acknowledging success.
+
+Existing test changes this round: the legacy feature-read regression now asserts
+safe cached false values rather than a thrown live-Stripe mismatch, as explicitly
+required by finding 3. Its protections remain and the new outage test asserts zero
+provider reads. The subscription helper supplies its actual known cached base
+price. Existing deliberate-break probes follow the renamed price guard and typed
+billing failure; no protection, assertion, skip, threshold, or tolerance is removed.
+
+New coverage: checkout creation rejection, missing-ID recovery, lost response,
+expiry/completed orphan, offline dashboard/text, last-confirmed state on rejected
+update, background reconciliation, surfaced text failure, single-webhook recovery,
+transaction lock release, database/local acquisition timeout, runtime pool reuse.
+
+The safe recompose policy is unchanged: a changed homeowner may miss this month's
+note. No broadening of send eligibility was made.
+
+The existing billing scheduling test now explicitly expects the four completed
+billing snapshot receipts in addition to its original build_call_lists job. It
+still asserts every returned row's kind/count; no arbitrary jobs are filtered out.
+STOP recovery always confirms switch-off with the provider, even if its last
+cached entitlement is already off after an ambiguous accepted update.
+
+Round two's extra browser harness also captures the new dashboard billing-pending
+notice after the Settings failure, seven main/head states in total. The original
+six captures and all existing desktop comparison thresholds are retained.

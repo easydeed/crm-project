@@ -21,6 +21,7 @@ export async function giveActiveSubscription(accountId: string, periodEnd = new 
       stripeCustomerId: `cus_fixture_${suffix}_${accountId}`,
       stripeSubId: `sub_fixture_${suffix}_${accountId}`,
       plan: 'base',
+      monthlyCents: PLAN.priceCents,
       status: 'active',
       currentPeriodEnd: periodEnd,
     })

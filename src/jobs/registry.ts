@@ -1,3 +1,5 @@
+import { reconcileBilling } from '@/billing/reconcile'
+import { retryStopTexting } from '@/text/stop-recovery'
 import { retryCallListText } from '@/text/retry-call-list'
 import { expireCheckoutQuote } from '@/billing/checkout-quote'
 /**
@@ -28,6 +30,8 @@ export const handlers: Record<JobKind, JobHandler> = {
   build_call_lists: buildCallLists,
   retry_call_list_text: retryCallListText,
   checkout_quote: expireCheckoutQuote,
+  billing_reconcile: reconcileBilling,
+  stop_texting: retryStopTexting,
 }
 
 export function getHandler(kind: string): JobHandler | undefined {

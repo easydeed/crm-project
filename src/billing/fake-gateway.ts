@@ -16,6 +16,10 @@ export class FakeBillingGateway implements BillingGateway {
     return { url, id }
   }
 
+  async findCheckoutSessions(accountId: string) {
+    return [...this.checkoutSessions].filter(([, session]) => session.accountId === accountId && session.status !== 'expired').map(([id, session]) => ({ id, ...session }))
+  }
+
   async getCheckoutSession(sessionId: string) {
     const session = this.checkoutSessions.get(sessionId)
     if (!session) throw new Error('Checkout not found')

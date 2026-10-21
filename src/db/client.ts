@@ -11,6 +11,8 @@ import * as schema from './schema'
 export function createPostgresClient(url: string) {
   return postgres(url, {
     max: 1,
+    connect_timeout: 10,
+    idle_timeout: 20,
     prepare: !usesTransactionPooler(url),
     ssl: isLocalDatabaseUrl(url) ? false : 'require',
   })

@@ -183,7 +183,7 @@ async function accountChange(accountId: string, key: string, enabled: boolean, c
       // Initialize a legacy provider's canonical state before changing DB config.
       await initializeAddonBilling(accountId, key)
     } catch (error) {
-      return { ok: false, reason: 'forbidden', message: error instanceof Error ? error.message : 'Could not confirm your bill.' }
+      return { ok: false, reason: 'forbidden', message: error instanceof Error ? `We could not confirm your bill: ${error.message}` : 'Could not confirm your bill.' }
     }
     const result = await commit() // A rollback here cannot change Stripe.
     if (!result.ok) return result

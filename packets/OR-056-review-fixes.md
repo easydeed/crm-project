@@ -14,5 +14,11 @@ Compare exact desktop pixels to main on one machine; marketing must be identical
 Record every test change and any uncertainty. Add OR-055 screen log rows, the
 login-mismatch instability finding, and the production demo-env checklist item.
 
-No dependency or schema change is planned. A branch-specific Vercel auto-deploy
-exclusion is necessary to enforce the owner's no-deployment instruction.
+No dependency or schema change is planned. Round two explicitly removes the
+branch-specific Vercel exclusion and evidence workflow condition. No manual deploy.
+
+Round two also requires checkout creation-error recovery; bounded, transaction-
+pooler-safe locking; DB-only feature reads with separate reconciliation; surfaced
+call-list billing failures; and durable STOP recovery independent of Twilio retries.
+The safe recompose policy remains unchanged. Repeat Linux verification, browser/
+pixel evidence and deliberate-break proofs, then stop for independent review.

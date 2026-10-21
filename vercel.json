@@ -1,9 +1,4 @@
 {
-  "git": {
-    "deploymentEnabled": {
-      "codex/or-056-review-fixes": false
-    }
-  },
   "crons": [
     {
       "path": "/api/cron/tick",

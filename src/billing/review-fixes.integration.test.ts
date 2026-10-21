@@ -168,7 +168,7 @@ describe.skipIf(!tryLoadIntegrationDatabaseUrl())('OR-056 billing and texting re
     expect(await home.fake.getSubscription(home.subId)).toMatchObject({ monthlyCents: PLAN.priceCents + ADDON_PRICES.cents[KEY], addonKeys: [KEY] })
   })
 
-  test('legacy entitlement cannot outrun its provider price even before a switch', async () => {
+  test('legacy entitlement cannot outrun its cached provider price even before a switch', async () => {
     const home = await readyAccount()
     const { db } = getRuntimeDb()
     const [cached] = await db.select().from(subscriptions).where(eq(subscriptions.accountId, home.accountId))
@@ -176,7 +176,7 @@ describe.skipIf(!tryLoadIntegrationDatabaseUrl())('OR-056 billing and texting re
     expect((await switchAddonOn(home.accountId, KEY, null)).ok).toBe(true)
     await db.insert(subscriptions).values(cached)
     home.fake.update(home.subId, { addonKeys: undefined, monthlyCents: PLAN.priceCents })
-    await expect(isAddonEnabled(home.accountId, KEY)).rejects.toThrow(/reconciliation/)
-    await expect(loadAddonStates(home.accountId)).rejects.toThrow(/reconciliation/)
+    expect(await isAddonEnabled(home.accountId, KEY)).toBe(false)
+    expect((await loadAddonStates(home.accountId)).states.find((state) => state.addon.key === KEY)?.enabled).toBe(false)
   })
 })
