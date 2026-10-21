@@ -4,6 +4,13 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { expect, test } from 'vitest'
 import { cancelSentence, MISSING_PLAN, PLAN_LINE } from '@/app/app/settings/billing/billing-copy'
 import { InvoiceList } from '@/app/app/settings/billing/invoice-list'
+import { PlanButton } from '@/app/app/settings/billing/plan-button'
+
+test('plan changes wait for hydration before accepting a submission', () => {
+  const html = renderToStaticMarkup(createElement(PlanButton, { label: 'Keep my plan' }))
+  expect(html).toContain('disabled=""')
+  expect(html).toContain('Keep my plan')
+})
 
 const src = (relative: string) => readFileSync(new URL(relative, import.meta.url), 'utf8')
 

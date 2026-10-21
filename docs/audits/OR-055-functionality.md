@@ -26,7 +26,7 @@ Codex owns `codex/demo-functionality`. Preserve the approved marketing design.
 | All calls dismissed leaves blank panel | Explain completed names or a quiet month. |
 | Address-update reassurance is false | Explain that notes pause until the new address is matched; preserve subscription consent. |
 | Add-on charge disconnected from subscription | Synchronize paid switches with the next renewal, serialized per account. Include enabled extras in checkout; show provider recurring total in Billing. |
-| Demo checkout and cancellation incomplete | Local/demo checkout activates a persistent test plan. Cancel/resume and recurring amount survive gateway restarts; checkout replay cannot uncancel an active plan. |
+| Demo checkout and cancellation incomplete | Local/demo checkout activates a persistent test plan. Cancel/resume and recurring amount survive gateway restarts; checkout replay cannot uncancel an active plan. Plan buttons wait for hydration and disable during submission; billing changes invalidate displayed state. |
 | Demo verification requires Twilio | Guarded demo mode uses a nonbillable fake and displays the generated code. Real validation, expiry and attempt checks remain active. |
 | Temporary text failure consumes monthly claim | Atomically reclaim explicit temporary refusals and retry through a separate job. Never automatically resend accepted, permanent or uncertain outcomes. |
 | Real digest never gets stored MLS | Load an actual active, recent nearby listing with provenance. Check ZIP, street, direction, street type and distance. Exclude future listings; keep rendering pure. |
