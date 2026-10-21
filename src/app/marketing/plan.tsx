@@ -80,7 +80,7 @@ export function PriceAndClose() {
           </div>
           <div className="flex flex-col items-start gap-5">
             <p className="max-w-[480px] text-[20px] leading-normal font-medium">
-              For agents in California. We&apos;ll tell you at signup if your county isn&apos;t on yet.
+              For agents in California.
             </p>
             <Link className={goldCtaClass} href="/register">
               Start for {planPrice} a month
