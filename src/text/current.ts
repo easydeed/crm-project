@@ -1,7 +1,9 @@
+import { demoBilling } from '@/billing/demo-checkout'
+import { FakeTexter } from '@/text/fake-texter'
 import type { Texter } from '@/text/texter'
 import { TwilioTexter } from '@/text/twilio-texter'
 
-let current: Texter = new TwilioTexter()
+let current: Texter = demoBilling() ? new FakeTexter() : new TwilioTexter()
 
 export function getTexter(): Texter {
   return current

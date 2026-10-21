@@ -17,7 +17,7 @@ function applyEnvFile(path: string, overwrite: boolean) {
 
 export function loadEnvFiles() {
   applyEnvFile('.env', false)
-  applyEnvFile('.env.local', true)
+  applyEnvFile('.env.local', false)
 }
 
 export function assertSafeDatabaseUrl(url: string) {

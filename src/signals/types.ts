@@ -1,4 +1,6 @@
 export const SIGNAL_KINDS = [
+  'home_listed',
+  'listed_nearby',
   'sold_nearby',
   'loan_paid_off',
   'tax_upside',
@@ -13,6 +15,7 @@ export type Signal = {
   detail: string
   score: number
   asOf: Date
+  listingId?: string
 }
 
 export type SignalEvent = {
@@ -61,5 +64,6 @@ export type SignalInput = {
   asOf: Date
   contacts: SignalContact[]
   streetSales: StreetSale[]
+  listings?: { id: string; address: string; zip: string; status: string; listDate: string | null }[]
   priorCalls: PriorCall[]
 }

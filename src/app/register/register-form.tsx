@@ -41,7 +41,7 @@ function Field({
   )
 }
 
-export function RegisterForm() {
+export function RegisterForm({ demo = false }: { demo?: boolean }) {
   const [state, action, pending] = useActionState(registerAction, {} as RegisterState)
 
   return (
@@ -93,7 +93,7 @@ export function RegisterForm() {
         {pending ? 'Creating account…' : 'Create account'}
       </button>
       <p className="text-[17px]">
-        Next you add a card in Stripe: {PLAN_LINE}. Cancel any time from Settings.
+        {demo ? <>Next you activate a demo plan. No card or payment is needed.</> : <>Next you add a card in Stripe: {PLAN_LINE}. Cancel any time from Settings.</>}
       </p>
     </form>
   )

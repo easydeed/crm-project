@@ -1,14 +1,15 @@
+import { syncAddonBilling } from '@/billing/addon-billing'
 /**
  * The only module that reads or writes account_addons (enforced by addons-access.test.ts),
  * the same pattern as src/db/live-contacts.ts. Every function takes accountId first.
  * An add-on the registry does not know is never on, whatever its row says.
  */
-import { and, eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import { coerceSubmitted } from '@/addons/config-fields'
 import { getAddonRegistry } from '@/addons/registry'
 import type { Addon, AddonConfig } from '@/addons/types'
 import { getAccountById } from '@/db/accounts'
-import { getRuntimeDb } from '@/db/runtime'
+import { getRuntimeDb, withTransactionDb } from '@/db/runtime'
 import { accountAddons, adminActions } from '@/db/schema'
 
 export type AddonState = { addon: Addon; enabled: boolean; config: AddonConfig }
@@ -80,7 +81,7 @@ function fieldErrors(issues: { path: PropertyKey[]; message: string; code: strin
  * Switches an add-on on. A config-gated add-on latches only when its config validates:
  * the submitted config if there is one, otherwise what was stored the last time it was on.
  */
-export async function switchAddonOn(accountId: string, key: string, submitted: Record<string, unknown> | null): Promise<SwitchResult> {
+async function switchAddonOnInTransaction(accountId: string, key: string, submitted: Record<string, unknown> | null): Promise<SwitchResult> {
   const addon = getAddonRegistry().get(key)
   if (!addon) return { ok: false, reason: 'unknown', message: 'That add-on is not available.' }
   const { db } = getRuntimeDb()
@@ -107,6 +108,10 @@ export async function switchAddonOn(accountId: string, key: string, submitted: R
     config = parsed.data as AddonConfig
   }
 
+  if (addon.priceCents > 0) {
+    try { await syncAddonBilling(accountId, key, true) }
+    catch { return { ok: false, reason: 'forbidden', message: 'We could not update your bill. Nothing was switched on. Try again.' } }
+  }
   const now = new Date()
   await db
     .insert(accountAddons)
@@ -120,10 +125,14 @@ export async function switchAddonOn(accountId: string, key: string, submitted: R
 }
 
 /** Switches an add-on off. Its config stays, so switching back on does not ask again. */
-export async function switchAddonOff(accountId: string, key: string): Promise<SwitchResult> {
+async function switchAddonOffInTransaction(accountId: string, key: string): Promise<SwitchResult> {
   const addon = getAddonRegistry().get(key)
   if (!addon) return { ok: false, reason: 'unknown', message: 'That add-on is not available.' }
   const { db } = getRuntimeDb()
+  if (addon.priceCents > 0) {
+    try { await syncAddonBilling(accountId, key, false) }
+    catch { return { ok: false, reason: 'forbidden', message: 'We could not update your bill. Try again.' } }
+  }
   await db
     .update(accountAddons)
     .set({ enabled: false })
@@ -145,4 +154,22 @@ export async function forceEnableAddon(accountId: string, key: string, adminAcco
   const { db } = getRuntimeDb()
   await db.insert(adminActions).values({ adminAccountId, targetAccountId: accountId, action: FORCE_ENABLE_ADDON, detail: { key } })
   return result
+}
+
+// One account's switch and its renewal update are serialized across workers.
+// Services reached through the demo gateway see this same transaction.
+async function accountChange(accountId: string, change: () => Promise<SwitchResult>) {
+  const { db } = getRuntimeDb()
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${accountId}))`)
+    return withTransactionDb(tx as unknown as typeof db, change)
+  })
+}
+
+export async function switchAddonOn(accountId: string, key: string, submitted: Record<string, unknown> | null): Promise<SwitchResult> {
+  return accountChange(accountId, () => switchAddonOnInTransaction(accountId, key, submitted))
+}
+
+export async function switchAddonOff(accountId: string, key: string): Promise<SwitchResult> {
+  return accountChange(accountId, () => switchAddonOffInTransaction(accountId, key))
 }

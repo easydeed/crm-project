@@ -19,7 +19,7 @@ export async function viewAsAction(formData: FormData) {
   const jar = await cookies()
   jar.set(
     SESSION_COOKIE,
-    createSessionValue(session.accountId, session.role, targetAccountId),
+    createSessionValue(session.accountId, session.role, targetAccountId, session.authVersion),
     sessionCookieOptions(),
   )
   redirect('/app')
@@ -31,7 +31,7 @@ export async function exitViewAsAction() {
   const jar = await cookies()
   jar.set(
     SESSION_COOKIE,
-    createSessionValue(session.accountId, session.role),
+    createSessionValue(session.accountId, session.role, undefined, session.authVersion),
     sessionCookieOptions(),
   )
   redirect('/admin/accounts')

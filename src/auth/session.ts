@@ -7,6 +7,7 @@ export type SessionPayload = {
   accountId: string
   role: 'agent' | 'admin'
   viewingAsAccountId?: string
+  authVersion?: number
   exp: number
 }
 
@@ -30,10 +31,12 @@ export function createSessionValue(
   accountId: string,
   role: 'agent' | 'admin',
   viewingAsAccountId?: string,
+  authVersion = 0,
 ) {
   const encoded = encodePayload({
     accountId,
     role,
+    authVersion,
     exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
     ...(viewingAsAccountId ? { viewingAsAccountId } : {}),
   })

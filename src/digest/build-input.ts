@@ -1,3 +1,4 @@
+import { loadNearbyListing } from '@/db/nearby-listing'
 import { and, desc, eq, ne } from 'drizzle-orm'
 import { CA_TAX } from '@/config/ca-tax'
 import type { createDb } from '@/db/client'
@@ -171,7 +172,7 @@ export async function buildDigestInput(
       streetNameNorm: row.streetNameNorm ?? '',
       asOf,
     }),
-    nearbyListing: null,
+    nearbyListing: await loadNearbyListing(db, parcel, asOf),
     tax: CA_TAX,
     lender: toDigestLender(parseLender(await addonConfig(accountId, LENDER_KEY))),
   }

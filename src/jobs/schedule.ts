@@ -14,6 +14,7 @@ type AccountClock = {
   sendDay: number
   sendTime: string
   timezone: string
+  createdAt: Date
 }
 
 async function ensureSend(db: Db, accountId: string, scheduledFor: Date) {
@@ -56,10 +57,20 @@ async function queueForDay(db: Db, account: AccountClock, day: { year: number; m
 
 async function scheduleAccount(db: Db, account: AccountClock, now: Date, paused: boolean) {
   const today = localDate(now, account.timezone)
+  // Recover the most recent missed occurrence, never a backlog of old notes.
+  const previousMonth = addDays({ ...today, day: 1 }, -1)
+  const dueDay = today.day >= account.sendDay
+    ? { ...today, day: account.sendDay }
+    : { ...previousMonth, day: account.sendDay }
+  const due = atLocalTime(dueDay, account.sendTime, account.timezone)
   // A pause stops mail to homeowners. It never takes away the agent's call list.
   if (paused) {
     if (today.day === account.sendDay) await enqueueCallList(account, today)
+    else if (due < now && due >= account.createdAt) await enqueueCallList(account, dueDay)
     return
+  }
+  if (due < now && due >= account.createdAt && dueDay.day !== today.day) {
+    await queueForDay(db, account, dueDay, true)
   }
   const tomorrow = addDays(today, 1)
   if (tomorrow.day === account.sendDay) {
@@ -80,6 +91,7 @@ export async function scheduleAccountById(accountId: string, now = new Date()) {
       sendTime: accounts.sendTime,
       timezone: accounts.timezone,
       paused: accounts.paused,
+      createdAt: accounts.createdAt,
     })
     .from(accounts)
     .where(eq(accounts.id, accountId))
@@ -90,7 +102,7 @@ export async function scheduleAccountById(accountId: string, now = new Date()) {
   const billing = await loadBillingState(db, row.id)
   await scheduleAccount(
     db,
-    { id: row.id, sendDay: row.sendDay, sendTime: row.sendTime, timezone: row.timezone },
+    { id: row.id, sendDay: row.sendDay, sendTime: row.sendTime, timezone: row.timezone, createdAt: row.createdAt },
     now,
     row.paused || !billingAllowsSending(billing, now),
   )

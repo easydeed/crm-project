@@ -70,6 +70,7 @@ function asRole(value: unknown): FieldRole {
     'first',
     'last',
     'email',
+    'phone',
     'address',
     'street',
     'city',
@@ -91,6 +92,8 @@ function parsePostedRows(
       name: stringOr(row?.name),
       email: stringOr(row?.email),
       address: stringOr(row?.address),
+      phone: stringOr(row?.phone),
+      invalidCloseDate: row?.invalidCloseDate === true,
       closeDate: typeof row?.closeDate === 'string' ? row.closeDate : null,
     }))
     return { ok: true, rows }

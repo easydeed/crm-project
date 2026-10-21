@@ -1,3 +1,4 @@
+import { demoBilling } from '@/billing/demo-checkout'
 /**
  * Hard block before any text. The destination must be the agent's own phone: the
  * verified one for the call list, and for a verification code the one they saved in
@@ -26,7 +27,7 @@ export type TextGuardContext =
 export const MAX_CODES_PER_HOUR = 3
 
 export function assertTextAllowed(ctx: TextGuardContext): void {
-  if (process.env.TEXTING_ENABLED !== 'true') {
+  if (process.env.TEXTING_ENABLED !== 'true' && !demoBilling()) {
     throw new Error('Text blocked: TEXTING_ENABLED is not true')
   }
   if (!ctx.billingActive) {

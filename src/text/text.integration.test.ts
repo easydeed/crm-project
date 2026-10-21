@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { and, eq, inArray } from 'drizzle-orm'
+import { and, eq, inArray, sql } from 'drizzle-orm'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
 import { POST } from '@/app/api/webhooks/twilio/route'
@@ -12,7 +12,7 @@ import { giveActiveSubscription } from '@/billing/subscription-fixture'
 import { withStreetNameNorm } from '@/db/parcel-write'
 import { tryLoadIntegrationDatabaseUrl } from '@/db/integration-session'
 import { getRuntimeDb, resetRuntimeDb } from '@/db/runtime'
-import { accounts, contacts, parcelEvents, parcels, subscriptions } from '@/db/schema'
+import { accounts, contacts, jobs, parcelEvents, parcels, subscriptions } from '@/db/schema'
 import { providerCalls } from '@/db/schema-billing'
 import { callListEntries } from '@/db/schema-call-lists'
 import { textMessages } from '@/db/schema-text'
@@ -48,6 +48,7 @@ describe.skipIf(!databaseUrl)('OR-022 text me the call list against the database
   })
   afterAll(async () => {
     const { db, client } = getRuntimeDb()
+    await db.delete(jobs).where(inArray(sql`${jobs.payload}->>'accountId'`, accountIds))
     await db.delete(providerCalls).where(inArray(providerCalls.accountId, accountIds))
     await db.delete(subscriptions).where(inArray(subscriptions.accountId, accountIds))
     await db.delete(accounts).where(inArray(accounts.id, accountIds))
@@ -156,6 +157,12 @@ describe.skipIf(!databaseUrl)('OR-022 text me the call list against the database
     expect(await getRuntimeDb().db.select().from(callListEntries).where(eq(callListEntries.accountId, blip))).toHaveLength(1)
     expect((await texts(blip))[0]).toMatchObject({ error: expect.stringMatching(/busy/), permanentFailure: false })
     expect(await isAddonEnabled(blip, TEXT_CALL_LIST_KEY)).toBe(true)
+    texter.failWith = () => null
+    await buildCallLists({ accountId: blip, asOf: AS_OF }, ctx)
+    expect((await texts(blip))[0]?.providerId).toMatch(/^SMfake/)
+    const sentCount = texter.calls.length
+    await buildCallLists({ accountId: blip, asOf: AS_OF }, ctx)
+    expect(texter.calls).toHaveLength(sentCount)
 
     const dead = await agent({ verified: true, addon: true })
     texter.failWith = () => new TextSendError('Twilio refused the text (400): unreachable', 30003)

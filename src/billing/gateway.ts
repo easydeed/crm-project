@@ -8,6 +8,7 @@ export type BillingSubscription = {
   /** Set from subscription_data.metadata at checkout, so any subscription event can find its account. */
   accountId: string | null
   cardLast4: string | null
+  monthlyCents?: number | null
 }
 
 export type BillingInvoice = {
@@ -23,6 +24,7 @@ export type CheckoutInput = {
   email: string
   /** Reuse the Stripe customer when an account that canceled comes back. */
   customerId: string | null
+  monthlyCents?: number
   successUrl: string
   cancelUrl: string
 }
@@ -42,5 +44,6 @@ export interface BillingGateway {
   createCheckoutSession(input: CheckoutInput): Promise<{ url: string }>
   getSubscription(subscriptionId: string): Promise<BillingSubscription>
   setCancelAtPeriodEnd(subscriptionId: string, cancel: boolean): Promise<void>
+  setMonthlyTotal(subscriptionId: string, cents: number): Promise<void>
   listInvoices(customerId: string): Promise<BillingInvoice[]>
 }

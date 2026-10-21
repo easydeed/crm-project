@@ -31,13 +31,15 @@ export function ReviewQueue({
   readOnly: boolean
   mode?: 'queue' | 'wrong-house'
 }) {
-  const [list, setList] = useState(items)
-  const [index, setIndex] = useState(Math.min(startIndex, Math.max(items.length - 1, 0)))
+  const [list, setList] = useState(() => [...items.slice(startIndex), ...items.slice(0, startIndex)])
+  const [index, setIndex] = useState(0)
   const [leftOut, setLeftOut] = useState(leftOutCount)
   const [noneOfThese, setNoneOfThese] = useState(false)
   const [showFix, setShowFix] = useState(false)
   const [address, setAddress] = useState('')
   const [snapshot, setSnapshot] = useState<ReviewSnapshot | null>(null)
+  const [leftOutDecision, setLeftOutDecision] = useState(false)
+  const [undoToken, setUndoToken] = useState('')
   const [undoUntil, setUndoUntil] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
@@ -58,12 +60,10 @@ export function ReviewQueue({
     return () => window.clearTimeout(timer)
   }, [snapshot, undoUntil])
 
-  if (!current) {
-    return <DoneState leftOutCount={leftOut} mode={mode} />
-  }
 
-  const showCards = current.candidates.length > 0 && !noneOfThese
-  const showNoParcel = current.candidates.length === 0 || noneOfThese
+
+  const showCards = current?.candidates.length > 0 && !noneOfThese
+  const showNoParcel = current && (current.candidates.length === 0 || noneOfThese)
 
   function applyResult(
     result: Awaited<ReturnType<typeof chooseReviewCandidateAction>>,
@@ -88,7 +88,7 @@ export function ReviewQueue({
           setIndex(Math.max(next.findIndex((row) => row.id === restored.id), 0))
           return next
         })
-        if (restored.status === 'no_parcel' && restored.reviewState === 'pending') {
+        if (leftOutDecision) {
           setLeftOut((n) => Math.max(0, n - 1))
         }
       }
@@ -96,8 +96,10 @@ export function ReviewQueue({
       setUndoUntil(0)
       return
     }
+    setLeftOutDecision(kind === 'leave')
     if (result.snapshot) {
       setSnapshot(result.snapshot)
+      setUndoToken(result.undoToken ?? '')
       setUndoUntil(Date.now() + UNDO_MS)
     }
     if (kind === 'leave') setLeftOut((n) => n + 1)
@@ -105,7 +107,8 @@ export function ReviewQueue({
       setList((rows) => rows.map((row) => (row.id === result.item?.id ? result.item! : row)))
       return
     }
-    setList((rows) => rows.filter((row) => row.id !== current.id))
+    setList((rows) => rows.filter((row) => row.id !== current?.id))
+    setIndex(0)
   }
 
   function run(kind: 'choose' | 'leave' | 'fix' | 'undo', form: FormData) {
@@ -118,19 +121,25 @@ export function ReviewQueue({
             : kind === 'fix'
               ? fixReviewAddressAction
               : undoReviewDecisionAction
-      applyResult(await action(form), kind)
+      try {
+        applyResult(await action(form), kind)
+      } catch {
+        setError('We could not save that change. Try again.')
+      }
     })
   }
 
   function onUndo() {
     if (!snapshot) return
     const form = new FormData()
-    form.set('snapshot', JSON.stringify(snapshot))
+    form.set('undoToken', undoToken)
     run('undo', form)
   }
 
   return (
     <main className="px-4 py-10">
+      {!current ? <DoneState leftOutCount={leftOut} mode={mode} /> : null}
+      {current ? <>
       <h1 className="text-[22px] font-semibold">
         {reviewHeader(index + 1, list.length)}
       </h1>
@@ -183,6 +192,7 @@ export function ReviewQueue({
           }}
         />
       ) : null}
+      </> : null}
       {readOnly ? <p className={`mt-6 ${mutedClass}`}>{VIEW_AS_READ_ONLY}</p> : null}
       {error ? (
         <p className="mt-6 text-[15px]" role="alert">

@@ -48,6 +48,9 @@ jobs:
       - name: Verify
         run: pnpm verify
 
+      - name: Prove the audit regression checks catch deliberate breaks
+        run: node scripts/audit-self-review.mjs
+
       - name: Report drift against crm-dev
         if: github.event_name == 'pull_request'
         env:

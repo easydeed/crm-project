@@ -40,11 +40,11 @@ test('schema exports every OR-000 table', () => {
   expect(schema.sendRecipients.subject).toBeDefined()
 })
 
-test('jobs unique index covers kind, payload_key, and run_after', () => {
+test('jobs unique index covers kind, payload_key, and immutable enqueued_for', () => {
   const source = readFileSync(new URL('./schema-jobs.ts', import.meta.url), 'utf8')
-  expect(source).toContain("uniqueIndex('jobs_kind_payload_key_run_after_uidx')")
+  expect(source).toContain("uniqueIndex('jobs_kind_payload_key_enqueued_for_uidx')")
   expect(source).toContain('t.payloadKey')
-  expect(source).toContain('t.runAfter')
+  expect(source).toContain('t.enqueuedFor')
   expect(source).toContain('could send the same note twice')
 })
 

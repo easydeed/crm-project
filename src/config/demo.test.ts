@@ -87,7 +87,7 @@ test('seed and e2e-setup keep their local-only guard; the shared seed bodies hav
   expect(demo.indexOf('demoSeedRefusal(')).toBeLessThan(demo.indexOf('seedFixtures(handle'))
   const files = (dir: string): string[] =>
     readdirSync(path.join(root, dir)).flatMap((name) => {
-      const rel = path.join(dir, name)
+      const rel = path.join(dir, name).replaceAll('\\', '/')
       if (statSync(path.join(root, rel)).isDirectory()) return name === 'node_modules' ? [] : files(rel)
       return /\.tsx?$/.test(name) && !/\.test\./.test(name) ? [rel] : []
     })

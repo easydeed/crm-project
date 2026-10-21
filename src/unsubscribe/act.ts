@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import { persistContactCandidates } from '@/db/persist-contact-candidates'
 import { getRuntimeDb } from '@/db/runtime'
 import { contactSubscriptions, parcels } from '@/db/schema'
@@ -71,6 +71,7 @@ export async function updateHomeownerAddress(
       .update(contactsTable)
       .set({
         addressRaw: trimmed,
+        reviewVersion: sql`${contactsTable.reviewVersion} + 1`,
         status: match.status,
         parcelId: match.parcelId,
         reviewState: 'pending',
@@ -101,7 +102,7 @@ export async function updateHomeownerAddress(
 export function addressNotice(result: AddressUpdate): string {
   if (result.outcome === 'matched') return `We'll use ${result.address}.`
   if (result.outcome === 'needs_review') {
-    return "We couldn't match that to one house. You're still getting these emails."
+    return "We couldn't match that to one house. Your notes are paused until your agent matches the address."
   }
-  return "We couldn't find that house on the record. You're still getting these emails."
+  return "We couldn't find that house on the record. Your notes are paused until your agent matches the address."
 }

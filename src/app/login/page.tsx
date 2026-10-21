@@ -19,6 +19,7 @@ export default async function LoginPage({
         <section aria-label="Sign in" className={`w-full ${panelClass}`}>
           <LoginForm returnTo={safeReturnTo(params.returnTo)} />
         </section>
+        <Link className={`tap ${linkClass}`} href="/forgot-password">Forgot your password?</Link>
         <Link
           className={`tap ${linkClass}`}
           href="/register"

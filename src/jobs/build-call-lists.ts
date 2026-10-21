@@ -1,3 +1,4 @@
+import { enqueue } from '@/jobs/enqueue'
 import { and, eq, notInArray } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts } from '@/db/schema'
@@ -40,12 +41,13 @@ export const buildCallLists: JobHandler = async (payload, ctx) => {
         contactId: signal.contactId,
         kind: signal.kind,
         detail: signal.detail,
+        listingId: signal.listingId ?? null,
         score: signal.score,
         period,
       })
       .onConflictDoUpdate({
         target: [callListEntries.accountId, callListEntries.contactId, callListEntries.period],
-        set: { kind: signal.kind, detail: signal.detail, score: signal.score },
+        set: { kind: signal.kind, detail: signal.detail, score: signal.score, listingId: signal.listingId ?? null },
       })
   }
 
@@ -56,5 +58,6 @@ export const buildCallLists: JobHandler = async (payload, ctx) => {
     .where(ids.length ? and(periodMatch, notInArray(callListEntries.contactId, ids)) : periodMatch)
 
   // After the list is written. Never throws: a failed text does not fail this job.
-  await textCallList(accountId, period, asOf, ctx.now)
+  const textOutcome = await textCallList(accountId, period, asOf, ctx.now)
+  if (textOutcome === 'retryable') await enqueue('retry_call_list_text', { accountId, period, asOf: asOf.toISOString() }, new Date(ctx.now.getTime() + 60_000))
 }

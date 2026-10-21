@@ -1,7 +1,10 @@
+import { demoBilling } from '@/billing/demo-checkout'
 import Link from 'next/link'
 import { RegisterForm } from '@/app/register/register-form'
 import { AuthBar } from '@/app/auth-bar'
 import { linkClass, panelClass } from '@/app/app/people/ui'
+
+export const dynamic = 'force-dynamic'
 
 export default function RegisterPage() {
   return (
@@ -12,7 +15,7 @@ export default function RegisterPage() {
       <div className="flex w-full max-w-sm flex-col items-center gap-6">
         <h1 className="text-center text-[24px] font-semibold tracking-[-0.01em]">Create your account</h1>
         <section aria-label="Create your account" className={`w-full ${panelClass}`}>
-          <RegisterForm />
+          <RegisterForm demo={demoBilling()} />
         </section>
         <Link
           className={`tap ${linkClass}`}

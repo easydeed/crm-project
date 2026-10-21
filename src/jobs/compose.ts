@@ -1,5 +1,6 @@
+import { recipientFingerprint } from '@/jobs/recipient-fingerprint'
 import { and, eq, isNull, sql } from 'drizzle-orm'
-import { getRuntimeDb } from '@/db/runtime'
+import { getRuntimeDb, withTransactionDb } from '@/db/runtime'
 import { contactSubscriptions, sends, sendRecipients } from '@/db/schema'
 import { liveContacts } from '@/db/live-contacts'
 import { buildDigestInput } from '@/digest/build-input'
@@ -12,7 +13,7 @@ import { applyUnsubscribeLinks, unsubscribeUrl } from '@/unsubscribe/links'
 
 type Skip = { contactId: string; reason: string }
 
-export const composeSend: JobHandler = async (payload, ctx) => {
+const composeInTransaction: JobHandler = async (payload, ctx) => {
   const accountId = String(payload.accountId ?? '')
   const sendId = String(payload.sendId ?? '')
   if (!accountId || !sendId) throw new Error('compose requires accountId and sendId')
@@ -24,10 +25,10 @@ export const composeSend: JobHandler = async (payload, ctx) => {
     .where(and(eq(sends.id, sendId), eq(sends.accountId, accountId)))
     .limit(1)
   if (!send) throw new Error('Send not found for this account')
-  if (send.state === 'skipped' || send.state === 'done') return
+  if (send.state !== 'scheduled') return
 
   const people = await db
-    .select({ id: liveContacts.id, email: liveContacts.email })
+    .select({ id: liveContacts.id, email: liveContacts.email, name: liveContacts.name, addressRaw: liveContacts.addressRaw, parcelId: liveContacts.parcelId, closeDate: liveContacts.closeDate, status: liveContacts.status })
     .from(liveContacts)
     .innerJoin(
       contactSubscriptions,
@@ -81,6 +82,7 @@ export const composeSend: JobHandler = async (payload, ctx) => {
         html: linked.html,
         plainText: linked.text,
         subject: result.subject,
+        composedFingerprint: recipientFingerprint(person),
       })
       .onConflictDoNothing({
         target: [sendRecipients.sendId, sendRecipients.contactId],
@@ -100,5 +102,17 @@ export const composeSend: JobHandler = async (payload, ctx) => {
       skippedCount: skips.length,
       skips,
     })
-    .where(and(eq(sends.id, sendId), eq(sends.accountId, accountId)))
+    .where(and(eq(sends.id, sendId), eq(sends.accountId, accountId), eq(sends.state, 'scheduled')))
+}
+
+// Composition is atomic and serialized across workers. No partial batch can be
+// exposed as ready while another composer is still adding recipients.
+export const composeSend: JobHandler = async (payload, ctx) => {
+  const sendId = String(payload.sendId ?? '')
+  if (!sendId) throw new Error('compose requires accountId and sendId')
+  const { db } = getRuntimeDb()
+  await db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${sendId}))`)
+    await withTransactionDb(tx as unknown as typeof db, () => composeInTransaction(payload, ctx))
+  })
 }

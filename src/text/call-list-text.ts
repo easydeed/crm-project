@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { and, eq, isNull } from 'drizzle-orm'
 import { isAddonEnabled } from '@/addons/state'
 import { TEXT_CALL_LIST_KEY, verifiedPhone } from '@/addons/text-call-list'
 import { CALL_TAGS } from '@/app/app/call-tags'
@@ -25,7 +25,7 @@ export function callListText(entries: { name: string; kind: SignalKind }[], appU
   return text
 }
 
-export type CallListTextOutcome = 'off' | 'empty' | 'already' | 'sent' | 'failed'
+export type CallListTextOutcome = 'off' | 'empty' | 'already' | 'sent' | 'failed' | 'retryable'
 
 /**
  * Texts this period's names to the agent's verified phone, once. Never throws: the list
@@ -44,22 +44,33 @@ export async function textCallList(accountId: string, period: string, asOf: Date
       .values({ accountId, kind: 'call_list', period, toPhone: phone ?? 'unverified', createdAt: now })
       .onConflictDoNothing()
       .returning({ id: textMessages.id })
-    if (!claimed) return 'already'
+    let claimId = claimed?.id
+    if (!claimId) {
+      const [prior] = await db.select().from(textMessages).where(and(eq(textMessages.accountId, accountId), eq(textMessages.kind, 'call_list'), eq(textMessages.period, period))).limit(1)
+      if (!prior || prior.providerId || prior.permanentFailure || !prior.error) return 'already'
+      const [retry] = await db.update(textMessages).set({ error: null, toPhone: phone ?? 'unverified' })
+        .where(and(eq(textMessages.id, prior.id), eq(textMessages.error, prior.error), isNull(textMessages.providerId)))
+        .returning({ id: textMessages.id })
+      if (!retry) return 'already'
+      claimId = retry.id
+    }
     try {
       const { providerId } = await deliverText(
         accountId,
         { purpose: 'call_list', to: phone ?? '', verifiedPhone: phone, billingActive: await billingActive(db, accountId, now), addonEnabled: true },
         { to: phone ?? '', body, idempotencyKey: `${accountId}:${period}` },
       )
-      await db.update(textMessages).set({ providerId }).where(eq(textMessages.id, claimed.id))
+      await db.update(textMessages).set({ providerId }).where(eq(textMessages.id, claimId))
       return 'sent'
     } catch (err) {
+      const retryable = err instanceof TextSendError && err.code !== null && !isPermanentTextError(err) || err instanceof Error && /^(Text blocked:|Texting is not configured:)/.test(err.message)
       const permanent = isPermanentTextError(err)
-      await db.update(textMessages).set({ error: err instanceof Error ? err.message : String(err), permanentFailure: permanent }).where(eq(textMessages.id, claimed.id))
+      const uncertain = !permanent && !retryable
+      await db.update(textMessages).set({ error: uncertain ? 'Delivery outcome unknown. Reconcile before retrying.' : err instanceof Error ? err.message : String(err), permanentFailure: permanent || uncertain }).where(eq(textMessages.id, claimId))
       if (permanent && phone) {
         await stopTexting(db, accountId, phone, err instanceof TextSendError && err.code === STOPPED_CODE ? 'stop_received' : 'call_list', now)
       }
-      return 'failed'
+      return retryable ? 'retryable' : 'failed'
     }
   } catch (err) {
     console.error(`[text] call list text for ${accountId} failed`, err)

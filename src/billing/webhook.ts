@@ -92,6 +92,7 @@ async function writeSubscription(tx: Tx, accountId: string, sub: BillingSubscrip
     stripeSubId: sub.id,
     plan: PLAN,
     status: sub.status,
+    monthlyCents: sub.monthlyCents ?? null,
     currentPeriodEnd: sub.currentPeriodEnd,
     cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
   }

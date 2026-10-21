@@ -1,3 +1,5 @@
+import { isCalendarDate } from '@/config/calendar-date'
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export function parseContactName(value: string) {
@@ -6,8 +8,9 @@ export function parseContactName(value: string) {
   return { ok: true as const, name }
 }
 
-export function parseContactEmail(value: string) {
+export function parseContactEmail(value: string, optional = false) {
   const email = value.trim()
+  if (!email && optional) return { ok: true as const, email: null }
   if (!EMAIL_RE.test(email)) {
     return { ok: false as const, message: "We need an email we can send to." }
   }
@@ -26,7 +29,7 @@ export function parseCloseDate(value: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
     return { ok: false as const, message: 'Use a date like 2020-06-15.' }
   }
-  if (Number.isNaN(Date.parse(`${trimmed}T00:00:00`))) {
+  if (!isCalendarDate(trimmed)) {
     return { ok: false as const, message: 'Use a date like 2020-06-15.' }
   }
   return { ok: true as const, closeDate: trimmed }

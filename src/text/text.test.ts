@@ -52,7 +52,7 @@ function files(dir: string): string[] {
 test('only deliverText calls texter.send, and it calls the guard first', () => {
   const production = files(path.join(root, 'src'))
     .filter((file) => !/\.test\.ts$/.test(file))
-    .map((file) => ({ rel: path.relative(root, file), src: readFileSync(file, 'utf8') }))
+    .map((file) => ({ rel: path.relative(root, file).replaceAll('\\', '/'), src: readFileSync(file, 'utf8') }))
   expect(production.filter(({ src }) => /texter\.send\(/i.test(src)).map(({ rel }) => rel)).toEqual(['src/text/deliver-text.ts'])
   expect(production.filter(({ src }) => /getTexter\(\)/.test(src)).map(({ rel }) => rel).sort()).toEqual(['src/text/current.ts', 'src/text/deliver-text.ts'])
   expect(production.filter(({ src }) => /from '@\/text\/twilio-texter'/.test(src) && /TwilioTexter/.test(src)).map(({ rel }) => rel)).toEqual(['src/text/current.ts'])

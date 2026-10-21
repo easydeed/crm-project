@@ -1,3 +1,4 @@
+import { recipientFingerprint } from '@/jobs/recipient-fingerprint'
 import { randomUUID } from 'node:crypto'
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import { afterAll, beforeAll, describe, expect, test } from 'vitest'
@@ -306,6 +307,7 @@ describe.skipIf(!sessionUrl)('admin sends', () => {
       {
         sendId: send.id,
         contactId: waitId,
+        composedFingerprint: recipientFingerprint({ name: 'Waiting', email: waitEmail, addressRaw: '4 Main', status: 'matched', parcelId: null, closeDate: null }),
         subject: 'Hi',
         html: '<p>wait</p>',
         plainText: 'wait',

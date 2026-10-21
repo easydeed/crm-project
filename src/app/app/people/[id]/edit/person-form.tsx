@@ -58,7 +58,6 @@ export function PersonForm({
           className={fieldClass}
           name="email"
           type="email"
-          required
           defaultValue={person.email ?? ''}
           aria-invalid={state.email ? true : undefined}
         />
@@ -98,8 +97,9 @@ export function PersonForm({
         <FieldError message={state.closeDate} />
       </label>
       <label className="text-[15px]">
-        Notes
+        <span id="person-notes-label">Notes</span>
         <textarea
+          aria-labelledby="person-notes-label"
           className={`${fieldClass} min-h-28`}
           name="notes"
           defaultValue={person.notes ?? ''}

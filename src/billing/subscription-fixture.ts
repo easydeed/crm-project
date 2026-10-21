@@ -1,3 +1,5 @@
+import { getBillingGateway, setBillingGateway } from '@/billing/current'
+import { FakeBillingGateway } from '@/billing/fake-gateway'
 import { getRuntimeDb } from '@/db/runtime'
 import { subscriptions } from '@/db/schema'
 
@@ -8,6 +10,9 @@ import { subscriptions } from '@/db/schema'
 export async function giveActiveSubscription(accountId: string, periodEnd = new Date('2099-01-01T00:00:00Z')) {
   const { db } = getRuntimeDb()
   const suffix = accountId.slice(0, 8)
+  const gateway = getBillingGateway() instanceof FakeBillingGateway ? getBillingGateway() as FakeBillingGateway : new FakeBillingGateway()
+  gateway.subscriptions.set(`sub_fixture_${suffix}_${accountId}`, { id: `sub_fixture_${suffix}_${accountId}`, customerId: `cus_fixture_${suffix}_${accountId}`, status: 'active', currentPeriodEnd: periodEnd, cancelAtPeriodEnd: false, accountId, cardLast4: '4242' })
+  setBillingGateway(gateway)
   await db
     .insert(subscriptions)
     .values({

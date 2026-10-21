@@ -11,7 +11,9 @@ export type ImportRow = {
    */
   email: string | null
   address: string
+  phone?: string | null
   closeDate: string | null
+  invalidCloseDate?: boolean
 }
 
 export type SkippedRow = {
@@ -43,6 +45,7 @@ export type FieldRole =
   | 'first'
   | 'last'
   | 'email'
+  | 'phone'
   | 'address'
   | 'street'
   | 'city'

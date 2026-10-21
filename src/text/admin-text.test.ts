@@ -7,7 +7,7 @@ test('each state of this period’s call-list text reads plainly, with the error
   expect(describePeriodText(null)).toEqual({ state: 'No text this period', detail: null })
   expect(describePeriodText({ ...base, providerId: 'SM123' })).toEqual({ state: 'Sent', detail: 'Provider id SM123' })
   expect(describePeriodText({ ...base, error: 'Text blocked: TEXTING_ENABLED is not true' })).toEqual({
-    state: 'Not sent (not retried this period)',
+    state: 'Not sent (retry pending)',
     detail: 'Text blocked: TEXTING_ENABLED is not true',
   })
   expect(describePeriodText({ ...base, error: 'Unsubscribed recipient', permanentFailure: true }).state).toBe('Not sent (permanent)')

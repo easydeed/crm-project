@@ -1,3 +1,5 @@
+import { emailHash } from '@/suppression/hash'
+import { suppressedHashes } from '@/suppression/suppressions'
 import { and, eq, isNull, ne, sql } from 'drizzle-orm'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts, contactSubscriptions, sends } from '@/db/schema'
@@ -63,12 +65,15 @@ export async function loadHomeSend(accountId: string, now = new Date()): Promise
     .where(eq(liveContacts.accountId, accountId))
   if (!people?.count) return { kind: 'import' }
 
-  const [ready] = await db
-    .select({ count: sql<number>`count(*)::int` })
+  const candidates = await db
+    .select({ id: liveContacts.id, email: liveContacts.email })
     .from(liveContacts)
     .innerJoin(contactSubscriptions, eq(contactSubscriptions.contactId, liveContacts.id))
     .where(and(eq(liveContacts.accountId, accountId), eligible))
-  const count = ready?.count ?? 0
+    .orderBy(liveContacts.name)
+  const suppressed = await suppressedHashes(db, candidates.flatMap((row) => row.email ? [row.email] : []), 'monthly')
+  const ready = candidates.filter((row) => row.email?.trim() && !suppressed.has(emailHash(row.email)))
+  const count = ready.length
   if (count === 0) {
     const [open] = await db
       .select({ count: sql<number>`count(*)::int` })
@@ -86,17 +91,10 @@ export async function loadHomeSend(accountId: string, now = new Date()): Promise
     .limit(1)
   if (send?.state === 'skipped') return { kind: 'skipped', when }
 
-  const [first] = await db
-    .select({ id: liveContacts.id })
-    .from(liveContacts)
-    .innerJoin(contactSubscriptions, eq(contactSubscriptions.contactId, liveContacts.id))
-    .where(and(eq(liveContacts.accountId, accountId), eligible))
-    .orderBy(liveContacts.name)
-    .limit(1)
 
   return {
     kind: 'scheduled',
     sentence: nextEmailSentence(when, count),
-    previewContactId: first?.id ?? null,
+    previewContactId: ready[0]?.id ?? null,
   }
 }

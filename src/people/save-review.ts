@@ -1,3 +1,4 @@
+import { openToken, sealToken } from '@/auth/signed-token'
 import { assertWritable } from '@/auth/write-guard'
 import type { SessionPayload } from '@/auth/session'
 import {
@@ -19,6 +20,7 @@ import type { ContactMatchStatus } from '@/people/status'
 export type ReviewFormState = {
   error?: string
   snapshot?: ReviewSnapshot
+  undoToken?: string
   item?: ReviewQueueItem | null
   advanced?: boolean
   undone?: boolean
@@ -71,7 +73,7 @@ export async function chooseReviewCandidate(
     String(formData.get('parcelId') ?? ''),
   )
   if (!result.ok) return { error: result.error }
-  return { snapshot: result.snapshot, item: result.item, advanced: true }
+  return { snapshot: result.snapshot, undoToken: undoToken(session.accountId, result.snapshot, result.after), item: result.item, advanced: true }
 }
 
 export async function leaveOutReviewContact(
@@ -85,7 +87,7 @@ export async function leaveOutReviewContact(
     String(formData.get('contactId') ?? ''),
   )
   if (!result.ok) return { error: result.error }
-  return { snapshot: result.snapshot, item: result.item, advanced: true }
+  return { snapshot: result.snapshot, undoToken: undoToken(session.accountId, result.snapshot, result.after), item: result.item, advanced: true }
 }
 
 export async function fixReviewAddress(
@@ -104,6 +106,7 @@ export async function fixReviewAddress(
   if (!result.ok) return { error: result.error }
   return {
     snapshot: result.snapshot,
+    undoToken: undoToken(session.accountId, result.snapshot, result.after),
     item: result.item,
     advanced: result.item === null,
   }
@@ -115,9 +118,16 @@ export async function undoReviewDecision(
 ): Promise<ReviewFormState> {
   const gate = assertWritable(session)
   if (!gate.ok) return { error: gate.error }
-  const snapshot = parseReviewSnapshot(String(formData.get('snapshot') ?? ''))
-  if (!snapshot) return { error: 'Nothing to undo.' }
-  const result = await undoReviewChangeForAccount(session.accountId, snapshot)
+  const proof = openToken<{ accountId: string; snapshot: ReviewSnapshot; after: string }>(String(formData.get('undoToken') ?? ''), 'review-undo')
+  if (!proof || proof.accountId !== session.accountId) return { error: 'Nothing to undo.' }
+  const snapshot = proof.snapshot
+  const result = await undoReviewChangeForAccount(session.accountId, snapshot, proof.after)
   if (!result.ok) return { error: result.error }
   return { item: result.item, undone: true }
+}
+
+function undoToken(accountId: string, snapshot: ReviewSnapshot, produced: ReviewSnapshot | undefined) {
+  if (!produced) throw new Error('Review change did not produce an Undo state')
+  const after = JSON.stringify(produced)
+  return sealToken('review-undo', { accountId, snapshot, after }, Date.now() + 60_000)
 }

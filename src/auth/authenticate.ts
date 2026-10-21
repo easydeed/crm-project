@@ -4,7 +4,7 @@ import { accounts } from '@/db/schema'
 import { eq, sql } from 'drizzle-orm'
 
 export type AuthenticateResult =
-  | { ok: true; accountId: string; role: 'agent' | 'admin' }
+  | { ok: true; accountId: string; role: 'agent' | 'admin'; authVersion: number }
   | { ok: false }
 
 export async function authenticate(
@@ -17,6 +17,7 @@ export async function authenticate(
       id: accounts.id,
       passwordHash: accounts.passwordHash,
       role: accounts.role,
+      authVersion: accounts.authVersion,
     })
     .from(accounts)
     .where(sql`lower(${accounts.email}) = ${email.trim().toLowerCase()}`)
@@ -28,5 +29,5 @@ export async function authenticate(
     .update(accounts)
     .set({ lastLoggedInAt: new Date() })
     .where(eq(accounts.id, row.id))
-  return { ok: true, accountId: row.id, role: row.role }
+  return { ok: true, accountId: row.id, role: row.role, authVersion: row.authVersion }
 }

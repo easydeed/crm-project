@@ -7,14 +7,14 @@ import { callListPeriod } from '@/jobs/call-list-period'
 export type PeriodTextRow = { providerId: string | null; error: string | null; permanentFailure: boolean; toPhone: string; createdAt: Date }
 
 /**
- * What support needs to answer "did my text go out?". A claimed row is never retried within its
- * period (the unique claim is what stops a double send), so a failure here is final for the month.
+ * What support needs to answer "did my text go out?". Explicit temporary refusals retry on the job queue; accepted or uncertain
+ * deliveries are never retried automatically.
  */
 export function describePeriodText(row: PeriodTextRow | null): { state: string; detail: string | null } {
   if (!row) return { state: 'No text this period', detail: null }
   if (row.providerId) return { state: 'Sent', detail: `Provider id ${row.providerId}` }
   if (row.error) {
-    return { state: row.permanentFailure ? 'Not sent (permanent)' : 'Not sent (not retried this period)', detail: row.error }
+    return { state: row.permanentFailure ? 'Not sent (permanent)' : 'Not sent (retry pending)', detail: row.error }
   }
   return { state: 'Claimed, not sent', detail: 'The send stopped before it finished. It is not retried this period.' }
 }

@@ -1,3 +1,4 @@
+import { listingSignal } from '@/signals/listed'
 import { loanPaidOff } from '@/signals/loan-paid-off'
 import { quietSignals } from '@/signals/quiet'
 import { selectCallList, strongestPerContact, withoutLastMonth } from '@/signals/select'
@@ -8,6 +9,8 @@ import type { Signal, SignalInput } from '@/signals/types'
 export function computeSignals(input: SignalInput): Signal[] {
   const raw: Signal[] = []
   for (const contact of input.contacts) {
+    const listing = listingSignal(contact, input)
+    if (listing) raw.push(listing)
     const sold = soldNearby(contact, input)
     if (sold) raw.push(sold)
     const loan = loanPaidOff(contact, input)

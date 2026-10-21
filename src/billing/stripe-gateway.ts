@@ -67,6 +67,7 @@ export function toSubscription(raw: Json): BillingSubscription {
     currentPeriodEnd: epoch(raw.current_period_end) ?? epoch(items[0]?.current_period_end),
     cancelAtPeriodEnd: raw.cancel_at_period_end === true,
     accountId: typeof metadata.account_id === 'string' ? metadata.account_id : null,
+    monthlyCents: items.length && items.every((item) => typeof (item.price as Json | undefined)?.unit_amount === 'number') ? items.reduce((total, item) => total + Number((item.price as Json | undefined)?.unit_amount ?? 0) * Number(item.quantity ?? 1), 0) : null,
     cardLast4: typeof card?.last4 === 'string' ? card.last4 : null,
   }
 }
@@ -81,6 +82,16 @@ export class StripeGateway implements BillingGateway {
       'subscription_data[metadata][account_id]': input.accountId,
       success_url: input.successUrl,
       cancel_url: input.cancelUrl,
+    }
+    if (input.monthlyCents && input.monthlyCents > 0) {
+      const price = await call('GET', `/prices/${encodeURIComponent(stripePriceId())}`)
+      if (price.unit_amount !== input.monthlyCents) {
+        delete params['line_items[0][price]']
+        params['line_items[0][price_data][currency]'] = 'usd'
+        params['line_items[0][price_data][product]'] = idOf(price.product)
+        params['line_items[0][price_data][unit_amount]'] = String(input.monthlyCents)
+        params['line_items[0][price_data][recurring][interval]'] = 'month'
+      }
     }
     if (input.customerId) params.customer = input.customerId
     else params.customer_email = input.email
@@ -104,6 +115,25 @@ export class StripeGateway implements BillingGateway {
   async setCancelAtPeriodEnd(subscriptionId: string, cancel: boolean) {
     await call('POST', `/subscriptions/${encodeURIComponent(subscriptionId)}`, {
       cancel_at_period_end: cancel ? 'true' : 'false',
+    })
+  }
+
+  async setMonthlyTotal(subscriptionId: string, cents: number) {
+    const raw = await call('GET', `/subscriptions/${encodeURIComponent(subscriptionId)}`)
+    const items = ((raw.items as Json | undefined)?.data as Json[] | undefined) ?? []
+    if (items.length !== 1 || !Number.isSafeInteger(cents) || cents <= 0) throw new Error('Unsupported subscription pricing')
+    const item = items[0]
+    const price = item.price as Json
+    const recurring = price.recurring as Json | undefined
+    if (price.currency !== 'usd' || recurring?.interval !== 'month' || Number(item.quantity ?? 1) !== 1) throw new Error('Expected one monthly USD plan')
+    if (price.unit_amount === cents) return
+    await call('POST', `/subscriptions/${encodeURIComponent(subscriptionId)}`, {
+      'items[0][id]': String(item.id),
+      'items[0][price_data][currency]': 'usd',
+      'items[0][price_data][product]': idOf(price.product),
+      'items[0][price_data][unit_amount]': String(cents),
+      'items[0][price_data][recurring][interval]': 'month',
+      proration_behavior: 'none',
     })
   }
 

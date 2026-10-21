@@ -30,7 +30,7 @@ export async function loginAction(
   const jar = await cookies()
   jar.set(
     SESSION_COOKIE,
-    createSessionValue(result.accountId, result.role),
+    createSessionValue(result.accountId, result.role, undefined, result.authVersion),
     sessionCookieOptions(),
   )
   redirect(safeReturnTo(String(formData.get('returnTo') ?? '')))

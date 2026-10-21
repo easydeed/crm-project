@@ -1,4 +1,4 @@
-import { and, eq, inArray } from 'drizzle-orm'
+import { and, eq, inArray, sql } from 'drizzle-orm'
 import { persistContactCandidates } from '@/db/persist-contact-candidates'
 import { getRuntimeDb } from '@/db/runtime'
 import { contactsTable, isLiveContact, liveContacts } from '@/db/live-contacts'
@@ -6,7 +6,7 @@ import { resolveAddressMatch } from '@/matching/resolve-match'
 
 export type ContactWriteInput = {
   name: string
-  email: string
+  email: string | null
   phone: string | null
   addressRaw: string
   closeDate: string | null
@@ -37,6 +37,7 @@ export async function updateContactForAccount(
       await tx
         .update(contactsTable)
         .set({
+          reviewVersion: sql`${contactsTable.reviewVersion} + 1`,
           name: input.name,
           email: input.email,
           phone: input.phone,

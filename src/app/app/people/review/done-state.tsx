@@ -26,7 +26,7 @@ export function DoneState({
         : REVIEW_ALL_ON_MAP
 
   return (
-    <main className="px-4 py-10">
+    <section className="px-4 py-10">
       <h1 className="max-w-xl text-[22px] font-semibold">{title}</h1>
       {mode !== 'wrong-house' && leftOutCount > 0 ? (
         <p className="mt-6">
@@ -43,6 +43,6 @@ export function DoneState({
           {REVIEW_BACK_TO_PEOPLE}
         </Link>
       </p>
-    </main>
+    </section>
   )
 }

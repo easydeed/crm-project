@@ -1,3 +1,4 @@
+import { demoBilling } from '@/billing/demo-checkout'
 import { createHash, randomInt } from 'node:crypto'
 import { eq } from 'drizzle-orm'
 import { isAddonEnabled, switchAddonOff } from '@/addons/state'
@@ -10,7 +11,7 @@ import { deliverText } from '@/text/deliver-text'
 import { MAX_CODES_PER_HOUR } from '@/text/text-guard'
 import { billingActive, codesSentSince } from '@/text/text-facts'
 
-export type VerifyResult = { ok: true } | { ok: false; message: string }
+export type VerifyResult = { ok: true; demoCode?: string } | { ok: false; message: string }
 
 const CODE_MINUTES = 10
 export const MAX_ATTEMPTS = 5
@@ -47,7 +48,7 @@ export async function requestPhoneCode(accountId: string, now = new Date(), code
       { to, body: `onrecord code: ${code}. It expires in ${CODE_MINUTES} minutes.`, idempotencyKey: `verify:${row!.id}` },
     )
     await db.update(textMessages).set({ providerId }).where(eq(textMessages.id, row!.id))
-    return { ok: true }
+    return { ok: true, ...(demoBilling() ? { demoCode: code } : {}) }
   } catch (err) {
     await db.update(textMessages).set({ error: err instanceof Error ? err.message : String(err) }).where(eq(textMessages.id, row!.id))
     return { ok: false, message: 'We could not send the code. Check the number and try again.' }

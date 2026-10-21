@@ -1,5 +1,7 @@
 'use server'
 
+import { recomposeUnsentSend } from '@/jobs/recompose-send'
+
 import { redirect } from 'next/navigation'
 import { readRequestSession } from '@/auth/current-session'
 import { adminUnpause, rerunSend } from '@/jobs/rerun-send'
@@ -24,4 +26,11 @@ export async function adminUnpauseAction(formData: FormData) {
   const admin = await adminId('/admin/deliverability')
   await adminUnpause(admin, targetAccountId)
   redirect('/admin/deliverability')
+}
+
+export async function recomposeSendAction(formData: FormData) {
+  const sendId = String(formData.get('sendId') ?? '')
+  const admin = await adminId(`/admin/sends/${sendId}`)
+  await recomposeUnsentSend(admin, sendId)
+  redirect(`/admin/sends/${sendId}`)
 }

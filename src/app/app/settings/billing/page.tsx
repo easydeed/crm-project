@@ -1,3 +1,4 @@
+import { formatDollars } from '@/config/costs'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { readRequestSession } from '@/auth/current-session'
@@ -81,6 +82,7 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
               <DetailsRow label="Plan" labels={LABELS}>
                 {PLAN_LINE}
               </DetailsRow>
+              {view.monthlyCents != null ? <DetailsRow label="Monthly total" labels={LABELS}>{formatDollars(view.monthlyCents)} including enabled extras</DetailsRow> : null}
               <DetailsRow label="Status" labels={LABELS}>
                 {statusWords(view.status, view.cancelAtPeriodEnd)}
               </DetailsRow>

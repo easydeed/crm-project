@@ -1,3 +1,4 @@
+import { accountMonthlyTotal } from '@/billing/addon-billing'
 import { eq } from 'drizzle-orm'
 import { getBillingGateway } from '@/billing/current'
 import { SubscriptionNotFound, type BillingInvoice } from '@/billing/gateway'
@@ -16,6 +17,7 @@ export type BillingView =
       cancelAtPeriodEnd: boolean
       cardLast4: string | null
       invoices: BillingInvoice[]
+      monthlyCents: number | null
     }
 
 async function cachedRow(accountId: string) {
@@ -47,6 +49,7 @@ export async function loadBillingView(accountId: string): Promise<BillingView> {
     cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
     cardLast4: sub.cardLast4,
     invoices,
+    monthlyCents: sub.monthlyCents ?? null,
   }
 }
 
@@ -64,6 +67,7 @@ export async function startCheckout(accountId: string, options: { successPath?: 
   const { url } = await getBillingGateway().createCheckoutSession({
     accountId,
     email: account.email,
+    monthlyCents: await accountMonthlyTotal(accountId),
     customerId: row?.stripeCustomerId ?? null,
     successUrl: options.successPath ? `${publicOrigin()}${options.successPath}` : `${billingUrl}?checkout=done`,
     cancelUrl: billingUrl,

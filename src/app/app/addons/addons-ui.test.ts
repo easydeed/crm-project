@@ -8,7 +8,7 @@ import { AddonRow } from '@/app/app/addons/addon-row'
 import { AddonsPanel } from '@/app/app/addons/addons-panel'
 import { BANDS, EMPTY_STATE, NEXT_BILL, type AddonRowData } from '@/app/app/addons/row-data'
 
-const src = (relative: string) => readFileSync(new URL(relative, import.meta.url), 'utf8')
+const src = (relative: string) => readFileSync(new URL(relative, import.meta.url), 'utf8').replaceAll('\r\n', '\n')
 
 function rowsFrom(enabled: Record<string, boolean> = {}): AddonRowData[] {
   return fixtureRegistry().list().map((addon) => ({
