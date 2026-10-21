@@ -22,7 +22,7 @@ export function TheNote({ facts, digest }: { facts: CanonicalFacts; digest: Dige
     <section id="sample" className="bg-mkt-cream text-mkt-paper-ink">
       <div className="mx-auto grid w-full max-w-[1280px] items-start gap-14 px-[clamp(20px,4vw,48px)] py-[clamp(64px,9vw,112px)] lg:grid-cols-2">
         <div className="flex flex-col gap-[22px]">
-          <h2 className={`${headingClass} text-mkt-navy`}>The note they actually open.</h2>
+          <h2 className={`${headingClass} text-mkt-navy`}>A note worth opening.</h2>
           <p className="max-w-[480px] text-[20px] leading-normal font-medium text-mkt-brown">
             It&apos;s about their house, not your listings. Your name sits at the bottom, and replies come to you.
           </p>

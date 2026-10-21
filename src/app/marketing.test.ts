@@ -89,6 +89,8 @@ const NOT_BUILT: Array<[string, RegExp]> = [
   ['the v0 export’s campaigns and weekly note', /campaign|weekly/i],
   // The note's footer is name, brokerage and DRE; it prints no phone number (OR-054).
   ['a phone number on every note', /dre and phone|name and number|phone on every note/i],
+  // Opens are not tracked, so the page does not say people open it (OR-054).
+  ['that homeowners open the note', /actually open/i],
 ]
 
 test.each(NOT_BUILT)('the marketing page does not claim %s (OR-052)', (_claim, pattern) => {
