@@ -81,7 +81,7 @@ async function markFailure(
   if (delay == null) {
     await db
       .update(jobs)
-      .set({ error: message, lockedAt: null })
+      .set({ error: message, lockedAt: null, ...(job.kind === 'stop_texting' ? { completedAt: now } : {}) })
       .where(eq(jobs.id, job.id))
     return
   }

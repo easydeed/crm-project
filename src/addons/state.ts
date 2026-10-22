@@ -3,6 +3,8 @@ import { paidAddonKeys } from '@/billing/paid-state'
 import { withBillingLock } from '@/billing/account-lock'
 import { demoBilling } from '@/billing/demo-checkout'
 import { assertCheckoutAllowsChanges } from '@/billing/checkout-quote'
+import { finishStopRecovery } from '@/text/stop-state'
+import { TEXT_CALL_LIST_KEY } from '@/addons/text-call-list'
 /**
  * The only module that reads or writes account_addons (enforced by addons-access.test.ts),
  * the same pattern as src/db/live-contacts.ts. Every function takes accountId first.
@@ -174,7 +176,11 @@ async function accountChange(accountId: string, key: string, enabled: boolean, c
   const { db } = getRuntimeDb()
   const commit = () => db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${accountId}))`)
-    return withTransactionDb(tx as unknown as typeof db, change)
+    return withTransactionDb(tx as unknown as typeof db, async () => {
+      const result = await change()
+      if (result.ok && enabled && key === TEXT_CALL_LIST_KEY && demoBilling()) await finishStopRecovery(accountId)
+      return result
+    })
   })
   if (demoBilling() || !getAddonRegistry().get(key)?.priceCents) return commit()
   return withBillingLock(accountId, async () => {
@@ -189,6 +195,7 @@ async function accountChange(accountId: string, key: string, enabled: boolean, c
     if (!result.ok) return result
     try { await syncAddonBilling(accountId, key, enabled) }
     catch { return { ok: false, reason: 'forbidden', message: 'Your billing change could not be confirmed. Reload Billing before trying again.' } }
+    if (enabled && key === TEXT_CALL_LIST_KEY) await finishStopRecovery(accountId)
     return result
   })
 }

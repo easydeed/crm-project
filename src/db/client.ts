@@ -8,9 +8,9 @@ import {
 } from '../config/database-url'
 import * as schema from './schema'
 
-export function createPostgresClient(url: string) {
+export function createPostgresClient(url: string, max = 1) {
   return postgres(url, {
-    max: 1,
+    max,
     connect_timeout: 10,
     idle_timeout: 20,
     prepare: !usesTransactionPooler(url),
@@ -18,8 +18,8 @@ export function createPostgresClient(url: string) {
   })
 }
 
-export function createDb(url: string) {
-  const client = createPostgresClient(url)
+export function createDb(url: string, max = 1) {
+  const client = createPostgresClient(url, max)
   return { client, db: drizzle(client, { schema }) }
 }
 
@@ -27,6 +27,6 @@ export function createSessionDb() {
   return createDb(loadDatabaseUrl())
 }
 
-export function createRuntimeDb() {
-  return createDb(loadDatabasePoolerUrl())
+export function createRuntimeDb(max = 1) {
+  return createDb(loadDatabasePoolerUrl(), max)
 }

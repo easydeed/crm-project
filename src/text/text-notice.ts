@@ -1,17 +1,17 @@
-import { jobs } from '@/db/schema'
-import { and, desc, eq, isNull, sql } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
+import { loadStopRecovery } from '@/text/stop-state'
 import { isAddonEnabled } from '@/addons/state'
 import { TEXT_CALL_LIST_KEY } from '@/addons/text-call-list'
 import { getRuntimeDb } from '@/db/runtime'
 import { textMessages } from '@/db/schema-text'
 
-export type TextNotice = 'billing_pending' | 'stopped' | 'unreachable' | null
+export type TextNotice = 'billing_pending' | 'billing_failed' | 'stopped' | 'unreachable' | null
 
 /** Why the call-list text went off, if texting stopped it. Gone once the agent verifies again or switches it back on. */
 export async function loadTextNotice(accountId: string): Promise<TextNotice> {
   const { db } = getRuntimeDb()
-  const [pending] = await db.select({ id: jobs.id }).from(jobs).where(and(eq(jobs.kind, 'stop_texting'), isNull(jobs.completedAt), sql`${jobs.payload}->>'accountId' = ${accountId}`)).limit(1)
-  if (pending) return 'billing_pending'
+  const recovery = await loadStopRecovery(accountId)
+  if (recovery) return recovery === 'failed' ? 'billing_failed' : 'billing_pending'
   if (await isAddonEnabled(accountId, TEXT_CALL_LIST_KEY)) return null
   const [latest] = await db
     .select({ kind: textMessages.kind, permanentFailure: textMessages.permanentFailure })

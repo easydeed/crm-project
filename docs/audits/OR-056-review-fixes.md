@@ -208,3 +208,37 @@ but the later strict login-mismatch comparison failed by one pixel. This failure
 is retained, not rerun away. Extra captures now precede strict comparison so they
 are not lost when it fails, and strict expected/actual/diff PNGs are preserved.
 The comparison's original nonzero exit is still returned. See 05-open.
+
+## OR-056 round three — 2026-10-22
+
+Limited to the three independent-review findings. Exhausted stop_texting failures
+now finish their receipt while retaining the error. The dashboard distinguishes
+failed from pending billing: no claim is made that billing stopped. A fresh STOP
+or Billing retry creates a fresh attempt budget; confirmed re-enable completes
+and clears recovery receipts. Recovery persistence moved to text/stop-state.ts
+so add-on confirmation can clear it without a state/recovery import cycle.
+
+Billing explains automatic retries, possible continuing charges, and exhausted
+retries. The exhausted state provides an authenticated, writable-account retry
+form and account-addressed support link. Dashboard links target that section.
+
+Operation queues are keyed by account/send; a reused transaction-pooler pool
+allows up to ten simultaneous lock transactions. Ordinary database clients still
+default to one connection. Same-key acquisition keeps the five-second timeout.
+The pool remains bounded: this is not a production capacity guarantee.
+
+Added three STOP lifecycle tests and Billing rendering coverage. Replaced the
+old different-key-blocks test with a same-key timeout test and an independent-key
+concurrency test, as requested. Mutation probes follow the renamed timeout test
+and pool argument and add five round-three regressions. No marketing changes,
+new dependencies, schema changes, or sending eligibility changes.
+
+The login-mismatch capture instability was newly reported during this review
+cycle, not a weeks-old issue. Published ef4ad6b evidence had raw 73/73 exact and
+strict 72/73, with one differing login pixel; this is not being masked or fixed
+as part of these three findings. PR remains draft; previews allowed, no merge.
+
+Round-three local validation: targeted tests 9/9, typecheck, lint and invariants
+passed. Five new deliberate regressions were caught by intended assertions and
+exact source bytes restored. The first Windows full mutation invocation stopped
+without a JSON result; it is not counted as proof. Final Linux CI is authoritative.

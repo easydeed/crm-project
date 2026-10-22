@@ -29,7 +29,7 @@ describe.skipIf(!url)('pooler transaction locks', () => {
     expect(ran).toBe(false)
     expect((error as Error & { cause: { code: string } }).cause.code).toBe('55P03')
   })
-  test('the local one-connection queue has a timeout too', async () => {
+  test('the same-key local queue has a timeout too', async () => {
     let entered!: () => void, release!: () => void
     const ready = new Promise<void>((resolve) => { entered = resolve })
     const hold = new Promise<void>((resolve) => { release = resolve })
@@ -37,9 +37,22 @@ describe.skipIf(!url)('pooler transaction locks', () => {
     await ready
     const timer = setTimeout(release, 6_500)
     let ran = false, error: unknown
-    try { await withOperationLock('round-two-local-other', async () => { ran = true }) } catch (caught) { error = caught }
+    try { await withOperationLock('round-two-local-owner', async () => { ran = true }) } catch (caught) { error = caught }
     finally { clearTimeout(timer); release(); await owner }
     expect(ran).toBe(false)
     expect(String(error)).toMatch(/lock is busy/)
+  })
+  test('a long send does not block a different account billing key', async () => {
+    let entered!: () => void, release!: () => void
+    const ready = new Promise<void>((resolve) => { entered = resolve })
+    const hold = new Promise<void>((resolve) => { release = resolve })
+    const owner = withOperationLock('send:round-three', async () => { entered(); await hold })
+    await ready
+    const timer = setTimeout(release, 6_500)
+    try {
+      const started = Date.now()
+      expect(await withOperationLock('billing:other-account', async () => 'changed')).toBe('changed')
+      expect(Date.now() - started).toBeLessThan(4_000)
+    } finally { clearTimeout(timer); release(); await owner }
   })
 })
