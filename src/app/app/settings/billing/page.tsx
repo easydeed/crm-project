@@ -12,6 +12,8 @@ import { PlanButton } from '@/app/app/settings/billing/plan-button'
 import { DetailsRow, DetailsTable } from '@/app/app/details-table'
 import { inlineLinkClass, linkClass, panelBodyClass, panelClass, panelHeaderClass } from '@/app/app/people/ui'
 import { SUPPORT_EMAIL, supportMailto } from '@/config/support'
+import { loadStopRecovery } from '@/text/stop-state'
+import { TextingRecovery } from '@/app/app/settings/billing/texting-recovery'
 
 /** The plan table's label column: 120px at 390, 160px from sm, as drawn. */
 const LABELS = 'grid-cols-[120px_1fr] sm:grid-cols-[160px_1fr]'
@@ -34,6 +36,7 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
   const params = await searchParams
   const notice = Object.entries(params).map(([key, value]) => NOTICES[`${key}=${value}`]).find(Boolean)
   const view = await loadBillingView(accountId)
+  const textingRecovery = await loadStopRecovery(accountId)
   const tz = account.timezone
 
   return (
@@ -48,6 +51,7 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
         {notice ? <p className="mt-3 max-w-xl text-[15px]" role="status">{notice}</p> : null}
       </div>
 
+      <TextingRecovery state={textingRecovery} accountId={accountId} readOnly={readOnly} />
       {view.kind === 'missing' ? (
         <section className={`${panelClass} ${panelBodyClass}`}>
           <h2 className="text-[17px] font-semibold">{MISSING_PLAN}</h2>

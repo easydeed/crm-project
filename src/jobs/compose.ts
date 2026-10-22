@@ -1,5 +1,5 @@
 import { recipientFingerprint } from '@/jobs/recipient-fingerprint'
-import { and, eq, isNull, sql } from 'drizzle-orm'
+import { and, eq, inArray, isNull, sql } from 'drizzle-orm'
 import { getRuntimeDb, withTransactionDb } from '@/db/runtime'
 import { contactSubscriptions, sends, sendRecipients } from '@/db/schema'
 import { liveContacts } from '@/db/live-contacts'
@@ -26,6 +26,8 @@ const composeInTransaction: JobHandler = async (payload, ctx) => {
     .limit(1)
   if (!send) throw new Error('Send not found for this account')
   if (send.state !== 'scheduled') return
+  const targets = Array.isArray(payload.contactIds) ? payload.contactIds.map(String) : null
+  if (targets && !targets.length) throw new Error('Targeted composition requires recipients')
 
   const people = await db
     .select({ id: liveContacts.id, email: liveContacts.email, name: liveContacts.name, addressRaw: liveContacts.addressRaw, parcelId: liveContacts.parcelId, closeDate: liveContacts.closeDate, status: liveContacts.status })
@@ -42,11 +44,12 @@ const composeInTransaction: JobHandler = async (payload, ctx) => {
       and(
         eq(liveContacts.accountId, accountId),
         eq(liveContacts.status, 'matched'),
+        targets ? inArray(liveContacts.id, targets) : undefined,
         sql`${liveContacts.parcelId} is not null`,
       ),
     )
 
-  const skips: Skip[] = []
+  const skips: Skip[] = targets ? (send.skips ?? []).filter((skip) => !targets.includes(skip.contactId)) : []
   const emails = people.flatMap((person) => (person.email ? [person.email] : []))
   const suppressed = await suppressedHashes(db, emails, 'monthly')
   for (const person of people) {

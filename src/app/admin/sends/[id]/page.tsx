@@ -17,7 +17,7 @@ export default async function AdminSendDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ tab?: string; read?: string }>
+  searchParams: Promise<{ tab?: string; read?: string; recompose?: string }>
 }) {
   const session = await readRequestSession()
   if (!session) redirect('/login?returnTo=/admin/sends')
@@ -36,6 +36,9 @@ export default async function AdminSendDetailPage({
         {formatWhen(send.scheduledFor)} · {send.state} · {send.composedCount} composed ·{' '}
         {send.skippedCount} skipped · {send.sent} sent · {send.failed} failed
       </p>
+      {query.recompose ? <p className="mt-3 text-[15px]" role="status">{query.recompose === 'done'
+        ? 'Recomposed the changed, never-attempted recipients. Other receipts were preserved.'
+        : 'Nothing was recomposed. Only unfinished sends with changed, never-attempted recipients can be rebuilt.'}</p> : null}
       <form action={rerunSendAction} className="mt-6">
         <input name="sendId" type="hidden" value={send.id} />
         <button
@@ -45,10 +48,10 @@ export default async function AdminSendDetailPage({
           Re-run this send
         </button>
       </form>
-      <form action={recomposeSendAction} className="mt-4">
+      {send.state === 'ready' ? <form action={recomposeSendAction} className="mt-4">
         <input name="sendId" type="hidden" value={send.id} />
         <button className={linkClass} type="submit">Recompose changed people who were never sent</button>
-      </form>
+      </form> : null}
       <p className="mt-2 max-w-xl text-[15px]">Uncertain deliveries stay held. Check their outcome with the provider before any retry.</p>
       <p className="mt-8 flex gap-4 text-[15px]">
         <Link className={linkClass} href={tabHref(send.id, 'composed')}>

@@ -79,6 +79,12 @@ export function sessionCookieOptions() {
 }
 
 export function safeReturnTo(value: string | null | undefined) {
-  if (!value || !value.startsWith('/') || value.startsWith('//')) return '/app'
+  if (!value || !value.startsWith('/') || value.startsWith('//') || /[\\\u0000-\u0020\u007f]/.test(value)) return '/app'
+  // Decode once to reject escaped slash/backslash and control-character targets.
+  try {
+    const decoded = decodeURIComponent(value)
+    if (decoded.startsWith('//') || /[\\\u0000-\u0020\u007f]/.test(decoded)) return '/app'
+    if (new URL(value, 'https://onrecord.invalid').origin !== 'https://onrecord.invalid') return '/app'
+  } catch { return '/app' }
   return value
 }

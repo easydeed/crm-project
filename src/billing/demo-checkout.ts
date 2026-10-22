@@ -6,6 +6,9 @@ import { openToken, sealToken } from '@/auth/signed-token'
 import { getRuntimeDb } from '@/db/runtime'
 import { subscriptions } from '@/db/schema'
 import type { CheckoutInput } from '@/billing/gateway'
+import { accountMonthlyTotal } from '@/billing/addon-billing'
+import { withTransactionDb } from '@/db/runtime'
+import { sql } from 'drizzle-orm'
 
 export const demoBilling = () => isLocalE2E() || isHostedDemo()
 type Checkout = { accountId: string; successPath: string; monthlyCents: number }
@@ -30,13 +33,15 @@ export async function completeDemoCheckout(token: string, accountId: string) {
   const values = {
     stripeCustomerId: `cus_demo_${accountId}`, stripeSubId: `sub_demo_${accountId}`,
     plan: 'base', status: 'active', cancelAtPeriodEnd: false,
-    currentPeriodEnd: new Date(Date.now() + 30 * 86_400_000), monthlyCents: data.monthlyCents,
+    currentPeriodEnd: new Date(Date.now() + 30 * 86_400_000),
   }
   // Replaying a confirmation cannot extend or uncancel an existing active plan.
   await db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${accountId}))`)
     const [existing] = await tx.select().from(subscriptions).where(eq(subscriptions.accountId, accountId)).for('update')
     if (existing?.status === 'active') return
-    await tx.insert(subscriptions).values({ accountId, ...values }).onConflictDoUpdate({ target: subscriptions.accountId, set: values })
+    const monthlyCents = await withTransactionDb(tx as unknown as typeof db, () => accountMonthlyTotal(accountId))
+    await tx.insert(subscriptions).values({ accountId, ...values, monthlyCents }).onConflictDoUpdate({ target: subscriptions.accountId, set: { ...values, monthlyCents } })
   })
   return data.successPath
 }

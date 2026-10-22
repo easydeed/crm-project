@@ -1,3 +1,4 @@
+import { queueStopRecovery, finishStopRecovery } from '@/text/stop-recovery'
 import { demoBilling } from '@/billing/demo-checkout'
 import { createHash, randomInt } from 'node:crypto'
 import { eq } from 'drizzle-orm'
@@ -77,11 +78,14 @@ export async function confirmPhoneCode(accountId: string, code: string, now = ne
 export const PHONE_CHANGED_ADDON_OFF = 'Your phone changed, so we turned off Text me the call list. Verify the new number to turn it back on.'
 
 /** A new phone is unverified. Any open code dies with the old number, and the text add-on goes off. */
-export async function onPhoneChanged(accountId: string): Promise<{ addonTurnedOff: boolean }> {
+export async function onPhoneChanged(accountId: string): Promise<{ addonTurnedOff: boolean; error?: string }> {
   const { db } = getRuntimeDb()
   await db.update(accounts).set({ phoneVerifiedAt: null }).where(eq(accounts.id, accountId))
   await db.delete(phoneVerifications).where(eq(phoneVerifications.accountId, accountId))
-  if (!(await isAddonEnabled(accountId, TEXT_CALL_LIST_KEY))) return { addonTurnedOff: false }
-  await switchAddonOff(accountId, TEXT_CALL_LIST_KEY)
-  return { addonTurnedOff: true }
+  const wasOn = await isAddonEnabled(accountId, TEXT_CALL_LIST_KEY)
+  await queueStopRecovery(accountId)
+  const result = await switchAddonOff(accountId, TEXT_CALL_LIST_KEY)
+  if (!result.ok) return { addonTurnedOff: false, error: `Your phone was saved and texts are paused, but the paid add-on could not be turned off. ${result.message}` }
+  await finishStopRecovery(accountId)
+  return { addonTurnedOff: wasOn }
 }

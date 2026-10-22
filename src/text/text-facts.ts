@@ -1,3 +1,4 @@
+import { queueStopRecovery, finishStopRecovery, TextBillingFailure } from '@/text/stop-recovery'
 import { and, eq, gte, sql } from 'drizzle-orm'
 import { loadBillingState } from '@/billing/load-state'
 import { billingAllowsSending } from '@/billing/status'
@@ -26,7 +27,14 @@ export async function codesSentSince(db: Db, accountId: string, since: Date) {
  * Verification is cleared, the add-on goes off, and a row explains it on the dashboard.
  */
 export async function stopTexting(db: Db, accountId: string, toPhone: string, kind: 'stop_received' | 'call_list', now: Date) {
-  await db.update(accounts).set({ phoneVerifiedAt: null }).where(eq(accounts.id, accountId))
-  await switchAddonOff(accountId, TEXT_CALL_LIST_KEY)
-  if (kind === 'stop_received') await db.insert(textMessages).values({ accountId, kind, toPhone, createdAt: now })
+  try {
+    await queueStopRecovery(accountId)
+    await db.update(accounts).set({ phoneVerifiedAt: null }).where(eq(accounts.id, accountId))
+    if (kind === 'stop_received') await db.insert(textMessages).values({ accountId, kind, toPhone, createdAt: now })
+    const result = await switchAddonOff(accountId, TEXT_CALL_LIST_KEY)
+    if (!result.ok) throw new TextBillingFailure(`Texts are paused, but the paid add-on switch-off failed: ${result.message}`)
+    await finishStopRecovery(accountId)
+  } catch (error) {
+    throw error instanceof TextBillingFailure ? error : new TextBillingFailure(`Text billing recovery failed: ${error instanceof Error ? error.message : String(error)}`)
+  }
 }

@@ -1,6 +1,7 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { readRequestSession } from '@/auth/current-session'
 import { saveAppearance, saveDetails, saveSending } from '@/app/app/settings/save'
 import type { AppearanceState, DetailsState, SendingState } from '@/app/app/settings/types'
@@ -17,7 +18,9 @@ export async function saveDetailsAction(
   _prev: DetailsState,
   formData: FormData,
 ): Promise<DetailsState> {
-  return saveDetails(await requireSession(), formData)
+  const result = await saveDetails(await requireSession(), formData)
+  if (result.savedAt || result.detailsPersisted) revalidatePath('/app/settings')
+  return result
 }
 
 export async function saveAppearanceAction(

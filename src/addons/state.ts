@@ -1,4 +1,10 @@
-import { syncAddonBilling } from '@/billing/addon-billing'
+import { initializeAddonBilling, syncAddonBilling } from '@/billing/addon-billing'
+import { paidAddonKeys } from '@/billing/paid-state'
+import { withBillingLock } from '@/billing/account-lock'
+import { demoBilling } from '@/billing/demo-checkout'
+import { assertCheckoutAllowsChanges } from '@/billing/checkout-quote'
+import { finishStopRecovery } from '@/text/stop-state'
+import { TEXT_CALL_LIST_KEY } from '@/addons/text-call-list'
 /**
  * The only module that reads or writes account_addons (enforced by addons-access.test.ts),
  * the same pattern as src/db/live-contacts.ts. Every function takes accountId first.
@@ -28,6 +34,12 @@ async function rowsFor(accountId: string) {
     .where(eq(accountAddons.accountId, accountId))
 }
 
+async function paidKeysFor(accountId: string, rows?: Awaited<ReturnType<typeof rowsFor>>) {
+  const stored = rows ?? await rowsFor(accountId)
+  const keys = stored.filter((row) => row.enabled && (getAddonRegistry().get(row.key)?.priceCents ?? 0) > 0).map((row) => row.key)
+  return paidAddonKeys(accountId, keys)
+}
+
 /** The single check any feature uses. Unknown or switched off is false. */
 export async function isAddonEnabled(accountId: string, key: string): Promise<boolean> {
   if (!getAddonRegistry().get(key)) return false
@@ -37,7 +49,8 @@ export async function isAddonEnabled(accountId: string, key: string): Promise<bo
     .from(accountAddons)
     .where(and(eq(accountAddons.accountId, accountId), eq(accountAddons.addonKey, key)))
     .limit(1)
-  return row?.enabled === true
+  const keys = getAddonRegistry().get(key)!.priceCents > 0 ? await paidKeysFor(accountId) : null
+  return keys ? keys.includes(key) : row?.enabled === true
 }
 
 /**
@@ -52,7 +65,7 @@ export async function addonConfig(accountId: string, key: string): Promise<Addon
     .from(accountAddons)
     .where(and(eq(accountAddons.accountId, accountId), eq(accountAddons.addonKey, key)))
     .limit(1)
-  return row?.enabled ? (row.config as AddonConfig) : null
+  return row && await isAddonEnabled(accountId, key) ? (row.config as AddonConfig) : null
 }
 
 /** Every registered add-on with this account's state, plus rows whose key nothing registers. */
@@ -60,9 +73,10 @@ export async function loadAddonStates(accountId: string): Promise<{ states: Addo
   const registry = getAddonRegistry()
   const rows = await rowsFor(accountId)
   const byKey = new Map(rows.map((row) => [row.key, row]))
+  const keys = await paidKeysFor(accountId, rows)
   const states = registry.list().map((addon) => {
     const row = byKey.get(addon.key)
-    return { addon, enabled: row?.enabled === true, config: (row?.config ?? {}) as AddonConfig }
+    return { addon, enabled: addon.priceCents > 0 && keys ? keys.includes(addon.key) : row?.enabled === true, config: (row?.config ?? {}) as AddonConfig }
   })
   const unknown = rows.filter((row) => !registry.get(row.key)).map((row) => ({ key: row.key, enabled: row.enabled }))
   return { states, unknown }
@@ -108,7 +122,7 @@ async function switchAddonOnInTransaction(accountId: string, key: string, submit
     config = parsed.data as AddonConfig
   }
 
-  if (addon.priceCents > 0) {
+  if (addon.priceCents > 0 && demoBilling()) {
     try { await syncAddonBilling(accountId, key, true) }
     catch { return { ok: false, reason: 'forbidden', message: 'We could not update your bill. Nothing was switched on. Try again.' } }
   }
@@ -129,7 +143,7 @@ async function switchAddonOffInTransaction(accountId: string, key: string): Prom
   const addon = getAddonRegistry().get(key)
   if (!addon) return { ok: false, reason: 'unknown', message: 'That add-on is not available.' }
   const { db } = getRuntimeDb()
-  if (addon.priceCents > 0) {
+  if (addon.priceCents > 0 && demoBilling()) {
     try { await syncAddonBilling(accountId, key, false) }
     catch { return { ok: false, reason: 'forbidden', message: 'We could not update your bill. Try again.' } }
   }
@@ -158,18 +172,38 @@ export async function forceEnableAddon(accountId: string, key: string, adminAcco
 
 // One account's switch and its renewal update are serialized across workers.
 // Services reached through the demo gateway see this same transaction.
-async function accountChange(accountId: string, change: () => Promise<SwitchResult>) {
+async function accountChange(accountId: string, key: string, enabled: boolean, change: () => Promise<SwitchResult>): Promise<SwitchResult> {
   const { db } = getRuntimeDb()
-  return db.transaction(async (tx) => {
+  const commit = () => db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${accountId}))`)
-    return withTransactionDb(tx as unknown as typeof db, change)
+    return withTransactionDb(tx as unknown as typeof db, async () => {
+      const result = await change()
+      if (result.ok && enabled && key === TEXT_CALL_LIST_KEY && demoBilling()) await finishStopRecovery(accountId)
+      return result
+    })
+  })
+  if (demoBilling() || !getAddonRegistry().get(key)?.priceCents) return commit()
+  return withBillingLock(accountId, async () => {
+    try {
+      await assertCheckoutAllowsChanges(accountId)
+      // Initialize a legacy provider's canonical state before changing DB config.
+      await initializeAddonBilling(accountId, key)
+    } catch (error) {
+      return { ok: false, reason: 'forbidden', message: error instanceof Error ? `We could not confirm your bill: ${error.message}` : 'Could not confirm your bill.' }
+    }
+    const result = await commit() // A rollback here cannot change Stripe.
+    if (!result.ok) return result
+    try { await syncAddonBilling(accountId, key, enabled) }
+    catch { return { ok: false, reason: 'forbidden', message: 'Your billing change could not be confirmed. Reload Billing before trying again.' } }
+    if (enabled && key === TEXT_CALL_LIST_KEY) await finishStopRecovery(accountId)
+    return result
   })
 }
 
 export async function switchAddonOn(accountId: string, key: string, submitted: Record<string, unknown> | null): Promise<SwitchResult> {
-  return accountChange(accountId, () => switchAddonOnInTransaction(accountId, key, submitted))
+  return accountChange(accountId, key, true, () => switchAddonOnInTransaction(accountId, key, submitted))
 }
 
 export async function switchAddonOff(accountId: string, key: string): Promise<SwitchResult> {
-  return accountChange(accountId, () => switchAddonOffInTransaction(accountId, key))
+  return accountChange(accountId, key, false, () => switchAddonOffInTransaction(accountId, key))
 }

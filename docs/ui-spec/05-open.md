@@ -221,6 +221,17 @@ Each item says how it is known:
     - Unresolved. The pixel comparison is the main instrument for the re-skin, and an instrument
       that occasionally lies is worse than one that is broken.
 
+33. **`login-mismatch` has a newly reported unstable capture (nine differing pixels).**
+    Independent review of PR #75 reported this on `1088036`. Record it separately
+    from an intentional auth-layout change: "9px" is a differing-pixel count, not
+    proof of a nine-pixel layout displacement. OR-056's same-runner, fresh-seed
+    main/repeat-main evidence measures it alongside the known bulk-bar captures.
+    Its first Linux run reproduced eight differing pixels at x 910–911, y 604–608
+    between unchanged auth layouts. Main/repeat-main matched 73/73 and the strict
+    comparison passed 73/73, so a passing strict run does not erase this observed
+    raw-capture instability. Evidence: OR-056 run `39664635767`.
+    Do not mask it or increase pixel tolerance to obtain a green comparison.
+
 ## Smaller things
 
 - The `start` capture shows whichever MLS ID the last browser run searched for, not the
@@ -228,3 +239,13 @@ Each item says how it is known:
 - The per-person review entry is a redirect, so the browser pass covers it through the review
   queue (`review-couldnt-find`). The edit screen is captured since OR-044a (`person-edit`), so
   the 390px checks now run on both.
+
+### OR-056 round-two capture evidence (4aaff61)
+
+Linux run 39683181324: raw main/repeat-main and main/head both matched all
+73 states, marketing included. The later strict Playwright main/head pass failed
+login-mismatch by one pixel (72/73 comparisons passed; 86 including auth setup).
+No tolerance, skip, assertion or baseline was changed to hide it. This remains
+part of the open intermittent login capture issue, not a proven layout regression.
+The failure occurred before the extra state captures; the harness now runs those
+first and preserves strict failure PNGs while returning the original failure code.

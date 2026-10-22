@@ -36,8 +36,13 @@ export async function saveDetails(session: SessionPayload, formData: FormData): 
     mlsAgentId: mls.mlsAgentId,
   })
   if (before && before.phone !== phone.phone) {
-    const { addonTurnedOff } = await onPhoneChanged(session.accountId)
-    if (addonTurnedOff) return { savedAt: Date.now(), notice: PHONE_CHANGED_ADDON_OFF }
+    try {
+      const { addonTurnedOff, error } = await onPhoneChanged(session.accountId)
+      if (error) return { error, detailsPersisted: true }
+      if (addonTurnedOff) return { savedAt: Date.now(), notice: PHONE_CHANGED_ADDON_OFF }
+    } catch {
+      return { error: 'Your phone was saved, but we could not confirm the text add-on or billing state. Reload Settings and Billing before trying again.', detailsPersisted: true }
+    }
   }
   return { savedAt: Date.now() }
 }

@@ -16,6 +16,8 @@
 
 ## Vercel
 
+- [ ] **Unset `ONRECORD_DEMO` on production.** Demo billing and texting are stand-ins. Production must never opt into them; verify the runtime environment before opening delivery or billing gates.
+
 - [ ] **Pro plan, and the cron back to every minute.** `vercel.json` carries `0 9 * * *` for a Hobby preview (OR-049). Vercel Hobby caps cron at one run per day. The send pipeline was built for every-minute ticks. On a daily tick every send goes out the day after the dashboard says it will, retries stretch from 36 minutes to three days, and the 10-jobs-per-tick limit caps the service at roughly three accounts' sends per day. Production requires Pro and a minute-by-minute schedule. This is not a soft preference. Vercel runs the schedule in UTC, so `0 9 * * *` is 01:00 or 02:00 Pacific. When the schedule goes back to `* * * * *`, delete this item: `src/jobs/cron-schedule.test.ts` fails while it describes a schedule `vercel.json` no longer carries.
 
 ## Links and mail

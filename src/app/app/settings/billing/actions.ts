@@ -6,8 +6,17 @@ import { readRequestSession } from '@/auth/current-session'
 import { effectiveAccountId } from '@/auth/effective-account'
 import { assertWritable } from '@/auth/write-guard'
 import { setCancelAtPeriodEnd, startCheckout } from '@/billing/account-billing'
+import { queueStopRecovery } from '@/text/stop-state'
 
 const BILLING = '/app/settings/billing'
+
+export async function retryTextingStopAction() {
+  const accountId = await writableAccountId()
+  await queueStopRecovery(accountId)
+  revalidatePath(BILLING)
+  revalidatePath('/app')
+  redirect(`${BILLING}#texting-recovery`)
+}
 
 async function writableAccountId() {
   const session = await readRequestSession()

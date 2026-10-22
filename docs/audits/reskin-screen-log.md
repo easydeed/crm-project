@@ -42,6 +42,48 @@ old threshold. OR-030's five muted-text screens are the change it would have hid
 | OR-048 constraints and findings | 96ba8d3 → b2e1f6e | 0 (of 72) | 0 | Not a re-skin: documents and one test. Step 0: three fresh-seed captures of b2e1f6e, byte-identical 72 of 72, all hashing 852864fe2a6b9495, the same hash as main's capture taken the same day. |
 | OR-053 marketing page | 0239934 → d6161e9 | home, sample, sample-text-dark (of 72); home-dark new | home and sample | Step 0: three fresh-seed captures of d6161e9, byte-identical 73 of 73, all hashing 91b62090f13e6b29. Main captured the same day. home is the landing page built from the audited design (OR-052): 900px tall before, 6062px now. sample and sample-text-dark are both /sample, which took the marketing header, an Archivo `<h1>` and the footer: each 259px taller, the preview panel unchanged. people-bulk-bar differs by one pixel at (791, 681), the known unstable corner (05-open #32), not this packet. The other 68 are byte-identical. home-dark is a new capture: the page's gold and cream have dark values, so dark is measured. |
 
+## OR-055 inventory added by OR-056
+
+Measured `775f7d0` → `1088036` on one Linux runner, 2026-10-21, with a fresh
+fixture seed for each build. [Evidence run](https://github.com/easydeed/crm-project/actions/runs/39664635767),
+artifact `or056-desktop-evidence`, `or055.json` and the parent/main PNG directories.
+The requested twenty states are listed individually below. The measurement also
+found a twenty-first change in the review counter; it is included rather than
+silently excluded. Counts are from this exact capture, with no pixel tolerance.
+
+| OR-055 screen | Changed pixels | Why it changed |
+|---|---:|---|
+| dashboard | 8,051 | Homeowners copy now says "The people on your list", rather than claiming everyone was a past closing. |
+| dashboard-dark | 8,205 | The same homeowners wording, rendered in dark mode. |
+| dashboard-call-open | 8,051 | The same homeowners wording below the open call panel. |
+| dashboard-empty | 9,235 | The same homeowners wording, plus removal of the unsupported "four minutes" setup promise. |
+| dashboard-no-plan | 8,051 | The same homeowners wording in the no-plan state. |
+| dashboard-past-due | 8,051 | The same homeowners wording in the past-due state. |
+| dashboard-paused | 8,051 | The same homeowners wording in the paused state. |
+| dashboard-system-paused | 8,051 | The same homeowners wording in the system-pause state. |
+| dashboard-quiet | 8,051 | The same homeowners wording in the quiet state. |
+| dashboard-quiet-dark | 8,205 | The same homeowners wording in dark quiet state. |
+| dashboard-view-as | 8,051 | The same homeowners wording below the view-as banner. |
+| login | 29,018 | New working "Forgot your password?" link changes the centered auth column layout. |
+| login-dark | 29,396 | The same recovery link/layout in dark mode. |
+| login-mismatch | 34,267 | The same recovery link/layout with the mismatch message; tiny capture instability is separately logged in 05-open #33. |
+| login-signing-in | 34,114 | The same recovery link/layout with the pending form. |
+| register | 45,823 | Demo next-step text no longer promises a Stripe card/payment step; page height 1036 → 1010. |
+| register-dark | 46,154 | The same demo next-step text in dark mode; height 1036 → 1010. |
+| register-creating | 45,823 | The same demo next-step text during submission; height 1036 → 1010. |
+| register-short-password | 44,385 | The same demo next-step text with validation; height 1065 → 1040. |
+| register-taken | 44,385 | The same demo next-step text with the taken-email error; height 1065 → 1040. |
+| review-couldnt-find (additional measured state) | 707 | Starting the rotated queue at Helen now correctly reads "1 of 7", rather than "4 of 7" and finishing early. |
+
+The other 52 states are identical in this parent/main capture. All four marketing
+captures (`home`, `home-dark`, `sample`, `sample-text-dark`) are identical.
+
+First OR-056 evidence on `e01cdd3`: main/repeat-main raw captures matched 73/73.
+Main/head raw captures matched 72/73, with eight differing `login-mismatch`
+pixels at x 910–911, y 604–608. The existing strict desktop comparison, against
+fresh main baselines on that same runner, passed 73/73 (87 including auth setup).
+No mask, tolerance, omitted state, or changed comparison assertion was used.
+
 ## Shared classes move screens early
 
 `src/app/app/people/ui.ts` holds classes shared across screens (mutedClass, fieldClass, buttonClass,

@@ -1,0 +1,17 @@
+import { afterEach, expect, test, vi } from 'vitest'
+const factory = vi.hoisted(() => ({ runtime: vi.fn(), direct: vi.fn() }))
+vi.mock('@/db/client', () => ({ createRuntimeDb: factory.runtime, createDb: factory.direct }))
+vi.mock('@/config/e2e', () => ({ isLocalE2E: () => false }))
+vi.mock('@/db/integration-session', () => ({ tryLoadIntegrationDatabaseUrl: () => null }))
+afterEach(() => { vi.resetModules(); vi.clearAllMocks() })
+test('runtime operation locks reuse the transaction pooler, never the session URL', async () => {
+  const execute = vi.fn(async () => [])
+  factory.runtime.mockReturnValue({ db: { transaction: async (work: (tx: { execute: typeof execute }) => Promise<unknown>) => work({ execute }) } })
+  factory.direct.mockImplementation(() => { throw new Error('Direct session URL must not be read') })
+  const { withOperationLock } = await import('@/db/operation-lock')
+  expect(await withOperationLock('one', async () => 1)).toBe(1)
+  expect(await withOperationLock('two', async () => 2)).toBe(2)
+  expect(factory.runtime).toHaveBeenCalledTimes(1)
+  expect(factory.direct).not.toHaveBeenCalled()
+  expect(execute).toHaveBeenCalledTimes(4)
+})

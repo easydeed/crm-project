@@ -72,6 +72,9 @@ describe.skipIf(!tryLoadIntegrationDatabaseUrl())('OR-055 adversarial delivery r
     await db.update(accounts).set({ role: 'admin' }).where(eq(accounts.id, home.accountId))
     await db.update(contactsTable).set({ name: 'Updated homeowner' }).where(eq(contactsTable.id, home.contact.id))
     await sendMail({ sendId: home.sendId }, ctx)
+    // OR-056: this recovery fixture must be an unfinished batch. Finished sends
+    // are now refused, separately proven in review-fixes.integration.test.ts.
+    await db.update(sends).set({ state: 'ready' }).where(eq(sends.id, home.sendId))
     expect(await recomposeUnsentSend(home.accountId, home.sendId)).toBe(true)
     await composeSend({ accountId: home.accountId, sendId: home.sendId }, ctx)
     const [row] = await db.select().from(sendRecipients).where(eq(sendRecipients.sendId, home.sendId))

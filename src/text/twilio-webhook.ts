@@ -1,4 +1,4 @@
-import { and, eq, isNotNull, sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { normalizeUsPhone } from '@/config/phone'
 import { getRuntimeDb } from '@/db/runtime'
 import { accounts } from '@/db/schema'
@@ -40,7 +40,10 @@ export async function handleTwilioWebhook(url: string, params: Record<string, st
     .select({ id: accounts.id })
     .from(accounts)
     // Phones are stored as typed at signup; compare on the last ten digits.
-    .where(and(sql`right(regexp_replace(${accounts.phone}, '[^0-9]', '', 'g'), 10) = ${digits}`, isNotNull(accounts.phoneVerifiedAt)))
-  for (const owner of owners) await stopTexting(db, owner.id, params.From!, 'stop_received', now)
+    // Keep finding an unverified owner on retries after a failed billing switch-off.
+    .where(sql`right(regexp_replace(${accounts.phone}, '[^0-9]', '', 'g'), 10) = ${digits}`)
+  const outcomes = await Promise.allSettled(owners.map((owner) => stopTexting(db, owner.id, params.From!, 'stop_received', now)))
+  const failed = outcomes.find((outcome) => outcome.status === 'rejected')
+  if (failed?.status === 'rejected') throw failed.reason
   return owners.length ? 'stop' : 'ignored'
 }

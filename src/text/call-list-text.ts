@@ -1,3 +1,4 @@
+import { TextBillingFailure } from '@/text/stop-recovery'
 import { and, eq, isNull } from 'drizzle-orm'
 import { isAddonEnabled } from '@/addons/state'
 import { TEXT_CALL_LIST_KEY, verifiedPhone } from '@/addons/text-call-list'
@@ -28,7 +29,8 @@ export function callListText(entries: { name: string; kind: SignalKind }[], appU
 export type CallListTextOutcome = 'off' | 'empty' | 'already' | 'sent' | 'failed' | 'retryable'
 
 /**
- * Texts this period's names to the agent's verified phone, once. Never throws: the list
+ * Texts this period's names to the agent's verified phone, once. Billing recovery
+ * failures throw; ordinary delivery failures are recorded. The list
  * on the dashboard is the source of truth and the text is a convenience.
  */
 export async function textCallList(accountId: string, period: string, asOf: Date, now = new Date()): Promise<CallListTextOutcome> {
@@ -73,6 +75,7 @@ export async function textCallList(accountId: string, period: string, asOf: Date
       return retryable ? 'retryable' : 'failed'
     }
   } catch (err) {
+    if (err instanceof TextBillingFailure) throw err
     console.error(`[text] call list text for ${accountId} failed`, err)
     return 'failed'
   }
